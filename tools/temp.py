@@ -1,0 +1,21 @@
+import numpy as np
+import h5py
+
+def temp_loader(c_path, shower):
+
+    temp_path = c_path + '/temp/'
+    if shower == 'EM':
+        temp_name = 'AraOut.setup.template.S.N0.E18.D500.3A.O0.VH.NuE.Nu.CC.'+shower+'.El1.0.txt.run0.fft_w_band.h5'
+    elif shower == 'HAD':
+        temp_name = 'AraOut.setup.template.S.N0.E18.D500.3A.O0.VH.NuMu.Nu.NC.'+shower+'.El1.0.txt.run0.fft_w_band.h5'
+    temp_file = h5py.File(temp_path+temp_name, 'r')
+    
+    temp_v = temp_file['temp_v'][:]
+    theta_info = temp_file['num_theta'][:]
+    theta_w = np.abs(theta_info[1] - theta_info[0])
+    n_theta = len(theta_info)
+    del temp_path, temp_name, temp_file
+    
+    print('Template loading is done!')
+
+    return temp_v, n_theta, theta_w, theta_info
