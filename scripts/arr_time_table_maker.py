@@ -98,9 +98,9 @@ if __name__ == "__main__":
     # since there is no click package in cobalt...
     if len (sys.argv) !=5:
         Usage = """
-    It will generate arrival time table by AraSim in ARA cvmfs.
-    Table variables are 1) Theta, 2) Phi, 3) Radius, 4) antenna and 5) ray solution
-    Output table dimesion would be (theta, phi, radius, antenna, ray solution).
+    It will generate giant index array based on plane wavefront concept of table by AraSim in ARA cvmfs.
+    Output table will be contained 1)index array, 2)shift array, 3)pad array, 4)begining and end of pad array
+    , and 5)peak search width.
 
     Usage = python3 %s
     <Station ex)2>
