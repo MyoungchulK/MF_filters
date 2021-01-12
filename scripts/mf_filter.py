@@ -169,7 +169,7 @@ def ms_filter(Data, Ped, Station, Run, Output, DMode, CPath = curr_path):
         g1.create_dataset('Soft_PSD_band_evt'+str(soft_indi_event), data=soft_indi_psd_band, compression="gzip", compression_opts=9)
         del g1, soft_sel_evt, soft_psd, soft_psd_wo_band, soft_evt_num, soft_wf, soft_fft, soft_fft_band, soft_indi_psd, soft_indi_psd_band, soft_indi_event
 
-        g2 = hf.create_group('Evt-wise_SNR')
+        g2 = hf.create_group('Event-wise_SNR_indi')
         g2.create_dataset('Trig_index', data=np.array([trig_index]), compression="gzip", compression_opts=9)
         g2.create_dataset('Freq', data=freq, compression="gzip", compression_opts=9)
         g2.create_dataset('Time', data=time_pad, compression="gzip", compression_opts=9)
