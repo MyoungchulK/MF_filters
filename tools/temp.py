@@ -12,10 +12,11 @@ def temp_loader(c_path, shower):
     
     temp_v = temp_file['temp_v'][:]
     theta_info = temp_file['num_theta'][:]
-    theta_w = np.abs(theta_info[1] - theta_info[0])
     n_theta = len(theta_info)
-    del temp_path, temp_name, temp_file
+    theta_w = np.abs(theta_info[1] - theta_info[0])
+    peak_i = temp_file['wf_peak_index'][:]
+    del temp_path, temp_name, temp_file, theta_info
     
     print('Template loading is done!')
 
-    return temp_v, n_theta, theta_w, theta_info
+    return temp_v, n_theta, theta_w, peak_i#, theta_info

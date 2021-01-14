@@ -1,6 +1,7 @@
 import numpy as np
 
 # information that can call directly data through AraRoot... later.....
+
 def antenna_info():
 
     ant_name =['D1TV', 'D2TV', 'D3TV','D4TV','D1BV', 'D2BV', 'D3BV','D4BV','D1TH', 'D2TH', 'D3TH','D4TH','D1BH', 'D2BH', 'D3BH','D4BH']
@@ -8,6 +9,10 @@ def antenna_info():
     num_ant = len(ant_name)
 
     return ant_name, ant_index, num_ant
+
+def pol_type(pol_t = 2):
+
+    return pol_t
 
 def bad_antenna(st):
     # masked antenna
@@ -23,6 +28,7 @@ def bad_antenna(st):
         bad_ant = np.array([])
     
     return bad_ant
+
 # information that can call directly data through AraRoot
 
 

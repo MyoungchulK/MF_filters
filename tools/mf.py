@@ -4,13 +4,14 @@ from scipy.ndimage import maximum_filter1d
 from tqdm import tqdm
 
 # custom lib
-from tools.array import arr_1d
+#from tools.array import arr_1d
 from tools.array import arr_2d
 from tools.array import arr_3d
 from tools.ara_root import useful_evt_maker
 from tools.ara_root import trig_checker
-from tools.wf import soft_station_pad
+from tools.wf import station_pad_soft
 from tools.wf import station_pad
+#from tools.wf import station_pad_w_index
 #from tools.plot import plot_16_log_theta
 #from tools.plot import plot_16
 #from tools.plot import plot_16_3
@@ -18,6 +19,7 @@ from tools.wf import station_pad
 #from tools.plot import plot_1
 #from tools.plot import sky_map
 #from tools.plot import hist_map
+from tools.arr_table import table_loader
 
 def off_pad_maker(pad_len, dt):
 
@@ -71,14 +73,14 @@ def Band_Square_debug(freq,amp):
 
 def psd_maker(vol, dt, i_time_len):
 
-    n_psd = np.fft.fft(vol, axis=0)
-    n_psd *= dt
-    n_psd *= n_psd.conjugate()
-    n_psd *= 2
-    n_psd /= dt
-    n_psd /= i_time_len[np.newaxis, :]
+    vol = np.fft.fft(vol, axis=0)
+    vol *= dt
+    vol *= vol.conjugate()
+    vol *= 2
+    vol /= dt
+    vol /= i_time_len[np.newaxis, :]
 
-    return n_psd
+    return vol
 
 def OMF(psd, rf_f_w, rf_v, temp_v):
     
@@ -89,19 +91,21 @@ def OMF(psd, rf_f_w, rf_v, temp_v):
     #conjugation = np.abs(2*np.fft.ifft(conjugation,axis=0))
     conjugation /= np.sqrt(np.abs(2*np.nansum(temp_v * temp_v.conjugate() / psd,axis=0) * rf_f_w))[np.newaxis, :, :]
     conjugation = conjugation[::-1,:,:]
+    conjugation[conjugation<0] = 0 
         
     return conjugation
 
-def soft_psd_maker(ant_arr, t_pad_len, num_Ants, num_evts, R, evtTree, rawEvt, cal, q, t_width_ns, time_pad_i, time_pad_f, t_width_s, n_theta, f, bad_ant_i):
+def soft_psd_maker(R, evtTree, rawEvt, num_evts, cal, q # ara root
+                    , num_Ants, bad_ant_i, t_width_ns, t_width_s # known config
+                    , t_pad_len, time_pad_i, time_pad_f # time
+                    , f # freq
+                    , n_theta): #theta
 
     print('PSD making starts!')
 
     # array for psd
     psd = arr_2d(t_pad_len, num_Ants, 0, complex)
     num_psd = 0
-
-    # array for int time length
-    int_time_len = arr_1d(num_Ants, np.nan, float)
 
     # loop over the events
     for event in tqdm(range(num_evts)):
@@ -116,15 +120,14 @@ def soft_psd_maker(ant_arr, t_pad_len, num_Ants, num_evts, R, evtTree, rawEvt, c
             if q.isGoodEvent(usefulEvent) == 1:
 
                 # make padded wf and interpolated wf length
-                ant_arr, int_time_len = soft_station_pad(usefulEvent, ant_arr, int_time_len, num_Ants, t_width_ns, time_pad_i, time_pad_f)
+                ant_arr, int_time_len = station_pad_soft(usefulEvent, num_Ants, t_width_ns, time_pad_i, time_pad_f)
 
                 # make psd
                 psd += psd_maker(ant_arr, t_width_s, int_time_len)
                 num_psd += 1
+                del ant_arr, int_time_len
 
         del usefulEvent
-
-    del int_time_len
 
     # averaging
     psd /= num_psd
@@ -141,8 +144,12 @@ def soft_psd_maker(ant_arr, t_pad_len, num_Ants, num_evts, R, evtTree, rawEvt, c
 
     return psd
 
-def soft_psd_maker_debug(ant_arr, t_pad_len, num_Ants, num_evts, R, evtTree, rawEvt, cal, q, t_width_ns, time_pad_i, time_pad_f, t_width_s, n_theta, f, bad_ant_i
-                            , Output, Station, Run, t_pad, sel_evt):
+def soft_psd_maker_debug(Station, Run, Output, sel_evt # argv
+                            , R, evtTree, rawEvt, num_evts, cal, q # ara root
+                            , num_Ants, bad_ant_i, t_width_ns, t_width_s # known config
+                            , t_pad_len, time_pad_i, time_pad_f # time
+                            , f # freq
+                            , n_theta): #theta
 
     from tools.plot import plot_16_log_theta
 
@@ -151,9 +158,6 @@ def soft_psd_maker_debug(ant_arr, t_pad_len, num_Ants, num_evts, R, evtTree, raw
     # array for psd
     psd = arr_2d(t_pad_len, num_Ants, 0, complex)
     num_psd = 0
-
-    # array for int time length
-    int_time_len = arr_1d(num_Ants, np.nan, float)
 
     # loop over the events
     for event in tqdm(range(num_evts)):
@@ -168,25 +172,23 @@ def soft_psd_maker_debug(ant_arr, t_pad_len, num_Ants, num_evts, R, evtTree, raw
             if q.isGoodEvent(usefulEvent) == 1:
 
                 # make padded wf and interpolated wf length
-                ant_arr, int_time_len = soft_station_pad(usefulEvent, ant_arr, int_time_len, num_Ants, t_width_ns, time_pad_i, time_pad_f)
+                ant_arr, int_time_len = station_pad_soft(usefulEvent, num_Ants, t_width_ns, time_pad_i, time_pad_f)
 
                 if event == sel_evt:
-
-                    event_copy = np.copy(event)    
 
                     # wf plot
                     from tools.plot import plot_16
                     ant_arr_copy = np.copy(ant_arr)
                     
                     plot_16(r'Time [ $ns$ ]',r'Amplitude [ $V$ ]','Soft WF, A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)
-                                ,t_pad,ant_arr_copy
+                                ,np.arange(time_pad_i, time_pad_f+t_width_ns, t_width_ns),ant_arr_copy
                                 ,np.round(np.nanmax(np.abs(ant_arr_copy),axis=0),2)
                                 ,-220,220
                                 ,Output,'Soft_WF_A'+str(Station)+'_Run'+str(Run)+'_Evt'+str(event)+'.png'
                                 ,'Event# '+str(event)+' Soft WF plot was generated!')
     
                     # fft plot
-                    ant_arr_fft = np.fft.fft(ant_arr, axis=0)
+                    ant_arr_fft = np.fft.fft(ant_arr_copy, axis=0)
                     ant_arr_fft_band = Band_Square_debug(f, np.repeat(ant_arr_fft[:,:,np.newaxis], n_theta, axis=2))
 
                     plot_16_log_theta(r'Frequency [ $GHz$ ]',r'Amplitude [ $V$ ]', 'Soft FFT, A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)
@@ -223,10 +225,9 @@ def soft_psd_maker_debug(ant_arr, t_pad_len, num_Ants, num_evts, R, evtTree, raw
                     pass
 
                 num_psd += 1
+                del ant_arr, int_time_len
 
         del usefulEvent
-
-    del int_time_len
 
     # averaging
     psd /= num_psd
@@ -250,11 +251,29 @@ def soft_psd_maker_debug(ant_arr, t_pad_len, num_Ants, num_evts, R, evtTree, raw
 
     print('PSD making is done!')
 
-    return psd_band, psd, num_psd, ant_arr_copy, ant_arr_fft, ant_arr_fft_band, indi_psd, indi_psd_band, event_copy
+    return psd_band, psd, num_psd, ant_arr_copy, ant_arr_fft, ant_arr_fft_band, indi_psd, indi_psd_band
 
-def evt_snr_maker(ant_arr, pad_t_l, num_Ants, n_theta, mov_i, num_evts, R, evtTree, rawEvt, cal, q, t_width_ns, time_pad_i, time_pad_f, f, f_w, n_psd, temp_v, p_len_front, p_len_end, ps_len_i, bad_ant_i):
+def evt_snr_maker(Station, CPath # argv
+                    , R, evtTree, rawEvt, num_evts, cal, q # ara root
+                    , num_Ants, bad_ant_i, t_width_ns # known config
+                    , t_pad_l, time_pad_i, time_pad_f # time
+                    , f, f_w # freq
+                    , n_psd # psd
+                    , temp_v, n_theta, theta_w, peak_i): # temp
 
     print('Event-wise SNR making starts!')
+
+    # table_loader
+    peak_w = 50
+    mov_i, pad_t_l, p_len_front, p_len_end, ps_len_i = table_loader(CPath, Station, theta_w, peak_w)[:-2]
+    del peak_w
+
+    # tale remove range
+    tale_i_front= -1*peak_i + p_len_front
+    tale_i_end= peak_i + p_len_end
+
+    # 16 pad wf arr
+    ant_arr_01 = arr_2d(t_pad_l, num_Ants, 0, int)
 
     # array for snr
     snr_wf = arr_3d(pad_t_l, num_Ants, n_theta, 0, float)
@@ -275,7 +294,7 @@ def evt_snr_maker(ant_arr, pad_t_l, num_Ants, n_theta, mov_i, num_evts, R, evtTr
    
     # half antenna number
     half_ant = int(num_Ants/2)
- 
+
     # loop over the events
     for event in tqdm(range(num_evts)):
 
@@ -289,12 +308,25 @@ def evt_snr_maker(ant_arr, pad_t_l, num_Ants, n_theta, mov_i, num_evts, R, evtTr
             if q.isGoodEvent(usefulEvent) == 1:
 
                 # make padded wf with interpolated wf to fft
-                ant_arr = np.fft.fft(station_pad(usefulEvent, ant_arr, num_Ants, t_width_ns, time_pad_i, time_pad_f), axis=0)
+                ant_arr = station_pad(usefulEvent, num_Ants, t_width_ns, time_pad_i, time_pad_f)
+
+                # 01 antenna array
+                ant_arr_01[:] = 0
+                ant_arr_01[ant_arr != 0] = 1               
+ 
+                # remove tale step 1
+                snr_wf_01[:] = 0
+                for n_t in range(n_theta):
+                    snr_wf_01[tale_i_front[0][n_t]:-tale_i_end[0][n_t], :half_ant, n_t] = ant_arr_01[:, :half_ant]
+                    snr_wf_01[tale_i_front[1][n_t]:-tale_i_end[1][n_t], half_ant:, n_t] = ant_arr_01[:, half_ant:]
 
                 # OMF
                 snr_wf[:] = 0
-                snr_wf[p_len_front:-p_len_end] = OMF(n_psd, f_w, Band_Square(f, np.repeat(ant_arr[:,:,np.newaxis], n_theta, axis=2)), temp_v)
-                snr_wf[snr_wf<0] = 0
+                snr_wf[p_len_front:-p_len_end] = OMF(n_psd, f_w, Band_Square(f, np.repeat(np.fft.fft(ant_arr, axis=0)[:,:,np.newaxis], n_theta, axis=2)), temp_v)
+                del ant_arr
+
+                # remove tale step 2
+                snr_wf[snr_wf_01 == 0] = 0
 
                 # picking max
                 snr_wf = maximum_filter1d(snr_wf, size=ps_len_i, axis=0, mode='constant')
@@ -348,16 +380,32 @@ def evt_snr_maker(ant_arr, pad_t_l, num_Ants, n_theta, mov_i, num_evts, R, evtTr
 
         del usefulEvent
 
-    del snr_wf, snr_wf_01, snr_wf_2d_v, snr_wf_2d_01_v, snr_wf_2d_h, snr_wf_2d_01_h, half_ant
+    del mov_i, pad_t_l, p_len_front, p_len_end, ps_len_i, tale_i_front, tale_i_end, ant_arr_01, snr_wf, snr_wf_01, snr_wf_2d_v, snr_wf_2d_01_v, snr_wf_2d_h, snr_wf_2d_01_h, half_ant
 
     print('Event-wise SNR making is done!')
 
     return np.asarray(evt_snr), np.asarray(evt_snr_v), np.asarray(evt_snr_h), np.asarray(evt_num), np.asarray(trigger)
 
-def evt_snr_maker_debug(ant_arr, pad_t_l, num_Ants, n_theta, mov_i, num_evts, R, evtTree, rawEvt, cal, q, t_width_ns, time_pad_i, time_pad_f, f, f_w, n_psd, temp_v, p_len_front, p_len_end, ps_len_i, bad_ant_i
-                            , Output, Station, Run, t_pad, pad_t, mov_t, sel_evt, peak_w, theta_w):
+def evt_snr_maker_debug(Station, Run, Output, CPath, sel_evt # argv
+                        , R, evtTree, rawEvt, num_evts, cal, q # ara root
+                        , num_Ants, bad_ant_i, t_width_ns # known config
+                        , t_pad_l, time_pad_i, time_pad_f # time
+                        , f, f_w # freq
+                        , n_psd # psd
+                        , temp_v, n_theta, theta_w, peak_i): # temp
 
     print('Event-wise SNR making starts!')
+
+    # table_loader
+    peak_w = 50
+    mov_i, pad_t_l, p_len_front, p_len_end, ps_len_i, mov_t, pad_t = table_loader(CPath, Station, theta_w, peak_w)
+
+    # tale remove range
+    tale_i_front= -1*peak_i + p_len_front
+    tale_i_end= peak_i + p_len_end
+
+    # 16 pad wf arr
+    ant_arr_01 = arr_2d(t_pad_l, num_Ants, 0, int)
 
     # array for snr
     snr_wf = arr_3d(pad_t_l, num_Ants, n_theta, 0, float)
@@ -392,7 +440,7 @@ def evt_snr_maker_debug(ant_arr, pad_t_l, num_Ants, n_theta, mov_i, num_evts, R,
             if q.isGoodEvent(usefulEvent) == 1:
 
                 # make padded wf with interpolated wf to fft
-                ant_arr = station_pad(usefulEvent, ant_arr, num_Ants, t_width_ns, time_pad_i, time_pad_f)
+                ant_arr = station_pad(usefulEvent, num_Ants, t_width_ns, time_pad_i, time_pad_f)
 
                 if event == sel_evt:
 
@@ -405,14 +453,12 @@ def evt_snr_maker_debug(ant_arr, pad_t_l, num_Ants, n_theta, mov_i, num_evts, R,
                     print('Evt#'+str(event)+' is selected!')
                     print('Trigger type is',trig_type) 
 
-                    event_copy = np.copy(event)
-
                     # wf plot
                     from tools.plot import plot_16
                     ant_arr_copy = np.copy(ant_arr)
                     
                     plot_16(r'Time [ $ns$ ]',r'Amplitude [ $V$ ]',trig_type+' WF, A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)
-                                ,t_pad,ant_arr_copy
+                                ,np.arange(time_pad_i, time_pad_f+t_width_ns, t_width_ns),ant_arr_copy
                                 ,np.round(np.nanmax(np.abs(ant_arr_copy),axis=0),2)
                                 ,time_pad_i,time_pad_f
                                 ,Output,trig_type+'_WF_A'+str(Station)+'_Run'+str(Run)+'_Evt'+str(event)+'.png'
@@ -436,13 +482,20 @@ def evt_snr_maker_debug(ant_arr, pad_t_l, num_Ants, n_theta, mov_i, num_evts, R,
                 else:
                     pass
 
-                # fft
-                ant_arr = np.fft.fft(ant_arr, axis=0)
+                # 01 antenna array
+                ant_arr_01[:] = 0
+                ant_arr_01[ant_arr != 0] = 1
+
+                # remove tale step 1
+                snr_wf_01[:] = 0
+                for n_t in range(n_theta):
+                    snr_wf_01[tale_i_front[0][n_t]:-tale_i_end[0][n_t], :half_ant, n_t] = ant_arr_01[:, :half_ant]
+                    snr_wf_01[tale_i_front[1][n_t]:-tale_i_end[1][n_t], half_ant:, n_t] = ant_arr_01[:, half_ant:]
 
                 # OMF
                 snr_wf[:] = 0
-                snr_wf[p_len_front:-p_len_end] = OMF(n_psd, f_w, Band_Square(f, np.repeat(ant_arr[:,:,np.newaxis], n_theta, axis=2)), temp_v)
-                snr_wf[snr_wf<0] = 0
+                snr_wf[p_len_front:-p_len_end] = OMF(n_psd, f_w, Band_Square(f, np.repeat(np.fft.fft(ant_arr, axis=0)[:,:,np.newaxis], n_theta, axis=2)), temp_v)
+                del ant_arr
 
                 if event == sel_evt:
 
@@ -450,13 +503,32 @@ def evt_snr_maker_debug(ant_arr, pad_t_l, num_Ants, n_theta, mov_i, num_evts, R,
                     from tools.plot import plot_16_3
                     snr_wf_copy = np.copy(snr_wf)
 
-                    plot_16_3(r'Offset Time [ $ns$ ]',r'SNR [ $V/RMS$ ]', trig_type+' SNR, A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)
+                    plot_16_3(r'Offset Time [ $ns$ ]',r'SNR [ $V/RMS$ ]', trig_type+' SNR, A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)+', w/ tale'
                                 ,pad_t,snr_wf_copy[:,:,0],np.round(np.nanmax(snr_wf_copy[:,:,0],axis=0),2)
                                 ,pad_t,snr_wf_copy[:,:,1],np.round(np.nanmax(snr_wf_copy[:,:,1],axis=0),2)
                                 ,pad_t,snr_wf_copy[:,:,2],np.round(np.nanmax(snr_wf_copy[:,:,2],axis=0),2)
-                                ,Output,trig_type+'_SNR_A'+str(Station)+'_Run'+str(Run)+'_Evt'+str(event)+'.png'
-                                ,'Event# '+str(event)+' '+trig_type+' SNR plot was generated!')
+                                ,Output,trig_type+'_SNR_A'+str(Station)+'_Run'+str(Run)+'_Evt'+str(event)+'_w_tale.png'
+                                ,'Event# '+str(event)+' '+trig_type+' SNR w/ tale plot was generated!')
 
+                else:
+                    pass
+
+                # remove tale step 2
+                snr_wf[snr_wf_01 == 0] = 0
+
+                if event == sel_evt:
+
+                    #snr plot
+                    from tools.plot import plot_16_3
+                    snr_wf_copy_1 = np.copy(snr_wf)
+
+                    plot_16_3(r'Offset Time [ $ns$ ]',r'SNR [ $V/RMS$ ]', trig_type+' SNR, A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)+', w/o tale'
+                                ,pad_t,snr_wf_copy_1[:,:,0],np.round(np.nanmax(snr_wf_copy[:,:,0],axis=0),2)
+                                ,pad_t,snr_wf_copy_1[:,:,1],np.round(np.nanmax(snr_wf_copy[:,:,1],axis=0),2)
+                                ,pad_t,snr_wf_copy_1[:,:,2],np.round(np.nanmax(snr_wf_copy[:,:,2],axis=0),2)
+                                ,Output,trig_type+'_SNR_A'+str(Station)+'_Run'+str(Run)+'_Evt'+str(event)+'_wo_tale.png'
+                                ,'Event# '+str(event)+' '+trig_type+' SNR w/o tale plot was generated!')
+                
                 else:
                     pass
 
@@ -640,7 +712,7 @@ def evt_snr_maker_debug(ant_arr, pad_t_l, num_Ants, n_theta, mov_i, num_evts, R,
 
         del usefulEvent
 
-    del snr_wf, snr_wf_01, snr_wf_2d_v, snr_wf_2d_01_v, snr_wf_2d_h, snr_wf_2d_01_h, half_ant
+    del mov_i, pad_t_l, p_len_front, p_len_end, ps_len_i, mov_t, pad_t, tale_i_front, tale_i_end, ant_arr_01, snr_wf, snr_wf_01, snr_wf_2d_v, snr_wf_2d_01_v, snr_wf_2d_h, snr_wf_2d_01_h, half_ant
 
     evt_snr = np.asarray(evt_snr)
     evt_snr_v = np.asarray(evt_snr_v)
@@ -657,7 +729,7 @@ def evt_snr_maker_debug(ant_arr, pad_t_l, num_Ants, n_theta, mov_i, num_evts, R,
 
     print('Event-wise SNR making is done!')
 
-    return evt_snr, evt_snr_v, evt_snr_h, evt_num, trigger, trig_index, event_copy, ant_arr_copy, ant_arr_fft, ant_arr_fft_band, snr_wf_copy, snr_wf_r_max_copy, v_match, h_match, v_sum_match, h_sum_match, v_sum_match_01, h_sum_match_01, v_avg_match, h_avg_match, evt_snr_v_sky_2d, evt_snr_h_sky_2d, nadir_range, phi_range
+    return evt_snr, evt_snr_v, evt_snr_h, evt_num, trigger, trig_index, ant_arr_copy, ant_arr_fft, ant_arr_fft_band, snr_wf_copy, snr_wf_copy_1, snr_wf_r_max_copy, v_match, h_match, v_sum_match, h_sum_match, v_sum_match_01, h_sum_match_01, v_avg_match, h_avg_match, evt_snr_v_sky_2d, evt_snr_h_sky_2d, nadir_range, phi_range, np.arange(time_pad_i, time_pad_f+t_width_ns, t_width_ns), mov_t, pad_t, peak_w
                  
 
 

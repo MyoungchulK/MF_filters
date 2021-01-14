@@ -4,7 +4,7 @@ import h5py
 # custom lib
 from tools.wf import interpolation_bin_width
 from tools.wf import time_pad_maker
-from tools.mf import off_pad_maker
+#from tools.mf import off_pad_maker
 
 def plane_table(num_Antennas, trg_xyz, index_of_refr, nadir_min = 0.5, nadir_max = 179.5+0.5, phi_min = 0.5, phi_max = 359.5+0.5, angle_width = 1):
 
@@ -73,7 +73,13 @@ def mov_index_table(path_dT_avg, arr_max_len, Search_Len):
     # make wf pad
     time_pad_len = time_pad_maker(time_width_ns)[1]
 
+    #off_t = np.arange(0,time_pad_len,1) * time_width_ns
+    #off_t_len = len(off_t)
+    #off_t_first = off_t[0]
+    #off_t_end = off_t[-1]
+
     # make offset pad
+    from tools.mf import off_pad_maker
     off_t, off_t_len, off_t_first, off_t_end = off_pad_maker(time_pad_len, time_width_ns)
     del time_pad_len, off_t_len
 
