@@ -120,7 +120,7 @@ def soft_psd_maker(R, evtTree, rawEvt, num_evts, cal, q # ara root
             if q.isGoodEvent(usefulEvent) == 1:
 
                 # make padded wf and interpolated wf length
-                ant_arr, int_time_len = station_pad_soft(usefulEvent, num_Ants, t_width_ns, time_pad_i, time_pad_f)
+                ant_arr, int_time_len = station_pad_soft(usefulEvent, num_Ants, t_width_ns, t_pad_len, time_pad_i, time_pad_f)
 
                 # make psd
                 psd += psd_maker(ant_arr, t_width_s, int_time_len)
@@ -172,7 +172,7 @@ def soft_psd_maker_debug(Station, Run, Output, sel_evt # argv
             if q.isGoodEvent(usefulEvent) == 1:
 
                 # make padded wf and interpolated wf length
-                ant_arr, int_time_len = station_pad_soft(usefulEvent, num_Ants, t_width_ns, time_pad_i, time_pad_f)
+                ant_arr, int_time_len = station_pad_soft(usefulEvent, num_Ants, t_width_ns, t_pad_len, time_pad_i, time_pad_f)
 
                 if event == sel_evt:
 
@@ -286,7 +286,7 @@ def evt_snr_maker(Station, CPath # argv
     snr_wf_2d_01_h = np.copy(snr_wf_2d_01_v)
 
     #array for event-wise snr
-    evt_snr = []
+    #evt_snr = []
     evt_snr_v = []
     evt_snr_h = []
     evt_num = []
@@ -308,7 +308,7 @@ def evt_snr_maker(Station, CPath # argv
             if q.isGoodEvent(usefulEvent) == 1:
 
                 # make padded wf with interpolated wf to fft
-                ant_arr = station_pad(usefulEvent, num_Ants, t_width_ns, time_pad_i, time_pad_f)
+                ant_arr = station_pad(usefulEvent, num_Ants, t_width_ns, t_pad_l, time_pad_i, time_pad_f)
 
                 # 01 antenna array
                 ant_arr_01[:] = 0
@@ -360,19 +360,19 @@ def evt_snr_maker(Station, CPath # argv
                     snr_wf_2d_01_v[:,0] += snr_wf_01[:,half,2][mov_i[:,half,0,:]]
                     snr_wf_2d_01_v[:,4] += snr_wf_01[:,half,2][mov_i[:,half,4,:]]
             
-                    snr_wf_2d_h[:,2] += snr_wf[:,half+8,0][mov_i[:,half+8,2,:]]
-                    snr_wf_2d_h[:,3] += snr_wf[:,half+8,1][mov_i[:,half+8,3,:]]
-                    snr_wf_2d_h[:,1] += snr_wf[:,half+8,1][mov_i[:,half+8,1,:]]
-                    snr_wf_2d_h[:,0] += snr_wf[:,half+8,2][mov_i[:,half+8,0,:]]
-                    snr_wf_2d_h[:,4] += snr_wf[:,half+8,2][mov_i[:,half+8,4,:]]
+                    snr_wf_2d_h[:,2] += snr_wf[:,half+half_ant,0][mov_i[:,half+half_ant,2,:]]
+                    snr_wf_2d_h[:,3] += snr_wf[:,half+half_ant,1][mov_i[:,half+half_ant,3,:]]
+                    snr_wf_2d_h[:,1] += snr_wf[:,half+half_ant,1][mov_i[:,half+half_ant,1,:]]
+                    snr_wf_2d_h[:,0] += snr_wf[:,half+half_ant,2][mov_i[:,half+half_ant,0,:]]
+                    snr_wf_2d_h[:,4] += snr_wf[:,half+half_ant,2][mov_i[:,half+half_ant,4,:]]
             
-                    snr_wf_2d_01_h[:,2] += snr_wf_01[:,half+8,0][mov_i[:,half+8,2,:]]
-                    snr_wf_2d_01_h[:,3] += snr_wf_01[:,half+8,1][mov_i[:,half+8,3,:]]
-                    snr_wf_2d_01_h[:,1] += snr_wf_01[:,half+8,1][mov_i[:,half+8,1,:]]
-                    snr_wf_2d_01_h[:,0] += snr_wf_01[:,half+8,2][mov_i[:,half+8,0,:]]
-                    snr_wf_2d_01_h[:,4] += snr_wf_01[:,half+8,2][mov_i[:,half+8,4,:]]
+                    snr_wf_2d_01_h[:,2] += snr_wf_01[:,half+half_ant,0][mov_i[:,half+half_ant,2,:]]
+                    snr_wf_2d_01_h[:,3] += snr_wf_01[:,half+half_ant,1][mov_i[:,half+half_ant,3,:]]
+                    snr_wf_2d_01_h[:,1] += snr_wf_01[:,half+half_ant,1][mov_i[:,half+half_ant,1,:]]
+                    snr_wf_2d_01_h[:,0] += snr_wf_01[:,half+half_ant,2][mov_i[:,half+half_ant,0,:]]
+                    snr_wf_2d_01_h[:,4] += snr_wf_01[:,half+half_ant,2][mov_i[:,half+half_ant,4,:]]
         
-                evt_snr.append(np.nanmax((snr_wf_2d_v+snr_wf_2d_h) / (snr_wf_2d_01_v+snr_wf_2d_01_h)))
+                #evt_snr.append(np.nanmax((snr_wf_2d_v+snr_wf_2d_h) / (snr_wf_2d_01_v+snr_wf_2d_01_h)))
                 evt_snr_v.append(np.nanmax(snr_wf_2d_v / snr_wf_2d_01_v))
                 evt_snr_h.append(np.nanmax(snr_wf_2d_h / snr_wf_2d_01_h))
                 evt_num.append(event)
@@ -384,7 +384,8 @@ def evt_snr_maker(Station, CPath # argv
 
     print('Event-wise SNR making is done!')
 
-    return np.asarray(evt_snr), np.asarray(evt_snr_v), np.asarray(evt_snr_h), np.asarray(evt_num), np.asarray(trigger)
+    #return np.asarray(evt_snr), np.asarray(evt_snr_v), np.asarray(evt_snr_h), np.asarray(evt_num), np.asarray(trigger)
+    return np.asarray(evt_snr_v), np.asarray(evt_snr_h), np.asarray(evt_num), np.asarray(trigger)
 
 def evt_snr_maker_debug(Station, Run, Output, CPath, sel_evt # argv
                         , R, evtTree, rawEvt, num_evts, cal, q # ara root
@@ -440,7 +441,7 @@ def evt_snr_maker_debug(Station, Run, Output, CPath, sel_evt # argv
             if q.isGoodEvent(usefulEvent) == 1:
 
                 # make padded wf with interpolated wf to fft
-                ant_arr = station_pad(usefulEvent, num_Ants, t_width_ns, time_pad_i, time_pad_f)
+                ant_arr = station_pad(usefulEvent, num_Ants, t_width_ns, t_pad_l, time_pad_i, time_pad_f)
 
                 if event == sel_evt:
 
@@ -580,17 +581,17 @@ def evt_snr_maker_debug(Station, Run, Output, CPath, sel_evt # argv
                     snr_wf_2d_01_v[:,0] += snr_wf_01[:,half,2][mov_i[:,half,0,:]]
                     snr_wf_2d_01_v[:,4] += snr_wf_01[:,half,2][mov_i[:,half,4,:]]
 
-                    snr_wf_2d_h[:,2] += snr_wf[:,half+8,0][mov_i[:,half+8,2,:]]
-                    snr_wf_2d_h[:,3] += snr_wf[:,half+8,1][mov_i[:,half+8,3,:]]
-                    snr_wf_2d_h[:,1] += snr_wf[:,half+8,1][mov_i[:,half+8,1,:]]
-                    snr_wf_2d_h[:,0] += snr_wf[:,half+8,2][mov_i[:,half+8,0,:]]
-                    snr_wf_2d_h[:,4] += snr_wf[:,half+8,2][mov_i[:,half+8,4,:]]
+                    snr_wf_2d_h[:,2] += snr_wf[:,half+half_ant,0][mov_i[:,half+half_ant,2,:]]
+                    snr_wf_2d_h[:,3] += snr_wf[:,half+half_ant,1][mov_i[:,half+half_ant,3,:]]
+                    snr_wf_2d_h[:,1] += snr_wf[:,half+half_ant,1][mov_i[:,half+half_ant,1,:]]
+                    snr_wf_2d_h[:,0] += snr_wf[:,half+half_ant,2][mov_i[:,half+half_ant,0,:]]
+                    snr_wf_2d_h[:,4] += snr_wf[:,half+half_ant,2][mov_i[:,half+half_ant,4,:]]
 
-                    snr_wf_2d_01_h[:,2] += snr_wf_01[:,half+8,0][mov_i[:,half+8,2,:]]
-                    snr_wf_2d_01_h[:,3] += snr_wf_01[:,half+8,1][mov_i[:,half+8,3,:]]
-                    snr_wf_2d_01_h[:,1] += snr_wf_01[:,half+8,1][mov_i[:,half+8,1,:]]
-                    snr_wf_2d_01_h[:,0] += snr_wf_01[:,half+8,2][mov_i[:,half+8,0,:]]
-                    snr_wf_2d_01_h[:,4] += snr_wf_01[:,half+8,2][mov_i[:,half+8,4,:]]
+                    snr_wf_2d_01_h[:,2] += snr_wf_01[:,half+half_ant,0][mov_i[:,half+half_ant,2,:]]
+                    snr_wf_2d_01_h[:,3] += snr_wf_01[:,half+half_ant,1][mov_i[:,half+half_ant,3,:]]
+                    snr_wf_2d_01_h[:,1] += snr_wf_01[:,half+half_ant,1][mov_i[:,half+half_ant,1,:]]
+                    snr_wf_2d_01_h[:,0] += snr_wf_01[:,half+half_ant,2][mov_i[:,half+half_ant,0,:]]
+                    snr_wf_2d_01_h[:,4] += snr_wf_01[:,half+half_ant,2][mov_i[:,half+half_ant,4,:]]
 
                 evt_snr.append(np.nanmax((snr_wf_2d_v+snr_wf_2d_h) / (snr_wf_2d_01_v+snr_wf_2d_01_h)))
                 evt_snr_v.append(np.nanmax(snr_wf_2d_v / snr_wf_2d_01_v))
@@ -606,21 +607,21 @@ def evt_snr_maker_debug(Station, Run, Output, CPath, sel_evt # argv
                     from tools.plot import sky_map
 
                     snr_wf_2d_ex = np.full(mov_i.shape,np.nan)
-        
-                    for a in range(num_Ants):
-                        snr_wf_2d_ex[:,a,2] = snr_wf[:,a,0][mov_i[:,a,2,:]]
-                        snr_wf_2d_ex[:,a,3] = snr_wf[:,a,1][mov_i[:,a,3,:]]
-                        snr_wf_2d_ex[:,a,1] = snr_wf[:,a,1][mov_i[:,a,1,:]]
-                        snr_wf_2d_ex[:,a,0] = snr_wf[:,a,2][mov_i[:,a,0,:]]
-                        snr_wf_2d_ex[:,a,4] = snr_wf[:,a,2][mov_i[:,a,4,:]]
+                    
+                    for n_ant in range(num_Ants):
+                        snr_wf_2d_ex[:,n_ant,2] = snr_wf[:,n_ant,0][mov_i[:,n_ant,2,:]]
+                        snr_wf_2d_ex[:,n_ant,3] = snr_wf[:,n_ant,1][mov_i[:,n_ant,3,:]]
+                        snr_wf_2d_ex[:,n_ant,1] = snr_wf[:,n_ant,1][mov_i[:,n_ant,1,:]]
+                        snr_wf_2d_ex[:,n_ant,0] = snr_wf[:,n_ant,2][mov_i[:,n_ant,0,:]]
+                        snr_wf_2d_ex[:,n_ant,4] = snr_wf[:,n_ant,2][mov_i[:,n_ant,4,:]]
     
                     snr_wf_2d_01_ex = np.copy(snr_wf_2d_ex)
                     snr_wf_2d_01_ex[snr_wf_2d_ex != 0] = 1
             
-                    v_sum = np.nansum(snr_wf_2d_ex[:,:8], axis=1)
-                    v_sum_01 = np.nansum(snr_wf_2d_01_ex[:,:8], axis=1)
-                    h_sum = np.nansum(snr_wf_2d_ex[:,8:], axis=1)
-                    h_sum_01 = np.nansum(snr_wf_2d_01_ex[:,8:], axis=1)
+                    v_sum = np.nansum(snr_wf_2d_ex[:,:half_ant], axis=1)
+                    v_sum_01 = np.nansum(snr_wf_2d_01_ex[:,:half_ant], axis=1)
+                    h_sum = np.nansum(snr_wf_2d_ex[:,half_ant:], axis=1)
+                    h_sum_01 = np.nansum(snr_wf_2d_01_ex[:,half_ant:], axis=1)
                     del snr_wf_2d_01_ex           
  
                     v_avg = v_sum / v_sum_01
@@ -632,12 +633,12 @@ def evt_snr_maker_debug(Station, Run, Output, CPath, sel_evt # argv
                     evt_snr_v_loc = np.where(v_avg == evt_snr_v_sky)
                     evt_snr_h_loc = np.where(h_avg == evt_snr_h_sky)
                     del evt_snr_v_sky, evt_snr_h_sky
-            
+                    
                     evt_snr_v_sky_2d = np.nanmax(v_avg,axis=0)
                     evt_snr_h_sky_2d = np.nanmax(h_avg,axis=0)
 
-                    v_match = snr_wf_2d_ex[:,:8,evt_snr_v_loc[1][0],evt_snr_v_loc[2][0]]
-                    h_match = snr_wf_2d_ex[:,8:,evt_snr_h_loc[1][0],evt_snr_h_loc[2][0]]
+                    v_match = snr_wf_2d_ex[:,:half_ant,evt_snr_v_loc[1][0],evt_snr_v_loc[2][0]]
+                    h_match = snr_wf_2d_ex[:,half_ant:,evt_snr_h_loc[1][0],evt_snr_h_loc[2][0]]
                     del snr_wf_2d_ex
 
                     v_sum_match = v_sum[:,evt_snr_v_loc[1][0],evt_snr_v_loc[2][0]]
@@ -650,48 +651,56 @@ def evt_snr_maker_debug(Station, Run, Output, CPath, sel_evt # argv
 
                     v_avg_match = v_avg[:,evt_snr_v_loc[1][0],evt_snr_v_loc[2][0]]
                     h_avg_match = h_avg[:,evt_snr_h_loc[1][0],evt_snr_h_loc[2][0]]
-                    del v_avg, h_avg, evt_snr_v_loc, evt_snr_h_loc
+                    del v_avg, h_avg
 
-                    plot_16_overlap(r'Offset Time [ $ns$ ]',r'SNR [ $V/RMS$ ]', trig_type+' Roll Max SNR(pw:'+str(peak_w)+'ns) w/o ArrT, A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)+', Vpol'
+                    v_nadir = theta_w/2 + evt_snr_v_loc[1][0] * theta_w
+                    v_phi = theta_w/2 + evt_snr_v_loc[2][0] * theta_w
+                    h_nadir = theta_w/2 + evt_snr_h_loc[1][0] * theta_w
+                    h_phi = theta_w/2 + evt_snr_h_loc[2][0] * theta_w
+                    v_opt_angle = np.array([v_nadir,v_phi])
+                    h_opt_angle = np.array([h_nadir,h_phi])
+                    del evt_snr_v_loc, evt_snr_h_loc
+
+                    plot_16_overlap(r'Offset Time [ $ns$ ]',r'SNR [ $V/RMS$ ]', trig_type+' Roll Max SNR(pw:'+str(peak_w)+'ns) w/o ArrT, N:'+str(v_nadir)+'deg, P:'+str(v_phi)+'deg, \n A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)+', Vpol'
                                     ,mov_t,v_match
-                                    ,Output,trig_type+'_Roll_Max_SNR_pw'+str(peak_w)+'_wo_ArrT_A'+str(Station)+'_Run'+str(Run)+'_Evt'+str(event)+'_Vpol.png'
+                                    ,Output,trig_type+'_Roll_Max_SNR_pw'+str(peak_w)+'_wo_ArrT_A'+str(Station)+'_Run'+str(Run)+'_Evt'+str(event)+'_Vpol_N'+str(v_nadir)+'_P'+str(v_phi)+'.png'
                                     ,'Vpol'
                                     ,'Event# '+str(event)+' '+trig_type+' Roll Max SNR plot w/o ArrT Vpol was generated!')
                     
-                    plot_16_overlap(r'Offset Time [ $ns$ ]',r'SNR [ $V/RMS$ ]', trig_type+' Roll Max SNR(pw:'+str(peak_w)+'ns) w/o ArrT, A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)+', Hpol'
+                    plot_16_overlap(r'Offset Time [ $ns$ ]',r'SNR [ $V/RMS$ ]', trig_type+' Roll Max SNR(pw:'+str(peak_w)+'ns) w/o ArrT, N:'+str(h_nadir)+'deg, P:'+str(h_phi)+'deg, \n A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)+', Hpol'
                                     ,mov_t,h_match
-                                    ,Output,trig_type+'_Roll_Max_SNR_pw'+str(peak_w)+'_wo_ArrT_A'+str(Station)+'_Run'+str(Run)+'_Evt'+str(event)+'_Hpol.png'
+                                    ,Output,trig_type+'_Roll_Max_SNR_pw'+str(peak_w)+'_wo_ArrT_A'+str(Station)+'_Run'+str(Run)+'_Evt'+str(event)+'_Hpol_N'+str(h_nadir)+'_P'+str(h_phi)+'.png'
                                     ,'Hpol'
                                     ,'Event# '+str(event)+' '+trig_type+' Roll Max SNR plot w/o ArrT Hpol was generated!')
 
-                    plot_1(r'Offset Time [ $ns$ ]',r'Sum SNR [ $V/RMS$ ]', trig_type+' Roll Max Sum SNR(pw:'+str(peak_w)+'ns) w/o ArrT, A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)+', Vpol'
+                    plot_1(r'Offset Time [ $ns$ ]',r'Sum SNR [ $V/RMS$ ]', trig_type+' Roll Max Sum SNR(pw:'+str(peak_w)+'ns) w/o ArrT, N:'+str(v_nadir)+'deg, P:'+str(v_phi)+'deg, \n A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)+', Vpol'
                                     ,mov_t, v_sum_match
-                                    ,Output,trig_type+'_Roll_Max_Sum_SNR_pw'+str(peak_w)+'_wo_ArrT_A'+str(Station)+'_Run'+str(Run)+'_Evt'+str(event)+'_Vpol.png'
+                                    ,Output,trig_type+'_Roll_Max_Sum_SNR_pw'+str(peak_w)+'_wo_ArrT_A'+str(Station)+'_Run'+str(Run)+'_Evt'+str(event)+'_Vpol_N'+str(v_nadir)+'_P'+str(v_phi)+'.png'
                                     ,'Event# '+str(event)+' '+trig_type+' Roll Max Sum SNR plot w/o ArrT Vpol was generated!')
 
-                    plot_1(r'Offset Time [ $ns$ ]',r'Sum SNR [ $V/RMS$ ]', trig_type+' Roll Max Sum SNR(pw:'+str(peak_w)+'ns) w/o ArrT, A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)+', Hpol'
+                    plot_1(r'Offset Time [ $ns$ ]',r'Sum SNR [ $V/RMS$ ]', trig_type+' Roll Max Sum SNR(pw:'+str(peak_w)+'ns) w/o ArrT, N:'+str(h_nadir)+'deg, P:'+str(h_phi)+'deg, \n A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)+', Hpol'
                                     ,mov_t, h_sum_match
-                                    ,Output,trig_type+'_Roll_Max_Sum_SNR_pw'+str(peak_w)+'_wo_ArrT_A'+str(Station)+'_Run'+str(Run)+'_Evt'+str(event)+'_Hpol.png'
+                                    ,Output,trig_type+'_Roll_Max_Sum_SNR_pw'+str(peak_w)+'_wo_ArrT_A'+str(Station)+'_Run'+str(Run)+'_Evt'+str(event)+'_Hpol_N'+str(h_nadir)+'_P'+str(h_phi)+'.png'
                                     ,'Event# '+str(event)+' '+trig_type+' Roll Max Sum SNR plot w/o ArrT Hpol was generated!')
 
-                    plot_1(r'Offset Time [ $ns$ ]',r'Sum SNR [ $V/RMS$ ]', trig_type+' Roll Max Sum SNR(pw:'+str(peak_w)+'ns) Counts w/o ArrT, A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)+', Vpol'
+                    plot_1(r'Offset Time [ $ns$ ]',r'Sum SNR [ $V/RMS$ ]', trig_type+' Roll Max Sum SNR(pw:'+str(peak_w)+'ns) Counts w/o ArrT, N:'+str(v_nadir)+'deg, P:'+str(v_phi)+'deg, \n A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)+', Vpol'
                                     ,mov_t, v_sum_match_01
-                                    ,Output,trig_type+'_Roll_Max_Sum_SNR_Counts_pw'+str(peak_w)+'_wo_ArrT_A'+str(Station)+'_Run'+str(Run)+'_Evt'+str(event)+'_Vpol.png'
+                                    ,Output,trig_type+'_Roll_Max_Sum_SNR_Counts_pw'+str(peak_w)+'_wo_ArrT_A'+str(Station)+'_Run'+str(Run)+'_Evt'+str(event)+'_Vpol_N'+str(v_nadir)+'_P'+str(v_phi)+'.png'
                                     ,'Event# '+str(event)+' '+trig_type+' Roll Max Sum SNR Counts plot w/o ArrT Vpol was generated!')
 
-                    plot_1(r'Offset Time [ $ns$ ]',r'Sum SNR [ $V/RMS$ ]', trig_type+' Roll Max Sum SNR(pw:'+str(peak_w)+'ns) Counts w/o ArrT, A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)+', Hpol'
+                    plot_1(r'Offset Time [ $ns$ ]',r'Sum SNR [ $V/RMS$ ]', trig_type+' Roll Max Sum SNR(pw:'+str(peak_w)+'ns) Counts w/o ArrT, N:'+str(h_nadir)+'deg, P:'+str(h_phi)+'deg, \n A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)+', Hpol'
                                     ,mov_t, h_sum_match_01
-                                    ,Output,trig_type+'_Roll_Max_Sum_SNR_Counts_pw'+str(peak_w)+'_wo_ArrT_A'+str(Station)+'_Run'+str(Run)+'_Evt'+str(event)+'_Hpol.png'
+                                    ,Output,trig_type+'_Roll_Max_Sum_SNR_Counts_pw'+str(peak_w)+'_wo_ArrT_A'+str(Station)+'_Run'+str(Run)+'_Evt'+str(event)+'_Hpol_N'+str(h_nadir)+'_P'+str(h_phi)+'.png'
                                     ,'Event# '+str(event)+' '+trig_type+' Roll Max Sum SNR Counts plot w/o ArrT Hpol was generated!')
 
-                    plot_1(r'Offset Time [ $ns$ ]',r'Sum SNR [ $V/RMS$ ]', trig_type+' Roll Max Avg SNR(pw:'+str(peak_w)+'ns) w/o ArrT, A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)+', Vpol'
+                    plot_1(r'Offset Time [ $ns$ ]',r'Sum SNR [ $V/RMS$ ]', trig_type+' Roll Max Avg SNR(pw:'+str(peak_w)+'ns) w/o ArrT, N:'+str(v_nadir)+'deg, P:'+str(v_phi)+'deg, \n A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)+', Vpol'
                                     ,mov_t, v_avg_match
-                                    ,Output,trig_type+'_Roll_Max_Avg_SNR_pw'+str(peak_w)+'_wo_ArrT_A'+str(Station)+'_Run'+str(Run)+'_Evt'+str(event)+'_Vpol.png'
+                                    ,Output,trig_type+'_Roll_Max_Avg_SNR_pw'+str(peak_w)+'_wo_ArrT_A'+str(Station)+'_Run'+str(Run)+'_Evt'+str(event)+'_Vpol_N'+str(v_nadir)+'_P'+str(v_phi)+'.png'
                                     ,'Event# '+str(event)+' '+trig_type+' Roll Max Avg SNR plot w/o ArrT Vpol was generated!')
 
-                    plot_1(r'Offset Time [ $ns$ ]',r'Sum SNR [ $V/RMS$ ]', trig_type+' Roll Max Avg SNR(pw:'+str(peak_w)+'ns) w/o ArrT, A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)+', Hpol'
+                    plot_1(r'Offset Time [ $ns$ ]',r'Sum SNR [ $V/RMS$ ]', trig_type+' Roll Max Avg SNR(pw:'+str(peak_w)+'ns) w/o ArrT, N:'+str(h_nadir)+'deg, P:'+str(h_phi)+'deg, \n A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)+', Hpol'
                                     ,mov_t, h_avg_match
-                                    ,Output,trig_type+'_Roll_Max_Avg_SNR_pw'+str(peak_w)+'_wo_ArrT_A'+str(Station)+'_Run'+str(Run)+'_Evt'+str(event)+'_Hpol.png'
+                                    ,Output,trig_type+'_Roll_Max_Avg_SNR_pw'+str(peak_w)+'_wo_ArrT_A'+str(Station)+'_Run'+str(Run)+'_Evt'+str(event)+'_Hpol_N'+str(h_nadir)+'_P'+str(h_phi)+'.png'
                                     ,'Event# '+str(event)+' '+trig_type+' Roll Max Avg SNR plot w/o ArrT Hpol was generated!')
           
                     nadir_range = np.arange(0+theta_w/2, 180, theta_w)
@@ -712,7 +721,7 @@ def evt_snr_maker_debug(Station, Run, Output, CPath, sel_evt # argv
 
         del usefulEvent
 
-    del mov_i, pad_t_l, p_len_front, p_len_end, ps_len_i, mov_t, pad_t, tale_i_front, tale_i_end, ant_arr_01, snr_wf, snr_wf_01, snr_wf_2d_v, snr_wf_2d_01_v, snr_wf_2d_h, snr_wf_2d_01_h, half_ant
+    del mov_i, pad_t_l, p_len_front, p_len_end, ps_len_i, tale_i_front, tale_i_end, ant_arr_01, snr_wf, snr_wf_01, snr_wf_2d_v, snr_wf_2d_01_v, snr_wf_2d_h, snr_wf_2d_01_h, half_ant
 
     evt_snr = np.asarray(evt_snr)
     evt_snr_v = np.asarray(evt_snr_v)
@@ -729,7 +738,7 @@ def evt_snr_maker_debug(Station, Run, Output, CPath, sel_evt # argv
 
     print('Event-wise SNR making is done!')
 
-    return evt_snr, evt_snr_v, evt_snr_h, evt_num, trigger, trig_index, ant_arr_copy, ant_arr_fft, ant_arr_fft_band, snr_wf_copy, snr_wf_copy_1, snr_wf_r_max_copy, v_match, h_match, v_sum_match, h_sum_match, v_sum_match_01, h_sum_match_01, v_avg_match, h_avg_match, evt_snr_v_sky_2d, evt_snr_h_sky_2d, nadir_range, phi_range, np.arange(time_pad_i, time_pad_f+t_width_ns, t_width_ns), mov_t, pad_t, peak_w
+    return evt_snr, evt_snr_v, evt_snr_h, evt_num, trigger, trig_index, ant_arr_copy, ant_arr_fft, ant_arr_fft_band, snr_wf_copy, snr_wf_copy_1, snr_wf_r_max_copy, v_match, h_match, v_sum_match, h_sum_match, v_sum_match_01, h_sum_match_01, v_avg_match, h_avg_match, evt_snr_v_sky_2d, evt_snr_h_sky_2d, nadir_range, phi_range, np.arange(time_pad_i, time_pad_f+t_width_ns, t_width_ns), mov_t, pad_t, peak_w, v_opt_angle, h_opt_angle
                  
 
 

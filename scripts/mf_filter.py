@@ -71,9 +71,10 @@ def ms_filter(Data, Ped, Station, Run, Output, DMode, CPath = curr_path, Sel_evt
         del time_width_s
 
         # event-wise snr maker
-        evt_w_snr, evt_w_snr_v, evt_w_snr_h, evts_num, trig = evt_snr_maker(Station, CPath # argv
-                                                                            , ROOT, eventTree, rawEvent, calibrator, qual # ara root
-                                                                            , num_Antennas, bad_ant_index, t_width_ns # known config
+        #evt_w_snr, evt_w_snr_v, evt_w_snr_h, evts_num, trig = evt_snr_maker(Station, CPath # argv
+        evt_w_snr_v, evt_w_snr_h, evts_num, trig = evt_snr_maker(Station, CPath # argv
+                                                                            , ROOT, eventTree, rawEvent, num_events, calibrator, qual # ara root
+                                                                            , num_Antennas, bad_ant_index, time_width_ns # known config
                                                                             , time_pad_len, time_pad_i, time_pad_f # time
                                                                             , freq, freq_w # freq
                                                                             , soft_psd # psd
@@ -88,7 +89,7 @@ def ms_filter(Data, Ped, Station, Run, Output, DMode, CPath = curr_path, Sel_evt
         del Station, Run
 
         #saving result
-        hf.create_dataset('evt_w_snr', data=evt_w_snr, compression="gzip", compression_opts=9)
+        #hf.create_dataset('evt_w_snr', data=evt_w_snr, compression="gzip", compression_opts=9)
         hf.create_dataset('evt_w_snr_v', data=evt_w_snr_v, compression="gzip", compression_opts=9)
         hf.create_dataset('evt_w_snr_h', data=evt_w_snr_h, compression="gzip", compression_opts=9)
         hf.create_dataset('evts_num', data=evts_num, compression="gzip", compression_opts=9)
@@ -102,8 +103,8 @@ def ms_filter(Data, Ped, Station, Run, Output, DMode, CPath = curr_path, Sel_evt
 
         # selected event
         #Sel_evt_soft = 679
-        #Sel_evt = 11 # RF
-        #Sel_evt = 13 # Cal
+        #Sel_evt = 11 # Cal
+        #Sel_evt = 13 # RF
 
         from tools.mf import soft_psd_maker_debug
         from tools.mf import evt_snr_maker_debug
@@ -118,7 +119,7 @@ def ms_filter(Data, Ped, Station, Run, Output, DMode, CPath = curr_path, Sel_evt
         del time_width_s  
  
         # event-wise snr maker
-        evt_w_snr, evt_w_snr_v, evt_w_snr_h, evts_num, trig, trig_index, ant_arr_copy, ant_arr_fft, ant_arr_fft_band, snr_wf_copy, snr_wf_copy_1, snr_wf_r_max_copy, v_match, h_match, v_sum_match, h_sum_match, v_sum_match_01, h_sum_match_01, v_avg_match, h_avg_match, evt_snr_v_sky_2d, evt_snr_h_sky_2d, nadir_range, phi_range, time_pad, mov_t, pad_t, peak_w = evt_snr_maker_debug(Station, Run, Output, CPath, Sel_evt # argv
+        evt_w_snr, evt_w_snr_v, evt_w_snr_h, evts_num, trig, trig_index, ant_arr_copy, ant_arr_fft, ant_arr_fft_band, snr_wf_copy, snr_wf_copy_1, snr_wf_r_max_copy, v_match, h_match, v_sum_match, h_sum_match, v_sum_match_01, h_sum_match_01, v_avg_match, h_avg_match, evt_snr_v_sky_2d, evt_snr_h_sky_2d, nadir_range, phi_range, time_pad, mov_t, pad_t, peak_w, v_opt_angle, h_opt_angle = evt_snr_maker_debug(Station, Run, Output, CPath, Sel_evt # argv
                                     , ROOT, eventTree, rawEvent, num_events, calibrator, qual # ara root
                                     , num_Antennas, bad_ant_index, time_width_ns # known config
                                     , time_pad_len, time_pad_i, time_pad_f # time
@@ -165,6 +166,8 @@ def ms_filter(Data, Ped, Station, Run, Output, DMode, CPath = curr_path, Sel_evt
         g2.create_dataset('SNR_evt'+str(Sel_evt)+'_wo_tale', data=snr_wf_copy_1, compression="gzip", compression_opts=9)
         g2.create_dataset('SNR_roll_max_evt'+str(Sel_evt), data=snr_wf_r_max_copy, compression="gzip", compression_opts=9)
         g2.create_dataset('SNR_shift_time', data=mov_t, compression="gzip", compression_opts=9)
+        g2.create_dataset('SNR_shift_opt_Vpol', data=v_opt_angle, compression="gzip", compression_opts=9)
+        g2.create_dataset('SNR_shift_opt_Hpol', data=h_opt_angle, compression="gzip", compression_opts=9)
         g2.create_dataset('SNR_shift_roll_max_evt'+str(Sel_evt)+'Vpol', data=v_match, compression="gzip", compression_opts=9)
         g2.create_dataset('SNR_shift_roll_max_evt'+str(Sel_evt)+'Hpol', data=h_match, compression="gzip", compression_opts=9)
         g2.create_dataset('SNR_shift_roll_max_sum_evt'+str(Sel_evt)+'Vpol', data=v_sum_match, compression="gzip", compression_opts=9)
@@ -178,7 +181,7 @@ def ms_filter(Data, Ped, Station, Run, Output, DMode, CPath = curr_path, Sel_evt
         g2.create_dataset('Grid_width', data=np.array([theta_w]), compression="gzip", compression_opts=9)
         g2.create_dataset('SNR_2d_evt'+str(Sel_evt)+'Vpol', data=evt_snr_v_sky_2d, compression="gzip", compression_opts=9)
         g2.create_dataset('SNR_2d_evt'+str(Sel_evt)+'Hpol', data=evt_snr_h_sky_2d, compression="gzip", compression_opts=9)
-        del g2, Sel_evt, trig_index, ant_arr_copy, ant_arr_fft, ant_arr_fft_band, snr_wf_copy, snr_wf_copy_1, snr_wf_r_max_copy, v_match, h_match, v_sum_match, h_sum_match, v_sum_match_01, h_sum_match_01, v_avg_match, h_avg_match, evt_snr_v_sky_2d, evt_snr_h_sky_2d, nadir_range, phi_range, time_pad, mov_t, pad_t, freq, peak_w, theta_w 
+        del g2, Sel_evt, trig_index, ant_arr_copy, ant_arr_fft, ant_arr_fft_band, snr_wf_copy, snr_wf_copy_1, snr_wf_r_max_copy, v_match, h_match, v_sum_match, h_sum_match, v_sum_match_01, h_sum_match_01, v_avg_match, h_avg_match, evt_snr_v_sky_2d, evt_snr_h_sky_2d, nadir_range, phi_range, time_pad, mov_t, pad_t, freq, peak_w, theta_w, v_opt_angle, h_opt_angle 
 
         gf = hf.create_group('Event_wise_SNR')
         gf.create_dataset('evt_w_snr', data=evt_w_snr, compression="gzip", compression_opts=9)
@@ -217,7 +220,7 @@ if __name__ == "__main__":
     <DMode ex) normal or debug>
     if DMode is debug, 
         <Sel_evt_soft ex) 679>
-        <Sel_evt ex) 11(RF) or 13(Cal)>
+        <Sel_evt ex) 11(Cal) or 13(RF)>
         """ %(sys.argv[0])
         print(Usage)
         del Usage

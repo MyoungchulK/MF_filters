@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.interpolate import Akima1DInterpolator
-from scipy.signal import resample
+#from scipy.signal import resample
 
 def interpolation_bin_width(int_dt=0.5): # bin width scale is ns
 
@@ -53,33 +53,36 @@ def wf_pad_index(int_ti, int_tf, t_pad_i, t_pad_f, dt):
     # wf inserting points
     return int((int_ti - t_pad_i) / dt), int((t_pad_f - int_tf) / dt) # make sure it is integer
 
-def station_pad_soft(usefulEvt, num_Ants, dt, time_pad_i, time_pad_f):
+def station_pad_soft(usefulEvt, num_Ants, dt, time_pad_l, time_pad_i, time_pad_f):
 
     # initialize array
-    ant_arr = []
-    i_time_len = []
+    ant_arr = np.zeros((time_pad_l, num_Ants))
+    i_time_len = np.full((num_Ants), np.nan)
 
     # loop over the antennas
     for ant in range(num_Ants):
 
         # TGraph to interpolated wf
-        time_i, time_f, volt_i, time_l = TGraph_to_int(usefulEvt.getGraphFromRFChan(ant), dt)
+        time_i, time_f, volt_i, i_time_len[ant] = TGraph_to_int(usefulEvt.getGraphFromRFChan(ant), dt)
 
         # wf inserting points
-        ti_index, tf_index = wf_pad_index(time_i, time_f, time_pad_i, time_pad_f, dt)
-        del time_i, time_f
+        #ti_index, tf_index = wf_pad_index(time_i, time_f, time_pad_i, time_pad_f, dt)
+        #del time_i, time_f
 
         # put wf & length into pad
-        ant_arr.append(np.pad(volt_i, (ti_index, tf_index), 'constant', constant_values=(0)))
-        i_time_len.append(time_l)
-        del volt_i, ti_index, tf_index, time_l
+        #ant_arr[ti_index:-tf_index, ant] = volt_i
+        #del volt_i, ti_index, tf_index
 
-    return np.asarray(ant_arr).T/1e3 , np.asarray(i_time_len) #mV to V
+        # put wf & length into pad v2
+        ant_arr[int((time_i - time_pad_i) / dt):-int((time_pad_f - time_f) / dt), ant] = volt_i
+        del time_i, time_f, volt_i
 
-def station_pad(usefulEvt, num_Ants, dt, time_pad_i, time_pad_f):
+    return ant_arr/1e3, i_time_len #mV to V
+
+def station_pad(usefulEvt, num_Ants, dt, time_pad_l, time_pad_i, time_pad_f):
 
     # initialize array
-    ant_arr = []
+    ant_arr = np.zeros((time_pad_l, num_Ants))
 
     # loop over the antennas
     for ant in range(num_Ants):
@@ -88,14 +91,18 @@ def station_pad(usefulEvt, num_Ants, dt, time_pad_i, time_pad_f):
         time_i, time_f, volt_i = TGraph_to_int(usefulEvt.getGraphFromRFChan(ant), dt)[:-1]
 
         # wf inserting points
-        ti_index, tf_index = wf_pad_index(time_i, time_f, time_pad_i, time_pad_f, dt)
-        del time_i, time_f
+        #ti_index, tf_index = wf_pad_index(time_i, time_f, time_pad_i, time_pad_f, dt)
+        #del time_i, time_f
 
         # put wf into pad
-        ant_arr.append(np.pad(volt_i, (ti_index, tf_index), 'constant', constant_values=(0)))
-        del volt_i, ti_index, tf_index
+        #ant_arr[ti_index:-tf_index, ant] = volt_i
+        #del volt_i, ti_index, tf_index
 
-    return np.asarray(ant_arr).T/1e3 #mV to V
+        # put wf into pad v2
+        ant_arr[int((time_i - time_pad_i) / dt):-int((time_pad_f - time_f) / dt), ant] = volt_i
+        del time_i, time_f, volt_i
+
+    return ant_arr/1e3 #mV to V
 
 """
 #Sinc interpolation from python scipy signal resample library

@@ -184,7 +184,7 @@ def plot_16_overlap(xlabel,ylabel,title
 
         plt.plot(x_data,y_data[:,b],'-',lw=3,color=color16[b],alpha=0.5,label=Ant[b])
 
-    plt.legend(loc='lower center',bbox_to_anchor=(1.23,0), numpoints = 1 ,fontsize=15)
+    plt.legend(loc='lower center',bbox_to_anchor=(1.15,0), numpoints = 1 ,fontsize=15)
     #plt.legend(loc='best', numpoints = 1 ,fontsize=15)
     
     os.chdir(d_path)
@@ -235,7 +235,7 @@ def sky_map(evt,nadir_range, phi_range, angle_width
     plt.grid(linestyle=':')
     plt.tick_params(axis='x', labelsize=20)
     plt.tick_params(axis='y', labelsize=20)
-    plt.title(title, y=1.02,fontsize=25)
+    plt.title(title, y=1.02,fontsize=20)
     plt.ylim(180,0)
     plt.xlim(0,360)
 
@@ -252,7 +252,7 @@ def sky_map(evt,nadir_range, phi_range, angle_width
     cbar1.ax.tick_params(axis='y', labelsize=15)
     cbar1.ax.set_ylabel(r'Averaged Event-wise SNR [ $V/RMS$ ]', fontsize=15)#, color= 'red')
 
-    plt.legend(loc='lower center',bbox_to_anchor=(0.5,-0.3), numpoints = 1 ,fontsize=15)
+    plt.legend(loc='lower center',bbox_to_anchor=(0.5,-0.35), numpoints = 1 ,fontsize=15)
 
     plt.tight_layout()
 
