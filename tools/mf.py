@@ -605,8 +605,10 @@ def evt_snr_maker_debug(Station, Run, Output, CPath, sel_evt # argv
                     from tools.plot import plot_16_overlap
                     from tools.plot import plot_1
                     from tools.plot import sky_map
+                    from tools.array import arr_4d
 
-                    snr_wf_2d_ex = np.full(mov_i.shape,np.nan)
+                    snr_wf_2d_ex = arr_4d(mov_i.shape[0], mov_i.shape[1], mov_i.shape[2], mov_i.shape[3], np.nan, float)
+                    #snr_wf_2d_ex = np.full(mov_i.shape,np.nan)
                     
                     for n_ant in range(num_Ants):
                         snr_wf_2d_ex[:,n_ant,2] = snr_wf[:,n_ant,0][mov_i[:,n_ant,2,:]]

@@ -94,7 +94,8 @@ def ms_filter(Data, Ped, Station, Run, Output, DMode, CPath = curr_path, Sel_evt
         hf.create_dataset('evt_w_snr_h', data=evt_w_snr_h, compression="gzip", compression_opts=9)
         hf.create_dataset('evts_num', data=evts_num, compression="gzip", compression_opts=9)
         hf.create_dataset('trig', data=trig, compression="gzip", compression_opts=9)
-        del evt_w_snr, evt_w_snr_v, evt_w_snr_h, evts_num, trig
+        #del evt_w_snr, evt_w_snr_v, evt_w_snr_h, evts_num, trig
+        del evt_w_snr_v, evt_w_snr_h, evts_num, trig
 
         hf.close()
         del hf

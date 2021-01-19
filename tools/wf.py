@@ -1,6 +1,8 @@
 import numpy as np
 from scipy.interpolate import Akima1DInterpolator
 #from scipy.signal import resample
+from tools.array import arr_2d
+from tools.array import arr_1d
 
 def interpolation_bin_width(int_dt=0.5): # bin width scale is ns
 
@@ -56,8 +58,8 @@ def wf_pad_index(int_ti, int_tf, t_pad_i, t_pad_f, dt):
 def station_pad_soft(usefulEvt, num_Ants, dt, time_pad_l, time_pad_i, time_pad_f):
 
     # initialize array
-    ant_arr = np.zeros((time_pad_l, num_Ants))
-    i_time_len = np.full((num_Ants), np.nan)
+    ant_arr = arr_2d(time_pad_l, num_Ants, 0, float)
+    i_time_len = arr_1d(num_Ants, np.nan, float)
 
     # loop over the antennas
     for ant in range(num_Ants):
@@ -82,7 +84,7 @@ def station_pad_soft(usefulEvt, num_Ants, dt, time_pad_l, time_pad_i, time_pad_f
 def station_pad(usefulEvt, num_Ants, dt, time_pad_l, time_pad_i, time_pad_f):
 
     # initialize array
-    ant_arr = np.zeros((time_pad_l, num_Ants))
+    ant_arr = arr_2d(time_pad_l, num_Ants, 0, float)
 
     # loop over the antennas
     for ant in range(num_Ants):

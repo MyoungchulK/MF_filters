@@ -1,5 +1,6 @@
 import numpy as np
 import os
+from tools.array import arr_2d
 
 # import root and ara root lib
 def ara_root_lib():
@@ -88,7 +89,7 @@ def ant_xyz(ROOT, Station, num_ant):
     geomTool = ROOT.AraGeomTool.Instance()
 
     # array for xyz coord
-    ant_xyz = np.full((num_ant, 3), np.nan)
+    ant_xyz = arr_2d(num_ant, 3, np.nan, float)
 
     # the x-y coordinates of channels 0-3 are enough for a top down view
     for ant in range(num_ant):
