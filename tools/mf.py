@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from scipy.signal import hilbert
 from scipy.ndimage import maximum_filter1d
@@ -742,16 +743,196 @@ def evt_snr_maker_debug(Station, Run, Output, CPath, sel_evt # argv
 
     return evt_snr, evt_snr_v, evt_snr_h, evt_num, trigger, trig_index, ant_arr_copy, ant_arr_fft, ant_arr_fft_band, snr_wf_copy, snr_wf_copy_1, snr_wf_r_max_copy, v_match, h_match, v_sum_match, h_sum_match, v_sum_match_01, h_sum_match_01, v_avg_match, h_avg_match, evt_snr_v_sky_2d, evt_snr_h_sky_2d, nadir_range, phi_range, np.arange(time_pad_i, time_pad_f+t_width_ns, t_width_ns), mov_t, pad_t, peak_w, v_opt_angle, h_opt_angle
                  
+def indi_snr_maker(Station, Run, Output # argv
+                    , R, evtTree, rawEvt, num_evts, cal, q # ara root
+                    , num_Ants, bad_ant_i, t_width_ns # known config
+                    , t_pad_l, time_pad_i, time_pad_f # time
+                    , f, f_w # freq
+                    , n_psd # psd
+                    , temp_v, n_theta): # temp
 
+    print('Indi SNR making starts!')
 
+    import h5py
 
+    # create output file
+    os.chdir(Output)
+    h5_file_name='Indi_SNR_A'+str(Station)+'_R'+str(Run)+'.h5'
+    hf = h5py.File(h5_file_name, 'w')
 
+    trigger = []
 
+    # loop over the events
+    for event in tqdm(range(num_evts)):
 
+        # make a useful event
+        usefulEvent = useful_evt_maker(R, evtTree, rawEvt, event, cal)
 
+        # trigger filter
+        if rawEvt.isSoftwareTrigger() == 0:
 
+            # quality cut
+            if q.isGoodEvent(usefulEvent) == 1:
 
+                # make padded wf with interpolated wf to fft
+                ant_arr = station_pad(usefulEvent, num_Ants, t_width_ns, t_pad_l, time_pad_i, time_pad_f)
 
+                # OMF
+                snr_wf = OMF(n_psd, f_w, Band_Square(f, np.repeat(np.fft.fft(ant_arr, axis=0)[:,:,np.newaxis], n_theta, axis=2)), temp_v)
+                del ant_arr
+
+                # remove bad antenna
+                snr_wf[:, bad_ant_i, :] = np.nan
+
+                #saving result
+                hf.create_dataset(str(event), data=snr_wf, compression="gzip", compression_opts=9)
+                del snr_wf
+
+                # trigger check
+                trigger.append(trig_checker(rawEvt))
+
+        del usefulEvent
+
+    #saving result
+    hf.create_dataset('Trigger', data=np.asarray(trigger), compression="gzip", compression_opts=9)
+
+    hf.close()
+    del hf
+
+    print('output is',Output+h5_file_name)
+    del Output, h5_file_name
+
+    print('Indi SNR making is done!')
+
+def indi_snr_maker_debug(Station, Run, Output, sel_evt # argv
+                    , R, evtTree, rawEvt, num_evts, cal, q # ara root
+                    , num_Ants, bad_ant_i, t_width_ns # known config
+                    , t_pad_l, time_pad_i, time_pad_f # time
+                    , f, f_w # freq
+                    , n_psd # psd
+                    , temp_v, n_theta): # temp
+
+    print('Indi SNR making starts!')
+
+    import h5py
+
+    # create output file
+    os.chdir(Output)
+    h5_file_name='Indi_SNR_A'+str(Station)+'_R'+str(Run)+'_debug.h5'
+    hf = h5py.File(h5_file_name, 'w')
+
+    g2 = hf.create_group('SNR')
+
+    trigger = []
+
+    # loop over the events
+    for event in tqdm(range(num_evts)):
+
+        # make a useful event
+        usefulEvent = useful_evt_maker(R, evtTree, rawEvt, event, cal)
+
+        # trigger filter
+        if rawEvt.isSoftwareTrigger() == 0:
+
+            # quality cut
+            if q.isGoodEvent(usefulEvent) == 1:
+
+                # make padded wf with interpolated wf to fft
+                ant_arr = station_pad(usefulEvent, num_Ants, t_width_ns, t_pad_l, time_pad_i, time_pad_f)
+
+                if event == sel_evt:
+
+                    trig_index = trig_checker(rawEvt)
+                    if trig_index == 0:
+                        trig_type = 'RF'
+                    elif trig_index == 1:
+                        trig_type = 'Cal'
+
+                    print('Evt#'+str(event)+' is selected!')
+                    print('Trigger type is',trig_type)
+
+                    # wf plot
+                    from tools.plot import plot_16
+                    ant_arr_copy = np.copy(ant_arr)
+
+                    plot_16(r'Time [ $ns$ ]',r'Amplitude [ $V$ ]',trig_type+' WF, A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)
+                                ,np.arange(time_pad_i, time_pad_f+t_width_ns, t_width_ns),ant_arr_copy
+                                ,np.round(np.nanmax(np.abs(ant_arr_copy),axis=0),2)
+                                ,time_pad_i,time_pad_f
+                                ,Output,trig_type+'_WF_A'+str(Station)+'_Run'+str(Run)+'_Evt'+str(event)+'.png'
+                                ,'Event# '+str(event)+' '+trig_type+' WF plot was generated!')
+
+                    # fft plot
+                    ant_arr_fft = np.fft.fft(ant_arr_copy, axis=0)
+                    ant_arr_fft_band = Band_Square_debug(f, np.repeat(ant_arr_fft[:,:,np.newaxis], n_theta, axis=2))
+
+                    from tools.plot import plot_16_log_theta
+
+                    plot_16_log_theta(r'Frequency [ $GHz$ ]',r'Amplitude [ $V$ ]', trig_type+' FFT, A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)
+                                ,f/1e9,ant_arr_fft
+                                ,f/1e9,ant_arr_fft_band[:,:,0]
+                                ,f/1e9,ant_arr_fft_band[:,:,1]
+                                ,f/1e9,ant_arr_fft_band[:,:,2]
+                                ,1e-4,1e2
+                                ,Output,trig_type+'_FFT_A'+str(Station)+'_Run'+str(Run)+'_Evt'+str(event)+'.png'
+                                ,'Event# '+str(event)+' '+trig_type+' FFT plot was generated!')
+
+                else:
+                    pass
+
+                # OMF
+                snr_wf = OMF(n_psd, f_w, Band_Square(f, np.repeat(np.fft.fft(ant_arr, axis=0)[:,:,np.newaxis], n_theta, axis=2)), temp_v)
+                del ant_arr
+
+                if event == sel_evt:
+
+                    #snr plot
+                    from tools.plot import plot_16_3
+                    snr_wf_copy = np.copy(snr_wf)
+
+                    plot_16_3(r'Offset Time [ $ns$ ]',r'SNR [ $V/RMS$ ]', trig_type+' SNR, A'+str(Station)+', Run'+str(Run)+', Evt'+str(event)+', w/ tale'
+                                ,np.arange(time_pad_i, time_pad_f+t_width_ns, t_width_ns),snr_wf_copy[:,:,0],np.round(np.nanmax(snr_wf_copy[:,:,0],axis=0),2)
+                                ,np.arange(time_pad_i, time_pad_f+t_width_ns, t_width_ns),snr_wf_copy[:,:,1],np.round(np.nanmax(snr_wf_copy[:,:,1],axis=0),2)
+                                ,np.arange(time_pad_i, time_pad_f+t_width_ns, t_width_ns),snr_wf_copy[:,:,2],np.round(np.nanmax(snr_wf_copy[:,:,2],axis=0),2)
+                                ,Output,trig_type+'_SNR_A'+str(Station)+'_Run'+str(Run)+'_Evt'+str(event)+'_w_tale.png'
+                                ,'Event# '+str(event)+' '+trig_type+' SNR w/ tale plot was generated!')
+
+                else:
+                    pass
+
+                # remove bad antenna
+                snr_wf[:, bad_ant_i, :] = np.nan
+
+                #saving result
+                g2.create_dataset(str(event), data=snr_wf, compression="gzip", compression_opts=9)
+                del snr_wf
+
+                # trigger check
+                trigger.append(trig_checker(rawEvt))
+
+        del usefulEvent
+
+    #saving result
+    g2.create_dataset('Trigger', data=np.asarray(trigger), compression="gzip", compression_opts=9)
+    del g2
+
+    g3 = hf.create_group('SNR_indi')
+    g3.create_dataset('Trig_index', data=np.array([trig_index]), compression="gzip", compression_opts=9)
+    g3.create_dataset('Freq', data=f, compression="gzip", compression_opts=9)
+    g3.create_dataset('Time', data=np.arange(time_pad_i, time_pad_f+t_width_ns, t_width_ns), compression="gzip", compression_opts=9)
+    g3.create_dataset('WF_evt'+str(sel_evt), data=ant_arr_copy, compression="gzip", compression_opts=9)
+    g3.create_dataset('FFT_evt'+str(sel_evt), data=ant_arr_fft, compression="gzip", compression_opts=9)
+    g3.create_dataset('FFT_band_evt'+str(sel_evt), data=ant_arr_fft_band, compression="gzip", compression_opts=9)
+    g3.create_dataset('SNR_evt'+str(sel_evt), data=snr_wf_copy, compression="gzip", compression_opts=9)    
+    del g3, trig_index, ant_arr_copy, ant_arr_fft, ant_arr_fft_band, snr_wf_copy, trig_type
+
+    hf.close()
+    del hf
+
+    print('output is',Output+h5_file_name)
+    del Output, h5_file_name
+
+    print('Indi SNR making is done!')
 
 
 
