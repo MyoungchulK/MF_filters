@@ -18,7 +18,7 @@ cd /home/mkim/analysis/MF_filters/scripts/
 
 #ulimit -s 131072; python3 mf_filter.py ${data} ${ped} ${station} ${run} ${temp_dir} ${mode}
 #ulimit -s 131072; python3 /home/mkim/analysis/MF_filters/scripts/mf_filter.py ${data} ${ped} ${station} ${run} ${out} ${mode}
-python3 /home/mkim/analysis/MF_filters/scripts/mf_filter.py ${data} ${ped} ${station} ${run} ${out} ${mode}
+python3 /home/mkim/analysis/MF_filters/scripts/mf_filter_coherent.py ${data} ${ped} ${station} ${run} ${out} ${mode}
 
 #if [ $? -ne 0 ] #error handle if something has gone wrong
 #then

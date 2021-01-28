@@ -212,10 +212,10 @@ def plot_1(xlabel,ylabel,title
     #plt.xlim(140,180)
     #plt.ylim(0,25)
 
-    plt.plot(x_data,y_data,'-',lw=3,color='red',alpha=0.5)#,label=Antenna[b])
+    plt.plot(x_data,y_data,'-',lw=3,color='red',alpha=0.5,label=str(np.round(np.nanmax(y_data),2)))
 
     #plt.legend(loc='lower center',bbox_to_anchor=(1.23,0), numpoints = 1 ,fontsize=15)
-    #plt.legend(loc='best', numpoints = 1 ,fontsize=15)
+    plt.legend(loc='best', numpoints = 1 ,fontsize=15)
     
     os.chdir(d_path)
     fig.savefig(file_name,bbox_inches='tight')

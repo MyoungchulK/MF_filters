@@ -6,7 +6,7 @@ from tools.array import arr_1d
 
 def interpolation_bin_width(int_dt=0.5): # bin width scale is ns
 
-    return int_dt, int_dt/1e9
+    return int_dt, int_dt/1e9, 1/(int_dt/1e9)
 
 def time_pad_maker(p_dt, p_range = 1024, p_offset = -200):
 
@@ -49,13 +49,13 @@ def akima_interp(raw_t, raw_v, dt):
 
     return int_ti, int_tf, akima(np.arange(int_ti, int_tf+dt, dt)), int((int_tf - int_ti)/dt)
     #return int_ti, int_tf, akima(int_t), len(int_t)
-
+"""
 def wf_pad_index(int_ti, int_tf, t_pad_i, t_pad_f, dt):
 
     # wf inserting points
     return int((int_ti - t_pad_i) / dt), int((t_pad_f - int_tf) / dt) # make sure it is integer
-
-def station_pad_soft(usefulEvt, num_Ants, dt, time_pad_l, time_pad_i, time_pad_f):
+"""
+def station_pad(usefulEvt, num_Ants, dt, time_pad_l, time_pad_i, time_pad_f):
 
     # initialize array
     ant_arr = arr_2d(time_pad_l, num_Ants, 0, float)
@@ -80,7 +80,7 @@ def station_pad_soft(usefulEvt, num_Ants, dt, time_pad_l, time_pad_i, time_pad_f
         del time_i, time_f, volt_i
 
     return ant_arr/1e3, i_time_len #mV to V
-
+"""
 def station_pad(usefulEvt, num_Ants, dt, time_pad_l, time_pad_i, time_pad_f):
 
     # initialize array
@@ -105,7 +105,7 @@ def station_pad(usefulEvt, num_Ants, dt, time_pad_l, time_pad_i, time_pad_f):
         del time_i, time_f, volt_i
 
     return ant_arr/1e3 #mV to V
-
+"""
 """
 #Sinc interpolation from python scipy signal resample library
 def sinc_interp(raw_t, raw_v, dt):
