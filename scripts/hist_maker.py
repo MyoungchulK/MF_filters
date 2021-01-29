@@ -99,15 +99,15 @@ plt.yscale('log')
 plt.xlim(3,60)
 plt.ylim(1e-4,1e8)
 
-plt.plot(bin_range_step[:-1]+(bin_range_step[1]-bin_range_step[0])/2,v_soft, drawstyle='steps',linestyle='-',linewidth=3,color='dodgerblue',alpha=0.5,label=f'Vpol Soft {soft_ee}evts')
+plt.plot(bin_range_step[:-1]+(bin_range_step[1]-bin_range_step[0])/2,v_soft, drawstyle='steps',linestyle='-',linewidth=3,color='cyan',alpha=0.5,label=f'Vpol Soft {soft_ee}evts')
 plt.plot(bin_range_step[:-1]+(bin_range_step[1]-bin_range_step[0])/2,h_soft, drawstyle='steps',linestyle='-',linewidth=3,color='orange',alpha=0.5,label=f'Hpol Soft {soft_ee}evts')
 plt.plot(bin_range_step[:-1]+(bin_range_step[1]-bin_range_step[0])/2,v_cal, drawstyle='steps',linestyle='-',linewidth=3,color='dodgerblue',alpha=0.5,label=f'Vpol Cal {cal_ee}evts')
-plt.plot(bin_range_step[:-1]+(bin_range_step[1]-bin_range_step[0])/2,h_cal, drawstyle='steps',linestyle='-',linewidth=3,color='orange',alpha=0.5,label=f'Hpol Cal {cal_ee}evts')
+plt.plot(bin_range_step[:-1]+(bin_range_step[1]-bin_range_step[0])/2,h_cal, drawstyle='steps',linestyle='-',linewidth=3,color='orangered',alpha=0.5,label=f'Hpol Cal {cal_ee}evts')
 plt.plot(bin_range_step[:-1]+(bin_range_step[1]-bin_range_step[0])/2,v_rf, drawstyle='steps',linestyle='-',linewidth=3,color='navy',alpha=0.5,label=f'Vpol RF {rf_ee}evts')
 plt.plot(bin_range_step[:-1]+(bin_range_step[1]-bin_range_step[0])/2,h_rf, drawstyle='steps',linestyle='-',linewidth=3,color='red',alpha=0.5,label=f'Hpol RF {rf_ee}evts')
 
 plt.legend(loc='lower center',bbox_to_anchor=(1.2,0), numpoints = 1 ,fontsize=15)
-fig.savefig(f'Evt_Wise_SNR_A{Station}_{hh}Rs_{ee}evts.png',bbox_inches='tight')
+fig.savefig(f'Evt_Wise_SNR_A{Station}_{hh}runs_{ee}evts.png',bbox_inches='tight')
 #plt.show()
 plt.close()
 
