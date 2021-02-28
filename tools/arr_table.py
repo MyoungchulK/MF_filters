@@ -110,7 +110,7 @@ def mov_index_table(path_dT_avg, arr_max_len, Search_Len):
 def table_loader(c_path, Station, grid, peak):
 
     table_path = c_path + '/table/'
-    table_name = 'Plane_Table_A'+str(Station)+'_GS'+str(grid)+'_PW'+str(peak)+'_lite.h5'
+    table_name = 'Plane_Table_A'+str(Station)+'_Y2013_GS'+str(grid)+'_PW'+str(peak)+'_lite.h5'
     table_file = h5py.File(table_path+table_name, 'r')
     
     mov_index = table_file['mov_index'][:] 
@@ -125,7 +125,13 @@ def table_loader(c_path, Station, grid, peak):
 
     return mov_index, len(pad_t), pad_len_front, pad_len_end, ps_len_index, mov_t, pad_t
 
+def nz_ice(z, a = 1.78, b = 1.326, c = 0.0202):
 
+    #if z > 0:
+    #    return 0
+    #else:
+        nz = a - (a - b) * np.exp(c * z)
+        return nz
 
 
 

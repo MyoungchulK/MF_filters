@@ -3,10 +3,10 @@
 # load in variables
 data=$1
 ped=$2
-station=$3
-run=$4
-out=$5
-mode=$6
+out=$3
+#station=$4
+#run=$5
+#mode=$6
 
 #temp_dir=/scratch/mkim/MF_filters_out/
 #script_dir=/home/mkim/analysis/MF_filters/scripts/
@@ -18,7 +18,7 @@ cd /home/mkim/analysis/MF_filters/scripts/
 
 #ulimit -s 131072; python3 mf_filter.py ${data} ${ped} ${station} ${run} ${temp_dir} ${mode}
 #ulimit -s 131072; python3 /home/mkim/analysis/MF_filters/scripts/mf_filter.py ${data} ${ped} ${station} ${run} ${out} ${mode}
-python3 /home/mkim/analysis/MF_filters/scripts/mf_filter_coherent.py ${data} ${ped} ${station} ${run} ${out} ${mode}
+python3 /home/mkim/analysis/MF_filters/scripts/mf_filter_coherent.py ${data} ${ped} ${out}
 
 #if [ $? -ne 0 ] #error handle if something has gone wrong
 #then

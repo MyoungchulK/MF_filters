@@ -47,6 +47,10 @@ def useful_evt_maker(ROOT, evtTree, rawEvt, evt, cal): #not sure need to input t
 
     return ROOT.UsefulAtriStationEvent(rawEvt,ROOT.AraCalType.kLatestCalib)
 
+#def useful_evt_maker_del(ROOT):
+#
+#    ROOT.~UsefulAtriStationEvent()
+
 # make a useful event
 #usefulEvt = ROOT.UsefulAtriStationEvent(rawEvt,ROOT.AraCalType.kLatestCalib)
 #return usefulEvt
@@ -83,7 +87,7 @@ def qual_checker(q, usefulEvt):
 
     return qual
 
-def ant_xyz(ROOT, Station, num_ant):
+def ant_xyz(ROOT, Station, num_ant, Years = None):
 
     # create a geomtool
     geomTool = ROOT.AraGeomTool.Instance()
@@ -94,7 +98,10 @@ def ant_xyz(ROOT, Station, num_ant):
     # the x-y coordinates of channels 0-3 are enough for a top down view
     for ant in range(num_ant):
 
-        ant_xyz[ant] = geomTool.getStationInfo(Station).getAntennaInfo(ant).antLocation
+        if Years is not None:
+            ant_xyz[ant] = geomTool.getStationInfo(Station,Years).getAntennaInfo(ant).antLocation
+        else:
+            ant_xyz[ant] = geomTool.getStationInfo(Station).getAntennaInfo(ant).antLocation
 
     del geomTool
 

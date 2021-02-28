@@ -42,7 +42,7 @@ for h in h5_list:
     cal_ee +=len(cal_loc)
     soft_ee +=len(soft_loc)
     #print('stacked rf&cal:',rf_ee, cal_ee)
-    print(soft_ee)
+    #print(soft_ee)
 
     evt_w_snr_v_rf = evt_w_snr_v[rf_loc]
     evt_w_snr_v_cal = evt_w_snr_v[cal_loc]
@@ -91,12 +91,12 @@ plt.grid(linestyle=':')
 plt.tick_params(axis='x', labelsize=20)
 plt.tick_params(axis='y', labelsize=20)
 plt.title(f'Evt_Wise_SNR_A{Station}_{hh}runs_{ee}evts', y=1.02,fontsize=15)
-#plt.xscale('log')
+plt.xscale('log')
 plt.yscale('log')
 #plt.ylim(0,300)
 #plt.ylim(0.9,500)
-#plt.xlim(3,1e2)
-plt.xlim(3,60)
+plt.xlim(3,1e3)
+#plt.xlim(3,60)
 plt.ylim(1e-4,1e8)
 
 plt.plot(bin_range_step[:-1]+(bin_range_step[1]-bin_range_step[0])/2,v_soft, drawstyle='steps',linestyle='-',linewidth=3,color='cyan',alpha=0.5,label=f'Vpol Soft {soft_ee}evts')
@@ -106,7 +106,7 @@ plt.plot(bin_range_step[:-1]+(bin_range_step[1]-bin_range_step[0])/2,h_cal, draw
 plt.plot(bin_range_step[:-1]+(bin_range_step[1]-bin_range_step[0])/2,v_rf, drawstyle='steps',linestyle='-',linewidth=3,color='navy',alpha=0.5,label=f'Vpol RF {rf_ee}evts')
 plt.plot(bin_range_step[:-1]+(bin_range_step[1]-bin_range_step[0])/2,h_rf, drawstyle='steps',linestyle='-',linewidth=3,color='red',alpha=0.5,label=f'Hpol RF {rf_ee}evts')
 
-plt.legend(loc='lower center',bbox_to_anchor=(1.2,0), numpoints = 1 ,fontsize=15)
+plt.legend(loc='lower center',bbox_to_anchor=(1.25,0), numpoints = 1 ,fontsize=15)
 fig.savefig(f'Evt_Wise_SNR_A{Station}_{hh}runs_{ee}evts.png',bbox_inches='tight')
 #plt.show()
 plt.close()

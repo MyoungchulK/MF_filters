@@ -1,77 +1,99 @@
 import numpy as np
 import os, sys
+import re
 from glob import glob
 from tqdm import tqdm
 
-def data_ped_list(Station, Year):
+def list_maker(glob_path):
 
-    if Year == '2013':
+    d_list = sorted(glob(glob_path))
+    d_run_num = []
+    for d in d_list:
+        d_run_num.append(int(re.sub("\D", "", d[-11:])))
+    d_run_num = np.asarray(d_run_num)
 
-        # make data list
-        data_list = sorted(glob(f'/data/wipac/ARA/{Year}/filtered/burnSample1in10/ARA0{Station}/root/*/event[0-9][0-9][0-9][0-9].root'))
-        data_run = []
-        for d in data_list:
-            data_run.append(int(d[-9:-5]))
-        data_run = np.asarray(data_run)
+    return d_list, d_run_num
+    
 
-        # make ped list
-        ped_list = sorted(glob(f'/data/user/mkim/ARA_2013_Ped/ARA0{Station}/*pedestalValues*'))
-        ped_run = []
-        for p in ped_list:
-            ped_run.append(int(p[-8:-4]))
-        ped_run = np.asarray(ped_run)
+def general_data_ped_list(Station, Year):
 
-        last_ped_list = []
-        last_ped_run = np.array([])
+    # make data list
+    data_list, data_run = list_maker(f'/data/wipac/ARA/{Year}/unblinded/L1/ARA0{Station}/*/run*/event[0-9]*.root')
+
+    # make ped list
+    ped_list, ped_run = list_maker(f'/data/wipac/ARA/{Year}/calibration/pedestals/ARA0{Station}/*pedestalValues*')
+
+    # make last year ped list
+    last_Year = int(Year-1)
+    if last_Year == 2013:
+        last_ped_list, last_ped_run = list_maker(f'/data/user/mkim/ARA_{last_Year}_Ped/ARA0{Station}/*pedestalValues*')
+
+    else:
+        last_ped_list, last_ped_run = list_maker(f'/data/wipac/ARA/{last_Year}/calibration/pedestals/ARA0{Station}/*pedestalValues*')
+
+    # total ped list
+    ped_list = last_ped_list + ped_list
+    ped_run = np.append(last_ped_run, ped_run, axis=0)
+
+    return data_list, data_run, ped_list, ped_run
+
+def A235_data_ped_list(Station, Year):
+
+    if Year == 2013 and Station != 5: #when we were full of hope and dream
+
+        # make data list    
+        data_list, data_run = list_maker(f'/data/wipac/ARA/{Year}/filtered/burnSample1in10/ARA0{Station}/root/*/event[0-9]*.root')
+        
+        # total ped list
+        ped_list, ped_run = list_maker(f'/data/user/mkim/ARA_2013_Ped/ARA0{Station}/*pedestalValues*')
+
+    elif Year > 2013 and Year < 2017 and Station != 5:
+
+        # data & ped list
+        data_list, data_run, ped_list, ped_run = general_data_ped_list(Station, Year)
+
+    elif Year == 2017 and Station == 2:
+
+        # data & ped list
+        data_list, data_run, ped_list, ped_run = general_data_ped_list(Station, Year)
+
+    elif Year == 2018 and Station != 3:
+
+        # data & ped list
+        data_list, data_run, ped_list, ped_run = general_data_ped_list(Station, Year)
 
     else:
 
-        # make data list
-        data_list = sorted(glob(f'/data/wipac/ARA/{Year}/unblinded/L1/ARA0{Station}/*/run*/event[0-9][0-9][0-9][0-9][0-9][0-9].root'))
-        data_run = []
-        for d in data_list:
-            data_run.append(int(d[-9:-5]))
-        data_run = np.asarray(data_run)
+        print('Wrong Station & Year combination!')
+        print('Choose 1) 2013~2016:ARA2&3, 2) 2017:ARA2, 3) 2018:ARA2&5')
+        sys.exit(1)
+        
+    return data_list, data_run, ped_list, ped_run
 
-        # make ped list
-        ped_list = sorted(glob(f'/data/wipac/ARA/{Year}/calibration/pedestals/ARA0{Station}/*pedestalValues*'))
-        ped_run = []
-        for p in ped_list:
-            ped_run.append(int(p[-8:-4]))
-        ped_run = np.asarray(ped_run)
+def dag_statement(r, data_list, ped_list, Output, Station, data_run):
 
-        if Year == '2014':
+    contents = ""
+    contents += f'JOB job_{r} ARA_job.sub \n'
+    contents += f'VARS job_{r} data="{data_list}" ped="{ped_list}" out="{Output}" station="{Station}" run="{data_run}"\n\n'
 
-            # make last year ped list
-            last_Year = str(int(Year)-1)
-            last_ped_list = sorted(glob(f'/data/user/mkim/ARA_2013_Ped/ARA0{Station}/*pedestalValues*'))
-            last_ped_run = []
-            for lp in last_ped_list:
-                last_ped_run.append(int(lp[-8:-4]))
-            last_ped_run = np.asarray(last_ped_run)
-
-        else:
-
-            # make last year ped list
-            last_Year = str(int(Year)-1)
-            last_ped_list = sorted(glob(f'/data/wipac/ARA/{last_Year}/calibration/pedestals/ARA0{Station}/*pedestalValues*'))
-            last_ped_run = []
-            for lp in last_ped_list:
-                last_ped_run.append(int(lp[-8:-4]))
-            last_ped_run = np.asarray(last_ped_run)
-
-    return data_list, data_run, ped_list, ped_run, last_ped_list, last_ped_run
+    return contents
 
 # argument
-Station = str(sys.argv[1])
-Year = str(sys.argv[2])
+Station = int(sys.argv[1])
+Year = int(sys.argv[2])
 Output = str(sys.argv[3])
-DMode = str(sys.argv[4])
+if Station != 2 or Station != 3 or Station != 5:
+    if Year < 2013 or Year > 2018 :
+        print('Wrong Station & Year combination!')
+        print('Choose 1) 2013~2016:ARA2&3, 2) 2017:ARA2, 3) 2018:ARA2&5')
+        sys.exit(1)
+
 print('Station:',Station)
 print('Year:',Year)
 
 # data ped list
-data_list, data_run, ped_list, ped_run, last_ped_list, last_ped_run = data_ped_list(Station, Year)
+print('Loading Data & Ped ...')
+data_list, data_run, ped_list, ped_run = A235_data_ped_list(Station, Year)
 print('Data & Ped loading is done!')
 
 # dag info
@@ -85,6 +107,7 @@ contents = ""
 #    os.makedirs(dag_path)
 #os.chdir(dag_path)
 
+# dag contents
 with open(dag_file_name, 'w') as f:
     f.write(contents)
 
@@ -96,54 +119,31 @@ for r in tqdm(range(len(data_run))):
         ped_pair_diff = ped_run - data_run[r]
         p_index = np.where(ped_pair_diff<0)[0][-1]
 
-        contents = ""
-        contents += f'JOB job_{r} ARA_job.sub \n'
-        contents += f'VARS job_{r} data="{data_list[r]}" ped="{ped_list[p_index]}" station="{Station}" run="{data_run[r]}" out="{Output}" mode="{DMode}"\n\n'
-
+        # write contents
+        contents = dag_statement(r, data_list[r], ped_list[p_index], Output, Station, data_run[r])
         with open(dag_file_name, 'a') as f:
             f.write(contents)
 
     except IndexError:
 
-        # matching pair with last year pedestral
-        try:
+        if Year == 2013 or Station == 5:
 
-            # check where is the nearest ped run number while it is smaller than data(<0).
-            ped_pair_diff = last_ped_run - data_run[r]
-            p_index = np.where(ped_pair_diff<0)[0][-1]
+            # match with default pedestal
+            de_ped = f'/cvmfs/ara.opensciencegrid.org/trunk/centos7/source/AraRoot/AraEvent/calib/ATRI/araAtriStation{Station}Pedestals.txt' 
 
-            print('Correspending pedestal is in last year data pack!')
-            print(data_list[r],last_ped_list[p_index])
-    
-            contents = ""
-            contents += f'JOB job_{r} ARA_job.sub \n'
-            contents += f'VARS job_{r} data="{data_list[r]}" ped="{last_ped_list[p_index]}" station="{Station}" run="{data_run[r]}" out="{Output}" mode="{DMode}"\n\n'
-
+            # write contents
+            contents = dag_statement(r, data_list[r], de_ped, Output, Station, data_run[r])
             with open(dag_file_name, 'a') as f:
                 f.write(contents)
 
-        except IndexError:
+            print('Matching data with default pedestal!')
+            print(data_list[r], de_ped)
 
-            if Year == '2013':
+        else:
 
-                # match with default pedestal
-                de_ped = f'/cvmfs/ara.opensciencegrid.org/trunk/centos7/source/AraRoot/AraEvent/calib/ATRI/araAtriStation{Station}Pedestals.txt' 
-
-                print('Matching data with default pedestal!')
-                print(data_list[r], de_ped)
-
-                contents = ""
-                contents += f'JOB job_{r} ARA_job.sub \n'
-                contents += f'VARS job_{r} data="{data_list[r]}" ped="{de_ped}" station="{Station}" run="{data_run[r]}" out="{Output}" mode="{DMode}"\n\n'
-
-                with open(dag_file_name, 'a') as f:
-                    f.write(contents)
-
-            else:
-
-                # trouble run
-                print('Weired run! Couldnt find the ped pair')
-                print(data_list[r],data_run[r])
+            # trouble run
+            print('Weired run! Couldnt find the ped pair')
+            print(data_list[r],data_run[r])
 
 print('Dag making is done!')
 

@@ -13,6 +13,7 @@ when_to_transfer_output = ON_EXIT
 nice_user = false
 
 executable = ARA_job.sh
-arguments = $(data) $(ped) $(station) $(run) $(out) $(mode)
+arguments = $(data) $(ped) $(out) $(station) $(run)
+#arguments = $(data) $(ped) $(station) $(run) $(out) $(mode)
 
 queue

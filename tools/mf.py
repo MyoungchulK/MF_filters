@@ -5,6 +5,7 @@ from tqdm import tqdm
 
 # custom lib
 from tools.ara_root import useful_evt_maker
+#from tools.ara_root import useful_evt_maker_del
 from tools.wf import station_pad
 
 def off_pad_maker(pad_len, dt):
@@ -100,7 +101,11 @@ def soft_psd_maker(R, evtTree, rawEvt, num_evts, cal, q # ara root
 
                 del ant_arr, int_time_len
 
+        #R.~UsefulAtriStationEvent()
+        #useful_evt_maker_del(R, usefulEvent) 
+        #usefulEvent.Delete()
         del usefulEvent
+        #usefulEvent.Delete()
 
     # averaging
     psd /= num_psd
@@ -121,7 +126,10 @@ def soft_psd_maker(R, evtTree, rawEvt, num_evts, cal, q # ara root
     psd = Band_Square(f, np.repeat(psd[:,:,np.newaxis], n_theta, axis=2))
 
     # remove bad antenna
-    psd[:, bad_ant_i, :] = np.nan
+    try:
+        psd[:, bad_ant_i, :] = np.nan
+    except IndexError:
+        pass
 
     print('PSD making is done!')
 
@@ -156,7 +164,7 @@ def evt_snr_maker(R, evtTree, rawEvt, num_evts, cal, q # ara root
     from tools.array import arr_3d
 
     # table_loader
-    peak_w = 50
+    peak_w = 100
     if DMode == 'debug':
         mov_i, pad_t_l, p_len_front, p_len_end, ps_len_i, mov_t, pad_t = table_loader(CPath, Station, theta_w, peak_w)
     else:
@@ -217,6 +225,8 @@ def evt_snr_maker(R, evtTree, rawEvt, num_evts, cal, q # ara root
                         trig_type = 'RF'
                     elif trig_index == 1:
                         trig_type = 'Cal'
+                    elif trig_index == 2:
+                        trig_type = 'Soft'
 
                     print('Evt#'+str(event)+' is selected!')
                     print('Trigger type is',trig_type) 
@@ -268,8 +278,11 @@ def evt_snr_maker(R, evtTree, rawEvt, num_evts, cal, q # ara root
                     pass
                 
                 # remove bad antenna
-                snr_wf[:, bad_ant_i, :] = 0
-                snr_wf_nor[:, bad_ant_i, :] = 0
+                try:
+                    snr_wf[:, bad_ant_i, :] = 0
+                    snr_wf_nor[:, bad_ant_i, :] = 0
+                except IndexError:
+                    pass
 
                 # 2d map array
                 snr_wf_2d_v[:] = 0
@@ -324,6 +337,7 @@ def evt_snr_maker(R, evtTree, rawEvt, num_evts, cal, q # ara root
                 else:
                     pass
 
+        #R.~UsefulAtriStationEvent()
         del usefulEvent
 
     del mov_i, pad_t_l, p_len_front, p_len_end, ps_len_i, tale_i_front, tale_i_end, snr_wf, snr_wf_nor, snr_wf_01, snr_wf_2d_v, snr_wf_2d_01_v, snr_wf_2d_h, snr_wf_2d_01_h, half_ant

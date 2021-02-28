@@ -64,8 +64,11 @@ def station_pad(usefulEvt, num_Ants, dt, time_pad_l, time_pad_i, time_pad_f):
     # loop over the antennas
     for ant in range(num_Ants):
 
+        # TGraph
+        gr = usefulEvt.getGraphFromRFChan(ant)
+
         # TGraph to interpolated wf
-        time_i, time_f, volt_i, i_time_len[ant] = TGraph_to_int(usefulEvt.getGraphFromRFChan(ant), dt)
+        time_i, time_f, volt_i, i_time_len[ant] = TGraph_to_int(gr, dt)
 
         # wf inserting points
         #ti_index, tf_index = wf_pad_index(time_i, time_f, time_pad_i, time_pad_f, dt)
@@ -78,6 +81,9 @@ def station_pad(usefulEvt, num_Ants, dt, time_pad_l, time_pad_i, time_pad_f):
         # put wf & length into pad v2
         ant_arr[int((time_i - time_pad_i) / dt):-int((time_pad_f - time_f) / dt), ant] = volt_i
         del time_i, time_f, volt_i
+
+        gr.Delete()
+        del gr
 
     return ant_arr/1e3, i_time_len #mV to V
 """

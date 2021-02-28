@@ -38,7 +38,7 @@ def ms_filter(Data, Ped, Station, Run, Output, DMode, CPath = curr_path, Sel_evt
     #antenna
     num_Antennas = ant.antenna_info()[2]
     # masked antenna
-    bad_ant_index = ant.bad_antenna(Station)
+    bad_ant_index = ant.bad_antenna(Station, Run)
     # interpolation time width
     time_width_ns, time_width_s, Ndf =interpolation_bin_width()
 
@@ -97,7 +97,8 @@ def ms_filter(Data, Ped, Station, Run, Output, DMode, CPath = curr_path, Sel_evt
     elif DMode == 'debug' and Sel_evt_soft is not None and Sel_evt is not None:
 
         # selected event
-        #Sel_evt_soft = 679
+        #Sel_evt_soft = 9
+        #Sel_evt = 10 # Soft
         #Sel_evt = 11 # Cal
         #Sel_evt = 13 # RF
 
@@ -211,8 +212,8 @@ if __name__ == "__main__":
     <Output path ex)/data/user/mkim/OMF_filter/ARA02/>
     <DMode ex) normal or debug>
     if DMode is debug, 
-        <Sel_evt_soft ex) 679>
-        <Sel_evt ex) 11(Cal) or 13(RF)>
+        <Sel_evt_soft ex) 9>
+        <Sel_evt ex) 10(Soft) 11(Cal) or 13(RF)>
         """ %(sys.argv[0])
         print(Usage)
         del Usage

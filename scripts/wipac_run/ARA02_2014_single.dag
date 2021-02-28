@@ -1,2 +1,0 @@
-JOB job_2 ARA_job.sub 
-VARS job_2 data="/data/wipac/ARA/2014/unblinded/L1/ARA02/0116/run002898/event002898.root" ped="/data/wipac/ARA/2014/calibration/pedestals/ARA02/pedestalValues.run002894.dat" station="2" run="2898" out="/data/user/mkim/OMF_filter/ARA02/" mode="normal"

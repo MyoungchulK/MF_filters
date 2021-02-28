@@ -272,11 +272,14 @@ def hist_map(xlabel,ylabel,title
 
     rf_loc = np.where(trig == 0)[0]
     cal_loc = np.where(trig == 1)[0]
+    soft_loc = np.where(trig == 2)[0]
 
     evt_w_snr_v_rf = evt_snr_v[rf_loc]
     evt_w_snr_v_cal = evt_snr_v[cal_loc]
+    evt_w_snr_v_soft = evt_snr_v[soft_loc]
     evt_w_snr_h_rf = evt_snr_h[rf_loc]
     evt_w_snr_h_cal = evt_snr_h[cal_loc]
+    evt_w_snr_h_soft = evt_snr_h[soft_loc]
 
     #plot
     fig = plt.figure(figsize=(10, 7))
@@ -295,10 +298,12 @@ def hist_map(xlabel,ylabel,title
 
     bin_range_step=np.arange(-10,10000,0.05)
 
-    plt.hist(evt_w_snr_v_rf,bins=bin_range_step,histtype='step',linewidth=3,linestyle='-',color='orangered',alpha=0.7,label='A2 Vpol rf (1run)')
-    plt.hist(evt_w_snr_h_rf,bins=bin_range_step,histtype='step',linewidth=3,linestyle='-',color='blue',alpha=0.7,label='A2 Hpol rf (1run)')
-    plt.hist(evt_w_snr_v_cal,bins=bin_range_step,histtype='step',linewidth=3,linestyle='-',color='orange',alpha=0.7,label='A2 Vpol cal (1run)')
-    plt.hist(evt_w_snr_h_cal,bins=bin_range_step,histtype='step',linewidth=3,linestyle='-',color='cyan',alpha=0.7,label='A2 Hpol cal (1run)')
+    plt.hist(evt_w_snr_v_soft,bins=bin_range_step,histtype='step',linewidth=3,linestyle='-',color='cyan',alpha=0.7,label='A2 Vpol soft (1run)')
+    plt.hist(evt_w_snr_h_soft,bins=bin_range_step,histtype='step',linewidth=3,linestyle='-',color='orange',alpha=0.7,label='A2 Hpol soft (1run)')
+    plt.hist(evt_w_snr_v_rf,bins=bin_range_step,histtype='step',linewidth=3,linestyle='-',color='navy',alpha=0.7,label='A2 Vpol rf (1run)')
+    plt.hist(evt_w_snr_h_rf,bins=bin_range_step,histtype='step',linewidth=3,linestyle='-',color='red',alpha=0.7,label='A2 Hpol rf (1run)')
+    plt.hist(evt_w_snr_v_cal,bins=bin_range_step,histtype='step',linewidth=3,linestyle='-',color='dodgerblue',alpha=0.7,label='A2 Vpol cal (1run)')
+    plt.hist(evt_w_snr_h_cal,bins=bin_range_step,histtype='step',linewidth=3,linestyle='-',color='orangered',alpha=0.7,label='A2 Hpol cal (1run)')
 
     plt.legend(loc='best', numpoints = 1 ,fontsize=15)
 
