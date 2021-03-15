@@ -75,6 +75,7 @@ def soft_psd_maker(R, evtTree, rawEvt, num_evts, cal, q # ara root
         usefulEvent = useful_evt_maker(R, evtTree, rawEvt, event, cal)
 
         # trigger filter
+        #if rawEvt.isSoftwareTrigger() == 0 and rawEvt.isCalpulserEvent() == 0:
         if rawEvt.isSoftwareTrigger() == 1:
 
             # quality cut
@@ -95,6 +96,19 @@ def soft_psd_maker(R, evtTree, rawEvt, num_evts, cal, q # ara root
                             , f
                             , n_theta
                             , ant_arr, int_time_len)
+                    selected_evt = np.copy(sel_evt)
+
+                elif sel_evt is None and DMode == 'debug' and num_psd == 10:
+
+                    print(f'event# {event} ({num_psd}th soft event) is selected for the debug')
+
+                    from tools.debug import psd_indi_debug
+                    ant_arr_copy, ant_arr_fft, ant_arr_fft_band, indi_psd, indi_psd_band = psd_indi_debug(Station, Run, Output, event
+                            , t_pad_len, time_pad_i, time_pad_f, t_width_ns, ndf
+                            , f
+                            , n_theta
+                            , ant_arr, int_time_len)
+                    selected_evt = np.copy(event)
 
                 else:
                     pass
@@ -123,6 +137,7 @@ def soft_psd_maker(R, evtTree, rawEvt, num_evts, cal, q # ara root
         pass
 
     # band pass filter
+    psd_wo_band = np.copy(psd)
     psd = Band_Square(f, np.repeat(psd[:,:,np.newaxis], n_theta, axis=2))
 
     # remove bad antenna
@@ -134,13 +149,13 @@ def soft_psd_maker(R, evtTree, rawEvt, num_evts, cal, q # ara root
     print('PSD making is done!')
 
     if DMode == 'debug':
-
-        return psd, psd_copy, num_psd, ant_arr_copy, ant_arr_fft, ant_arr_fft_band, indi_psd, indi_psd_band
+        del psd_wo_band
+        return psd, psd_copy, num_psd, ant_arr_copy, ant_arr_fft, ant_arr_fft_band, indi_psd, indi_psd_band, selected_evt
 
     elif DMode == 'normal':
     #else:
         del num_psd
-        return psd
+        return psd, psd_wo_band
 
     else:
  
@@ -228,7 +243,7 @@ def evt_snr_maker(R, evtTree, rawEvt, num_evts, cal, q # ara root
                     elif trig_index == 2:
                         trig_type = 'Soft'
 
-                    print('Evt#'+str(event)+' is selected!')
+                    print(f'Evt#{event} is selected!')
                     print('Trigger type is',trig_type) 
 
                     from tools.debug import evt_snr_indi_debug_0

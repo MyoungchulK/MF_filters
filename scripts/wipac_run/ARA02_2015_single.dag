@@ -1,0 +1,2 @@
+JOB job_18 ARA_job.sub 
+VARS job_18 data="/data/exp/ARA/2015/unblinded/L1/ARA02/0105/run004787/event004787.root" ped="/data/exp/ARA/2015/calibration/pedestals/ARA02/pedestalValues.run004786.dat" station="2" run="4787"

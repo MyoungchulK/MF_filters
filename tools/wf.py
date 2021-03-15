@@ -15,6 +15,10 @@ def time_pad_maker(p_dt, p_range = 1024, p_offset = -200):
 
     return t_pad, len(t_pad), t_pad[0], t_pad[-1]
 
+def TGraph_to_raw(graph):
+
+    return np.frombuffer(graph.GetX(),dtype=float,count=-1), np.frombuffer(graph.GetY(),dtype=float,count=-1)
+
 def TGraph_to_int(graph, dt):
 
     return akima_interp(np.frombuffer(graph.GetX(),dtype=float,count=-1)
@@ -41,14 +45,13 @@ def akima_interp(raw_t, raw_v, dt):
         int_tf = raw_t[-1] # if value is x.5 exact, leave it
 
     # set time range by dt
-    #int_t = np.arange(int_ti, int_tf+0.0001, dt)
+    int_t = np.arange(int_ti, int_tf+dt, dt)
 
     # akima interpolation!
     akima = Akima1DInterpolator(raw_t, raw_v)
     del raw_t, raw_v
 
-    return int_ti, int_tf, akima(np.arange(int_ti, int_tf+dt, dt)), int((int_tf - int_ti)/dt)
-    #return int_ti, int_tf, akima(int_t), len(int_t)
+    return int_ti, int_tf, akima(int_t), len(int_t)
 """
 def wf_pad_index(int_ti, int_tf, t_pad_i, t_pad_f, dt):
 

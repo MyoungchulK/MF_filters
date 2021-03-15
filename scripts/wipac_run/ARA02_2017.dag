@@ -1,0 +1,2250 @@
+JOB job_0 ARA_job.sub 
+VARS job_0 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0110/run008509/event008509.root" ped="/data/exp/ARA/2016/calibration/pedestals/ARA02/pedestalValues.run008240.dat" station="2" run="8509"
+
+JOB job_1 ARA_job.sub 
+VARS job_1 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0111/run008510/event008510.root" ped="/data/exp/ARA/2016/calibration/pedestals/ARA02/pedestalValues.run008240.dat" station="2" run="8510"
+
+JOB job_2 ARA_job.sub 
+VARS job_2 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0111/run008511/event008511.root" ped="/data/exp/ARA/2016/calibration/pedestals/ARA02/pedestalValues.run008240.dat" station="2" run="8511"
+
+JOB job_3 ARA_job.sub 
+VARS job_3 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0111/run008513/event008513.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008512.dat" station="2" run="8513"
+
+JOB job_4 ARA_job.sub 
+VARS job_4 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0111/run008514/event008514.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008512.dat" station="2" run="8514"
+
+JOB job_5 ARA_job.sub 
+VARS job_5 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0112/run008515/event008515.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008512.dat" station="2" run="8515"
+
+JOB job_6 ARA_job.sub 
+VARS job_6 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0112/run008516/event008516.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008512.dat" station="2" run="8516"
+
+JOB job_7 ARA_job.sub 
+VARS job_7 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0112/run008518/event008518.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008517.dat" station="2" run="8518"
+
+JOB job_8 ARA_job.sub 
+VARS job_8 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0113/run008519/event008519.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008517.dat" station="2" run="8519"
+
+JOB job_9 ARA_job.sub 
+VARS job_9 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0113/run008520/event008520.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008517.dat" station="2" run="8520"
+
+JOB job_10 ARA_job.sub 
+VARS job_10 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0113/run008521/event008521.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008517.dat" station="2" run="8521"
+
+JOB job_11 ARA_job.sub 
+VARS job_11 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0114/run008523/event008523.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008517.dat" station="2" run="8523"
+
+JOB job_12 ARA_job.sub 
+VARS job_12 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0115/run008524/event008524.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008517.dat" station="2" run="8524"
+
+JOB job_13 ARA_job.sub 
+VARS job_13 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0115/run008525/event008525.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008517.dat" station="2" run="8525"
+
+JOB job_14 ARA_job.sub 
+VARS job_14 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0115/run008526/event008526.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008517.dat" station="2" run="8526"
+
+JOB job_15 ARA_job.sub 
+VARS job_15 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0115/run008527/event008527.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008517.dat" station="2" run="8527"
+
+JOB job_16 ARA_job.sub 
+VARS job_16 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0116/run008528/event008528.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008517.dat" station="2" run="8528"
+
+JOB job_17 ARA_job.sub 
+VARS job_17 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0116/run008529/event008529.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008517.dat" station="2" run="8529"
+
+JOB job_18 ARA_job.sub 
+VARS job_18 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0116/run008530/event008530.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008517.dat" station="2" run="8530"
+
+JOB job_19 ARA_job.sub 
+VARS job_19 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0116/run008531/event008531.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008517.dat" station="2" run="8531"
+
+JOB job_20 ARA_job.sub 
+VARS job_20 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0117/run008532/event008532.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008517.dat" station="2" run="8532"
+
+JOB job_21 ARA_job.sub 
+VARS job_21 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0117/run008534/event008534.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008533.dat" station="2" run="8534"
+
+JOB job_22 ARA_job.sub 
+VARS job_22 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0117/run008535/event008535.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008533.dat" station="2" run="8535"
+
+JOB job_23 ARA_job.sub 
+VARS job_23 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0117/run008536/event008536.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008533.dat" station="2" run="8536"
+
+JOB job_24 ARA_job.sub 
+VARS job_24 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0118/run008537/event008537.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008533.dat" station="2" run="8537"
+
+JOB job_25 ARA_job.sub 
+VARS job_25 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0118/run008539/event008539.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008538.dat" station="2" run="8539"
+
+JOB job_26 ARA_job.sub 
+VARS job_26 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0118/run008540/event008540.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008538.dat" station="2" run="8540"
+
+JOB job_27 ARA_job.sub 
+VARS job_27 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0118/run008541/event008541.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008538.dat" station="2" run="8541"
+
+JOB job_28 ARA_job.sub 
+VARS job_28 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0119/run008542/event008542.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008538.dat" station="2" run="8542"
+
+JOB job_29 ARA_job.sub 
+VARS job_29 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0119/run008544/event008544.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008543.dat" station="2" run="8544"
+
+JOB job_30 ARA_job.sub 
+VARS job_30 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0119/run008545/event008545.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008543.dat" station="2" run="8545"
+
+JOB job_31 ARA_job.sub 
+VARS job_31 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0119/run008546/event008546.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008543.dat" station="2" run="8546"
+
+JOB job_32 ARA_job.sub 
+VARS job_32 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0120/run008547/event008547.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008543.dat" station="2" run="8547"
+
+JOB job_33 ARA_job.sub 
+VARS job_33 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0120/run008549/event008549.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008548.dat" station="2" run="8549"
+
+JOB job_34 ARA_job.sub 
+VARS job_34 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0120/run008550/event008550.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008548.dat" station="2" run="8550"
+
+JOB job_35 ARA_job.sub 
+VARS job_35 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0120/run008551/event008551.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008548.dat" station="2" run="8551"
+
+JOB job_36 ARA_job.sub 
+VARS job_36 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0121/run008552/event008552.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008548.dat" station="2" run="8552"
+
+JOB job_37 ARA_job.sub 
+VARS job_37 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0121/run008554/event008554.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008553.dat" station="2" run="8554"
+
+JOB job_38 ARA_job.sub 
+VARS job_38 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0121/run008555/event008555.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008553.dat" station="2" run="8555"
+
+JOB job_39 ARA_job.sub 
+VARS job_39 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0121/run008556/event008556.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008553.dat" station="2" run="8556"
+
+JOB job_40 ARA_job.sub 
+VARS job_40 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0122/run008557/event008557.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008553.dat" station="2" run="8557"
+
+JOB job_41 ARA_job.sub 
+VARS job_41 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0122/run008559/event008559.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8559"
+
+JOB job_42 ARA_job.sub 
+VARS job_42 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0122/run008560/event008560.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8560"
+
+JOB job_43 ARA_job.sub 
+VARS job_43 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0122/run008561/event008561.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8561"
+
+JOB job_44 ARA_job.sub 
+VARS job_44 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0122/run008562/event008562.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8562"
+
+JOB job_45 ARA_job.sub 
+VARS job_45 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0122/run008563/event008563.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8563"
+
+JOB job_46 ARA_job.sub 
+VARS job_46 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0123/run008564/event008564.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8564"
+
+JOB job_47 ARA_job.sub 
+VARS job_47 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0123/run008565/event008565.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8565"
+
+JOB job_48 ARA_job.sub 
+VARS job_48 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0123/run008566/event008566.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8566"
+
+JOB job_49 ARA_job.sub 
+VARS job_49 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0123/run008567/event008567.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8567"
+
+JOB job_50 ARA_job.sub 
+VARS job_50 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0124/run008568/event008568.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8568"
+
+JOB job_51 ARA_job.sub 
+VARS job_51 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0124/run008569/event008569.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8569"
+
+JOB job_52 ARA_job.sub 
+VARS job_52 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0124/run008570/event008570.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8570"
+
+JOB job_53 ARA_job.sub 
+VARS job_53 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0124/run008571/event008571.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8571"
+
+JOB job_54 ARA_job.sub 
+VARS job_54 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0124/run008572/event008572.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8572"
+
+JOB job_55 ARA_job.sub 
+VARS job_55 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0124/run008573/event008573.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8573"
+
+JOB job_56 ARA_job.sub 
+VARS job_56 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0124/run008574/event008574.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8574"
+
+JOB job_57 ARA_job.sub 
+VARS job_57 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0124/run008575/event008575.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8575"
+
+JOB job_58 ARA_job.sub 
+VARS job_58 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0125/run008576/event008576.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8576"
+
+JOB job_59 ARA_job.sub 
+VARS job_59 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0125/run008577/event008577.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8577"
+
+JOB job_60 ARA_job.sub 
+VARS job_60 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0125/run008578/event008578.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8578"
+
+JOB job_61 ARA_job.sub 
+VARS job_61 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0125/run008579/event008579.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8579"
+
+JOB job_62 ARA_job.sub 
+VARS job_62 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0125/run008580/event008580.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8580"
+
+JOB job_63 ARA_job.sub 
+VARS job_63 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0126/run008581/event008581.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8581"
+
+JOB job_64 ARA_job.sub 
+VARS job_64 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0126/run008582/event008582.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8582"
+
+JOB job_65 ARA_job.sub 
+VARS job_65 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0126/run008583/event008583.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008558.dat" station="2" run="8583"
+
+JOB job_66 ARA_job.sub 
+VARS job_66 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0126/run008585/event008585.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008584.dat" station="2" run="8585"
+
+JOB job_67 ARA_job.sub 
+VARS job_67 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0127/run008586/event008586.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008584.dat" station="2" run="8586"
+
+JOB job_68 ARA_job.sub 
+VARS job_68 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0127/run008587/event008587.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008584.dat" station="2" run="8587"
+
+JOB job_69 ARA_job.sub 
+VARS job_69 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0127/run008588/event008588.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008584.dat" station="2" run="8588"
+
+JOB job_70 ARA_job.sub 
+VARS job_70 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0127/run008590/event008590.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008589.dat" station="2" run="8590"
+
+JOB job_71 ARA_job.sub 
+VARS job_71 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0128/run008591/event008591.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008589.dat" station="2" run="8591"
+
+JOB job_72 ARA_job.sub 
+VARS job_72 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0128/run008592/event008592.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008589.dat" station="2" run="8592"
+
+JOB job_73 ARA_job.sub 
+VARS job_73 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0128/run008593/event008593.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008589.dat" station="2" run="8593"
+
+JOB job_74 ARA_job.sub 
+VARS job_74 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0128/run008594/event008594.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008589.dat" station="2" run="8594"
+
+JOB job_75 ARA_job.sub 
+VARS job_75 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0128/run008595/event008595.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008589.dat" station="2" run="8595"
+
+JOB job_76 ARA_job.sub 
+VARS job_76 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0129/run008596/event008596.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008589.dat" station="2" run="8596"
+
+JOB job_77 ARA_job.sub 
+VARS job_77 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0129/run008597/event008597.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008589.dat" station="2" run="8597"
+
+JOB job_78 ARA_job.sub 
+VARS job_78 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0129/run008598/event008598.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008589.dat" station="2" run="8598"
+
+JOB job_79 ARA_job.sub 
+VARS job_79 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0129/run008600/event008600.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008599.dat" station="2" run="8600"
+
+JOB job_80 ARA_job.sub 
+VARS job_80 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0130/run008601/event008601.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008599.dat" station="2" run="8601"
+
+JOB job_81 ARA_job.sub 
+VARS job_81 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0130/run008602/event008602.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008599.dat" station="2" run="8602"
+
+JOB job_82 ARA_job.sub 
+VARS job_82 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0130/run008603/event008603.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008599.dat" station="2" run="8603"
+
+JOB job_83 ARA_job.sub 
+VARS job_83 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0131/run008605/event008605.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008604.dat" station="2" run="8605"
+
+JOB job_84 ARA_job.sub 
+VARS job_84 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0131/run008606/event008606.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008604.dat" station="2" run="8606"
+
+JOB job_85 ARA_job.sub 
+VARS job_85 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0131/run008607/event008607.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008604.dat" station="2" run="8607"
+
+JOB job_86 ARA_job.sub 
+VARS job_86 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0131/run008608/event008608.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008604.dat" station="2" run="8608"
+
+JOB job_87 ARA_job.sub 
+VARS job_87 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0201/run008610/event008610.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008609.dat" station="2" run="8610"
+
+JOB job_88 ARA_job.sub 
+VARS job_88 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0201/run008611/event008611.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008609.dat" station="2" run="8611"
+
+JOB job_89 ARA_job.sub 
+VARS job_89 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0201/run008612/event008612.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008609.dat" station="2" run="8612"
+
+JOB job_90 ARA_job.sub 
+VARS job_90 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0201/run008613/event008613.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008609.dat" station="2" run="8613"
+
+JOB job_91 ARA_job.sub 
+VARS job_91 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0202/run008615/event008615.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008614.dat" station="2" run="8615"
+
+JOB job_92 ARA_job.sub 
+VARS job_92 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0202/run008616/event008616.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008614.dat" station="2" run="8616"
+
+JOB job_93 ARA_job.sub 
+VARS job_93 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0202/run008617/event008617.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008614.dat" station="2" run="8617"
+
+JOB job_94 ARA_job.sub 
+VARS job_94 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0202/run008618/event008618.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008614.dat" station="2" run="8618"
+
+JOB job_95 ARA_job.sub 
+VARS job_95 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0203/run008619/event008619.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008614.dat" station="2" run="8619"
+
+JOB job_96 ARA_job.sub 
+VARS job_96 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0203/run008620/event008620.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008614.dat" station="2" run="8620"
+
+JOB job_97 ARA_job.sub 
+VARS job_97 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0203/run008621/event008621.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008614.dat" station="2" run="8621"
+
+JOB job_98 ARA_job.sub 
+VARS job_98 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0203/run008622/event008622.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008614.dat" station="2" run="8622"
+
+JOB job_99 ARA_job.sub 
+VARS job_99 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0204/run008623/event008623.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008614.dat" station="2" run="8623"
+
+JOB job_100 ARA_job.sub 
+VARS job_100 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0204/run008625/event008625.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008624.dat" station="2" run="8625"
+
+JOB job_101 ARA_job.sub 
+VARS job_101 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0204/run008626/event008626.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008624.dat" station="2" run="8626"
+
+JOB job_102 ARA_job.sub 
+VARS job_102 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0204/run008627/event008627.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008624.dat" station="2" run="8627"
+
+JOB job_103 ARA_job.sub 
+VARS job_103 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0205/run008628/event008628.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008624.dat" station="2" run="8628"
+
+JOB job_104 ARA_job.sub 
+VARS job_104 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0205/run008630/event008630.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008629.dat" station="2" run="8630"
+
+JOB job_105 ARA_job.sub 
+VARS job_105 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0205/run008631/event008631.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008629.dat" station="2" run="8631"
+
+JOB job_106 ARA_job.sub 
+VARS job_106 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0205/run008632/event008632.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008629.dat" station="2" run="8632"
+
+JOB job_107 ARA_job.sub 
+VARS job_107 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0206/run008633/event008633.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008629.dat" station="2" run="8633"
+
+JOB job_108 ARA_job.sub 
+VARS job_108 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0206/run008635/event008635.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008634.dat" station="2" run="8635"
+
+JOB job_109 ARA_job.sub 
+VARS job_109 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0206/run008636/event008636.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008634.dat" station="2" run="8636"
+
+JOB job_110 ARA_job.sub 
+VARS job_110 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0206/run008637/event008637.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008634.dat" station="2" run="8637"
+
+JOB job_111 ARA_job.sub 
+VARS job_111 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0207/run008638/event008638.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008634.dat" station="2" run="8638"
+
+JOB job_112 ARA_job.sub 
+VARS job_112 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0207/run008640/event008640.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008639.dat" station="2" run="8640"
+
+JOB job_113 ARA_job.sub 
+VARS job_113 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0207/run008641/event008641.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008639.dat" station="2" run="8641"
+
+JOB job_114 ARA_job.sub 
+VARS job_114 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0207/run008642/event008642.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008639.dat" station="2" run="8642"
+
+JOB job_115 ARA_job.sub 
+VARS job_115 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0208/run008643/event008643.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008639.dat" station="2" run="8643"
+
+JOB job_116 ARA_job.sub 
+VARS job_116 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0208/run008645/event008645.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008644.dat" station="2" run="8645"
+
+JOB job_117 ARA_job.sub 
+VARS job_117 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0208/run008646/event008646.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008644.dat" station="2" run="8646"
+
+JOB job_118 ARA_job.sub 
+VARS job_118 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0208/run008647/event008647.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008644.dat" station="2" run="8647"
+
+JOB job_119 ARA_job.sub 
+VARS job_119 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0209/run008648/event008648.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008644.dat" station="2" run="8648"
+
+JOB job_120 ARA_job.sub 
+VARS job_120 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0209/run008650/event008650.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008649.dat" station="2" run="8650"
+
+JOB job_121 ARA_job.sub 
+VARS job_121 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0209/run008651/event008651.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008649.dat" station="2" run="8651"
+
+JOB job_122 ARA_job.sub 
+VARS job_122 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0209/run008652/event008652.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008649.dat" station="2" run="8652"
+
+JOB job_123 ARA_job.sub 
+VARS job_123 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0209/run008653/event008653.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008649.dat" station="2" run="8653"
+
+JOB job_124 ARA_job.sub 
+VARS job_124 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0210/run008655/event008655.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008654.dat" station="2" run="8655"
+
+JOB job_125 ARA_job.sub 
+VARS job_125 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0210/run008659/event008659.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008654.dat" station="2" run="8659"
+
+JOB job_126 ARA_job.sub 
+VARS job_126 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0210/run008660/event008660.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008654.dat" station="2" run="8660"
+
+JOB job_127 ARA_job.sub 
+VARS job_127 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0211/run008661/event008661.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008654.dat" station="2" run="8661"
+
+JOB job_128 ARA_job.sub 
+VARS job_128 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0211/run008662/event008662.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008654.dat" station="2" run="8662"
+
+JOB job_129 ARA_job.sub 
+VARS job_129 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0211/run008663/event008663.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008654.dat" station="2" run="8663"
+
+JOB job_130 ARA_job.sub 
+VARS job_130 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0211/run008664/event008664.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008654.dat" station="2" run="8664"
+
+JOB job_131 ARA_job.sub 
+VARS job_131 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0211/run008665/event008665.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008654.dat" station="2" run="8665"
+
+JOB job_132 ARA_job.sub 
+VARS job_132 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0212/run008666/event008666.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008654.dat" station="2" run="8666"
+
+JOB job_133 ARA_job.sub 
+VARS job_133 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0212/run008667/event008667.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008654.dat" station="2" run="8667"
+
+JOB job_134 ARA_job.sub 
+VARS job_134 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0212/run008668/event008668.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008654.dat" station="2" run="8668"
+
+JOB job_135 ARA_job.sub 
+VARS job_135 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0212/run008670/event008670.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008669.dat" station="2" run="8670"
+
+JOB job_136 ARA_job.sub 
+VARS job_136 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0213/run008671/event008671.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008669.dat" station="2" run="8671"
+
+JOB job_137 ARA_job.sub 
+VARS job_137 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0213/run008672/event008672.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008669.dat" station="2" run="8672"
+
+JOB job_138 ARA_job.sub 
+VARS job_138 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0213/run008673/event008673.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008669.dat" station="2" run="8673"
+
+JOB job_139 ARA_job.sub 
+VARS job_139 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0213/run008675/event008675.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008674.dat" station="2" run="8675"
+
+JOB job_140 ARA_job.sub 
+VARS job_140 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0214/run008676/event008676.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008674.dat" station="2" run="8676"
+
+JOB job_141 ARA_job.sub 
+VARS job_141 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0214/run008677/event008677.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008674.dat" station="2" run="8677"
+
+JOB job_142 ARA_job.sub 
+VARS job_142 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0214/run008678/event008678.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008674.dat" station="2" run="8678"
+
+JOB job_143 ARA_job.sub 
+VARS job_143 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0214/run008680/event008680.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008679.dat" station="2" run="8680"
+
+JOB job_144 ARA_job.sub 
+VARS job_144 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0215/run008681/event008681.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008679.dat" station="2" run="8681"
+
+JOB job_145 ARA_job.sub 
+VARS job_145 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0215/run008682/event008682.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008679.dat" station="2" run="8682"
+
+JOB job_146 ARA_job.sub 
+VARS job_146 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0215/run008683/event008683.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008679.dat" station="2" run="8683"
+
+JOB job_147 ARA_job.sub 
+VARS job_147 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0215/run008684/event008684.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008679.dat" station="2" run="8684"
+
+JOB job_148 ARA_job.sub 
+VARS job_148 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0216/run008685/event008685.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008679.dat" station="2" run="8685"
+
+JOB job_149 ARA_job.sub 
+VARS job_149 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0216/run008686/event008686.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008679.dat" station="2" run="8686"
+
+JOB job_150 ARA_job.sub 
+VARS job_150 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0216/run008687/event008687.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008679.dat" station="2" run="8687"
+
+JOB job_151 ARA_job.sub 
+VARS job_151 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0216/run008688/event008688.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008679.dat" station="2" run="8688"
+
+JOB job_152 ARA_job.sub 
+VARS job_152 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0217/run008690/event008690.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008689.dat" station="2" run="8690"
+
+JOB job_153 ARA_job.sub 
+VARS job_153 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0217/run008691/event008691.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008689.dat" station="2" run="8691"
+
+JOB job_154 ARA_job.sub 
+VARS job_154 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0217/run008692/event008692.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008689.dat" station="2" run="8692"
+
+JOB job_155 ARA_job.sub 
+VARS job_155 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0217/run008693/event008693.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008689.dat" station="2" run="8693"
+
+JOB job_156 ARA_job.sub 
+VARS job_156 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0218/run008695/event008695.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008694.dat" station="2" run="8695"
+
+JOB job_157 ARA_job.sub 
+VARS job_157 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0218/run008696/event008696.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008694.dat" station="2" run="8696"
+
+JOB job_158 ARA_job.sub 
+VARS job_158 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0218/run008697/event008697.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008694.dat" station="2" run="8697"
+
+JOB job_159 ARA_job.sub 
+VARS job_159 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0218/run008698/event008698.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008694.dat" station="2" run="8698"
+
+JOB job_160 ARA_job.sub 
+VARS job_160 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0219/run008700/event008700.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008699.dat" station="2" run="8700"
+
+JOB job_161 ARA_job.sub 
+VARS job_161 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0219/run008701/event008701.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008699.dat" station="2" run="8701"
+
+JOB job_162 ARA_job.sub 
+VARS job_162 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0219/run008702/event008702.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008699.dat" station="2" run="8702"
+
+JOB job_163 ARA_job.sub 
+VARS job_163 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0219/run008703/event008703.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008699.dat" station="2" run="8703"
+
+JOB job_164 ARA_job.sub 
+VARS job_164 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0220/run008705/event008705.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008704.dat" station="2" run="8705"
+
+JOB job_165 ARA_job.sub 
+VARS job_165 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0220/run008706/event008706.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008704.dat" station="2" run="8706"
+
+JOB job_166 ARA_job.sub 
+VARS job_166 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0220/run008707/event008707.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008704.dat" station="2" run="8707"
+
+JOB job_167 ARA_job.sub 
+VARS job_167 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0220/run008708/event008708.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008704.dat" station="2" run="8708"
+
+JOB job_168 ARA_job.sub 
+VARS job_168 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0221/run008709/event008709.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008704.dat" station="2" run="8709"
+
+JOB job_169 ARA_job.sub 
+VARS job_169 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0221/run008710/event008710.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008704.dat" station="2" run="8710"
+
+JOB job_170 ARA_job.sub 
+VARS job_170 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0221/run008711/event008711.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008704.dat" station="2" run="8711"
+
+JOB job_171 ARA_job.sub 
+VARS job_171 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0221/run008713/event008713.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008712.dat" station="2" run="8713"
+
+JOB job_172 ARA_job.sub 
+VARS job_172 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0222/run008714/event008714.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008712.dat" station="2" run="8714"
+
+JOB job_173 ARA_job.sub 
+VARS job_173 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0222/run008715/event008715.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008712.dat" station="2" run="8715"
+
+JOB job_174 ARA_job.sub 
+VARS job_174 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0222/run008716/event008716.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008712.dat" station="2" run="8716"
+
+JOB job_175 ARA_job.sub 
+VARS job_175 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0222/run008717/event008717.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008712.dat" station="2" run="8717"
+
+JOB job_176 ARA_job.sub 
+VARS job_176 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0223/run008718/event008718.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008712.dat" station="2" run="8718"
+
+JOB job_177 ARA_job.sub 
+VARS job_177 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0223/run008720/event008720.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008719.dat" station="2" run="8720"
+
+JOB job_178 ARA_job.sub 
+VARS job_178 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0223/run008721/event008721.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008719.dat" station="2" run="8721"
+
+JOB job_179 ARA_job.sub 
+VARS job_179 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0223/run008722/event008722.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008719.dat" station="2" run="8722"
+
+JOB job_180 ARA_job.sub 
+VARS job_180 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0224/run008723/event008723.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008719.dat" station="2" run="8723"
+
+JOB job_181 ARA_job.sub 
+VARS job_181 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0224/run008725/event008725.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008724.dat" station="2" run="8725"
+
+JOB job_182 ARA_job.sub 
+VARS job_182 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0224/run008726/event008726.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008724.dat" station="2" run="8726"
+
+JOB job_183 ARA_job.sub 
+VARS job_183 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0224/run008727/event008727.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008724.dat" station="2" run="8727"
+
+JOB job_184 ARA_job.sub 
+VARS job_184 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0225/run008728/event008728.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008724.dat" station="2" run="8728"
+
+JOB job_185 ARA_job.sub 
+VARS job_185 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0225/run008730/event008730.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008729.dat" station="2" run="8730"
+
+JOB job_186 ARA_job.sub 
+VARS job_186 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0225/run008731/event008731.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008729.dat" station="2" run="8731"
+
+JOB job_187 ARA_job.sub 
+VARS job_187 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0225/run008732/event008732.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008729.dat" station="2" run="8732"
+
+JOB job_188 ARA_job.sub 
+VARS job_188 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0226/run008733/event008733.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008729.dat" station="2" run="8733"
+
+JOB job_189 ARA_job.sub 
+VARS job_189 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0226/run008735/event008735.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008734.dat" station="2" run="8735"
+
+JOB job_190 ARA_job.sub 
+VARS job_190 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0226/run008736/event008736.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008734.dat" station="2" run="8736"
+
+JOB job_191 ARA_job.sub 
+VARS job_191 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0226/run008737/event008737.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008734.dat" station="2" run="8737"
+
+JOB job_192 ARA_job.sub 
+VARS job_192 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0227/run008738/event008738.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008734.dat" station="2" run="8738"
+
+JOB job_193 ARA_job.sub 
+VARS job_193 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0227/run008740/event008740.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008739.dat" station="2" run="8740"
+
+JOB job_194 ARA_job.sub 
+VARS job_194 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0227/run008741/event008741.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008739.dat" station="2" run="8741"
+
+JOB job_195 ARA_job.sub 
+VARS job_195 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0227/run008742/event008742.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008739.dat" station="2" run="8742"
+
+JOB job_196 ARA_job.sub 
+VARS job_196 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0228/run008743/event008743.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008739.dat" station="2" run="8743"
+
+JOB job_197 ARA_job.sub 
+VARS job_197 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0228/run008744/event008744.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008739.dat" station="2" run="8744"
+
+JOB job_198 ARA_job.sub 
+VARS job_198 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0228/run008745/event008745.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008739.dat" station="2" run="8745"
+
+JOB job_199 ARA_job.sub 
+VARS job_199 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0228/run008747/event008747.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008746.dat" station="2" run="8747"
+
+JOB job_200 ARA_job.sub 
+VARS job_200 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0301/run008763/event008763.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008746.dat" station="2" run="8763"
+
+JOB job_201 ARA_job.sub 
+VARS job_201 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0301/run008764/event008764.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008746.dat" station="2" run="8764"
+
+JOB job_202 ARA_job.sub 
+VARS job_202 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0302/run008765/event008765.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008746.dat" station="2" run="8765"
+
+JOB job_203 ARA_job.sub 
+VARS job_203 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0302/run008766/event008766.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008746.dat" station="2" run="8766"
+
+JOB job_204 ARA_job.sub 
+VARS job_204 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0302/run008767/event008767.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008746.dat" station="2" run="8767"
+
+JOB job_205 ARA_job.sub 
+VARS job_205 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0302/run008769/event008769.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008768.dat" station="2" run="8769"
+
+JOB job_206 ARA_job.sub 
+VARS job_206 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0303/run008770/event008770.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008768.dat" station="2" run="8770"
+
+JOB job_207 ARA_job.sub 
+VARS job_207 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0303/run008771/event008771.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008768.dat" station="2" run="8771"
+
+JOB job_208 ARA_job.sub 
+VARS job_208 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0303/run008772/event008772.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008768.dat" station="2" run="8772"
+
+JOB job_209 ARA_job.sub 
+VARS job_209 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0303/run008774/event008774.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008773.dat" station="2" run="8774"
+
+JOB job_210 ARA_job.sub 
+VARS job_210 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0304/run008775/event008775.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008773.dat" station="2" run="8775"
+
+JOB job_211 ARA_job.sub 
+VARS job_211 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0304/run008776/event008776.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008773.dat" station="2" run="8776"
+
+JOB job_212 ARA_job.sub 
+VARS job_212 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0304/run008777/event008777.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008773.dat" station="2" run="8777"
+
+JOB job_213 ARA_job.sub 
+VARS job_213 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0304/run008779/event008779.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008778.dat" station="2" run="8779"
+
+JOB job_214 ARA_job.sub 
+VARS job_214 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0305/run008780/event008780.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008778.dat" station="2" run="8780"
+
+JOB job_215 ARA_job.sub 
+VARS job_215 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0305/run008781/event008781.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008778.dat" station="2" run="8781"
+
+JOB job_216 ARA_job.sub 
+VARS job_216 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0305/run008782/event008782.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008778.dat" station="2" run="8782"
+
+JOB job_217 ARA_job.sub 
+VARS job_217 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0305/run008784/event008784.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008783.dat" station="2" run="8784"
+
+JOB job_218 ARA_job.sub 
+VARS job_218 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0306/run008785/event008785.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008783.dat" station="2" run="8785"
+
+JOB job_219 ARA_job.sub 
+VARS job_219 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0306/run008786/event008786.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008783.dat" station="2" run="8786"
+
+JOB job_220 ARA_job.sub 
+VARS job_220 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0306/run008787/event008787.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008783.dat" station="2" run="8787"
+
+JOB job_221 ARA_job.sub 
+VARS job_221 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0306/run008789/event008789.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008788.dat" station="2" run="8789"
+
+JOB job_222 ARA_job.sub 
+VARS job_222 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0307/run008790/event008790.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008788.dat" station="2" run="8790"
+
+JOB job_223 ARA_job.sub 
+VARS job_223 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0307/run008791/event008791.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008788.dat" station="2" run="8791"
+
+JOB job_224 ARA_job.sub 
+VARS job_224 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0307/run008792/event008792.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008788.dat" station="2" run="8792"
+
+JOB job_225 ARA_job.sub 
+VARS job_225 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0307/run008794/event008794.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008793.dat" station="2" run="8794"
+
+JOB job_226 ARA_job.sub 
+VARS job_226 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0308/run008795/event008795.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008793.dat" station="2" run="8795"
+
+JOB job_227 ARA_job.sub 
+VARS job_227 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0308/run008796/event008796.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008793.dat" station="2" run="8796"
+
+JOB job_228 ARA_job.sub 
+VARS job_228 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0308/run008797/event008797.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008793.dat" station="2" run="8797"
+
+JOB job_229 ARA_job.sub 
+VARS job_229 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0308/run008799/event008799.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008798.dat" station="2" run="8799"
+
+JOB job_230 ARA_job.sub 
+VARS job_230 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0309/run008800/event008800.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008798.dat" station="2" run="8800"
+
+JOB job_231 ARA_job.sub 
+VARS job_231 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0309/run008801/event008801.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008798.dat" station="2" run="8801"
+
+JOB job_232 ARA_job.sub 
+VARS job_232 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0309/run008802/event008802.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008798.dat" station="2" run="8802"
+
+JOB job_233 ARA_job.sub 
+VARS job_233 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0309/run008804/event008804.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008803.dat" station="2" run="8804"
+
+JOB job_234 ARA_job.sub 
+VARS job_234 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0310/run008805/event008805.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008803.dat" station="2" run="8805"
+
+JOB job_235 ARA_job.sub 
+VARS job_235 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0310/run008806/event008806.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008803.dat" station="2" run="8806"
+
+JOB job_236 ARA_job.sub 
+VARS job_236 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0310/run008807/event008807.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008803.dat" station="2" run="8807"
+
+JOB job_237 ARA_job.sub 
+VARS job_237 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0310/run008809/event008809.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008808.dat" station="2" run="8809"
+
+JOB job_238 ARA_job.sub 
+VARS job_238 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0311/run008810/event008810.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008808.dat" station="2" run="8810"
+
+JOB job_239 ARA_job.sub 
+VARS job_239 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0311/run008811/event008811.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008808.dat" station="2" run="8811"
+
+JOB job_240 ARA_job.sub 
+VARS job_240 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0311/run008812/event008812.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008808.dat" station="2" run="8812"
+
+JOB job_241 ARA_job.sub 
+VARS job_241 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0311/run008814/event008814.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008813.dat" station="2" run="8814"
+
+JOB job_242 ARA_job.sub 
+VARS job_242 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0312/run008815/event008815.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008813.dat" station="2" run="8815"
+
+JOB job_243 ARA_job.sub 
+VARS job_243 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0312/run008816/event008816.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008813.dat" station="2" run="8816"
+
+JOB job_244 ARA_job.sub 
+VARS job_244 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0312/run008817/event008817.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008813.dat" station="2" run="8817"
+
+JOB job_245 ARA_job.sub 
+VARS job_245 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0312/run008819/event008819.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008818.dat" station="2" run="8819"
+
+JOB job_246 ARA_job.sub 
+VARS job_246 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0313/run008820/event008820.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008818.dat" station="2" run="8820"
+
+JOB job_247 ARA_job.sub 
+VARS job_247 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0313/run008821/event008821.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008818.dat" station="2" run="8821"
+
+JOB job_248 ARA_job.sub 
+VARS job_248 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0313/run008822/event008822.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008818.dat" station="2" run="8822"
+
+JOB job_249 ARA_job.sub 
+VARS job_249 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0313/run008824/event008824.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008823.dat" station="2" run="8824"
+
+JOB job_250 ARA_job.sub 
+VARS job_250 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0314/run008825/event008825.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008823.dat" station="2" run="8825"
+
+JOB job_251 ARA_job.sub 
+VARS job_251 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0314/run008826/event008826.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008823.dat" station="2" run="8826"
+
+JOB job_252 ARA_job.sub 
+VARS job_252 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0314/run008827/event008827.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008823.dat" station="2" run="8827"
+
+JOB job_253 ARA_job.sub 
+VARS job_253 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0314/run008829/event008829.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008828.dat" station="2" run="8829"
+
+JOB job_254 ARA_job.sub 
+VARS job_254 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0315/run008830/event008830.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008828.dat" station="2" run="8830"
+
+JOB job_255 ARA_job.sub 
+VARS job_255 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0315/run008831/event008831.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008828.dat" station="2" run="8831"
+
+JOB job_256 ARA_job.sub 
+VARS job_256 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0315/run008832/event008832.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008828.dat" station="2" run="8832"
+
+JOB job_257 ARA_job.sub 
+VARS job_257 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0315/run008834/event008834.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008833.dat" station="2" run="8834"
+
+JOB job_258 ARA_job.sub 
+VARS job_258 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0316/run008835/event008835.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008833.dat" station="2" run="8835"
+
+JOB job_259 ARA_job.sub 
+VARS job_259 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0316/run008836/event008836.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008833.dat" station="2" run="8836"
+
+JOB job_260 ARA_job.sub 
+VARS job_260 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0316/run008837/event008837.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008833.dat" station="2" run="8837"
+
+JOB job_261 ARA_job.sub 
+VARS job_261 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0316/run008839/event008839.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008838.dat" station="2" run="8839"
+
+JOB job_262 ARA_job.sub 
+VARS job_262 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0317/run008840/event008840.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008838.dat" station="2" run="8840"
+
+JOB job_263 ARA_job.sub 
+VARS job_263 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0317/run008841/event008841.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008838.dat" station="2" run="8841"
+
+JOB job_264 ARA_job.sub 
+VARS job_264 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0317/run008842/event008842.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008838.dat" station="2" run="8842"
+
+JOB job_265 ARA_job.sub 
+VARS job_265 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0318/run008844/event008844.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008843.dat" station="2" run="8844"
+
+JOB job_266 ARA_job.sub 
+VARS job_266 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0318/run008845/event008845.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008843.dat" station="2" run="8845"
+
+JOB job_267 ARA_job.sub 
+VARS job_267 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0318/run008846/event008846.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008843.dat" station="2" run="8846"
+
+JOB job_268 ARA_job.sub 
+VARS job_268 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0318/run008847/event008847.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008843.dat" station="2" run="8847"
+
+JOB job_269 ARA_job.sub 
+VARS job_269 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0318/run008849/event008849.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008848.dat" station="2" run="8849"
+
+JOB job_270 ARA_job.sub 
+VARS job_270 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0319/run008850/event008850.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008848.dat" station="2" run="8850"
+
+JOB job_271 ARA_job.sub 
+VARS job_271 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0319/run008851/event008851.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008848.dat" station="2" run="8851"
+
+JOB job_272 ARA_job.sub 
+VARS job_272 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0319/run008852/event008852.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008848.dat" station="2" run="8852"
+
+JOB job_273 ARA_job.sub 
+VARS job_273 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0319/run008854/event008854.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008853.dat" station="2" run="8854"
+
+JOB job_274 ARA_job.sub 
+VARS job_274 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0320/run008855/event008855.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008853.dat" station="2" run="8855"
+
+JOB job_275 ARA_job.sub 
+VARS job_275 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0320/run008856/event008856.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008853.dat" station="2" run="8856"
+
+JOB job_276 ARA_job.sub 
+VARS job_276 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0320/run008857/event008857.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008853.dat" station="2" run="8857"
+
+JOB job_277 ARA_job.sub 
+VARS job_277 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0320/run008858/event008858.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008853.dat" station="2" run="8858"
+
+JOB job_278 ARA_job.sub 
+VARS job_278 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0320/run008859/event008859.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008853.dat" station="2" run="8859"
+
+JOB job_279 ARA_job.sub 
+VARS job_279 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0321/run008860/event008860.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008853.dat" station="2" run="8860"
+
+JOB job_280 ARA_job.sub 
+VARS job_280 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0321/run008861/event008861.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008853.dat" station="2" run="8861"
+
+JOB job_281 ARA_job.sub 
+VARS job_281 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0321/run008863/event008863.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008862.dat" station="2" run="8863"
+
+JOB job_282 ARA_job.sub 
+VARS job_282 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0321/run008864/event008864.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008862.dat" station="2" run="8864"
+
+JOB job_283 ARA_job.sub 
+VARS job_283 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0322/run008865/event008865.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008862.dat" station="2" run="8865"
+
+JOB job_284 ARA_job.sub 
+VARS job_284 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0322/run008866/event008866.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008862.dat" station="2" run="8866"
+
+JOB job_285 ARA_job.sub 
+VARS job_285 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0322/run008868/event008868.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008867.dat" station="2" run="8868"
+
+JOB job_286 ARA_job.sub 
+VARS job_286 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0323/run008869/event008869.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008867.dat" station="2" run="8869"
+
+JOB job_287 ARA_job.sub 
+VARS job_287 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0323/run008870/event008870.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008867.dat" station="2" run="8870"
+
+JOB job_288 ARA_job.sub 
+VARS job_288 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0323/run008871/event008871.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008867.dat" station="2" run="8871"
+
+JOB job_289 ARA_job.sub 
+VARS job_289 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0323/run008873/event008873.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008872.dat" station="2" run="8873"
+
+JOB job_290 ARA_job.sub 
+VARS job_290 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0324/run008874/event008874.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008872.dat" station="2" run="8874"
+
+JOB job_291 ARA_job.sub 
+VARS job_291 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0324/run008875/event008875.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008872.dat" station="2" run="8875"
+
+JOB job_292 ARA_job.sub 
+VARS job_292 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0324/run008876/event008876.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008872.dat" station="2" run="8876"
+
+JOB job_293 ARA_job.sub 
+VARS job_293 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0324/run008878/event008878.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008877.dat" station="2" run="8878"
+
+JOB job_294 ARA_job.sub 
+VARS job_294 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0325/run008879/event008879.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008877.dat" station="2" run="8879"
+
+JOB job_295 ARA_job.sub 
+VARS job_295 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0325/run008880/event008880.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008877.dat" station="2" run="8880"
+
+JOB job_296 ARA_job.sub 
+VARS job_296 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0325/run008881/event008881.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008877.dat" station="2" run="8881"
+
+JOB job_297 ARA_job.sub 
+VARS job_297 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0325/run008882/event008882.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008877.dat" station="2" run="8882"
+
+JOB job_298 ARA_job.sub 
+VARS job_298 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0325/run008883/event008883.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008877.dat" station="2" run="8883"
+
+JOB job_299 ARA_job.sub 
+VARS job_299 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0326/run008884/event008884.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008877.dat" station="2" run="8884"
+
+JOB job_300 ARA_job.sub 
+VARS job_300 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0326/run008885/event008885.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008877.dat" station="2" run="8885"
+
+JOB job_301 ARA_job.sub 
+VARS job_301 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0326/run008887/event008887.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008886.dat" station="2" run="8887"
+
+JOB job_302 ARA_job.sub 
+VARS job_302 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0326/run008888/event008888.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008886.dat" station="2" run="8888"
+
+JOB job_303 ARA_job.sub 
+VARS job_303 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0327/run008889/event008889.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008886.dat" station="2" run="8889"
+
+JOB job_304 ARA_job.sub 
+VARS job_304 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0327/run008890/event008890.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008886.dat" station="2" run="8890"
+
+JOB job_305 ARA_job.sub 
+VARS job_305 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0327/run008892/event008892.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008891.dat" station="2" run="8892"
+
+JOB job_306 ARA_job.sub 
+VARS job_306 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0328/run008893/event008893.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008891.dat" station="2" run="8893"
+
+JOB job_307 ARA_job.sub 
+VARS job_307 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0328/run008894/event008894.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008891.dat" station="2" run="8894"
+
+JOB job_308 ARA_job.sub 
+VARS job_308 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0328/run008895/event008895.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008891.dat" station="2" run="8895"
+
+JOB job_309 ARA_job.sub 
+VARS job_309 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0328/run008897/event008897.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008896.dat" station="2" run="8897"
+
+JOB job_310 ARA_job.sub 
+VARS job_310 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0329/run008898/event008898.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008896.dat" station="2" run="8898"
+
+JOB job_311 ARA_job.sub 
+VARS job_311 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0329/run008899/event008899.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008896.dat" station="2" run="8899"
+
+JOB job_312 ARA_job.sub 
+VARS job_312 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0329/run008900/event008900.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008896.dat" station="2" run="8900"
+
+JOB job_313 ARA_job.sub 
+VARS job_313 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0329/run008902/event008902.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008901.dat" station="2" run="8902"
+
+JOB job_314 ARA_job.sub 
+VARS job_314 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0330/run008903/event008903.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008901.dat" station="2" run="8903"
+
+JOB job_315 ARA_job.sub 
+VARS job_315 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0330/run008904/event008904.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008901.dat" station="2" run="8904"
+
+JOB job_316 ARA_job.sub 
+VARS job_316 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0330/run008905/event008905.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008901.dat" station="2" run="8905"
+
+JOB job_317 ARA_job.sub 
+VARS job_317 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0330/run008907/event008907.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008906.dat" station="2" run="8907"
+
+JOB job_318 ARA_job.sub 
+VARS job_318 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0331/run008908/event008908.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008906.dat" station="2" run="8908"
+
+JOB job_319 ARA_job.sub 
+VARS job_319 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0331/run008909/event008909.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008906.dat" station="2" run="8909"
+
+JOB job_320 ARA_job.sub 
+VARS job_320 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0331/run008910/event008910.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008906.dat" station="2" run="8910"
+
+JOB job_321 ARA_job.sub 
+VARS job_321 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0331/run008912/event008912.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008911.dat" station="2" run="8912"
+
+JOB job_322 ARA_job.sub 
+VARS job_322 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0401/run008913/event008913.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008911.dat" station="2" run="8913"
+
+JOB job_323 ARA_job.sub 
+VARS job_323 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0401/run008914/event008914.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008911.dat" station="2" run="8914"
+
+JOB job_324 ARA_job.sub 
+VARS job_324 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0401/run008915/event008915.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008911.dat" station="2" run="8915"
+
+JOB job_325 ARA_job.sub 
+VARS job_325 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0401/run008917/event008917.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008916.dat" station="2" run="8917"
+
+JOB job_326 ARA_job.sub 
+VARS job_326 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0402/run008918/event008918.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008916.dat" station="2" run="8918"
+
+JOB job_327 ARA_job.sub 
+VARS job_327 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0402/run008919/event008919.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008916.dat" station="2" run="8919"
+
+JOB job_328 ARA_job.sub 
+VARS job_328 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0402/run008920/event008920.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008916.dat" station="2" run="8920"
+
+JOB job_329 ARA_job.sub 
+VARS job_329 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0402/run008922/event008922.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008921.dat" station="2" run="8922"
+
+JOB job_330 ARA_job.sub 
+VARS job_330 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0403/run008923/event008923.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008921.dat" station="2" run="8923"
+
+JOB job_331 ARA_job.sub 
+VARS job_331 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0403/run008924/event008924.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008921.dat" station="2" run="8924"
+
+JOB job_332 ARA_job.sub 
+VARS job_332 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0403/run008925/event008925.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008921.dat" station="2" run="8925"
+
+JOB job_333 ARA_job.sub 
+VARS job_333 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0403/run008927/event008927.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008926.dat" station="2" run="8927"
+
+JOB job_334 ARA_job.sub 
+VARS job_334 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0404/run008928/event008928.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008926.dat" station="2" run="8928"
+
+JOB job_335 ARA_job.sub 
+VARS job_335 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0404/run008929/event008929.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008926.dat" station="2" run="8929"
+
+JOB job_336 ARA_job.sub 
+VARS job_336 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0404/run008930/event008930.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008926.dat" station="2" run="8930"
+
+JOB job_337 ARA_job.sub 
+VARS job_337 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0404/run008932/event008932.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008931.dat" station="2" run="8932"
+
+JOB job_338 ARA_job.sub 
+VARS job_338 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0405/run008933/event008933.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008931.dat" station="2" run="8933"
+
+JOB job_339 ARA_job.sub 
+VARS job_339 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0405/run008934/event008934.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008931.dat" station="2" run="8934"
+
+JOB job_340 ARA_job.sub 
+VARS job_340 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0405/run008935/event008935.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008931.dat" station="2" run="8935"
+
+JOB job_341 ARA_job.sub 
+VARS job_341 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0405/run008937/event008937.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008936.dat" station="2" run="8937"
+
+JOB job_342 ARA_job.sub 
+VARS job_342 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0406/run008938/event008938.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008936.dat" station="2" run="8938"
+
+JOB job_343 ARA_job.sub 
+VARS job_343 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0406/run008940/event008940.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008936.dat" station="2" run="8940"
+
+JOB job_344 ARA_job.sub 
+VARS job_344 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0406/run008942/event008942.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008941.dat" station="2" run="8942"
+
+JOB job_345 ARA_job.sub 
+VARS job_345 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0407/run008939/event008939.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008936.dat" station="2" run="8939"
+
+JOB job_346 ARA_job.sub 
+VARS job_346 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0407/run008943/event008943.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008941.dat" station="2" run="8943"
+
+JOB job_347 ARA_job.sub 
+VARS job_347 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0407/run008944/event008944.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008941.dat" station="2" run="8944"
+
+JOB job_348 ARA_job.sub 
+VARS job_348 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0407/run008945/event008945.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008941.dat" station="2" run="8945"
+
+JOB job_349 ARA_job.sub 
+VARS job_349 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0407/run008946/event008946.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008941.dat" station="2" run="8946"
+
+JOB job_350 ARA_job.sub 
+VARS job_350 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0407/run008947/event008947.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008941.dat" station="2" run="8947"
+
+JOB job_351 ARA_job.sub 
+VARS job_351 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0408/run008948/event008948.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008941.dat" station="2" run="8948"
+
+JOB job_352 ARA_job.sub 
+VARS job_352 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0408/run008950/event008950.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008949.dat" station="2" run="8950"
+
+JOB job_353 ARA_job.sub 
+VARS job_353 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0408/run008951/event008951.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008949.dat" station="2" run="8951"
+
+JOB job_354 ARA_job.sub 
+VARS job_354 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0408/run008952/event008952.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008949.dat" station="2" run="8952"
+
+JOB job_355 ARA_job.sub 
+VARS job_355 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0409/run008953/event008953.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008949.dat" station="2" run="8953"
+
+JOB job_356 ARA_job.sub 
+VARS job_356 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0409/run008955/event008955.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8955"
+
+JOB job_357 ARA_job.sub 
+VARS job_357 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0409/run008956/event008956.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8956"
+
+JOB job_358 ARA_job.sub 
+VARS job_358 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0410/run008957/event008957.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8957"
+
+JOB job_359 ARA_job.sub 
+VARS job_359 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0410/run008958/event008958.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8958"
+
+JOB job_360 ARA_job.sub 
+VARS job_360 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0410/run008959/event008959.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8959"
+
+JOB job_361 ARA_job.sub 
+VARS job_361 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0410/run008960/event008960.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8960"
+
+JOB job_362 ARA_job.sub 
+VARS job_362 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0410/run008961/event008961.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8961"
+
+JOB job_363 ARA_job.sub 
+VARS job_363 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008962/event008962.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8962"
+
+JOB job_364 ARA_job.sub 
+VARS job_364 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008963/event008963.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8963"
+
+JOB job_365 ARA_job.sub 
+VARS job_365 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008964/event008964.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8964"
+
+JOB job_366 ARA_job.sub 
+VARS job_366 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008965/event008965.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8965"
+
+JOB job_367 ARA_job.sub 
+VARS job_367 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008966/event008966.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8966"
+
+JOB job_368 ARA_job.sub 
+VARS job_368 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008967/event008967.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8967"
+
+JOB job_369 ARA_job.sub 
+VARS job_369 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008968/event008968.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8968"
+
+JOB job_370 ARA_job.sub 
+VARS job_370 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008969/event008969.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8969"
+
+JOB job_371 ARA_job.sub 
+VARS job_371 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008970/event008970.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8970"
+
+JOB job_372 ARA_job.sub 
+VARS job_372 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008971/event008971.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8971"
+
+JOB job_373 ARA_job.sub 
+VARS job_373 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008972/event008972.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8972"
+
+JOB job_374 ARA_job.sub 
+VARS job_374 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008973/event008973.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8973"
+
+JOB job_375 ARA_job.sub 
+VARS job_375 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008974/event008974.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8974"
+
+JOB job_376 ARA_job.sub 
+VARS job_376 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008975/event008975.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8975"
+
+JOB job_377 ARA_job.sub 
+VARS job_377 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008976/event008976.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8976"
+
+JOB job_378 ARA_job.sub 
+VARS job_378 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008977/event008977.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8977"
+
+JOB job_379 ARA_job.sub 
+VARS job_379 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008978/event008978.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8978"
+
+JOB job_380 ARA_job.sub 
+VARS job_380 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008979/event008979.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8979"
+
+JOB job_381 ARA_job.sub 
+VARS job_381 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008980/event008980.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8980"
+
+JOB job_382 ARA_job.sub 
+VARS job_382 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008981/event008981.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8981"
+
+JOB job_383 ARA_job.sub 
+VARS job_383 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008982/event008982.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8982"
+
+JOB job_384 ARA_job.sub 
+VARS job_384 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008983/event008983.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8983"
+
+JOB job_385 ARA_job.sub 
+VARS job_385 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008984/event008984.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8984"
+
+JOB job_386 ARA_job.sub 
+VARS job_386 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008985/event008985.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8985"
+
+JOB job_387 ARA_job.sub 
+VARS job_387 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008986/event008986.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8986"
+
+JOB job_388 ARA_job.sub 
+VARS job_388 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008987/event008987.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8987"
+
+JOB job_389 ARA_job.sub 
+VARS job_389 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008988/event008988.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8988"
+
+JOB job_390 ARA_job.sub 
+VARS job_390 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008989/event008989.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8989"
+
+JOB job_391 ARA_job.sub 
+VARS job_391 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008990/event008990.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8990"
+
+JOB job_392 ARA_job.sub 
+VARS job_392 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008991/event008991.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8991"
+
+JOB job_393 ARA_job.sub 
+VARS job_393 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008992/event008992.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8992"
+
+JOB job_394 ARA_job.sub 
+VARS job_394 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008993/event008993.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8993"
+
+JOB job_395 ARA_job.sub 
+VARS job_395 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008994/event008994.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8994"
+
+JOB job_396 ARA_job.sub 
+VARS job_396 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008995/event008995.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8995"
+
+JOB job_397 ARA_job.sub 
+VARS job_397 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008996/event008996.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8996"
+
+JOB job_398 ARA_job.sub 
+VARS job_398 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008997/event008997.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8997"
+
+JOB job_399 ARA_job.sub 
+VARS job_399 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008998/event008998.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8998"
+
+JOB job_400 ARA_job.sub 
+VARS job_400 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run008999/event008999.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="8999"
+
+JOB job_401 ARA_job.sub 
+VARS job_401 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009000/event009000.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9000"
+
+JOB job_402 ARA_job.sub 
+VARS job_402 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009001/event009001.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9001"
+
+JOB job_403 ARA_job.sub 
+VARS job_403 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009002/event009002.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9002"
+
+JOB job_404 ARA_job.sub 
+VARS job_404 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009003/event009003.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9003"
+
+JOB job_405 ARA_job.sub 
+VARS job_405 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009004/event009004.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9004"
+
+JOB job_406 ARA_job.sub 
+VARS job_406 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009005/event009005.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9005"
+
+JOB job_407 ARA_job.sub 
+VARS job_407 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009006/event009006.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9006"
+
+JOB job_408 ARA_job.sub 
+VARS job_408 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009007/event009007.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9007"
+
+JOB job_409 ARA_job.sub 
+VARS job_409 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009008/event009008.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9008"
+
+JOB job_410 ARA_job.sub 
+VARS job_410 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009009/event009009.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9009"
+
+JOB job_411 ARA_job.sub 
+VARS job_411 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009010/event009010.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9010"
+
+JOB job_412 ARA_job.sub 
+VARS job_412 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009011/event009011.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9011"
+
+JOB job_413 ARA_job.sub 
+VARS job_413 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009012/event009012.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9012"
+
+JOB job_414 ARA_job.sub 
+VARS job_414 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009013/event009013.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9013"
+
+JOB job_415 ARA_job.sub 
+VARS job_415 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009014/event009014.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9014"
+
+JOB job_416 ARA_job.sub 
+VARS job_416 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009015/event009015.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9015"
+
+JOB job_417 ARA_job.sub 
+VARS job_417 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009016/event009016.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9016"
+
+JOB job_418 ARA_job.sub 
+VARS job_418 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009017/event009017.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9017"
+
+JOB job_419 ARA_job.sub 
+VARS job_419 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009018/event009018.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9018"
+
+JOB job_420 ARA_job.sub 
+VARS job_420 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009019/event009019.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9019"
+
+JOB job_421 ARA_job.sub 
+VARS job_421 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009020/event009020.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9020"
+
+JOB job_422 ARA_job.sub 
+VARS job_422 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009021/event009021.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9021"
+
+JOB job_423 ARA_job.sub 
+VARS job_423 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009022/event009022.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9022"
+
+JOB job_424 ARA_job.sub 
+VARS job_424 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009023/event009023.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9023"
+
+JOB job_425 ARA_job.sub 
+VARS job_425 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009024/event009024.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9024"
+
+JOB job_426 ARA_job.sub 
+VARS job_426 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009025/event009025.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9025"
+
+JOB job_427 ARA_job.sub 
+VARS job_427 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009026/event009026.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9026"
+
+JOB job_428 ARA_job.sub 
+VARS job_428 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009027/event009027.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9027"
+
+JOB job_429 ARA_job.sub 
+VARS job_429 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009028/event009028.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9028"
+
+JOB job_430 ARA_job.sub 
+VARS job_430 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009029/event009029.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9029"
+
+JOB job_431 ARA_job.sub 
+VARS job_431 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009030/event009030.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9030"
+
+JOB job_432 ARA_job.sub 
+VARS job_432 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009031/event009031.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9031"
+
+JOB job_433 ARA_job.sub 
+VARS job_433 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009032/event009032.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9032"
+
+JOB job_434 ARA_job.sub 
+VARS job_434 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009033/event009033.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9033"
+
+JOB job_435 ARA_job.sub 
+VARS job_435 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009034/event009034.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9034"
+
+JOB job_436 ARA_job.sub 
+VARS job_436 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009035/event009035.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9035"
+
+JOB job_437 ARA_job.sub 
+VARS job_437 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009036/event009036.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9036"
+
+JOB job_438 ARA_job.sub 
+VARS job_438 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009037/event009037.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9037"
+
+JOB job_439 ARA_job.sub 
+VARS job_439 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009038/event009038.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9038"
+
+JOB job_440 ARA_job.sub 
+VARS job_440 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009039/event009039.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9039"
+
+JOB job_441 ARA_job.sub 
+VARS job_441 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009040/event009040.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9040"
+
+JOB job_442 ARA_job.sub 
+VARS job_442 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0411/run009055/event009055.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9055"
+
+JOB job_443 ARA_job.sub 
+VARS job_443 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0412/run009056/event009056.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9056"
+
+JOB job_444 ARA_job.sub 
+VARS job_444 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0412/run009057/event009057.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9057"
+
+JOB job_445 ARA_job.sub 
+VARS job_445 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0412/run009058/event009058.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9058"
+
+JOB job_446 ARA_job.sub 
+VARS job_446 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0412/run009059/event009059.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run008954.dat" station="2" run="9059"
+
+JOB job_447 ARA_job.sub 
+VARS job_447 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0413/run009061/event009061.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009060.dat" station="2" run="9061"
+
+JOB job_448 ARA_job.sub 
+VARS job_448 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0413/run009062/event009062.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009060.dat" station="2" run="9062"
+
+JOB job_449 ARA_job.sub 
+VARS job_449 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0413/run009063/event009063.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009060.dat" station="2" run="9063"
+
+JOB job_450 ARA_job.sub 
+VARS job_450 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0413/run009064/event009064.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009060.dat" station="2" run="9064"
+
+JOB job_451 ARA_job.sub 
+VARS job_451 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0414/run009066/event009066.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009065.dat" station="2" run="9066"
+
+JOB job_452 ARA_job.sub 
+VARS job_452 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0414/run009067/event009067.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009065.dat" station="2" run="9067"
+
+JOB job_453 ARA_job.sub 
+VARS job_453 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0414/run009068/event009068.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009065.dat" station="2" run="9068"
+
+JOB job_454 ARA_job.sub 
+VARS job_454 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0414/run009069/event009069.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009065.dat" station="2" run="9069"
+
+JOB job_455 ARA_job.sub 
+VARS job_455 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0415/run009071/event009071.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009070.dat" station="2" run="9071"
+
+JOB job_456 ARA_job.sub 
+VARS job_456 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0415/run009072/event009072.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009070.dat" station="2" run="9072"
+
+JOB job_457 ARA_job.sub 
+VARS job_457 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0415/run009073/event009073.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009070.dat" station="2" run="9073"
+
+JOB job_458 ARA_job.sub 
+VARS job_458 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0415/run009074/event009074.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009070.dat" station="2" run="9074"
+
+JOB job_459 ARA_job.sub 
+VARS job_459 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0416/run009076/event009076.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009075.dat" station="2" run="9076"
+
+JOB job_460 ARA_job.sub 
+VARS job_460 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0416/run009077/event009077.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009075.dat" station="2" run="9077"
+
+JOB job_461 ARA_job.sub 
+VARS job_461 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0416/run009078/event009078.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009075.dat" station="2" run="9078"
+
+JOB job_462 ARA_job.sub 
+VARS job_462 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0416/run009079/event009079.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009075.dat" station="2" run="9079"
+
+JOB job_463 ARA_job.sub 
+VARS job_463 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0417/run009081/event009081.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009080.dat" station="2" run="9081"
+
+JOB job_464 ARA_job.sub 
+VARS job_464 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0417/run009082/event009082.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009080.dat" station="2" run="9082"
+
+JOB job_465 ARA_job.sub 
+VARS job_465 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0417/run009083/event009083.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009080.dat" station="2" run="9083"
+
+JOB job_466 ARA_job.sub 
+VARS job_466 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0417/run009084/event009084.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009080.dat" station="2" run="9084"
+
+JOB job_467 ARA_job.sub 
+VARS job_467 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0418/run009086/event009086.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009085.dat" station="2" run="9086"
+
+JOB job_468 ARA_job.sub 
+VARS job_468 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0418/run009087/event009087.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009085.dat" station="2" run="9087"
+
+JOB job_469 ARA_job.sub 
+VARS job_469 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0418/run009088/event009088.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009085.dat" station="2" run="9088"
+
+JOB job_470 ARA_job.sub 
+VARS job_470 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0418/run009090/event009090.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009085.dat" station="2" run="9090"
+
+JOB job_471 ARA_job.sub 
+VARS job_471 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0418/run009091/event009091.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009085.dat" station="2" run="9091"
+
+JOB job_472 ARA_job.sub 
+VARS job_472 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0419/run009092/event009092.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009085.dat" station="2" run="9092"
+
+JOB job_473 ARA_job.sub 
+VARS job_473 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0419/run009093/event009093.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009085.dat" station="2" run="9093"
+
+JOB job_474 ARA_job.sub 
+VARS job_474 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0419/run009094/event009094.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009085.dat" station="2" run="9094"
+
+JOB job_475 ARA_job.sub 
+VARS job_475 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0420/run009096/event009096.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009095.dat" station="2" run="9096"
+
+JOB job_476 ARA_job.sub 
+VARS job_476 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0420/run009097/event009097.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009095.dat" station="2" run="9097"
+
+JOB job_477 ARA_job.sub 
+VARS job_477 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0420/run009098/event009098.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009095.dat" station="2" run="9098"
+
+JOB job_478 ARA_job.sub 
+VARS job_478 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0420/run009099/event009099.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009095.dat" station="2" run="9099"
+
+JOB job_479 ARA_job.sub 
+VARS job_479 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0421/run009101/event009101.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009100.dat" station="2" run="9101"
+
+JOB job_480 ARA_job.sub 
+VARS job_480 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0421/run009102/event009102.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009100.dat" station="2" run="9102"
+
+JOB job_481 ARA_job.sub 
+VARS job_481 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0421/run009103/event009103.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009100.dat" station="2" run="9103"
+
+JOB job_482 ARA_job.sub 
+VARS job_482 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0421/run009104/event009104.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009100.dat" station="2" run="9104"
+
+JOB job_483 ARA_job.sub 
+VARS job_483 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0422/run009106/event009106.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009105.dat" station="2" run="9106"
+
+JOB job_484 ARA_job.sub 
+VARS job_484 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0422/run009107/event009107.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009105.dat" station="2" run="9107"
+
+JOB job_485 ARA_job.sub 
+VARS job_485 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0422/run009108/event009108.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009105.dat" station="2" run="9108"
+
+JOB job_486 ARA_job.sub 
+VARS job_486 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0422/run009109/event009109.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009105.dat" station="2" run="9109"
+
+JOB job_487 ARA_job.sub 
+VARS job_487 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0422/run009110/event009110.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009105.dat" station="2" run="9110"
+
+JOB job_488 ARA_job.sub 
+VARS job_488 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0423/run009111/event009111.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009105.dat" station="2" run="9111"
+
+JOB job_489 ARA_job.sub 
+VARS job_489 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0423/run009112/event009112.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009105.dat" station="2" run="9112"
+
+JOB job_490 ARA_job.sub 
+VARS job_490 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0423/run009113/event009113.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009105.dat" station="2" run="9113"
+
+JOB job_491 ARA_job.sub 
+VARS job_491 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0423/run009115/event009115.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009114.dat" station="2" run="9115"
+
+JOB job_492 ARA_job.sub 
+VARS job_492 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0424/run009116/event009116.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009114.dat" station="2" run="9116"
+
+JOB job_493 ARA_job.sub 
+VARS job_493 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0424/run009117/event009117.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009114.dat" station="2" run="9117"
+
+JOB job_494 ARA_job.sub 
+VARS job_494 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0424/run009118/event009118.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009114.dat" station="2" run="9118"
+
+JOB job_495 ARA_job.sub 
+VARS job_495 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0424/run009120/event009120.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009119.dat" station="2" run="9120"
+
+JOB job_496 ARA_job.sub 
+VARS job_496 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0425/run009121/event009121.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009119.dat" station="2" run="9121"
+
+JOB job_497 ARA_job.sub 
+VARS job_497 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0425/run009122/event009122.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009119.dat" station="2" run="9122"
+
+JOB job_498 ARA_job.sub 
+VARS job_498 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0425/run009123/event009123.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009119.dat" station="2" run="9123"
+
+JOB job_499 ARA_job.sub 
+VARS job_499 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0425/run009125/event009125.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9125"
+
+JOB job_500 ARA_job.sub 
+VARS job_500 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009126/event009126.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9126"
+
+JOB job_501 ARA_job.sub 
+VARS job_501 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009127/event009127.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9127"
+
+JOB job_502 ARA_job.sub 
+VARS job_502 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009128/event009128.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9128"
+
+JOB job_503 ARA_job.sub 
+VARS job_503 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009129/event009129.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9129"
+
+JOB job_504 ARA_job.sub 
+VARS job_504 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009130/event009130.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9130"
+
+JOB job_505 ARA_job.sub 
+VARS job_505 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009131/event009131.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9131"
+
+JOB job_506 ARA_job.sub 
+VARS job_506 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009132/event009132.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9132"
+
+JOB job_507 ARA_job.sub 
+VARS job_507 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009133/event009133.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9133"
+
+JOB job_508 ARA_job.sub 
+VARS job_508 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009134/event009134.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9134"
+
+JOB job_509 ARA_job.sub 
+VARS job_509 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009135/event009135.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9135"
+
+JOB job_510 ARA_job.sub 
+VARS job_510 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009136/event009136.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9136"
+
+JOB job_511 ARA_job.sub 
+VARS job_511 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009137/event009137.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9137"
+
+JOB job_512 ARA_job.sub 
+VARS job_512 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009138/event009138.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9138"
+
+JOB job_513 ARA_job.sub 
+VARS job_513 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009139/event009139.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9139"
+
+JOB job_514 ARA_job.sub 
+VARS job_514 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009140/event009140.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9140"
+
+JOB job_515 ARA_job.sub 
+VARS job_515 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009141/event009141.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9141"
+
+JOB job_516 ARA_job.sub 
+VARS job_516 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009142/event009142.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9142"
+
+JOB job_517 ARA_job.sub 
+VARS job_517 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009143/event009143.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9143"
+
+JOB job_518 ARA_job.sub 
+VARS job_518 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009144/event009144.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9144"
+
+JOB job_519 ARA_job.sub 
+VARS job_519 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009145/event009145.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9145"
+
+JOB job_520 ARA_job.sub 
+VARS job_520 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009146/event009146.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9146"
+
+JOB job_521 ARA_job.sub 
+VARS job_521 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009147/event009147.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9147"
+
+JOB job_522 ARA_job.sub 
+VARS job_522 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009148/event009148.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9148"
+
+JOB job_523 ARA_job.sub 
+VARS job_523 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009149/event009149.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9149"
+
+JOB job_524 ARA_job.sub 
+VARS job_524 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009150/event009150.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9150"
+
+JOB job_525 ARA_job.sub 
+VARS job_525 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009151/event009151.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9151"
+
+JOB job_526 ARA_job.sub 
+VARS job_526 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009152/event009152.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9152"
+
+JOB job_527 ARA_job.sub 
+VARS job_527 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009153/event009153.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9153"
+
+JOB job_528 ARA_job.sub 
+VARS job_528 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009154/event009154.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9154"
+
+JOB job_529 ARA_job.sub 
+VARS job_529 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009155/event009155.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9155"
+
+JOB job_530 ARA_job.sub 
+VARS job_530 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009156/event009156.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9156"
+
+JOB job_531 ARA_job.sub 
+VARS job_531 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009157/event009157.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9157"
+
+JOB job_532 ARA_job.sub 
+VARS job_532 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009158/event009158.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9158"
+
+JOB job_533 ARA_job.sub 
+VARS job_533 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009159/event009159.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9159"
+
+JOB job_534 ARA_job.sub 
+VARS job_534 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009160/event009160.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009124.dat" station="2" run="9160"
+
+JOB job_535 ARA_job.sub 
+VARS job_535 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0426/run009162/event009162.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009161.dat" station="2" run="9162"
+
+JOB job_536 ARA_job.sub 
+VARS job_536 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0427/run009163/event009163.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009161.dat" station="2" run="9163"
+
+JOB job_537 ARA_job.sub 
+VARS job_537 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0427/run009164/event009164.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009161.dat" station="2" run="9164"
+
+JOB job_538 ARA_job.sub 
+VARS job_538 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0427/run009165/event009165.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009161.dat" station="2" run="9165"
+
+JOB job_539 ARA_job.sub 
+VARS job_539 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0427/run009167/event009167.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009166.dat" station="2" run="9167"
+
+JOB job_540 ARA_job.sub 
+VARS job_540 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0428/run009168/event009168.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009166.dat" station="2" run="9168"
+
+JOB job_541 ARA_job.sub 
+VARS job_541 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0428/run009169/event009169.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009166.dat" station="2" run="9169"
+
+JOB job_542 ARA_job.sub 
+VARS job_542 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0428/run009170/event009170.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009166.dat" station="2" run="9170"
+
+JOB job_543 ARA_job.sub 
+VARS job_543 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0428/run009171/event009171.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009166.dat" station="2" run="9171"
+
+JOB job_544 ARA_job.sub 
+VARS job_544 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0429/run009172/event009172.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009166.dat" station="2" run="9172"
+
+JOB job_545 ARA_job.sub 
+VARS job_545 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0429/run009173/event009173.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009166.dat" station="2" run="9173"
+
+JOB job_546 ARA_job.sub 
+VARS job_546 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0429/run009174/event009174.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009166.dat" station="2" run="9174"
+
+JOB job_547 ARA_job.sub 
+VARS job_547 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0429/run009175/event009175.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009166.dat" station="2" run="9175"
+
+JOB job_548 ARA_job.sub 
+VARS job_548 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0429/run009176/event009176.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009166.dat" station="2" run="9176"
+
+JOB job_549 ARA_job.sub 
+VARS job_549 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0430/run009177/event009177.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009166.dat" station="2" run="9177"
+
+JOB job_550 ARA_job.sub 
+VARS job_550 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0430/run009178/event009178.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009166.dat" station="2" run="9178"
+
+JOB job_551 ARA_job.sub 
+VARS job_551 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0430/run009179/event009179.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009166.dat" station="2" run="9179"
+
+JOB job_552 ARA_job.sub 
+VARS job_552 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0430/run009180/event009180.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009166.dat" station="2" run="9180"
+
+JOB job_553 ARA_job.sub 
+VARS job_553 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009182/event009182.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9182"
+
+JOB job_554 ARA_job.sub 
+VARS job_554 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009183/event009183.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9183"
+
+JOB job_555 ARA_job.sub 
+VARS job_555 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009184/event009184.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9184"
+
+JOB job_556 ARA_job.sub 
+VARS job_556 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009185/event009185.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9185"
+
+JOB job_557 ARA_job.sub 
+VARS job_557 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009186/event009186.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9186"
+
+JOB job_558 ARA_job.sub 
+VARS job_558 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009187/event009187.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9187"
+
+JOB job_559 ARA_job.sub 
+VARS job_559 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009188/event009188.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9188"
+
+JOB job_560 ARA_job.sub 
+VARS job_560 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009189/event009189.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9189"
+
+JOB job_561 ARA_job.sub 
+VARS job_561 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009190/event009190.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9190"
+
+JOB job_562 ARA_job.sub 
+VARS job_562 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009191/event009191.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9191"
+
+JOB job_563 ARA_job.sub 
+VARS job_563 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009192/event009192.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9192"
+
+JOB job_564 ARA_job.sub 
+VARS job_564 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009193/event009193.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9193"
+
+JOB job_565 ARA_job.sub 
+VARS job_565 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009194/event009194.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9194"
+
+JOB job_566 ARA_job.sub 
+VARS job_566 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009195/event009195.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9195"
+
+JOB job_567 ARA_job.sub 
+VARS job_567 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009196/event009196.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9196"
+
+JOB job_568 ARA_job.sub 
+VARS job_568 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009197/event009197.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9197"
+
+JOB job_569 ARA_job.sub 
+VARS job_569 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009198/event009198.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9198"
+
+JOB job_570 ARA_job.sub 
+VARS job_570 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009199/event009199.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9199"
+
+JOB job_571 ARA_job.sub 
+VARS job_571 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009200/event009200.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9200"
+
+JOB job_572 ARA_job.sub 
+VARS job_572 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009201/event009201.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9201"
+
+JOB job_573 ARA_job.sub 
+VARS job_573 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009202/event009202.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9202"
+
+JOB job_574 ARA_job.sub 
+VARS job_574 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009203/event009203.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9203"
+
+JOB job_575 ARA_job.sub 
+VARS job_575 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009204/event009204.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9204"
+
+JOB job_576 ARA_job.sub 
+VARS job_576 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009205/event009205.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9205"
+
+JOB job_577 ARA_job.sub 
+VARS job_577 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009206/event009206.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9206"
+
+JOB job_578 ARA_job.sub 
+VARS job_578 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009207/event009207.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9207"
+
+JOB job_579 ARA_job.sub 
+VARS job_579 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009208/event009208.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9208"
+
+JOB job_580 ARA_job.sub 
+VARS job_580 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009209/event009209.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9209"
+
+JOB job_581 ARA_job.sub 
+VARS job_581 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009210/event009210.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9210"
+
+JOB job_582 ARA_job.sub 
+VARS job_582 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009211/event009211.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9211"
+
+JOB job_583 ARA_job.sub 
+VARS job_583 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009212/event009212.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9212"
+
+JOB job_584 ARA_job.sub 
+VARS job_584 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009213/event009213.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9213"
+
+JOB job_585 ARA_job.sub 
+VARS job_585 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009214/event009214.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9214"
+
+JOB job_586 ARA_job.sub 
+VARS job_586 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009215/event009215.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9215"
+
+JOB job_587 ARA_job.sub 
+VARS job_587 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009216/event009216.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9216"
+
+JOB job_588 ARA_job.sub 
+VARS job_588 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0501/run009217/event009217.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009181.dat" station="2" run="9217"
+
+JOB job_589 ARA_job.sub 
+VARS job_589 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0502/run009219/event009219.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009218.dat" station="2" run="9219"
+
+JOB job_590 ARA_job.sub 
+VARS job_590 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0502/run009220/event009220.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009218.dat" station="2" run="9220"
+
+JOB job_591 ARA_job.sub 
+VARS job_591 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0502/run009221/event009221.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009218.dat" station="2" run="9221"
+
+JOB job_592 ARA_job.sub 
+VARS job_592 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0502/run009222/event009222.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009218.dat" station="2" run="9222"
+
+JOB job_593 ARA_job.sub 
+VARS job_593 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0503/run009224/event009224.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009223.dat" station="2" run="9224"
+
+JOB job_594 ARA_job.sub 
+VARS job_594 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0503/run009225/event009225.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009223.dat" station="2" run="9225"
+
+JOB job_595 ARA_job.sub 
+VARS job_595 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0503/run009226/event009226.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009223.dat" station="2" run="9226"
+
+JOB job_596 ARA_job.sub 
+VARS job_596 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0503/run009227/event009227.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009223.dat" station="2" run="9227"
+
+JOB job_597 ARA_job.sub 
+VARS job_597 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009229/event009229.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9229"
+
+JOB job_598 ARA_job.sub 
+VARS job_598 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009230/event009230.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9230"
+
+JOB job_599 ARA_job.sub 
+VARS job_599 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009231/event009231.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9231"
+
+JOB job_600 ARA_job.sub 
+VARS job_600 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009232/event009232.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9232"
+
+JOB job_601 ARA_job.sub 
+VARS job_601 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009233/event009233.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9233"
+
+JOB job_602 ARA_job.sub 
+VARS job_602 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009234/event009234.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9234"
+
+JOB job_603 ARA_job.sub 
+VARS job_603 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009235/event009235.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9235"
+
+JOB job_604 ARA_job.sub 
+VARS job_604 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009236/event009236.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9236"
+
+JOB job_605 ARA_job.sub 
+VARS job_605 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009237/event009237.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9237"
+
+JOB job_606 ARA_job.sub 
+VARS job_606 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009238/event009238.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9238"
+
+JOB job_607 ARA_job.sub 
+VARS job_607 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009239/event009239.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9239"
+
+JOB job_608 ARA_job.sub 
+VARS job_608 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009240/event009240.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9240"
+
+JOB job_609 ARA_job.sub 
+VARS job_609 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009241/event009241.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9241"
+
+JOB job_610 ARA_job.sub 
+VARS job_610 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009242/event009242.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9242"
+
+JOB job_611 ARA_job.sub 
+VARS job_611 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009243/event009243.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9243"
+
+JOB job_612 ARA_job.sub 
+VARS job_612 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009244/event009244.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9244"
+
+JOB job_613 ARA_job.sub 
+VARS job_613 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009245/event009245.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9245"
+
+JOB job_614 ARA_job.sub 
+VARS job_614 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009246/event009246.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9246"
+
+JOB job_615 ARA_job.sub 
+VARS job_615 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009247/event009247.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9247"
+
+JOB job_616 ARA_job.sub 
+VARS job_616 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009248/event009248.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9248"
+
+JOB job_617 ARA_job.sub 
+VARS job_617 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009249/event009249.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9249"
+
+JOB job_618 ARA_job.sub 
+VARS job_618 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009250/event009250.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9250"
+
+JOB job_619 ARA_job.sub 
+VARS job_619 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009251/event009251.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9251"
+
+JOB job_620 ARA_job.sub 
+VARS job_620 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009252/event009252.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9252"
+
+JOB job_621 ARA_job.sub 
+VARS job_621 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009253/event009253.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9253"
+
+JOB job_622 ARA_job.sub 
+VARS job_622 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009254/event009254.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9254"
+
+JOB job_623 ARA_job.sub 
+VARS job_623 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009255/event009255.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9255"
+
+JOB job_624 ARA_job.sub 
+VARS job_624 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009256/event009256.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9256"
+
+JOB job_625 ARA_job.sub 
+VARS job_625 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009257/event009257.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9257"
+
+JOB job_626 ARA_job.sub 
+VARS job_626 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009258/event009258.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9258"
+
+JOB job_627 ARA_job.sub 
+VARS job_627 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009259/event009259.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9259"
+
+JOB job_628 ARA_job.sub 
+VARS job_628 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009260/event009260.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9260"
+
+JOB job_629 ARA_job.sub 
+VARS job_629 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009261/event009261.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9261"
+
+JOB job_630 ARA_job.sub 
+VARS job_630 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009262/event009262.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9262"
+
+JOB job_631 ARA_job.sub 
+VARS job_631 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0504/run009263/event009263.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9263"
+
+JOB job_632 ARA_job.sub 
+VARS job_632 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009264/event009264.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009228.dat" station="2" run="9264"
+
+JOB job_633 ARA_job.sub 
+VARS job_633 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009266/event009266.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9266"
+
+JOB job_634 ARA_job.sub 
+VARS job_634 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009267/event009267.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9267"
+
+JOB job_635 ARA_job.sub 
+VARS job_635 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009268/event009268.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9268"
+
+JOB job_636 ARA_job.sub 
+VARS job_636 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009269/event009269.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9269"
+
+JOB job_637 ARA_job.sub 
+VARS job_637 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009270/event009270.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9270"
+
+JOB job_638 ARA_job.sub 
+VARS job_638 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009271/event009271.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9271"
+
+JOB job_639 ARA_job.sub 
+VARS job_639 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009272/event009272.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9272"
+
+JOB job_640 ARA_job.sub 
+VARS job_640 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009273/event009273.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9273"
+
+JOB job_641 ARA_job.sub 
+VARS job_641 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009274/event009274.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9274"
+
+JOB job_642 ARA_job.sub 
+VARS job_642 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009275/event009275.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9275"
+
+JOB job_643 ARA_job.sub 
+VARS job_643 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009276/event009276.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9276"
+
+JOB job_644 ARA_job.sub 
+VARS job_644 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009277/event009277.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9277"
+
+JOB job_645 ARA_job.sub 
+VARS job_645 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009278/event009278.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9278"
+
+JOB job_646 ARA_job.sub 
+VARS job_646 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009279/event009279.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9279"
+
+JOB job_647 ARA_job.sub 
+VARS job_647 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009280/event009280.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9280"
+
+JOB job_648 ARA_job.sub 
+VARS job_648 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009281/event009281.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9281"
+
+JOB job_649 ARA_job.sub 
+VARS job_649 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009282/event009282.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9282"
+
+JOB job_650 ARA_job.sub 
+VARS job_650 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009283/event009283.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9283"
+
+JOB job_651 ARA_job.sub 
+VARS job_651 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009284/event009284.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9284"
+
+JOB job_652 ARA_job.sub 
+VARS job_652 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009285/event009285.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9285"
+
+JOB job_653 ARA_job.sub 
+VARS job_653 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009286/event009286.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9286"
+
+JOB job_654 ARA_job.sub 
+VARS job_654 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009287/event009287.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9287"
+
+JOB job_655 ARA_job.sub 
+VARS job_655 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009288/event009288.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9288"
+
+JOB job_656 ARA_job.sub 
+VARS job_656 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009289/event009289.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9289"
+
+JOB job_657 ARA_job.sub 
+VARS job_657 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009290/event009290.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9290"
+
+JOB job_658 ARA_job.sub 
+VARS job_658 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009291/event009291.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9291"
+
+JOB job_659 ARA_job.sub 
+VARS job_659 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009292/event009292.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9292"
+
+JOB job_660 ARA_job.sub 
+VARS job_660 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009293/event009293.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9293"
+
+JOB job_661 ARA_job.sub 
+VARS job_661 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009294/event009294.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9294"
+
+JOB job_662 ARA_job.sub 
+VARS job_662 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009295/event009295.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9295"
+
+JOB job_663 ARA_job.sub 
+VARS job_663 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009296/event009296.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9296"
+
+JOB job_664 ARA_job.sub 
+VARS job_664 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009297/event009297.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9297"
+
+JOB job_665 ARA_job.sub 
+VARS job_665 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009298/event009298.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9298"
+
+JOB job_666 ARA_job.sub 
+VARS job_666 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009299/event009299.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9299"
+
+JOB job_667 ARA_job.sub 
+VARS job_667 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0505/run009300/event009300.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9300"
+
+JOB job_668 ARA_job.sub 
+VARS job_668 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0506/run009301/event009301.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009265.dat" station="2" run="9301"
+
+JOB job_669 ARA_job.sub 
+VARS job_669 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0506/run009303/event009303.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009302.dat" station="2" run="9303"
+
+JOB job_670 ARA_job.sub 
+VARS job_670 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0506/run009304/event009304.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009302.dat" station="2" run="9304"
+
+JOB job_671 ARA_job.sub 
+VARS job_671 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0506/run009305/event009305.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009302.dat" station="2" run="9305"
+
+JOB job_672 ARA_job.sub 
+VARS job_672 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0507/run009306/event009306.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009302.dat" station="2" run="9306"
+
+JOB job_673 ARA_job.sub 
+VARS job_673 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0507/run009308/event009308.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009307.dat" station="2" run="9308"
+
+JOB job_674 ARA_job.sub 
+VARS job_674 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0507/run009309/event009309.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009307.dat" station="2" run="9309"
+
+JOB job_675 ARA_job.sub 
+VARS job_675 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0507/run009310/event009310.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009307.dat" station="2" run="9310"
+
+JOB job_676 ARA_job.sub 
+VARS job_676 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0508/run009311/event009311.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009307.dat" station="2" run="9311"
+
+JOB job_677 ARA_job.sub 
+VARS job_677 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0508/run009313/event009313.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009312.dat" station="2" run="9313"
+
+JOB job_678 ARA_job.sub 
+VARS job_678 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0508/run009314/event009314.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009312.dat" station="2" run="9314"
+
+JOB job_679 ARA_job.sub 
+VARS job_679 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0508/run009315/event009315.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009312.dat" station="2" run="9315"
+
+JOB job_680 ARA_job.sub 
+VARS job_680 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0509/run009316/event009316.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009312.dat" station="2" run="9316"
+
+JOB job_681 ARA_job.sub 
+VARS job_681 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0509/run009318/event009318.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009317.dat" station="2" run="9318"
+
+JOB job_682 ARA_job.sub 
+VARS job_682 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0509/run009319/event009319.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009317.dat" station="2" run="9319"
+
+JOB job_683 ARA_job.sub 
+VARS job_683 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0509/run009320/event009320.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009317.dat" station="2" run="9320"
+
+JOB job_684 ARA_job.sub 
+VARS job_684 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0510/run009321/event009321.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009317.dat" station="2" run="9321"
+
+JOB job_685 ARA_job.sub 
+VARS job_685 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0510/run009323/event009323.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009322.dat" station="2" run="9323"
+
+JOB job_686 ARA_job.sub 
+VARS job_686 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0510/run009324/event009324.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009322.dat" station="2" run="9324"
+
+JOB job_687 ARA_job.sub 
+VARS job_687 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0510/run009325/event009325.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009322.dat" station="2" run="9325"
+
+JOB job_688 ARA_job.sub 
+VARS job_688 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0511/run009326/event009326.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009322.dat" station="2" run="9326"
+
+JOB job_689 ARA_job.sub 
+VARS job_689 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0511/run009328/event009328.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009327.dat" station="2" run="9328"
+
+JOB job_690 ARA_job.sub 
+VARS job_690 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0511/run009329/event009329.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009327.dat" station="2" run="9329"
+
+JOB job_691 ARA_job.sub 
+VARS job_691 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0511/run009330/event009330.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009327.dat" station="2" run="9330"
+
+JOB job_692 ARA_job.sub 
+VARS job_692 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0512/run009332/event009332.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009327.dat" station="2" run="9332"
+
+JOB job_693 ARA_job.sub 
+VARS job_693 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0512/run009333/event009333.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009327.dat" station="2" run="9333"
+
+JOB job_694 ARA_job.sub 
+VARS job_694 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0512/run009334/event009334.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009327.dat" station="2" run="9334"
+
+JOB job_695 ARA_job.sub 
+VARS job_695 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0512/run009335/event009335.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009327.dat" station="2" run="9335"
+
+JOB job_696 ARA_job.sub 
+VARS job_696 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0513/run009336/event009336.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009327.dat" station="2" run="9336"
+
+JOB job_697 ARA_job.sub 
+VARS job_697 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0513/run009338/event009338.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009337.dat" station="2" run="9338"
+
+JOB job_698 ARA_job.sub 
+VARS job_698 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0513/run009339/event009339.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009337.dat" station="2" run="9339"
+
+JOB job_699 ARA_job.sub 
+VARS job_699 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0513/run009340/event009340.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009337.dat" station="2" run="9340"
+
+JOB job_700 ARA_job.sub 
+VARS job_700 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0514/run009341/event009341.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009337.dat" station="2" run="9341"
+
+JOB job_701 ARA_job.sub 
+VARS job_701 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0514/run009343/event009343.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009342.dat" station="2" run="9343"
+
+JOB job_702 ARA_job.sub 
+VARS job_702 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0514/run009344/event009344.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009342.dat" station="2" run="9344"
+
+JOB job_703 ARA_job.sub 
+VARS job_703 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0514/run009345/event009345.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009342.dat" station="2" run="9345"
+
+JOB job_704 ARA_job.sub 
+VARS job_704 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0515/run009346/event009346.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009342.dat" station="2" run="9346"
+
+JOB job_705 ARA_job.sub 
+VARS job_705 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0515/run009348/event009348.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009347.dat" station="2" run="9348"
+
+JOB job_706 ARA_job.sub 
+VARS job_706 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0515/run009349/event009349.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009347.dat" station="2" run="9349"
+
+JOB job_707 ARA_job.sub 
+VARS job_707 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0515/run009350/event009350.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009347.dat" station="2" run="9350"
+
+JOB job_708 ARA_job.sub 
+VARS job_708 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0516/run009351/event009351.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009347.dat" station="2" run="9351"
+
+JOB job_709 ARA_job.sub 
+VARS job_709 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0516/run009353/event009353.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009352.dat" station="2" run="9353"
+
+JOB job_710 ARA_job.sub 
+VARS job_710 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0516/run009354/event009354.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009352.dat" station="2" run="9354"
+
+JOB job_711 ARA_job.sub 
+VARS job_711 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0516/run009355/event009355.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009352.dat" station="2" run="9355"
+
+JOB job_712 ARA_job.sub 
+VARS job_712 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0517/run009356/event009356.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009352.dat" station="2" run="9356"
+
+JOB job_713 ARA_job.sub 
+VARS job_713 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0517/run009358/event009358.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009357.dat" station="2" run="9358"
+
+JOB job_714 ARA_job.sub 
+VARS job_714 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0517/run009359/event009359.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009357.dat" station="2" run="9359"
+
+JOB job_715 ARA_job.sub 
+VARS job_715 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0517/run009360/event009360.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009357.dat" station="2" run="9360"
+
+JOB job_716 ARA_job.sub 
+VARS job_716 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0518/run009361/event009361.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009357.dat" station="2" run="9361"
+
+JOB job_717 ARA_job.sub 
+VARS job_717 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0518/run009363/event009363.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009362.dat" station="2" run="9363"
+
+JOB job_718 ARA_job.sub 
+VARS job_718 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0518/run009364/event009364.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009362.dat" station="2" run="9364"
+
+JOB job_719 ARA_job.sub 
+VARS job_719 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0518/run009365/event009365.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009362.dat" station="2" run="9365"
+
+JOB job_720 ARA_job.sub 
+VARS job_720 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0519/run009366/event009366.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009362.dat" station="2" run="9366"
+
+JOB job_721 ARA_job.sub 
+VARS job_721 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0519/run009367/event009367.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009362.dat" station="2" run="9367"
+
+JOB job_722 ARA_job.sub 
+VARS job_722 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0519/run009368/event009368.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009362.dat" station="2" run="9368"
+
+JOB job_723 ARA_job.sub 
+VARS job_723 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0519/run009369/event009369.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009362.dat" station="2" run="9369"
+
+JOB job_724 ARA_job.sub 
+VARS job_724 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0520/run009371/event009371.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009370.dat" station="2" run="9371"
+
+JOB job_725 ARA_job.sub 
+VARS job_725 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0520/run009372/event009372.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009370.dat" station="2" run="9372"
+
+JOB job_726 ARA_job.sub 
+VARS job_726 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0520/run009373/event009373.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009370.dat" station="2" run="9373"
+
+JOB job_727 ARA_job.sub 
+VARS job_727 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0520/run009374/event009374.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009370.dat" station="2" run="9374"
+
+JOB job_728 ARA_job.sub 
+VARS job_728 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0521/run009375/event009375.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009370.dat" station="2" run="9375"
+
+JOB job_729 ARA_job.sub 
+VARS job_729 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0521/run009376/event009376.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009370.dat" station="2" run="9376"
+
+JOB job_730 ARA_job.sub 
+VARS job_730 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0521/run009377/event009377.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009370.dat" station="2" run="9377"
+
+JOB job_731 ARA_job.sub 
+VARS job_731 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0521/run009379/event009379.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009378.dat" station="2" run="9379"
+
+JOB job_732 ARA_job.sub 
+VARS job_732 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0522/run009380/event009380.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009378.dat" station="2" run="9380"
+
+JOB job_733 ARA_job.sub 
+VARS job_733 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0522/run009381/event009381.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009378.dat" station="2" run="9381"
+
+JOB job_734 ARA_job.sub 
+VARS job_734 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0522/run009382/event009382.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009378.dat" station="2" run="9382"
+
+JOB job_735 ARA_job.sub 
+VARS job_735 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0522/run009384/event009384.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009383.dat" station="2" run="9384"
+
+JOB job_736 ARA_job.sub 
+VARS job_736 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0523/run009385/event009385.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009383.dat" station="2" run="9385"
+
+JOB job_737 ARA_job.sub 
+VARS job_737 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0523/run009386/event009386.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009383.dat" station="2" run="9386"
+
+JOB job_738 ARA_job.sub 
+VARS job_738 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0523/run009387/event009387.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009383.dat" station="2" run="9387"
+
+JOB job_739 ARA_job.sub 
+VARS job_739 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0523/run009389/event009389.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009388.dat" station="2" run="9389"
+
+JOB job_740 ARA_job.sub 
+VARS job_740 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0524/run009390/event009390.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009388.dat" station="2" run="9390"
+
+JOB job_741 ARA_job.sub 
+VARS job_741 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0524/run009391/event009391.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009388.dat" station="2" run="9391"
+
+JOB job_742 ARA_job.sub 
+VARS job_742 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0524/run009392/event009392.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009388.dat" station="2" run="9392"
+
+JOB job_743 ARA_job.sub 
+VARS job_743 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0524/run009394/event009394.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009393.dat" station="2" run="9394"
+
+JOB job_744 ARA_job.sub 
+VARS job_744 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0525/run009395/event009395.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009393.dat" station="2" run="9395"
+
+JOB job_745 ARA_job.sub 
+VARS job_745 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0525/run009396/event009396.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009393.dat" station="2" run="9396"
+
+JOB job_746 ARA_job.sub 
+VARS job_746 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0525/run009397/event009397.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009393.dat" station="2" run="9397"
+
+JOB job_747 ARA_job.sub 
+VARS job_747 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0525/run009399/event009399.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009398.dat" station="2" run="9399"
+
+JOB job_748 ARA_job.sub 
+VARS job_748 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0526/run009400/event009400.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009398.dat" station="2" run="9400"
+
+JOB job_749 ARA_job.sub 
+VARS job_749 data="/data/exp/ARA/2017/unblinded/L1/ARA02/0526/run009401/event009401.root" ped="/data/exp/ARA/2017/calibration/pedestals/ARA02/pedestalValues.run009398.dat" station="2" run="9401"
+

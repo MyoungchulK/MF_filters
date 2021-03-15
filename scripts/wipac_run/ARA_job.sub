@@ -3,7 +3,8 @@ output = /scratch/mkim/MF_filters/ARA0$(station).Run$(run).out
 error  = /scratch/mkim/MF_filters/ARA0$(station).Run$(run).err
 
 #request_cpus = 1
-request_memory = 16GB
+request_memory = 8GB
+#request_memory = 16GB
 #request_disk = 2GB
 Universe = vanilla
 getenv = true
@@ -13,7 +14,8 @@ when_to_transfer_output = ON_EXIT
 nice_user = false
 
 executable = ARA_job.sh
-arguments = $(data) $(ped) $(out) $(station) $(run)
+arguments = $(data) $(ped) $(station)
+#arguments = $(data) $(ped) $(out) $(station) $(run)
 #arguments = $(data) $(ped) $(station) $(run) $(out) $(mode)
 
 queue

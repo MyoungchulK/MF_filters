@@ -14,8 +14,9 @@ from tools.fft import freq_pad_maker
 from tools.temp import temp_loader
 from tools.mf import soft_psd_maker
 from tools.mf import evt_snr_maker
+from tools.run import data_info_reader
 
-def ms_filter(Data, Ped, Station, Run, Output, DMode, CPath = curr_path, Sel_evt_soft = None, Sel_evt = None):
+def ms_filter(Data, Ped, Output, CPath = curr_path, DMode = 'normal', Sel_evt_soft = None, Sel_evt = None):
 
     if DMode == 'normal':
         print('DMode is normal! Final result will be only event-wise SNR!')
@@ -26,6 +27,10 @@ def ms_filter(Data, Ped, Station, Run, Output, DMode, CPath = curr_path, Sel_evt
     else:
         print('DMode is not set. Choose 1) normal or 2) debug w/ events')
         sys.exit(1)
+
+    # read data info
+    #Station, Run, Config = data_info_reader(Data)[:3]
+    Station, Run = data_info_reader(Data)[:2]
 
     # import root and ara root lib
     ROOT = ara_root_lib()
@@ -200,18 +205,17 @@ def ms_filter(Data, Ped, Station, Run, Output, DMode, CPath = curr_path, Sel_evt
 if __name__ == "__main__":
 
     # since there is no click package in cobalt...
-    if len (sys.argv) !=7 and len (sys.argv) !=9:
+    if len (sys.argv) !=4 and len (sys.argv) !=7:
         Usage = """
     This is designed to analyze all events in the run. You have to choose specific run.
     Depending on DMode, It will save just event-wise SNR or all middle step information.
     Usage = python3 %s
     <Raw file ex)/data/exp/ARA/2014/unblinded/L1/ARA02/0116/run002898/event002898.root>
     <Pedestal file ex)/data/exp/ARA/2014/calibration/pedestals/ARA02/pedestalValues.run002894.dat>
-    <Station ex)2>
-    <Run ex)2898>
     <Output path ex)/data/user/mkim/OMF_filter/ARA02/>
     <DMode ex) normal or debug>
-    if DMode is debug, 
+    if you want debug plot, 
+        <DMode ex) debug(default is normal)>
         <Sel_evt_soft ex) 9>
         <Sel_evt ex) 10(Soft) 11(Cal) or 13(RF)>
         """ %(sys.argv[0])
@@ -221,18 +225,16 @@ if __name__ == "__main__":
 
     Data=str(sys.argv[1])
     Ped=str(sys.argv[2])
-    Station=int(sys.argv[3])
-    Run=int(sys.argv[4])
-    Output=str(sys.argv[5])
-    DMode=str(sys.argv[6])
-    if DMode == 'debug':
-        sel_soft = int(sys.argv[7])
-        sel = int(sys.argv[8])
-        ms_filter(Data, Ped, Station, Run, Output, DMode, CPath = curr_path+'/..', Sel_evt_soft = sel_soft, Sel_evt = sel)
+    Output=str(sys.argv[3])
+    if len (sys.argv) == 7 and str(sys.argv[4]) == 'debug':   
+        dmode=str(sys.argv[4])
+        sel_soft = int(sys.argv[5])
+        sel = int(sys.argv[6])
+        ms_filter(Data, Ped, Output, CPath = curr_path+'/..', DMode = dmode, Sel_evt_soft = sel_soft, Sel_evt = sel)
         del sel_soft, sel
 
     else:
-        ms_filter(Data, Ped, Station, Run, Output, DMode, CPath = curr_path+'/..')
+        ms_filter(Data, Ped, Output, CPath = curr_path+'/..')
 
 del curr_path
 

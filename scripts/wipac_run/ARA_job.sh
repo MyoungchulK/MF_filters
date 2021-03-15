@@ -3,8 +3,8 @@
 # load in variables
 data=$1
 ped=$2
-out=$3
-#station=$4
+station=$3
+out=/data/user/mkim/OMF_filter/ARA0${station}/PSD/
 #run=$5
 #mode=$6
 
@@ -12,13 +12,15 @@ out=$3
 #script_dir=/home/mkim/analysis/MF_filters/scripts/
 
 # run the reconstruction script
+export HDF5_USE_FILE_LOCKING='FALSE'
 source /cvmfs/ara.opensciencegrid.org/trunk/centos7/setup.sh
 cd /home/mkim/analysis/MF_filters/scripts/
 #cd ${script_dir}
 
 #ulimit -s 131072; python3 mf_filter.py ${data} ${ped} ${station} ${run} ${temp_dir} ${mode}
 #ulimit -s 131072; python3 /home/mkim/analysis/MF_filters/scripts/mf_filter.py ${data} ${ped} ${station} ${run} ${out} ${mode}
-python3 /home/mkim/analysis/MF_filters/scripts/mf_filter_coherent.py ${data} ${ped} ${out}
+#python3 /home/mkim/analysis/MF_filters/scripts/mf_filter_coherent.py ${data} ${ped} ${out}
+python3 /home/mkim/analysis/MF_filters/scripts/mf_filter_psd.py ${data} ${ped} ${out}
 
 #if [ $? -ne 0 ] #error handle if something has gone wrong
 #then
