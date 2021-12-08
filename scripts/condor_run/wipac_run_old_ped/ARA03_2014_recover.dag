@@ -1,0 +1,26 @@
+JOB job_66 ARA_job.sub 
+VARS job_66 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0212/run001986/event001986.root" ped="/data/exp/ARA/2014/calibration/pedestals/ARA03/pedestalValues.run001982.dat" station="3" run="1986"
+
+JOB job_351 ARA_job.sub 
+VARS job_351 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0329/run002424/event002424.root" ped="/data/exp/ARA/2014/calibration/pedestals/ARA03/pedestalValues.run002420.dat" station="3" run="2424"
+
+JOB job_469 ARA_job.sub 
+VARS job_469 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0430/run002585/event002585.root" ped="/data/exp/ARA/2014/calibration/pedestals/ARA03/pedestalValues.run002584.dat" station="3" run="2585"
+
+JOB job_584 ARA_job.sub 
+VARS job_584 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0529/run002728/event002728.root" ped="/data/exp/ARA/2014/calibration/pedestals/ARA03/pedestalValues.run002724.dat" station="3" run="2728"
+
+JOB job_773 ARA_job.sub
+VARS job_773 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0720/run002974/event002974.root" ped="/data/exp/ARA/2014/calibration/pedestals/ARA03/pedestalValues.run002972.dat" station="3" run="2974"
+
+JOB job_794 ARA_job.sub
+VARS job_794 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0725/run003000/event003000.root" ped="/data/exp/ARA/2014/calibration/pedestals/ARA03/pedestalValues.run002997.dat" station="3" run="3000"
+
+JOB job_1022 ARA_job.sub
+VARS job_1022 data="/data/exp/ARA/2014/unblinded/L1/ARA03/1022/run003443/event003443.root" ped="/data/exp/ARA/2014/calibration/pedestals/ARA03/pedestalValues.run003441.dat" station="3" run="3443"
+
+JOB job_1144 ARA_job.sub
+VARS job_1144 data="/data/exp/ARA/2014/unblinded/L1/ARA03/1105/run003508/event003508.root" ped="/data/exp/ARA/2014/calibration/pedestals/ARA03/pedestalValues.run003507.dat" station="3" run="3508"
+
+JOB job_1213 ARA_job.sub
+VARS job_1213 data="/data/exp/ARA/2014/unblinded/L1/ARA03/1123/run003593/event003593.root" ped="/data/exp/ARA/2014/calibration/pedestals/ARA03/pedestalValues.run003592.dat" station="3" run="3593"

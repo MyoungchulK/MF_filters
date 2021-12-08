@@ -1,0 +1,714 @@
+JOB job_34 ARA_job.sub 
+VARS job_34 data="/data/exp/ARA/2013/filtered/burnSample1in10/ARA03/root/run512/event512.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run512.dat" station="3" run="512"
+
+JOB job_37 ARA_job.sub 
+VARS job_37 data="/data/exp/ARA/2013/filtered/burnSample1in10/ARA03/root/run515/event515.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run515.dat" station="3" run="515"
+
+JOB job_38 ARA_job.sub 
+VARS job_38 data="/data/exp/ARA/2013/filtered/burnSample1in10/ARA03/root/run516/event516.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run516.dat" station="3" run="516"
+
+JOB job_58 ARA_job.sub 
+VARS job_58 data="/data/exp/ARA/2013/filtered/burnSample1in10/ARA03/root/run541/event541.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run541.dat" station="3" run="541"
+
+JOB job_70 ARA_job.sub 
+VARS job_70 data="/data/exp/ARA/2013/filtered/burnSample1in10/ARA03/root/run557/event557.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run557.dat" station="3" run="557"
+
+JOB job_137 ARA_job.sub 
+VARS job_137 data="/data/exp/ARA/2013/filtered/burnSample1in10/ARA03/root/run732/event732.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run732.dat" station="3" run="732"
+
+JOB job_227 ARA_job.sub 
+VARS job_227 data="/data/exp/ARA/2013/filtered/burnSample1in10/ARA03/root/run855/event855.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run855.dat" station="3" run="855"
+
+JOB job_498 ARA_job.sub 
+VARS job_498 data="/data/exp/ARA/2013/filtered/burnSample1in10/ARA03/root/run1188/event1188.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run1188.dat" station="3" run="1188"
+
+JOB job_542 ARA_job.sub 
+VARS job_542 data="/data/exp/ARA/2013/filtered/burnSample1in10/ARA03/root/run1244/event1244.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run1244.dat" station="3" run="1244"
+
+JOB job_571 ARA_job.sub 
+VARS job_571 data="/data/exp/ARA/2013/filtered/burnSample1in10/ARA03/root/run1280/event1280.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run1280.dat" station="3" run="1280"
+
+JOB job_689 ARA_job.sub 
+VARS job_689 data="/data/exp/ARA/2013/filtered/burnSample1in10/ARA03/root/run1460/event1460.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run1460.dat" station="3" run="1460"
+
+JOB job_799 ARA_job.sub 
+VARS job_799 data="/data/exp/ARA/2013/filtered/burnSample1in10/ARA03/root/run1651/event1651.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run1651.dat" station="3" run="1651"
+
+JOB job_809 ARA_job.sub 
+VARS job_809 data="/data/exp/ARA/2013/filtered/burnSample1in10/ARA03/root/run1664/event1664.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run1664.dat" station="3" run="1664"
+
+JOB job_816 ARA_job.sub 
+VARS job_816 data="/data/exp/ARA/2013/filtered/burnSample1in10/ARA03/root/run1672/event1672.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run1672.dat" station="3" run="1672"
+
+JOB job_822 ARA_job.sub 
+VARS job_822 data="/data/exp/ARA/2013/filtered/burnSample1in10/ARA03/root/run1680/event1680.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run1680.dat" station="3" run="1680"
+
+JOB job_828 ARA_job.sub 
+VARS job_828 data="/data/exp/ARA/2013/filtered/burnSample1in10/ARA03/root/run1687/event1687.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run1687.dat" station="3" run="1687"
+
+JOB job_885 ARA_job.sub 
+VARS job_885 data="/data/exp/ARA/2013/filtered/burnSample1in10/ARA03/root/run1759/event1759.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run1759.dat" station="3" run="1759"
+
+JOB job_932 ARA_job.sub 
+VARS job_932 data="/data/exp/ARA/2013/filtered/burnSample1in10/ARA03/root/run1817/event1817.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run1817.dat" station="3" run="1817"
+
+JOB job_1029 ARA_job.sub 
+VARS job_1029 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0211/run001971/event001971.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run1971.dat" station="3" run="1971"
+
+JOB job_1140 ARA_job.sub 
+VARS job_1140 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0216/run002164/event002164.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run2164.dat" station="3" run="2164"
+
+JOB job_1178 ARA_job.sub 
+VARS job_1178 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0226/run002219/event002219.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run2219.dat" station="3" run="2219"
+
+JOB job_1199 ARA_job.sub 
+VARS job_1199 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0303/run002245/event002245.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run2245.dat" station="3" run="2245"
+
+JOB job_1200 ARA_job.sub 
+VARS job_1200 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0303/run002246/event002246.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run2246.dat" station="3" run="2246"
+
+JOB job_1210 ARA_job.sub 
+VARS job_1210 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0304/run002257/event002257.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run2257.dat" station="3" run="2257"
+
+JOB job_1275 ARA_job.sub 
+VARS job_1275 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0316/run002334/event002334.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run2334.dat" station="3" run="2334"
+
+JOB job_1338 ARA_job.sub 
+VARS job_1338 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0325/run002407/event002407.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run2407.dat" station="3" run="2407"
+
+JOB job_1404 ARA_job.sub 
+VARS job_1404 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0411/run002489/event002489.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run2489.dat" station="3" run="2489"
+
+JOB job_1419 ARA_job.sub 
+VARS job_1419 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0414/run002508/event002508.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run2508.dat" station="3" run="2508"
+
+JOB job_1500 ARA_job.sub 
+VARS job_1500 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0508/run002622/event002622.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run2622.dat" station="3" run="2622"
+
+JOB job_1535 ARA_job.sub 
+VARS job_1535 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0516/run002666/event002666.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run2666.dat" station="3" run="2666"
+
+JOB job_1552 ARA_job.sub 
+VARS job_1552 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0520/run002687/event002687.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run2687.dat" station="3" run="2687"
+
+JOB job_1658 ARA_job.sub 
+VARS job_1658 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0615/run002820/event002820.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run2820.dat" station="3" run="2820"
+
+JOB job_1817 ARA_job.sub 
+VARS job_1817 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0730/run003028/event003028.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3028.dat" station="3" run="3028"
+
+JOB job_1825 ARA_job.sub 
+VARS job_1825 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0801/run003038/event003038.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3038.dat" station="3" run="3038"
+
+JOB job_1873 ARA_job.sub 
+VARS job_1873 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0815/run003097/event003097.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3097.dat" station="3" run="3097"
+
+JOB job_1885 ARA_job.sub 
+VARS job_1885 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0825/run003112/event003112.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3112.dat" station="3" run="3112"
+
+JOB job_1925 ARA_job.sub 
+VARS job_1925 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0831/run003162/event003162.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3162.dat" station="3" run="3162"
+
+JOB job_2017 ARA_job.sub 
+VARS job_2017 data="/data/exp/ARA/2014/unblinded/L1/ARA03/1101/run003349/event003349.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3349.dat" station="3" run="3349"
+
+JOB job_2134 ARA_job.sub 
+VARS job_2134 data="/data/exp/ARA/2014/unblinded/L1/ARA03/1103/run003496/event003496.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3496.dat" station="3" run="3496"
+
+JOB job_2183 ARA_job.sub 
+VARS job_2183 data="/data/exp/ARA/2014/unblinded/L1/ARA03/1115/run003556/event003556.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3556.dat" station="3" run="3556"
+
+JOB job_2303 ARA_job.sub 
+VARS job_2303 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0108/run003823/event003823.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3823.dat" station="3" run="3823"
+
+JOB job_2358 ARA_job.sub 
+VARS job_2358 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0116/run003885/event003885.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3885.dat" station="3" run="3885"
+
+JOB job_2371 ARA_job.sub 
+VARS job_2371 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0117/run003899/event003899.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3899.dat" station="3" run="3899"
+
+JOB job_2386 ARA_job.sub 
+VARS job_2386 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003916/event003916.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3916.dat" station="3" run="3916"
+
+JOB job_2387 ARA_job.sub 
+VARS job_2387 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003917/event003917.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3917.dat" station="3" run="3917"
+
+JOB job_2388 ARA_job.sub 
+VARS job_2388 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003918/event003918.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3918.dat" station="3" run="3918"
+
+JOB job_2389 ARA_job.sub 
+VARS job_2389 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003919/event003919.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3919.dat" station="3" run="3919"
+
+JOB job_2390 ARA_job.sub 
+VARS job_2390 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003920/event003920.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3920.dat" station="3" run="3920"
+
+JOB job_2391 ARA_job.sub 
+VARS job_2391 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003921/event003921.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3921.dat" station="3" run="3921"
+
+JOB job_2392 ARA_job.sub 
+VARS job_2392 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003922/event003922.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3922.dat" station="3" run="3922"
+
+JOB job_2393 ARA_job.sub 
+VARS job_2393 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003923/event003923.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3923.dat" station="3" run="3923"
+
+JOB job_2394 ARA_job.sub 
+VARS job_2394 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003924/event003924.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3924.dat" station="3" run="3924"
+
+JOB job_2395 ARA_job.sub 
+VARS job_2395 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003925/event003925.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3925.dat" station="3" run="3925"
+
+JOB job_2396 ARA_job.sub 
+VARS job_2396 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003926/event003926.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3926.dat" station="3" run="3926"
+
+JOB job_2397 ARA_job.sub 
+VARS job_2397 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003927/event003927.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3927.dat" station="3" run="3927"
+
+JOB job_2398 ARA_job.sub 
+VARS job_2398 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003928/event003928.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3928.dat" station="3" run="3928"
+
+JOB job_2399 ARA_job.sub 
+VARS job_2399 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003929/event003929.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3929.dat" station="3" run="3929"
+
+JOB job_2400 ARA_job.sub 
+VARS job_2400 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003930/event003930.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3930.dat" station="3" run="3930"
+
+JOB job_2401 ARA_job.sub 
+VARS job_2401 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003931/event003931.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3931.dat" station="3" run="3931"
+
+JOB job_2402 ARA_job.sub 
+VARS job_2402 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003932/event003932.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3932.dat" station="3" run="3932"
+
+JOB job_2403 ARA_job.sub 
+VARS job_2403 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003933/event003933.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3933.dat" station="3" run="3933"
+
+JOB job_2404 ARA_job.sub 
+VARS job_2404 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003934/event003934.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3934.dat" station="3" run="3934"
+
+JOB job_2405 ARA_job.sub 
+VARS job_2405 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003935/event003935.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3935.dat" station="3" run="3935"
+
+JOB job_2406 ARA_job.sub 
+VARS job_2406 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003936/event003936.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3936.dat" station="3" run="3936"
+
+JOB job_2407 ARA_job.sub 
+VARS job_2407 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003937/event003937.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3937.dat" station="3" run="3937"
+
+JOB job_2408 ARA_job.sub 
+VARS job_2408 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003938/event003938.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3938.dat" station="3" run="3938"
+
+JOB job_2409 ARA_job.sub 
+VARS job_2409 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003939/event003939.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3939.dat" station="3" run="3939"
+
+JOB job_2410 ARA_job.sub 
+VARS job_2410 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003940/event003940.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3940.dat" station="3" run="3940"
+
+JOB job_2411 ARA_job.sub 
+VARS job_2411 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003941/event003941.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3941.dat" station="3" run="3941"
+
+JOB job_2412 ARA_job.sub 
+VARS job_2412 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003942/event003942.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3942.dat" station="3" run="3942"
+
+JOB job_2413 ARA_job.sub 
+VARS job_2413 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003943/event003943.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3943.dat" station="3" run="3943"
+
+JOB job_2414 ARA_job.sub 
+VARS job_2414 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003944/event003944.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3944.dat" station="3" run="3944"
+
+JOB job_2415 ARA_job.sub 
+VARS job_2415 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003945/event003945.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3945.dat" station="3" run="3945"
+
+JOB job_2416 ARA_job.sub 
+VARS job_2416 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003946/event003946.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3946.dat" station="3" run="3946"
+
+JOB job_2417 ARA_job.sub 
+VARS job_2417 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003947/event003947.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3947.dat" station="3" run="3947"
+
+JOB job_2418 ARA_job.sub 
+VARS job_2418 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003948/event003948.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3948.dat" station="3" run="3948"
+
+JOB job_2419 ARA_job.sub 
+VARS job_2419 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003949/event003949.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3949.dat" station="3" run="3949"
+
+JOB job_2420 ARA_job.sub 
+VARS job_2420 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003950/event003950.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3950.dat" station="3" run="3950"
+
+JOB job_2421 ARA_job.sub 
+VARS job_2421 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003951/event003951.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3951.dat" station="3" run="3951"
+
+JOB job_2422 ARA_job.sub 
+VARS job_2422 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003952/event003952.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3952.dat" station="3" run="3952"
+
+JOB job_2423 ARA_job.sub 
+VARS job_2423 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003953/event003953.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3953.dat" station="3" run="3953"
+
+JOB job_2424 ARA_job.sub 
+VARS job_2424 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003954/event003954.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3954.dat" station="3" run="3954"
+
+JOB job_2425 ARA_job.sub 
+VARS job_2425 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003955/event003955.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3955.dat" station="3" run="3955"
+
+JOB job_2426 ARA_job.sub 
+VARS job_2426 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003956/event003956.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3956.dat" station="3" run="3956"
+
+JOB job_2427 ARA_job.sub 
+VARS job_2427 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003957/event003957.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3957.dat" station="3" run="3957"
+
+JOB job_2428 ARA_job.sub 
+VARS job_2428 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003958/event003958.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3958.dat" station="3" run="3958"
+
+JOB job_2429 ARA_job.sub 
+VARS job_2429 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003959/event003959.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3959.dat" station="3" run="3959"
+
+JOB job_2430 ARA_job.sub 
+VARS job_2430 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003960/event003960.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3960.dat" station="3" run="3960"
+
+JOB job_2431 ARA_job.sub 
+VARS job_2431 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003961/event003961.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3961.dat" station="3" run="3961"
+
+JOB job_2432 ARA_job.sub 
+VARS job_2432 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003962/event003962.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3962.dat" station="3" run="3962"
+
+JOB job_2433 ARA_job.sub 
+VARS job_2433 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003963/event003963.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3963.dat" station="3" run="3963"
+
+JOB job_2434 ARA_job.sub 
+VARS job_2434 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003964/event003964.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3964.dat" station="3" run="3964"
+
+JOB job_2435 ARA_job.sub 
+VARS job_2435 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003965/event003965.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3965.dat" station="3" run="3965"
+
+JOB job_2436 ARA_job.sub 
+VARS job_2436 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003966/event003966.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3966.dat" station="3" run="3966"
+
+JOB job_2437 ARA_job.sub 
+VARS job_2437 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003967/event003967.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3967.dat" station="3" run="3967"
+
+JOB job_2438 ARA_job.sub 
+VARS job_2438 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003968/event003968.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3968.dat" station="3" run="3968"
+
+JOB job_2439 ARA_job.sub 
+VARS job_2439 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003969/event003969.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3969.dat" station="3" run="3969"
+
+JOB job_2440 ARA_job.sub 
+VARS job_2440 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003970/event003970.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3970.dat" station="3" run="3970"
+
+JOB job_2441 ARA_job.sub 
+VARS job_2441 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003971/event003971.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3971.dat" station="3" run="3971"
+
+JOB job_2442 ARA_job.sub 
+VARS job_2442 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003972/event003972.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3972.dat" station="3" run="3972"
+
+JOB job_2443 ARA_job.sub 
+VARS job_2443 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003973/event003973.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3973.dat" station="3" run="3973"
+
+JOB job_2444 ARA_job.sub 
+VARS job_2444 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0121/run003974/event003974.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run3974.dat" station="3" run="3974"
+
+JOB job_2474 ARA_job.sub 
+VARS job_2474 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004009/event004009.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4009.dat" station="3" run="4009"
+
+JOB job_2475 ARA_job.sub 
+VARS job_2475 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004010/event004010.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4010.dat" station="3" run="4010"
+
+JOB job_2476 ARA_job.sub 
+VARS job_2476 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004011/event004011.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4011.dat" station="3" run="4011"
+
+JOB job_2477 ARA_job.sub 
+VARS job_2477 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004012/event004012.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4012.dat" station="3" run="4012"
+
+JOB job_2478 ARA_job.sub 
+VARS job_2478 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004013/event004013.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4013.dat" station="3" run="4013"
+
+JOB job_2479 ARA_job.sub 
+VARS job_2479 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004014/event004014.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4014.dat" station="3" run="4014"
+
+JOB job_2480 ARA_job.sub 
+VARS job_2480 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004015/event004015.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4015.dat" station="3" run="4015"
+
+JOB job_2481 ARA_job.sub 
+VARS job_2481 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004016/event004016.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4016.dat" station="3" run="4016"
+
+JOB job_2482 ARA_job.sub 
+VARS job_2482 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004017/event004017.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4017.dat" station="3" run="4017"
+
+JOB job_2483 ARA_job.sub 
+VARS job_2483 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004018/event004018.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4018.dat" station="3" run="4018"
+
+JOB job_2484 ARA_job.sub 
+VARS job_2484 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004019/event004019.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4019.dat" station="3" run="4019"
+
+JOB job_2485 ARA_job.sub 
+VARS job_2485 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004020/event004020.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4020.dat" station="3" run="4020"
+
+JOB job_2486 ARA_job.sub 
+VARS job_2486 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004021/event004021.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4021.dat" station="3" run="4021"
+
+JOB job_2487 ARA_job.sub 
+VARS job_2487 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004022/event004022.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4022.dat" station="3" run="4022"
+
+JOB job_2488 ARA_job.sub 
+VARS job_2488 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004023/event004023.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4023.dat" station="3" run="4023"
+
+JOB job_2489 ARA_job.sub 
+VARS job_2489 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004024/event004024.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4024.dat" station="3" run="4024"
+
+JOB job_2490 ARA_job.sub 
+VARS job_2490 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004025/event004025.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4025.dat" station="3" run="4025"
+
+JOB job_2491 ARA_job.sub 
+VARS job_2491 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004026/event004026.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4026.dat" station="3" run="4026"
+
+JOB job_2492 ARA_job.sub 
+VARS job_2492 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004027/event004027.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4027.dat" station="3" run="4027"
+
+JOB job_2493 ARA_job.sub 
+VARS job_2493 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004028/event004028.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4028.dat" station="3" run="4028"
+
+JOB job_2494 ARA_job.sub 
+VARS job_2494 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004029/event004029.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4029.dat" station="3" run="4029"
+
+JOB job_2495 ARA_job.sub 
+VARS job_2495 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004030/event004030.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4030.dat" station="3" run="4030"
+
+JOB job_2496 ARA_job.sub 
+VARS job_2496 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004031/event004031.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4031.dat" station="3" run="4031"
+
+JOB job_2497 ARA_job.sub 
+VARS job_2497 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004032/event004032.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4032.dat" station="3" run="4032"
+
+JOB job_2498 ARA_job.sub 
+VARS job_2498 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004033/event004033.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4033.dat" station="3" run="4033"
+
+JOB job_2499 ARA_job.sub 
+VARS job_2499 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004034/event004034.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4034.dat" station="3" run="4034"
+
+JOB job_2500 ARA_job.sub 
+VARS job_2500 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004035/event004035.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4035.dat" station="3" run="4035"
+
+JOB job_2501 ARA_job.sub 
+VARS job_2501 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004036/event004036.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4036.dat" station="3" run="4036"
+
+JOB job_2502 ARA_job.sub 
+VARS job_2502 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004037/event004037.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4037.dat" station="3" run="4037"
+
+JOB job_2503 ARA_job.sub 
+VARS job_2503 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004038/event004038.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4038.dat" station="3" run="4038"
+
+JOB job_2504 ARA_job.sub 
+VARS job_2504 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004039/event004039.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4039.dat" station="3" run="4039"
+
+JOB job_2505 ARA_job.sub 
+VARS job_2505 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004040/event004040.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4040.dat" station="3" run="4040"
+
+JOB job_2506 ARA_job.sub 
+VARS job_2506 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004041/event004041.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4041.dat" station="3" run="4041"
+
+JOB job_2507 ARA_job.sub 
+VARS job_2507 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004042/event004042.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4042.dat" station="3" run="4042"
+
+JOB job_2508 ARA_job.sub 
+VARS job_2508 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004043/event004043.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4043.dat" station="3" run="4043"
+
+JOB job_2509 ARA_job.sub 
+VARS job_2509 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004044/event004044.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4044.dat" station="3" run="4044"
+
+JOB job_2510 ARA_job.sub 
+VARS job_2510 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004045/event004045.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4045.dat" station="3" run="4045"
+
+JOB job_2511 ARA_job.sub 
+VARS job_2511 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004046/event004046.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4046.dat" station="3" run="4046"
+
+JOB job_2512 ARA_job.sub 
+VARS job_2512 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004047/event004047.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4047.dat" station="3" run="4047"
+
+JOB job_2513 ARA_job.sub 
+VARS job_2513 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004048/event004048.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4048.dat" station="3" run="4048"
+
+JOB job_2514 ARA_job.sub 
+VARS job_2514 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004049/event004049.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4049.dat" station="3" run="4049"
+
+JOB job_2515 ARA_job.sub 
+VARS job_2515 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004050/event004050.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4050.dat" station="3" run="4050"
+
+JOB job_2516 ARA_job.sub 
+VARS job_2516 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004051/event004051.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4051.dat" station="3" run="4051"
+
+JOB job_2517 ARA_job.sub 
+VARS job_2517 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004052/event004052.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4052.dat" station="3" run="4052"
+
+JOB job_2518 ARA_job.sub 
+VARS job_2518 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004053/event004053.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4053.dat" station="3" run="4053"
+
+JOB job_2519 ARA_job.sub 
+VARS job_2519 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004054/event004054.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4054.dat" station="3" run="4054"
+
+JOB job_2520 ARA_job.sub 
+VARS job_2520 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004055/event004055.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4055.dat" station="3" run="4055"
+
+JOB job_2521 ARA_job.sub 
+VARS job_2521 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004056/event004056.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4056.dat" station="3" run="4056"
+
+JOB job_2522 ARA_job.sub 
+VARS job_2522 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004057/event004057.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4057.dat" station="3" run="4057"
+
+JOB job_2523 ARA_job.sub 
+VARS job_2523 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004058/event004058.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4058.dat" station="3" run="4058"
+
+JOB job_2524 ARA_job.sub 
+VARS job_2524 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004059/event004059.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4059.dat" station="3" run="4059"
+
+JOB job_2525 ARA_job.sub 
+VARS job_2525 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004060/event004060.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4060.dat" station="3" run="4060"
+
+JOB job_2526 ARA_job.sub 
+VARS job_2526 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004061/event004061.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4061.dat" station="3" run="4061"
+
+JOB job_2527 ARA_job.sub 
+VARS job_2527 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004062/event004062.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4062.dat" station="3" run="4062"
+
+JOB job_2528 ARA_job.sub 
+VARS job_2528 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004063/event004063.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4063.dat" station="3" run="4063"
+
+JOB job_2529 ARA_job.sub 
+VARS job_2529 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004064/event004064.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4064.dat" station="3" run="4064"
+
+JOB job_2530 ARA_job.sub 
+VARS job_2530 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004065/event004065.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4065.dat" station="3" run="4065"
+
+JOB job_2531 ARA_job.sub 
+VARS job_2531 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004066/event004066.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4066.dat" station="3" run="4066"
+
+JOB job_2532 ARA_job.sub 
+VARS job_2532 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004067/event004067.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4067.dat" station="3" run="4067"
+
+JOB job_2533 ARA_job.sub 
+VARS job_2533 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004068/event004068.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4068.dat" station="3" run="4068"
+
+JOB job_2534 ARA_job.sub 
+VARS job_2534 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004069/event004069.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4069.dat" station="3" run="4069"
+
+JOB job_2535 ARA_job.sub 
+VARS job_2535 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004070/event004070.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4070.dat" station="3" run="4070"
+
+JOB job_2536 ARA_job.sub 
+VARS job_2536 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004071/event004071.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4071.dat" station="3" run="4071"
+
+JOB job_2537 ARA_job.sub 
+VARS job_2537 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0129/run004072/event004072.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4072.dat" station="3" run="4072"
+
+JOB job_2696 ARA_job.sub 
+VARS job_2696 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0310/run004269/event004269.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4269.dat" station="3" run="4269"
+
+JOB job_2832 ARA_job.sub 
+VARS job_2832 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0413/run004439/event004439.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4439.dat" station="3" run="4439"
+
+JOB job_2890 ARA_job.sub 
+VARS job_2890 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0428/run004512/event004512.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4512.dat" station="3" run="4512"
+
+JOB job_2968 ARA_job.sub 
+VARS job_2968 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0517/run004609/event004609.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4609.dat" station="3" run="4609"
+
+JOB job_3065 ARA_job.sub 
+VARS job_3065 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0611/run004731/event004731.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4731.dat" station="3" run="4731"
+
+JOB job_3124 ARA_job.sub 
+VARS job_3124 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0626/run004804/event004804.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4804.dat" station="3" run="4804"
+
+JOB job_3175 ARA_job.sub 
+VARS job_3175 data="/data/exp/ARA/2015/unblinded/L1/ARA03/0708/run004868/event004868.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run4868.dat" station="3" run="4868"
+
+JOB job_3361 ARA_job.sub 
+VARS job_3361 data="/data/exp/ARA/2015/unblinded/L1/ARA03/1216/run006084/event006084.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run6084.dat" station="3" run="6084"
+
+JOB job_3486 ARA_job.sub 
+VARS job_3486 data="/data/exp/ARA/2016/unblinded/L1/ARA03/0118/run006247/event006247.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run6247.dat" station="3" run="6247"
+
+JOB job_3566 ARA_job.sub 
+VARS job_3566 data="/data/exp/ARA/2016/unblinded/L1/ARA03/0208/run006351/event006351.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run6351.dat" station="3" run="6351"
+
+JOB job_3606 ARA_job.sub 
+VARS job_3606 data="/data/exp/ARA/2016/unblinded/L1/ARA03/0218/run006401/event006401.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run6401.dat" station="3" run="6401"
+
+JOB job_3647 ARA_job.sub 
+VARS job_3647 data="/data/exp/ARA/2016/unblinded/L1/ARA03/0228/run006449/event006449.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run6449.dat" station="3" run="6449"
+
+JOB job_3788 ARA_job.sub 
+VARS job_3788 data="/data/exp/ARA/2016/unblinded/L1/ARA03/0504/run006709/event006709.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run6709.dat" station="3" run="6709"
+
+JOB job_3861 ARA_job.sub 
+VARS job_3861 data="/data/exp/ARA/2016/unblinded/L1/ARA03/0521/run006794/event006794.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run6794.dat" station="3" run="6794"
+
+JOB job_3886 ARA_job.sub 
+VARS job_3886 data="/data/exp/ARA/2016/unblinded/L1/ARA03/0528/run006825/event006825.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run6825.dat" station="3" run="6825"
+
+JOB job_3891 ARA_job.sub 
+VARS job_3891 data="/data/exp/ARA/2016/unblinded/L1/ARA03/0529/run006832/event006832.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run6832.dat" station="3" run="6832"
+
+JOB job_3932 ARA_job.sub 
+VARS job_3932 data="/data/exp/ARA/2016/unblinded/L1/ARA03/0609/run006913/event006913.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run6913.dat" station="3" run="6913"
+
+JOB job_3950 ARA_job.sub 
+VARS job_3950 data="/data/exp/ARA/2016/unblinded/L1/ARA03/0613/run006935/event006935.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run6935.dat" station="3" run="6935"
+
+JOB job_4056 ARA_job.sub 
+VARS job_4056 data="/data/exp/ARA/2016/unblinded/L1/ARA03/0710/run007067/event007067.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run7067.dat" station="3" run="7067"
+
+JOB job_4100 ARA_job.sub 
+VARS job_4100 data="/data/exp/ARA/2016/unblinded/L1/ARA03/0721/run007125/event007125.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run7125.dat" station="3" run="7125"
+
+JOB job_4178 ARA_job.sub 
+VARS job_4178 data="/data/exp/ARA/2016/unblinded/L1/ARA03/0721/run007203/event007203.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run7203.dat" station="3" run="7203"
+
+JOB job_4197 ARA_job.sub 
+VARS job_4197 data="/data/exp/ARA/2016/unblinded/L1/ARA03/0721/run007222/event007222.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run7222.dat" station="3" run="7222"
+
+JOB job_4301 ARA_job.sub 
+VARS job_4301 data="/data/exp/ARA/2016/unblinded/L1/ARA03/0808/run007344/event007344.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run7344.dat" station="3" run="7344"
+
+JOB job_4314 ARA_job.sub 
+VARS job_4314 data="/data/exp/ARA/2016/unblinded/L1/ARA03/0812/run007361/event007361.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run7361.dat" station="3" run="7361"
+
+JOB job_4320 ARA_job.sub 
+VARS job_4320 data="/data/exp/ARA/2016/unblinded/L1/ARA03/0813/run007368/event007368.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run7368.dat" station="3" run="7368"
+
+JOB job_4333 ARA_job.sub 
+VARS job_4333 data="/data/exp/ARA/2016/unblinded/L1/ARA03/0824/run007385/event007385.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run7385.dat" station="3" run="7385"
+
+JOB job_4373 ARA_job.sub 
+VARS job_4373 data="/data/exp/ARA/2016/unblinded/L1/ARA03/0903/run007435/event007435.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run7435.dat" station="3" run="7435"
+
+JOB job_4374 ARA_job.sub 
+VARS job_4374 data="/data/exp/ARA/2016/unblinded/L1/ARA03/0904/run007436/event007436.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run7436.dat" station="3" run="7436"
+
+JOB job_4466 ARA_job.sub 
+VARS job_4466 data="/data/exp/ARA/2016/unblinded/L1/ARA03/0927/run007551/event007551.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run7551.dat" station="3" run="7551"
+
+JOB job_4512 ARA_job.sub 
+VARS job_4512 data="/data/exp/ARA/2016/unblinded/L1/ARA03/1008/run007609/event007609.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run7609.dat" station="3" run="7609"
+
+JOB job_4612 ARA_job.sub 
+VARS job_4612 data="/data/exp/ARA/2016/unblinded/L1/ARA03/1102/run007739/event007739.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run7739.dat" station="3" run="7739"
+
+JOB job_4623 ARA_job.sub 
+VARS job_4623 data="/data/exp/ARA/2016/unblinded/L1/ARA03/1105/run007753/event007753.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run7753.dat" station="3" run="7753"
+
+JOB job_4632 ARA_job.sub 
+VARS job_4632 data="/data/exp/ARA/2016/unblinded/L1/ARA03/1107/run007765/event007765.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run7765.dat" station="3" run="7765"
+
+JOB job_4666 ARA_job.sub 
+VARS job_4666 data="/data/exp/ARA/2016/unblinded/L1/ARA03/1116/run007808/event007808.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run7808.dat" station="3" run="7808"
+
+JOB job_4721 ARA_job.sub 
+VARS job_4721 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0121/run010060/event010060.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run10060.dat" station="3" run="10060"
+
+JOB job_4724 ARA_job.sub 
+VARS job_4724 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0121/run010063/event010063.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run10063.dat" station="3" run="10063"
+
+JOB job_4753 ARA_job.sub 
+VARS job_4753 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0126/run010094/event010094.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run10094.dat" station="3" run="10094"
+
+JOB job_4864 ARA_job.sub 
+VARS job_4864 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0220/run010226/event010226.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run10226.dat" station="3" run="10226"
+
+JOB job_4874 ARA_job.sub 
+VARS job_4874 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0222/run010238/event010238.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run10238.dat" station="3" run="10238"
+
+JOB job_4949 ARA_job.sub 
+VARS job_4949 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0309/run010326/event010326.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run10326.dat" station="3" run="10326"
+
+JOB job_4989 ARA_job.sub 
+VARS job_4989 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0315/run010368/event010368.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run10368.dat" station="3" run="10368"
+
+JOB job_4997 ARA_job.sub 
+VARS job_4997 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0316/run010377/event010377.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run10377.dat" station="3" run="10377"
+
+JOB job_5079 ARA_job.sub 
+VARS job_5079 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0325/run010470/event010470.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run10470.dat" station="3" run="10470"
+
+JOB job_5112 ARA_job.sub 
+VARS job_5112 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0329/run010507/event010507.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run10507.dat" station="3" run="10507"
+
+JOB job_5249 ARA_job.sub 
+VARS job_5249 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0414/run010660/event010660.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run10660.dat" station="3" run="10660"
+
+JOB job_5296 ARA_job.sub 
+VARS job_5296 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0420/run010710/event010710.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run10710.dat" station="3" run="10710"
+
+JOB job_5302 ARA_job.sub 
+VARS job_5302 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0421/run010717/event010717.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run10717.dat" station="3" run="10717"
+
+JOB job_5367 ARA_job.sub 
+VARS job_5367 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0428/run010790/event010790.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run10790.dat" station="3" run="10790"
+
+JOB job_5376 ARA_job.sub 
+VARS job_5376 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0429/run010800/event010800.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run10800.dat" station="3" run="10800"
+
+JOB job_5482 ARA_job.sub 
+VARS job_5482 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0512/run010918/event010918.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run10918.dat" station="3" run="10918"
+
+JOB job_5529 ARA_job.sub 
+VARS job_5529 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0518/run010970/event010970.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run10970.dat" station="3" run="10970"
+
+JOB job_5626 ARA_job.sub 
+VARS job_5626 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0529/run011076/event011076.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run11076.dat" station="3" run="11076"
+
+JOB job_5674 ARA_job.sub 
+VARS job_5674 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0604/run011130/event011130.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run11130.dat" station="3" run="11130"
+
+JOB job_5709 ARA_job.sub 
+VARS job_5709 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0608/run011168/event011168.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run11168.dat" station="3" run="11168"
+
+JOB job_5726 ARA_job.sub 
+VARS job_5726 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0610/run011188/event011188.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run11188.dat" station="3" run="11188"
+
+JOB job_5779 ARA_job.sub 
+VARS job_5779 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0616/run011247/event011247.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run11247.dat" station="3" run="11247"
+
+JOB job_5830 ARA_job.sub 
+VARS job_5830 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0622/run011302/event011302.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run11302.dat" station="3" run="11302"
+
+JOB job_5862 ARA_job.sub 
+VARS job_5862 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0625/run011337/event011337.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run11337.dat" station="3" run="11337"
+
+JOB job_6213 ARA_job.sub 
+VARS job_6213 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0806/run011728/event011728.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run11728.dat" station="3" run="11728"
+
+JOB job_6523 ARA_job.sub 
+VARS job_6523 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0912/run012071/event012071.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run12071.dat" station="3" run="12071"
+
+JOB job_6544 ARA_job.sub 
+VARS job_6544 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0914/run012095/event012095.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run12095.dat" station="3" run="12095"
+
+JOB job_6630 ARA_job.sub 
+VARS job_6630 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0924/run012190/event012190.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run12190.dat" station="3" run="12190"
+
+JOB job_6639 ARA_job.sub 
+VARS job_6639 data="/data/exp/ARA/2018/unblinded/L1/ARA03/0925/run012199/event012199.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run12199.dat" station="3" run="12199"
+
+JOB job_6828 ARA_job.sub 
+VARS job_6828 data="/data/exp/ARA/2018/unblinded/L1/ARA03/1017/run012403/event012403.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run12403.dat" station="3" run="12403"
+
+JOB job_7044 ARA_job.sub 
+VARS job_7044 data="/data/exp/ARA/2018/unblinded/L1/ARA03/1104/run012627/event012627.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run12627.dat" station="3" run="12627"
+
+JOB job_7094 ARA_job.sub 
+VARS job_7094 data="/data/exp/ARA/2018/unblinded/L1/ARA03/1110/run012681/event012681.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run12681.dat" station="3" run="12681"
+
+JOB job_7125 ARA_job.sub 
+VARS job_7125 data="/data/exp/ARA/2018/unblinded/L1/ARA03/1114/run012715/event012715.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run12715.dat" station="3" run="12715"
+
+JOB job_7145 ARA_job.sub 
+VARS job_7145 data="/data/exp/ARA/2018/unblinded/L1/ARA03/1116/run012738/event012738.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run12738.dat" station="3" run="12738"
+
+JOB job_7200 ARA_job.sub 
+VARS job_7200 data="/data/exp/ARA/2018/unblinded/L1/ARA03/1123/run012800/event012800.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run12800.dat" station="3" run="12800"
+
+JOB job_7201 ARA_job.sub 
+VARS job_7201 data="/data/exp/ARA/2018/unblinded/L1/ARA03/1124/run012801/event012801.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run12801.dat" station="3" run="12801"
+
+JOB job_7262 ARA_job.sub 
+VARS job_7262 data="/data/exp/ARA/2018/unblinded/L1/ARA03/1221/run012866/event012866.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run12866.dat" station="3" run="12866"
+
+JOB job_7423 ARA_job.sub 
+VARS job_7423 data="/data/exp/ARA/2018/unblinded/L1/ARA03/1227/run013047/event013047.root" ped="/data/user/mkim/OMF_filter/ARA03/Ped/pedestalValues.run13047.dat" station="3" run="13047"
+

@@ -5,9 +5,9 @@ def temp_loader(c_path, shower):
 
     temp_path = f'{c_path}/temp/'
     if shower == 'EM':
-        temp_name = f'AraOut.setup.template.S.N0.E18.D500.3A.O0.VH.NuE.Nu.CC.{shower}.El1.0.txt.run0.fft_w_band.h5'
+        temp_name = f'AraOut.setup.template.S.N0.E18.D500.3A.O0.VH.NuE.Nu.CC.{shower}.El1.0.test.txt.run0.fft.h5'
     elif shower == 'HAD':
-        temp_name = f'AraOut.setup.template.S.N0.E18.D500.3A.O0.VH.NuMu.Nu.NC.{shower}.El1.0.txt.run0.fft_w_band.h5'
+        temp_name = f'AraOut.setup.template.S.N0.E18.D500.3A.O0.VH.NuMu.Nu.NC.{shower}.El1.0.test.txt.run0.fft.h5'
     temp_file = h5py.File(temp_path+temp_name, 'r')
     
     temp_v = temp_file['temp_v'][:]

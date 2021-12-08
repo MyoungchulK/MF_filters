@@ -1,0 +1,2 @@
+JOB job_218 ARA_job.sub 
+VARS job_218 data="/data/exp/ARA/2013/filtered/full2013Data/ARA02/root/run1727/event1727.root" station="2" run="1727"

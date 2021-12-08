@@ -9,6 +9,23 @@ from tools.plot import sky_map
 from tools.plot import hist_map
 from tools.array import arr_4d
 
+def sel_evt_checker(evt_num, sel_evt = None):
+
+    if sel_evt is None:
+        try:
+            evt_index = np.where(evt_num == sel_evt)[0][0]
+        except IndexError:
+            print(f'event#{sel_evt} is not in the event list!')
+            sel_evt = np.random.choice(evt_num,1)[0]
+            evt_index = np.where(evt_num == sel_evt)[0][0]
+            print(f're-selected event is {sel_evt}')
+    else:
+        sel_evt = np.random.choice(evt_num,1)[0]
+        evt_index = np.where(evt_num == sel_evt)[0][0]
+        print(f'selected event is {sel_evt}')
+
+    return sel_evt, evt_index    
+
 def Band_Square_debug(freq,amp):
 
     band_amp = np.copy(amp)
@@ -53,10 +70,10 @@ def psd_indi_debug(Station, Run, Output, event
     ant_arr_fft_band = Band_Square_debug(f, np.repeat(ant_arr_fft[:,:,np.newaxis], n_theta, axis=2))
 
     plot_16_log_theta(r'Frequency [ $GHz$ ]',r'Amplitude [ $V$ ]', f'Soft FFT, A{Station}, Run{Run}, Evt{event}'
-            ,f/1e9,ant_arr_fft
-            ,f/1e9,ant_arr_fft_band[:,:,0]
-            ,f/1e9,ant_arr_fft_band[:,:,1]
-            ,f/1e9,ant_arr_fft_band[:,:,2]
+            ,f/1e9,np.abs(ant_arr_fft)
+            ,f/1e9,np.abs(ant_arr_fft_band[:,:,0])
+            ,f/1e9,np.abs(ant_arr_fft_band[:,:,1])
+            ,f/1e9,np.abs(ant_arr_fft_band[:,:,2])
             ,1e-13,1e-7
             ,Output,f'Soft_FFT_A{Station}_Run{Run}_Evt{event}.png'
             ,f'Event# {event} Soft FFT plot was generated!')
@@ -65,7 +82,7 @@ def psd_indi_debug(Station, Run, Output, event
     indi_psd = psd_maker(ant_arr_copy, ndf, t_pad_len, int_time_len)
     indi_psd_band = Band_Square_debug(f, np.repeat(indi_psd[:,:,np.newaxis], n_theta, axis=2))
 
-    plot_16_log_theta(r'Frequency [ $GHz$ ]',r'Power [ $V^2$ ]', f'Soft PSD, A{Station}, Run{Run}, Evt{event}'
+    plot_16_log_theta(r'Frequency [ $GHz$ ]',r'Power [ $V^2/Hz$ ]', f'Soft PSD, A{Station}, Run{Run}, Evt{event}'
             ,f/1e9,indi_psd
             ,f/1e9,indi_psd_band[:,:,0]
             ,f/1e9,indi_psd_band[:,:,1]
@@ -76,7 +93,7 @@ def psd_indi_debug(Station, Run, Output, event
 
     return ant_arr_copy, ant_arr_fft, ant_arr_fft_band, indi_psd, indi_psd_band
 
-def psd_debug(Station, Run, Output, event
+def psd_debug(Station, Run, Output
                 , f
                 , n_theta
                 , psd, num_psd):
@@ -85,7 +102,7 @@ def psd_debug(Station, Run, Output, event
     psd_copy = np.copy(psd)
     psd_band = Band_Square_debug(f, np.repeat(psd_copy[:,:,np.newaxis], n_theta, axis=2))
 
-    plot_16_log_theta(r'Frequency [ $GHz$ ]',r'Power [ $V^2$ ]', f'Soft Avg PSD, A{Station}, Run{Run}, Avg of {num_psd}Evts'
+    plot_16_log_theta(r'Frequency [ $GHz$ ]',r'Power [ $V^2/Hz$ ]', f'Soft Avg PSD, A{Station}, Run{Run}, Avg of {num_psd}Evts'
             ,f/1e9,psd_copy
             ,f/1e9,psd_band[:,:,0]
             ,f/1e9,psd_band[:,:,1]
@@ -118,10 +135,10 @@ def evt_snr_indi_debug_0(Station, Run, Output, event, trig_type
     ant_arr_fft_band = Band_Square_debug(f, np.repeat(ant_arr_fft[:,:,np.newaxis], n_theta, axis=2))
 
     plot_16_log_theta(r'Frequency [ $GHz$ ]',r'Amplitude [ $V$ ]', f'{trig_type} FFT, A{Station}, Run{Run}, Evt{event}'
-            ,f/1e9,ant_arr_fft
-            ,f/1e9,ant_arr_fft_band[:,:,0]
-            ,f/1e9,ant_arr_fft_band[:,:,1]
-            ,f/1e9,ant_arr_fft_band[:,:,2]
+            ,f/1e9,np.abs(ant_arr_fft)
+            ,f/1e9,np.abs(ant_arr_fft_band[:,:,0])
+            ,f/1e9,np.abs(ant_arr_fft_band[:,:,1])
+            ,f/1e9,np.abs(ant_arr_fft_band[:,:,2])
             ,1e-13,1e-7
             ,Output,f'{trig_type}_FFT_A{Station}_Run{Run}_Evt{event}.png'
             ,f'Event# {event} {trig_type} FFT plot was generated!')

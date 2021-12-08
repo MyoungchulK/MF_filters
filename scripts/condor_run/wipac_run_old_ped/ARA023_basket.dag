@@ -1,0 +1,11 @@
+JOB job_676 ARA_job.sub
+VARS job_676 data="/data/exp/ARA/2014/unblinded/L1/ARA02/0612/run003747/event003747.root" ped="/data/exp/ARA/2014/calibration/pedestals/ARA02/pedestalValues.run003744.dat" station="2" run="3747"
+
+JOB job_411 ARA_job.sub
+VARS job_411 data="/data/exp/ARA/2014/unblinded/L1/ARA02/0411/run003405/event003405.root" ped="/data/exp/ARA/2014/calibration/pedestals/ARA02/pedestalValues.run003401.dat" station="2" run="3405"
+
+JOB job_241 ARA_job.sub
+VARS job_241 data="/data/exp/ARA/2014/unblinded/L1/ARA02/0306/run003196/event003196.root" ped="/data/exp/ARA/2014/calibration/pedestals/ARA02/pedestalValues.run003195.dat" station="2" run="3196"
+
+JOB job_701 ARA_job.sub
+VARS job_701 data="/data/exp/ARA/2014/unblinded/L1/ARA03/0702/run002884/event002884.root" ped="/data/exp/ARA/2014/calibration/pedestals/ARA03/pedestalValues.run002870.dat" station="3" run="2884"

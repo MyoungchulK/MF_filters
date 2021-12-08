@@ -1,0 +1,21 @@
+log    = /scratch/mkim/MF_filters/ARA0$(station).Run$(run).log
+output = /scratch/mkim/MF_filters/ARA0$(station).Run$(run).out
+error  = /scratch/mkim/MF_filters/ARA0$(station).Run$(run).err
+
+#request_gpus = 1
+#request_memory = 2GB
+#request_memory = 4GB
+request_memory = 5GB
+#request_memory = 8GB
+#request_memory = 16GB
+Universe = vanilla
+getenv = true
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+
+nice_user = false
+
+executable = ARA_job.sh
+arguments = $(data) $(ped) $(station)
+
+queue

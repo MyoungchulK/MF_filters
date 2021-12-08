@@ -1,0 +1,18 @@
+log    = /scratch/mkim/Sim/R$(station)_real.log
+output = /scratch/mkim/Sim/R$(station)_real.out
+error  = /scratch/mkim/Sim/R$(station)_real.err
+
+#request_gpus = 1
+request_memory = 4GB
+#request_memory = 8GB
+Universe = vanilla
+getenv = true
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+
+nice_user = false
+
+executable = ARA_job_real.sh
+arguments = $(data) $(ped) $(station)
+
+queue

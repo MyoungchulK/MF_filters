@@ -29,8 +29,7 @@ def ms_filter(Data, Ped, Output, CPath = curr_path, DMode = 'normal', Sel_evt_so
         sys.exit(1)
 
     # read data info
-    #Station, Run, Config = data_info_reader(Data)[:3]
-    Station, Run = data_info_reader(Data)[:2]
+    Station, Run, Config, Year = data_info_reader(Data)[:4]
 
     # import root and ara root lib
     ROOT = ara_root_lib()
@@ -70,7 +69,7 @@ def ms_filter(Data, Ped, Output, CPath = curr_path, DMode = 'normal', Sel_evt_so
                                     , time_pad_len, time_pad_i, time_pad_f # time
                                     , freq # freq
                                     , num_theta # theta
-                                    , DMode) # argv
+                                    , DMode)[0] # argv
 
         # event-wise snr maker
         evt_w_snr_v, evt_w_snr_h, evts_num, trig = evt_snr_maker(ROOT, eventTree, rawEvent, num_events, calibrator, qual # ara root
@@ -79,8 +78,8 @@ def ms_filter(Data, Ped, Output, CPath = curr_path, DMode = 'normal', Sel_evt_so
                                     , freq, freq_w # freq
                                     , soft_psd # psd
                                     , temp_vol, num_theta, theta_w, peak_index # temp
-                                    , DMode, Station, CPath) # argv
-        del soft_psd, CPath, ROOT, file, eventTree, rawEvent, num_events, calibrator, qual, num_Antennas, time_pad_len, time_width_ns, time_pad_i, time_pad_f, freq, freq_w, temp_vol, num_theta, theta_w, peak_index, bad_ant_index, Ndf
+                                    , DMode, Station, Year, CPath) # argv
+        del soft_psd, CPath, Year, ROOT, file, eventTree, rawEvent, num_events, calibrator, qual, num_Antennas, time_pad_len, time_width_ns, time_pad_i, time_pad_f, freq, freq_w, temp_vol, num_theta, theta_w, peak_index, bad_ant_index, Ndf
 
         # create output file
         os.chdir(Output)
@@ -113,7 +112,7 @@ def ms_filter(Data, Ped, Output, CPath = curr_path, DMode = 'normal', Sel_evt_so
                                     , time_pad_len, time_pad_i, time_pad_f # time
                                     , freq # freq
                                     , num_theta #theta
-                                    , DMode, Station, Run, Output, Sel_evt_soft) # argv
+                                    , DMode, Station, Run, Output, Sel_evt_soft)[:-1] # argv
 
  
         # event-wise snr maker
@@ -123,8 +122,8 @@ def ms_filter(Data, Ped, Output, CPath = curr_path, DMode = 'normal', Sel_evt_so
                                     , freq, freq_w # freq
                                     , soft_psd # psd
                                     , temp_vol, num_theta, theta_w, peak_index # temp
-                                    , DMode, Station, CPath, Run, Output, Sel_evt) # argv
-        del CPath, ROOT, file, eventTree, rawEvent, num_events, calibrator, qual, num_Antennas, time_pad_len, time_width_ns, time_pad_i, time_pad_f, freq_w, temp_vol, num_theta, peak_index, Ndf
+                                    , DMode, Station, Year, CPath, Run, Output, Sel_evt) # argv
+        del CPath, Year, ROOT, file, eventTree, rawEvent, num_events, calibrator, qual, num_Antennas, time_pad_len, time_width_ns, time_pad_i, time_pad_f, freq_w, temp_vol, num_theta, peak_index, Ndf
  
         # create output file
         os.chdir(Output)
@@ -135,6 +134,7 @@ def ms_filter(Data, Ped, Output, CPath = curr_path, DMode = 'normal', Sel_evt_so
 
         #saving result
         g0 = hf.create_group('Station_info')
+        g0.create_dataset('Config', data=np.array([Config]), compression="gzip", compression_opts=9)
         g0.create_dataset('Bad_ant', data=np.array([bad_ant_index]), compression="gzip", compression_opts=9)
         del g0, bad_ant_index
 
@@ -212,7 +212,7 @@ if __name__ == "__main__":
     Usage = python3 %s
     <Raw file ex)/data/exp/ARA/2014/unblinded/L1/ARA02/0116/run002898/event002898.root>
     <Pedestal file ex)/data/exp/ARA/2014/calibration/pedestals/ARA02/pedestalValues.run002894.dat>
-    <Output path ex)/data/user/mkim/OMF_filter/ARA02/>
+    <Output path ex)/data/user/mkim/OMF_filter/ARA02/Evt_SNR/>
     <DMode ex) normal or debug>
     if you want debug plot, 
         <DMode ex) debug(default is normal)>

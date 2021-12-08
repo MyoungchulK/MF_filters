@@ -2,6 +2,7 @@ import os
 import numpy as np
 from matplotlib import pyplot as plt
 from tools.antenna import antenna_info
+from matplotlib.colors import LogNorm
 
 Antenna = antenna_info()[0]
 
@@ -135,9 +136,11 @@ def plot_16_indi(xlabel,ylabel,title
 
     plt.title(title, y=1.04,fontsize=35)
 
-    for b in range(16):
+    #for b in range(16):
+    for b in range(20):
 
-        ax = fig.add_subplot(4,4,b+1)
+        #ax = fig.add_subplot(4,4,b+1)
+        ax = fig.add_subplot(5,4,b+1)
         ax.tick_params(axis='x', labelsize=15)
         ax.tick_params(axis='y', labelsize=20)
         #ax.set_xlim(-200,800)
@@ -149,7 +152,8 @@ def plot_16_indi(xlabel,ylabel,title
             ax.set_yscale('log')    
         #ax.set_ylim(-0.8,0.8)
         ax.grid(linestyle=':')
-        ax.set_title(Antenna[b],fontsize=25)
+        #ax.set_title(Antenna[b],fontsize=25)
+        ax.set_title(f'ch{b}',fontsize=25)
 
         if absol is not None:
             y_dat = np.abs(y_data[b])
@@ -375,3 +379,148 @@ def hist_map(xlabel,ylabel,title
     del rf_loc, cal_loc, evt_w_snr_v_rf, evt_w_snr_v_cal, evt_w_snr_h_rf, evt_w_snr_h_cal, bin_range_step
 
     print(message)
+
+def hist_2d(title
+            , xlabel, ylabel
+            , d_path
+            , file_name
+            , cmap_c = 'viridis'
+            , cbar_legend = None
+            , x_range = None, y_range = None
+            , x_dat = None, y_dat = None
+            , x_dat1 = None, y_dat1 = None, dat1_legend = None
+            , y_dat1_err = None, dat1_err_legend = None
+            , x_dat2 = None, y_dat2 = None, dat2_legend = None
+            , y_dat2_err = None, dat2_err_legend = None
+            , xmin = None, xmax = None
+            , ymin = None, ymax = None
+            , message = None):
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    plt.ylabel(ylabel, fontsize=25)
+    plt.xlabel(xlabel, fontsize=25)
+    plt.tick_params(axis='x', labelsize=20)
+    plt.tick_params(axis='y', labelsize=20)
+    plt.title(title, y=1.02,fontsize=15)
+
+    if x_dat is not None:
+        if x_range is not None:
+            cc = plt.hist2d(x_dat, y_dat, bins=(x_range, y_range), cmap=cmap_c,norm=LogNorm())
+        else:
+            cc = plt.hist2d(x_dat, y_dat, cmap=cmap_c,norm=LogNorm())
+    
+        cbar1 = plt.colorbar(cc[3], ax=ax)
+        cbar1.ax.tick_params(axis='y', labelsize=15)
+        if cbar_legend is not None:
+            cbar1.ax.set_ylabel(cbar_legend, fontsize=15)#, color= 'red')
+
+    if x_dat1 is not None:
+        plt.plot(x_dat1,y_dat1,'-',lw=3,color='red',alpha=0.8,label=dat1_legend)
+        if y_dat1_err is not None:
+            plt.fill_between(x_dat1, y_dat1-y_dat1_err, y_dat1+y_dat1_err, linestyle = '--', linewidth = 2, edgecolor = 'red', facecolor='none', alpha=0.8,label=dat1_err_legend)
+
+    if x_dat2 is not None:
+        plt.plot(x_dat2,y_dat2,'-',lw=3,color='magenta',alpha=0.8,label=dat2_legend)
+        if y_dat2_err is not None:
+            plt.fill_between(x_dat2, y_dat2-y_dat2_err, y_dat2+y_dat2_err, linestyle = '--', linewidth = 2, edgecolor = 'magenta', facecolor='none', alpha=0.8,label=dat2_err_legend)
+
+    if dat1_legend is not None or dat2_legend is not None or dat1_err_legend is not None or dat2_err_legend is not None:
+        plt.legend(loc='best',numpoints = 1 ,fontsize=10)
+
+    plt.grid(linestyle=':')
+    if ymin is not None:
+        plt.ylim(ymin,ymax)
+    if xmin is not None:
+        plt.xlim(xmin,xmax)
+    plt.tight_layout()
+
+    os.chdir(d_path)
+    fig.savefig(file_name,bbox_inches='tight')
+    #plt.show()
+    plt.close()
+    del fig#, ax, cc, cbar1
+ 
+    if message is not None:
+        print(message)
+
+def imshow_2d(title
+            , xlabel, ylabel
+            , d_path
+            , file_name
+            , cmap_c = 'viridis'
+            , cbar_legend = None
+            , x_range = None, y_range = None
+            , x_width = None, y_width = None
+            , xy_dat = None
+            , cmin = None, cmax = None
+            , xmin = None, xmax = None
+            , ymin = None, ymax = None
+            , message = None):
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    plt.ylabel(ylabel, fontsize=25)
+    plt.xlabel(xlabel, fontsize=25)
+    plt.grid(linestyle=':')
+    plt.tick_params(axis='x', labelsize=20)
+    plt.tick_params(axis='y', labelsize=20)
+    plt.title(title, y=1.02,fontsize=15)
+
+    if xy_dat is not None:
+        if x_range is not None:
+            cc = plt.imshow(xy_dat, interpolation='none',cmap= cmap_c
+                    #,norm=LogNorm()
+                    ,extent=[x_range.min()-x_width/2, x_range.max()+x_width/2, y_range.min()-y_width/2, y_range.max()+y_width/2]
+                    , aspect='auto')
+            if cmin is not None:
+                cc = plt.imshow(xy_dat, interpolation='none',cmap= cmap_c
+                        #,norm=LogNorm()
+                        ,vmin = cmin, vmax = cmax
+                        ,extent=[x_range.min()-x_width/2, x_range.max()+x_width/2, y_range.min()-y_width/2, y_range.max()+y_width/2]
+                        , aspect='auto')
+        else:
+            cc = plt.imshow(xy_dat, interpolation='none',cmap= cmap_c
+                    #,norm=LogNorm()
+                    #,extent=[x_range.min()-x_width/2, x_range.max()+x_width/2, y_range.min()-y_width/2, y_range.max()+y_width/2]
+                    , aspect='auto')
+            if cmin is not None:
+                cc = plt.imshow(xy_dat, interpolation='none',cmap= cmap_c
+                        #,norm=LogNorm()
+                        ,vmin = cmin, vmax = cmax
+                        #,extent=[x_range.min()-x_width/2, x_range.max()+x_width/2, y_range.min()-y_width/2, y_range.max()+y_width/2]
+                        , aspect='auto')
+
+        cbar1 = plt.colorbar(cc, ax=ax)
+        cbar1.ax.tick_params(axis='y', labelsize=15)
+        if cbar_legend is not None:
+            cbar1.ax.set_ylabel(cbar_legend, fontsize=15)#, color= 'red')
+
+    plt.grid(linestyle=':')
+    if ymin is not None:
+        plt.ylim(ymin,ymax)
+    if xmin is not None:
+        plt.xlim(xmin,xmax)
+    plt.tight_layout()
+
+    os.chdir(d_path)
+    fig.savefig(file_name,bbox_inches='tight')
+    #plt.show()
+    plt.close()
+    del fig#, ax, cc, cbar1
+
+    if message is not None:
+        print(message)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

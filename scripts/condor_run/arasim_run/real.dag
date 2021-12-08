@@ -1,0 +1,59 @@
+JOB job_0 ARA_job_real.sub 
+VARS job_0 data="/home/mkim/analysis/setup_file/setup_E-1/setup_random_SN_E-1_N100_R12km_rayl_crop.txt" ped="0" station="0"
+
+JOB job_1 ARA_job_real.sub
+VARS job_1 data="/home/mkim/analysis/setup_file/setup_E-1/setup_random_SN_E-1_N100_R12km_rayl_crop.txt" ped="1" station="1"
+
+JOB job_2 ARA_job_real.sub
+VARS job_2 data="/home/mkim/analysis/setup_file/setup_E-1/setup_random_SN_E-1_N100_R12km_rayl_crop.txt" ped="2" station="2"
+
+JOB job_3 ARA_job_real.sub
+VARS job_3 data="/home/mkim/analysis/setup_file/setup_E-1/setup_random_SN_E-1_N100_R12km_rayl_crop.txt" ped="3" station="3"
+
+JOB job_4 ARA_job_real.sub
+VARS job_4 data="/home/mkim/analysis/setup_file/setup_E-1/setup_random_SN_E-1_N100_R12km_rayl_crop.txt" ped="4" station="4"
+
+JOB job_5 ARA_job_real.sub
+VARS job_5 data="/home/mkim/analysis/setup_file/setup_E-1/setup_random_SN_E-1_N100_R12km_rayl_crop.txt" ped="5" station="5"
+
+JOB job_6 ARA_job_real.sub
+VARS job_6 data="/home/mkim/analysis/setup_file/setup_E-1/setup_random_SN_E-1_N100_R12km_rayl_crop.txt" ped="6" station="6"
+
+JOB job_7 ARA_job_real.sub
+VARS job_7 data="/home/mkim/analysis/setup_file/setup_E-1/setup_random_SN_E-1_N100_R12km_rayl_crop.txt" ped="7" station="7"
+
+JOB job_8 ARA_job_real.sub
+VARS job_8 data="/home/mkim/analysis/setup_file/setup_E-1/setup_random_SN_E-1_N100_R12km_rayl_crop.txt" ped="8" station="8"
+
+JOB job_9 ARA_job_real.sub
+VARS job_9 data="/home/mkim/analysis/setup_file/setup_E-1/setup_random_SN_E-1_N100_R12km_rayl_crop.txt" ped="9" station="9"
+
+JOB job_10 ARA_job_real.sub
+VARS job_10 data="/home/mkim/analysis/setup_file/setup_E-1/setup_random_SN_E-1_N100_R12km_rayl_crop.txt" ped="10" station="10"
+
+JOB job_11 ARA_job_real.sub
+VARS job_11 data="/home/mkim/analysis/setup_file/setup_E-1/setup_random_SN_E-1_N100_R12km_rayl_crop.txt" ped="11" station="11"
+
+JOB job_12 ARA_job_real.sub
+VARS job_12 data="/home/mkim/analysis/setup_file/setup_E-1/setup_random_SN_E-1_N100_R12km_rayl_crop.txt" ped="12" station="12"
+
+JOB job_13 ARA_job_real.sub
+VARS job_13 data="/home/mkim/analysis/setup_file/setup_E-1/setup_random_SN_E-1_N100_R12km_rayl_crop.txt" ped="13" station="13"
+
+JOB job_14 ARA_job_real.sub
+VARS job_14 data="/home/mkim/analysis/setup_file/setup_E-1/setup_random_SN_E-1_N100_R12km_rayl_crop.txt" ped="14" station="14"
+
+JOB job_15 ARA_job_real.sub
+VARS job_15 data="/home/mkim/analysis/setup_file/setup_E-1/setup_random_SN_E-1_N100_R12km_rayl_crop.txt" ped="15" station="15"
+
+JOB job_16 ARA_job_real.sub
+VARS job_16 data="/home/mkim/analysis/setup_file/setup_E-1/setup_random_SN_E-1_N100_R12km_rayl_crop.txt" ped="16" station="16"
+
+JOB job_17 ARA_job_real.sub
+VARS job_17 data="/home/mkim/analysis/setup_file/setup_E-1/setup_random_SN_E-1_N100_R12km_rayl_crop.txt" ped="17" station="17"
+
+JOB job_18 ARA_job_real.sub
+VARS job_18 data="/home/mkim/analysis/setup_file/setup_E-1/setup_random_SN_E-1_N100_R12km_rayl_crop.txt" ped="18" station="18"
+
+JOB job_19 ARA_job_real.sub
+VARS job_19 data="/home/mkim/analysis/setup_file/setup_E-1/setup_random_SN_E-1_N100_R12km_rayl_crop.txt" ped="19" station="19"
