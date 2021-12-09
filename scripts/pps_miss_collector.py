@@ -8,7 +8,7 @@ sys.path.append(curr_path+'/../')
 from tools.run import data_info_reader
 from tools.chunk_pps_miss import pps_miss_collector_dat
 
-def pps_miss_loader(CPath = curr_path, Data = None, Ped = None, Output = None):
+def pps_miss_loader(Data = None, Ped = None, Output = None):
 
     # collecting info
     Station, Run, Config, Year, Month, Date = data_info_reader(Data)
@@ -65,9 +65,7 @@ if __name__ == "__main__":
     ped=str(sys.argv[2])
     output=str(sys.argv[3])
 
-    pps_miss_loader(CPath = curr_path+'/..', Data = data, Ped = ped, Output = output)
-
-del curr_path
+    pps_miss_loader(Data = data, Ped = ped, Output = output)
 
 
 

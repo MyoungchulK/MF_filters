@@ -258,7 +258,7 @@ class analog_buffer_info_loader:
 
     def __init__(self, st, yrs, incl_cable_delay = False):
 
-        cap_name = f'/home/mkim/analysis/MF_filters/data/araAtriStation{st}SampleTimingNew.h5'
+        cap_name = os.getcwd() + f'../data/araAtriStation{st}SampleTimingNew.h5'
         cap_file = h5py.File(cap_name, 'r')
         self.num_idxs = cap_file['cap_arr'][:]
         self.idx_num_arr = cap_file['idx_arr_rm_overlap'][:]
