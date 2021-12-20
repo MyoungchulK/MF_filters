@@ -31,10 +31,10 @@ d_list, d_run_tot, d_run_range = file_sorter(d_path)
 del d_run_range
 
 # config array
-config_arr = np.array([], dtype = int)
-run_arr = np.copy(config_arr)
-evt_num = np.copy(config_arr)
-pps_miss = np.copy(config_arr)
+config_arr = []
+run_arr = []
+evt_num = []
+pps_miss = []
 raw_std = []
 bp_std = []
 
@@ -50,31 +50,68 @@ std_pps_after = np.copy(std_pps_before)
 bp_std_pps_before = np.copy(std_pps_before)
 bp_std_pps_after = np.copy(std_pps_before)
 
-evt_limit = 100
+evt_limit = 201
+est_len = 100
 
 for r in tqdm(range(len(d_run_tot))):
-  if r > len(d_run_tot)-100:
+  #if r < 10:
     if d_run_tot[r] in bad_runs:
         #print('bad run:',d_list[r],d_run_tot[r])
         continue
 
+    if d_run_tot[r] == 7100 or d_run_tot[r] == 2319 or d_run_tot[r] == 4827 or d_run_tot[r] == 4830 or d_run_tot[r] == 12589 or d_run_tot[r] == 8652:
+        continue
+    if d_run_tot[r] == 8596 or d_run_tot[r] == 8641 or d_run_tot[r] == 8643 or d_run_tot[r] == 8651 or d_run_tot[r] == 12548 or d_run_tot[r] == 12590:
+        continue
+
     hf = h5py.File(d_list[r], 'r')
+    evt_arr = np.full((est_len),np.nan,dtype=float)
+    evt = hf['rf_soft_evt_num'][:]
+    evt_idx = evt < evt_limit
+    evt_len_ori = np.count_nonzero(evt_idx.astype(int))
+    if evt_len_ori < 2:
+        continue
+    evt_len = evt_len_ori - 1
+    evt_arr[:evt_len] = evt[evt_idx][:-1]
+    evt_num.append(evt_arr)
+    del evt
+    
+    raw_arr = hf['wf_std'][:][:,evt_idx][:,:-1]
+    """    
+    if (raw_arr[2] > 100).any():
+        print(d_run_tot[r])
+    if (raw_arr[4] > 110).any():
+        print(d_run_tot[r])
+    if (raw_arr[7] > 125).any():
+        print(d_run_tot[r])
+    if (raw_arr[10] > 110).any():
+        print(d_run_tot[r])
+    if (raw_arr[14] > 110).any():
+        print(d_run_tot[r])
+    #if (raw_arr > 2500).any():
+    #    print(d_run_tot[r])       
 
-    config_arr = np.append(config_arr, hf['config'][2])
-    run_arr = np.append(run_arr, d_run_tot[r])
-    evt_arr = hf['rf_soft_evt_num'][:evt_limit - 1]
-    evt_num = np.append(evt_num, evt_arr)
+    """ 
+    bp_arr = hf['bp_wf_std'][:][:,evt_idx][:,:-1]
+    raw_run_arr = np.full((16,est_len), np.nan, dtype = float)
+    bp_run_arr = np.copy(raw_run_arr)
+    raw_run_arr[:, :evt_len] = raw_arr
+    bp_run_arr[:, :evt_len] = bp_arr
 
-    pps_num = hf['rf_soft_pps_number'][:evt_limit]
-    unix_t = hf['rf_soft_unix_time'][:evt_limit]
+    raw_std.append(raw_run_arr)
+    bp_std.append(bp_run_arr)
+
+    config = hf['config'][2]
+    config_arr.append(config)
+    run_arr.append(d_run_tot[r])
+
+    pps_num = hf['rf_soft_pps_number'][evt_idx]
+    unix_t = hf['rf_soft_unix_time'][evt_idx]
+    diff_arr = np.copy(evt_arr)
     diff = np.diff(pps_num) - np.diff(unix_t)
-    pps_miss = np.append(pps_miss, diff)
-
-    raw_arr = hf['wf_std'][:,:evt_limit - 1]
-    bp_arr = hf['bp_wf_std'][:,:evt_limit - 1]
-
-    raw_std.append(raw_arr)
-    bp_std.append(bp_arr)
+    diff[(diff > 50000) | (diff < -40000)] = 0
+    diff_arr[:evt_len] = diff
+    pps_miss.append(diff_arr)
 
     pps_cut = np.where(diff > 1)[0]
     if len(pps_cut) != 0:
@@ -92,8 +129,12 @@ for r in tqdm(range(len(d_run_tot))):
         for a in range(16):
             std_pps_after[:,a] += np.histogram(raw_arr[a], bins = std_bins)[0]
             bp_std_pps_after[:,a] += np.histogram(bp_arr[a], bins = std_bins)[0]    
-    del hf, pps_num, unix_t
-
+    del hf, pps_num, unix_t, diff, raw_arr, bp_arr, evt_idx, evt_len
+       
+run_arr = np.asarray(run_arr)
+config_arr = np.asarray(config_arr)
+evt_num = np.asarray(evt_num)
+pps_miss = np.asarray(pps_miss)
 raw_std = np.asarray(raw_std)
 bp_std = np.asarray(bp_std)
 
@@ -153,12 +194,11 @@ if not os.path.exists(p_path):
 os.chdir(p_path)
 print(p_path)
 
-for a in tqdm(range(16)):
-  #if a == ant:    
+def sctt_plot(ang, raw_std, pps_miss, evt_num, title, name):
 
     fig = plt.figure(figsize=(12, 8))
     ax = fig.gca(projection='3d')
-    ax.set_title(f'First Few Evts & PPS Miss Correlation A{Station} Ch{a}', y=1.06,fontsize=20)
+    ax.set_title(title, y=1.06,fontsize=20)
     ax.set_ylabel(r'Event #', labelpad = 20,fontsize=20)
     ax.set_xlabel(r'PPS Miss', labelpad = 20,fontsize=20)
     ax.set_zlabel(r'RMS [ $mV$ ]', labelpad = 10,fontsize=20)
@@ -166,26 +206,37 @@ for a in tqdm(range(16)):
     ax.tick_params(axis='x', labelsize=15)
     ax.tick_params(axis='y', labelsize=15)
     ax.tick_params(axis='z', labelsize=15)
-    ax.view_init(30, 130)
-    #ax.view_init(90, 0)
-    
-    std_arr = raw_std[:,a,:].flatten()
+    ax.view_init(ang[0],ang[1])
 
-    sctt = ax.scatter3D(pps_miss, evt_num, std_arr, c = std_arr, cmap='jet', s = 100, alpha = 0.8, marker='o')  
+    std_arr = raw_std.flatten()
+
+    sctt = ax.scatter3D(pps_miss, evt_num, std_arr, c = std_arr, s = 100, alpha = 0.8, marker='o')
     cbar1 = plt.colorbar(sctt, ax=ax, shrink = 0.5, aspect = 10, pad = 0.1,location = 'right')
     cbar1.ax.tick_params(axis='y', labelsize=15)
     cbar1.ax.set_ylabel(r'RMS [ $mV$ ]', fontsize=15)
-    
-    fig.savefig(f'{p_path}First_Few_Evts_PPS_Miss_Correlation_A{Station}_Ch{a}_3d.png',bbox_inches='tight')
+
+    fig.savefig(name,bbox_inches='tight')
     #plt.show()
     plt.close()
 
+for a in tqdm(range(16)):
+  #if a == ant:    
 
+    sctt_plot((30,130), raw_std[:,a,:], pps_miss, evt_num, 
+            f'First Few Evts & PPS Miss Correlation A{Station} Ch{a}',
+            f'{p_path}First_Few_Evts_PPS_Miss_Correlation_A{Station}_Ch{a}_3d.png')
 
+    sctt_plot((90,0), raw_std[:,a,:], pps_miss, evt_num,
+            f'First Few Evts & PPS Miss Correlation A{Station} Ch{a}',
+            f'{p_path}First_Few_Evts_PPS_Miss_Correlation_A{Station}_Ch{a}_3d_1.png')
 
+    sctt_plot((0,90), raw_std[:,a,:], pps_miss, evt_num,
+            f'First Few Evts & PPS Miss Correlation A{Station} Ch{a}',
+            f'{p_path}First_Few_Evts_PPS_Miss_Correlation_A{Station}_Ch{a}_3d_2.png')
 
-
-
+    sctt_plot((0,0), raw_std[:,a,:], pps_miss, evt_num,
+            f'First Few Evts & PPS Miss Correlation A{Station} Ch{a}',
+            f'{p_path}First_Few_Evts_PPS_Miss_Correlation_A{Station}_Ch{a}_3d_3.png')
 
 
 

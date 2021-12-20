@@ -26,7 +26,7 @@ def raw_wf_collector_dat(Data, Ped, Station, Year, sel_evts = None):
     # data config
     buffer_info = analog_buffer_info_loader(Station, Year, incl_cable_delay = True)
     buffer_info.get_int_time_info()
-    ara_root = ara_root_loader(Data, Ped, Station)
+    ara_root = ara_root_loader(Data, Ped, Station, Year)
     ara_uproot = ara_uproot_loader(Data)
     ara_uproot.get_sub_info()
     evt_num = ara_uproot.evt_num
@@ -37,13 +37,24 @@ def raw_wf_collector_dat(Data, Ped, Station, Year, sel_evts = None):
     if sel_evts is not None:
         sel_evt_idx = np.in1d(evt_num, sel_evts)
         sel_entries = entry_num[sel_evt_idx]
+        
+        #temp = np.copy(sel_evts)
+        #sel_evts = np.asarray(evt_num[np.where(entry_num == int(sel_evts))[0]])        
+        #sel_entries = np.asarray(np.copy(temp))
+
         print(f'Selected events are {sel_evts}')
         print(f'Selected entries are {sel_entries}')
+    else:
+        sel_entries = sel_entries[:20]
+        sel_evts = evt_num[sel_entries]
+        print(f'Selected events are {sel_evts}')
+        print(f'Selected entries are {sel_entries}')
+
     evt_len = len(sel_entries)
 
-    ts = ara_uproot.time_stamp[sel_entries]
-    pps = ara_uproot.pps_number[sel_entries]
-    unix = ara_uproot.unix_time[sel_entries]
+    ts = ara_uproot.time_stamp#[sel_entries]
+    pps = ara_uproot.pps_number#[sel_entries]
+    unix = ara_uproot.unix_time#[sel_entries]
 
     # wf interpolator
     wf_int = wf_interpolator()
@@ -92,8 +103,7 @@ def raw_wf_collector_dat(Data, Ped, Station, Year, sel_evts = None):
         ara_root.get_useful_evt()
 
         # buffer info
-        blk_idx_arr = ara_uproot.get_block_idx(sel_entries[evt], trim_1st_blk = True)
-        blk_idx_len = len(blk_idx_arr)
+        blk_idx_arr, blk_idx_len = ara_uproot.get_block_idx(sel_entries[evt], trim_1st_blk = True)
         blk_idx[:blk_idx_len, evt] = blk_idx_arr
 
         buffer_info.get_num_samp_in_blk(blk_idx_arr)
@@ -154,7 +164,7 @@ def raw_wf_collector_dat(Data, Ped, Station, Year, sel_evts = None):
             del raw_t, raw_v, wf_len, int_t, int_v, int_wf_len, bp_v, freq_evt, fft_len, int_fft_evt, bp_fft_evt
             del ele_t, ele_v, ele_len, int_ele_t, int_ele_v, int_ele_wf_len, ele_freq, ele_fft_len
         del blk_idx_arr, blk_idx_len
-    del evt_len, ara_root, ara_uproot, buffer_info, evt_num, entry_num, blk_est_range, wf_est_range, num_Ants, num_Samples, wf_int, dt, mf_package, ara_geom, ele_ch
+    del evt_len, ara_root, ara_uproot, buffer_info, entry_num, blk_est_range, wf_est_range, num_Ants, num_Samples, wf_int, dt, mf_package, ara_geom, ele_ch
 
     print('WF collecting is done!')
 
@@ -183,6 +193,7 @@ def raw_wf_collector_dat(Data, Ped, Station, Year, sel_evts = None):
             'mean_blk':mean_blk,
             'int_mean_blk':int_mean_blk,
             'bp_mean_blk':bp_mean_blk,
+            'evt_num':evt_num,
             'ts':ts,
             'pps':pps,
             'unix':unix}

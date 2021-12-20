@@ -1,290 +1,391 @@
 import os, sys
 import numpy as np
+import ROOT
 from tqdm import tqdm
+import h5py
 
 # custom lib
-from tools.antenna import antenna_info
 from tools.constant import ara_const
 
-v_off_thr = -20.
-h_off_thr = -12.
-_OffsetBlocksTimeWindowCut=10.
+#link AraRoot
+ROOT.gSystem.Load(os.environ.get('ARA_UTIL_INSTALL_DIR')+"/lib/libAraEvent.so")
 
 ara_const = ara_const()
 num_ddas = ara_const.DDA_PER_ATRI
 num_blocks = ara_const.BLOCKS_PER_DDA
+num_ants = ara_const.USEFUL_CHAN_PER_STATION
+num_strs = ara_const.DDA_PER_ATRI
 
-def pol_dt_maker(pol_type, v_dt_ns = 0.4, h_dt_ns = 0.625):
+def quick_qual_check(dat, evt_num, ser_val, flag_val = 0):
 
-    dt_pol = np.full(pol_type.shape, np.nan)
-    dt_pol[pol_type == 0] = v_dt_ns
-    dt_pol[pol_type == 1] = h_dt_ns
-    print('dt:',dt_pol)
+    idx = (dat != flag_val)
+    idx_len = np.count_nonzero(idx)
+    if idx_len > 0:
+        print(f'Qcut, {ser_val}:', idx_len, evt_num[idx])
+    del idx, idx_len
 
-    return dt_pol
+class pre_qual_cut_loader:
 
-"""
-def freq_glitch_finder(int_v, dt):
+    def __init__(self, st, ara_uproot, trim_1st_blk = False):
 
-    int_v_len = len(int_v)
-    fft = np.abs(np.fft.rfft(int_v))
-    fft_idx = np.arange(len(fft))
+        self.st = st
+        self.evt_num = ara_uproot.evt_num 
+        self.unix_time = ara_uproot.unix_time
+        self.irs_block_number = ara_uproot.irs_block_number
+        self.pps_number = ara_uproot.pps_number
+        #self.read_win = ara_uproot.read_win
+        self.remove_1_blk = int(trim_1st_blk)
+        self.blk_len_arr = ara_uproot.read_win//num_ddas - self.remove_1_blk
 
-    peak_idx, peak_abs = max_finder(fft_idx, fft)
-    peak_idx /= int_v_len*dt
-    peak_abs /= np.sqrt(int_v_len)
+    def get_bad_event_number(self):
+        
+        bad_evt_num = np.full((len(self.evt_num)), 0, dtype = int)
 
-    freq_glitch = np.array([peak_idx, peak_abs])
-    del int_v_len, fft, fft_idx, peak_idx, peak_abs
+        negative_idx = np.where(np.diff(self.evt_num) < 0)[0]
+        if len(negative_idx) > 0:
+            bad_evt_num[negative_idx[0] + 1:] = 1
+        del negative_idx
 
-    return freq_glitch
-"""
+        quick_qual_check(bad_evt_num, self.evt_num, 'bad evt num')
 
-def freq_glitch_error_chunk(data, limits = 0.12, num_ant = 2, flag_reverse = False):
+        return bad_evt_num
 
-    flag_ant_arr = (data < limits).astype(int)
-    flag_sum = np.nansum(flag_ant_arr, axis = 0)
-    flag_arr = np.full(flag_sum.shape, np.nan, dtype = float)
-    if flag_reverse == True:
-        flag_arr[flag_sum < num_ant] = 1
-    else:
-        flag_arr[flag_sum >= num_ant] = 1
-    del flag_sum
-
-    return flag_ant_arr, flag_arr
-
-
-"""def freq_glitch_error_chunk(freq_glitch, Station, unix_time):
-
-    band_limit = 0.12
-    freq_glitch_idx = np.copy(freq_glitch)
-
-    if Station == 3:
-
-        num_Ants = antenna_info()[2]
-        st_4_idx = np.where(num_Ants%4 == 3)[0]
-        unix_cut = unix_time > 1387451885
-        freq_glitch_idx[ant_idx, unix_cut] = np.nan
-        del num_Ants, st_4_idx, unix_cut
-    else:
-        pass
-
-    qual_num_tot = np.full(freq_glitch_idx.shape,0,dtype=int)
-    qual_num_tot[freq_glitch_idx < band_limit] = 1
-    qual_num_tot = np.nansum(qual_num_tot, axis = 0)
-    qual_num_tot[qual_num_tot < 4] = 0
-    qual_num_tot[qual_num_tot != 0] = 1
-    del freq_glitch_idx, band_limit
-
-    qcut_flag_chunk(qual_num_tot, 1, 'freq glitch (entry)')
-
-    return qual_num_tot
-"""
-
-def timing_error(time):
-
-    t_diff = np.diff(time)
-    is_timing_error = np.any(t_diff<0)
-    del t_diff
- 
-    if is_timing_error == True:
-        print('Qcut, timing')
-
-    return is_timing_error
-
-def timing_error_chunk(t_diff):
-
-    qual_num_tot = np.copy(t_diff)
-    qual_num_tot = np.nansum(qual_num_tot, axis = 0)
-    qual_num_tot[qual_num_tot != 0] = 1
-  
-    qcut_flag_chunk(qual_num_tot, 1, 'timing (entry)')
-    
-    return qual_num_tot
-
-def few_sample_error(raw_v, ideal_len):
-
-    d_len = len(raw_v)
-    if d_len != ideal_len:
-        is_few_sample_error = True
-        print('Qcut, few sample')
-        print(f'WF len:{d_len}, Sample len:{ideal_len}, Diff:{d_len-ideal_len}' )
-    else:
-        is_few_sample_error = False
-    del d_len, ideal_len
-    
-    return is_few_sample_error
-
-def few_sample_error_chunk(len_all, cap_num, trim_1st_blk = False):
-
-    num_Ants = antenna_info()[2]
-    dda_num = 4
-    remove_1_blk = int(trim_1st_blk) * dda_num
-
-    qual_num_tot = np.full(len_all.shape,0,dtype=int)
-    for evt in tqdm(range(len(blockVec))):
-        blk_arr = blockVec[evt][remove_1_blk::4]%2
-        for ant in range(num_Ants):
-            qual_num_tot[ant, evt] = np.nansum(cap_num[:,ant][blk_arr])
-
-    qual_num_tot -= len_all
-    qual_num_tot = np.nansum(qual_num_tot, axis = 0)
-    qual_num_tot[qual_num_tot != 0] = 1    
-
-    qcut_flag_chunk(qual_num_tot, 1, 'few sample (entry)')
-
-    return qual_num_tot
-
-def first_few_event_error(Station, unix_time, act_evt_num):
-
-    if Station == 2 and unix_time >= 1448485911 and act_evt_num <6:
-        is_first_five_event = True
-    elif Station == 3 and act_evt_num <6:
-        is_first_five_event = True
-    else:
-        is_first_five_event = False
-
-    return is_first_five_event
-
-class qual_cut_loader:
-
-    def __init__(self, evt_num):
-
-        self.evt_num = evt_num
-
-    def quick_check(self, dat, ser_val, flag_val = 0):
-
-        idx = np.where(dat != flag_val)[0]
-        if len(idx) > 0:
-            print(f'Qcut, {ser_val}:', self.evt_num[idx])
-        del idx
-
-    def bad_unix_time_evetns(self, st, unix_time):
+    def get_bad_unix_time_events(self):
 
         from tools.run import bad_unixtime
+
+        bad_unix_evts = np.full((len(self.unix_time)), 0, dtype = int)
+        for evt in range(len(self.unix_time)):
+            bad_unix_evts[evt] = bad_unixtime(self.st, self.unix_time[evt])
+
+        quick_qual_check(bad_unix_evts, self.evt_num, 'bad unix time')
+
+        return bad_unix_evts
         
-        bad_unix_flag = np.full((len(unix_time)), 0, dtype = int)
-        for evt in range(len(unix_time)):
-            bad_unix_flag[evt] = bad_unixtime(st, unix_time[evt])
+    def get_untagged_software_events(self, soft_blk_limit = 9):
 
-        self.quick_check(bad_unix_flag, 'bad unix time')
+        if np.any(self.unix_time >= 1514764800):
+            soft_blk_limit = 13
+        soft_blk_limit -= self.remove_1_blk
 
-        return bad_unix_flag
+        untagged_soft_evts = (self.blk_len_arr < soft_blk_limit).astype(int)
 
-    def first_few_events(self, st, unix_time, evt_num, few_limit = 7):
+        quick_qual_check(untagged_soft_evts, self.evt_num, 'untagged soft events')
 
-        first_few_flag = np.full((len(evt_num)), 0, dtype = int) 
-        if st == 2:
-            first_few_flag[(evt_num < few_limit) & (unix_time >= 1448485911)] = 1
-        elif st == 3:
-            first_few_flag[evt_num < few_limit] = 1   
+        return untagged_soft_evts
 
-        self.quick_check(first_few_flag, f'first {few_limit} events')
+    def get_zero_block_events(self, zero_blk_limit = 2):
 
-        return first_few_flag
+        zero_blk_limit -= self.remove_1_blk
 
-    def block_gap_events(self, irs_block_number, trim_1st_blk = True):
+        zero_blk_evts = (self.blk_len_arr < zero_blk_limit).astype(int)
 
-        remove_1_blk = int(trim_1st_blk)
+        quick_qual_check(zero_blk_evts, self.evt_num, 'zero block')
 
-        block_gap = np.full((len(irs_block_number)), 0, dtype = int)
-        
-        for evt in range(len(irs_block_number)):
-            irs_block_evt = irs_block_number[evt]
+        return zero_blk_evts
+
+    def get_block_gap_events(self):
+
+        blk_gap_evts = np.full((len(self.irs_block_number)), 0, dtype = int)
+
+        for evt in range(len(self.irs_block_number)):
+            irs_block_evt = self.irs_block_number[evt]
             first_block_idx = irs_block_evt[0]
             last_block_idx = irs_block_evt[-1]
-            block_diff = len(irs_block_evt)//num_ddas - remove_1_blk
+            block_diff = len(irs_block_evt)//num_ddas - 1
 
             if first_block_idx + block_diff != last_block_idx:
                 if num_blocks - first_block_idx + last_block_idx != block_diff:
-                    block_gap[evt] = 1
+                    blk_gap_evts[evt] = 1
             del irs_block_evt, first_block_idx, last_block_idx, block_diff
 
-        self.quick_check(block_gap, 'block gap')
+        quick_qual_check(blk_gap_evts, self.evt_num, 'block gap')
 
-        return block_gap
+        return blk_gap_evts
 
-    def few_block_events(self, irs_block_number, few_limit = 2, trim_1st_blk = True):
+    def get_pps_miss_events(self, first_evt_limit = 7, check_limit = 100, pps_reset = 65536):
 
-        remove_1_blk = int(trim_1st_blk)
+        pps_miss_evts = np.full((len(self.evt_num)), 0, dtype = int)
 
-        few_block = np.full((len(irs_block_number)), 0, dtype = int)
+        pps_num_temp = self.pps_number[:check_limit]
+        pps_reset_idx = np.where(np.diff(pps_num_temp) < 0)[0]
+        if len(pps_reset_idx) > 0:
+            pps_num_temp[pps_reset_idx[0]+1:] += pps_limit
 
-        for evt in range(len(irs_block_number)):
-            irs_block_evt = irs_block_number[evt]
-            block_diff = len(irs_block_evt)//num_ddas - remove_1_blk
-            if block_diff < few_limit:
-                few_block[evt] = 1
-            del irs_block_evt, block_diff
+        unix_time_temp = self.unix_time[:check_limit]
 
-        self.quick_check(few_block, 'few block')
+        incre_diff = np.diff(pps_num_temp) - np.diff(unix_time_temp)
 
-        return few_block
-
-    def run_pre_qual_cut(self, st, unix_time, evt_num, irs_block_number, num_cuts = 4):
-
-        pre_qual_cut = np.full((len(evt_num), num_cuts), 0, dtype = int)
-        pre_qual_cut[:,0] = self.bad_unix_time_evetns(st, unix_time)
-        #pre_qual_cut[:,1] = self.first_few_events(st, unix_time, evt_num)
-        pre_qual_cut[:,2] = self.block_gap_events(irs_block_number)
-        pre_qual_cut[:,3] = self.few_block_events(irs_block_number)
-
-        self.quick_check(np.nansum(pre_qual_cut, axis = 1), 'total pre qual cut!')
-
-        return pre_qual_cut
-
-def block_gap_error(rawEvt):
-
-    first_block = rawEvt.blockVec[0].getBlock()
-    last_block = rawEvt.blockVec[-1].getBlock()
-    block_diff = rawEvt.blockVec.size()//num_ddas - 1
-
-    if first_block + block_diff != last_block:
-        if num_blocks - first_block + last_block != block_diff:
-            print('gap error!!!')
-            return True
+        pps_cut = np.where(incre_diff > 1)[0]
+        if len(pps_cut) == 0 or pps_cut[-1] < first_evt_limit - 1:
+            if self.st == 2:
+                pps_miss_evts[(self.evt_num < first_evt_limit) & (self.unix_time >= 1448485911)] = 1
+            elif self.st == 3:
+                pps_miss_evts[self.evt_num < first_evt_limit] = 1
         else:
-            pass
+            pps_miss_evts[:pps_cut[-1] + 1] = 1
+        del pps_num_temp, pps_reset_idx, unix_time_temp, incre_diff, pps_cut
+
+        quick_qual_check(pps_miss_evts, self.evt_num, f'pps miss events')
+
+        return pps_miss_evts
+
+    def run_pre_qual_cut(self, merge_cuts = False):
+
+        tot_pre_qual_cut = np.full((len(self.evt_num), 6), 0, dtype = int)
+
+        tot_pre_qual_cut[:,0] = self.get_bad_event_number()
+        tot_pre_qual_cut[:,1] = self.get_bad_unix_time_events()
+        tot_pre_qual_cut[:,2] = self.get_untagged_software_events()
+        tot_pre_qual_cut[:,3] = self.get_zero_block_events()
+        tot_pre_qual_cut[:,4] = self.get_block_gap_events()
+        tot_pre_qual_cut[:,5] = self.get_pps_miss_events()
+        # time stamp cut
+
+        tot_pre_qual_cut_sum = np.nansum(tot_pre_qual_cut, axis = 1)
+        quick_qual_check(tot_pre_qual_cut_sum, self.evt_num, 'total pre qual cut!')
+
+        if merge_cuts == True:
+            return tot_pre_qual_cut_sum
+        else:
+            return tot_pre_qual_cut
+
+class post_qual_cut_loader:
+
+    def __init__(self, st, evt_num, dt = 0.5):
+
+        from tools.wf import wf_interpolator
+        self.wf_int = wf_interpolator(dt = dt)
+        self.dt = self.wf_int.dt
+        self.st = st
+        self.evt_num = evt_num
+        self.dead_bit_arr = self.get_dead_bit_range()
+
+        self.zero_adc_ratio = np.full((num_ants, len(evt_num)), np.nan, dtype = float)
+        self.freq_glitch_evts = np.copy(self.zero_adc_ratio) 
+        self.adc_offset_evts = np.copy(self.zero_adc_ratio)
+        self.timing_err_evts = np.full((num_ants, len(evt_num)), 0, dtype = int)
+        self.dead_bit_evts = np.copy(self.timing_err_evts)
+        # band pass cut(offset block)??
+        # spare
+        # cliff (time stamp)?
+        # cw (testbad, phase, anita)
+        # surface
+
+    def get_timing_error_events(self, raw_t):
+
+        timing_err_flag = int(np.any(np.diff(raw_t)<0))
+
+        return timing_err_flag
+
+    def get_zero_adc_events(self, raw_v, zero_adc_limit = 8):
+
+        wf_len = len(raw_v)
+        zero_ratio = np.count_nonzero(raw_v < zero_adc_limit)/wf_len
+        del wf_len
+
+        return zero_ratio
+
+    def get_freq_glitch_events(self, raw_t, raw_v):
+
+        int_v = self.wf_int.get_int_wf(raw_t, raw_v)[1]
+
+        fft_peak_idx = np.nanargmax(np.abs(np.fft.rfft(int_v)))
+        peak_freq = fft_peak_idx / (len(int_v) * self.dt)
+        del int_v, fft_peak_idx
+
+        return peak_freq
+
+    def get_adc_offset_events(self, raw_t, raw_v):
+
+        peak_freq = self.get_freq_glitch_events(raw_t, raw_v)
+
+        return peak_freq
+
+    def get_dead_bit_range(self, dead_bits = 2**7):
+
+        tot_bits = 2**12 # 4096
+
+        dead_bit_offset = np.arange(tot_bits/dead_bits, dtype = int)[1::2] * dead_bits
+
+        dead_bit_arr = np.arange(dead_bits, dtype = int)
+        dead_bit_arr = np.repeat(dead_bit_arr[:, np.newaxis], len(dead_bit_offset), axis=1)
+        dead_bit_arr += dead_bit_offset[np.newaxis, :]
+        dead_bit_arr = dead_bit_arr.flatten('F')
+        del tot_bits, dead_bit_offset
+
+        return dead_bit_arr
+
+    def get_dead_bit_events(self, raw_v):
+
+        dead_bit_bool = np.in1d(raw_v, self.dead_bit_arr, invert = True)
+        dead_bit_flag = int(np.all(dead_bit_bool))
+        del dead_bit_bool
+
+        return dead_bit_flag
+
+    def get_post_qual_cut(self, rawEvt, evt):
+
+        raw_adc_evt = ROOT.UsefulAtriStationEvent(rawEvt, ROOT.AraCalType.kOnlyGoodADC)
+        for ant in range(num_ants):
+            gr = raw_adc_evt.getGraphFromRFChan(ant)
+            raw_t = np.frombuffer(gr.GetX(),dtype=float,count=-1)
+            raw_v = np.frombuffer(gr.GetY(),dtype=float,count=-1)
+    
+            if len(raw_t) == 0:
+                return
+        
+            self.zero_adc_ratio[ant, evt] = self.get_zero_adc_events(raw_v)
+            self.timing_err_evts[ant, evt] = self.get_timing_error_events(raw_t)
+            if self.st == 3:
+                self.dead_bit_evts[ant, evt] = self.get_dead_bit_events(raw_v)
+
+            gr.Delete()
+            del gr, raw_t, raw_v
+        del raw_adc_evt
+
+        if np.nansum(self.timing_err_evts[:,evt]) > 0:
+            return
+
+        vol_evt = ROOT.UsefulAtriStationEvent(rawEvt, ROOT.AraCalType.kLatestCalib)
+        for ant in range(num_ants):
+            gr = vol_evt.getGraphFromRFChan(ant)
+            raw_t = np.frombuffer(gr.GetX(),dtype=float,count=-1)
+            raw_v = np.frombuffer(gr.GetY(),dtype=float,count=-1)            
+    
+            if self.dead_bit_evts[ant, evt] == 0:
+                self.freq_glitch_evts[ant, evt] = self.get_freq_glitch_events(raw_t, raw_v)
+
+            gr.Delete()
+            del gr, raw_t, raw_v
+        del vol_evt
+
+        """vol_evt_wo_zeromean = ROOT.UsefulAtriStationEvent(rawEvt, ROOT.AraCalType.kLatestCalibWithOutZeroMean)
+        for ant in range(num_ants):
+            gr = vol_evt_wo_zeromean.getGraphFromRFChan(ant)
+            raw_t = np.frombuffer(gr.GetX(),dtype=float,count=-1)
+            raw_v = np.frombuffer(gr.GetY(),dtype=float,count=-1)
+
+            if self.dead_bit_evts[ant, evt] == 0:
+                self.adc_offset_evts[ant, evt] = self.get_adc_offset_events(raw_t, raw_v)
+
+            gr.Delete()
+            del gr, raw_t, raw_v
+        del vol_evt_wo_zeromean"""
+
+    def get_string_flag(self, dat_bool, qual_name, st_limit = 2, comp_st_flag = False):
+
+        dat_int = dat_bool.astype(int)
+
+        flagged_events = np.full((num_strs, len(self.evt_num)), 0, dtype = int)
+        for string in range(num_strs):
+            dat_int_sum = np.nansum(dat_int[string::num_strs], axis = 0)
+            flagged_events[string] = (dat_int_sum > st_limit).astype(int)
+            del dat_int_sum
+        del dat_int
+
+        flagged_events_sum = np.nansum(flagged_events, axis = 0)
+        quick_qual_check(flagged_events_sum, self.evt_num, qual_name)
+
+        if comp_st_flag == True:
+            flagged_events_sum[flagged_events_sum != 0] = 1
+            return flagged_events_sum
+        else:       
+            del flagged_events_sum 
+            return flagged_events
+
+    def run_post_qual_cut(self, merge_cuts = False):
+
+        tot_post_qual_cut = np.full((len(self.evt_num), 4), 0, dtype = int)
+
+        ratio_limit = 0
+        tot_post_qual_cut[:,0] = self.get_string_flag(self.zero_adc_ratio > ratio_limit, 'zero_adc', comp_st_flag = True)
+        
+        low_freq_limit = 0.13
+        tot_post_qual_cut[:,1] = self.get_string_flag(self.freq_glitch_evts < low_freq_limit, 'freq glitch', comp_st_flag = True)
+        tot_post_qual_cut[:,2] = self.get_string_flag(self.adc_offset_evts < low_freq_limit, 'wf offset', comp_st_flag = True)
+
+        timing_err_sum = np.nansum(self.timing_err_evts, axis = 0)
+        timing_err_sum[timing_err_sum > 0] = 1
+        tot_post_qual_cut[:,3] = timing_err_sum
+        quick_qual_check(timing_err_sum, self.evt_num,'timing error')
+
+        tot_post_qual_cut_sum = np.nansum(tot_post_qual_cut, axis = 1)
+        quick_qual_check(tot_post_qual_cut_sum, self.evt_num,'total post qual cut!')
+
+
+        tot_st_post_qual_cut =  np.full((num_strs, len(self.evt_num),1), 0, dtype = int)
+        tot_st_post_qual_cut[:,:,0] = self.get_string_flag(self.dead_bit_evts, 'dead bit')
+
+        tot_st_post_qual_cut_sum = np.nansum(tot_st_post_qual_cut, axis = 2)
+        quick_qual_check(np.nansum(tot_st_post_qual_cut_sum, axis = 0), self.evt_num,'total string post qual cut!')
+        del ratio_limit, low_freq_limit, timing_err_sum
+
+        if merge_cuts == True:
+            return tot_post_qual_cut_sum, tot_st_post_qual_cut_sum
+        else:
+            return tot_post_qual_cut, tot_st_post_qual_cut
+
+
+def get_clean_events(pre_cut, post_cut, post_cut_st, 
+                    evt_num, entry_num, trig_type, trig_flag, qual_flag):
+
+    trig_flag = np.asarray(trig_flag)
+    tot_evt_cut = np.append(pre_cut, post_cut, axis = 1)
+    if 2 in trig_flag:
+        print('Untagged software WF filter is excluded!')
+        tot_evt_cut[:, 3] = 0
+    tot_evt_cut = np.nansum(tot_evt_cut, axis = 1)
+    tot_evt_st_cut = np.nansum(post_cut_st, axis = 2)
+
+    trig_idx = np.in1d(trig_type, trig_flag)
+    qual_flag = np.asarray(qual_flag)
+    qual_idx = np.in1d(tot_evt_cut, qual_flag)
+    del tot_evt_cut
+
+    tot_idx = (trig_idx & qual_idx)
+    clean_evt = evt_num[tot_idx]
+    clean_entry = entry_num[tot_idx]
+    clean_st = tot_evt_st_cut[:, tot_idx]
+    del trig_idx, qual_idx, tot_idx, tot_evt_st_cut
+
+    print('total # of clean event:',len(clean_evt))
+
+    return clean_evt, clean_entry, clean_st
+
+def get_qual_cut_results(Station, Run, trig_flag = None, qual_flag = None):
+
+    d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Qual_Cut/'
+    d_path += f'Qual_Cut_A{Station}_R{Run}.h5'
+    qual_file = h5py.File(d_path, 'r')
+    print(f'{d_path} is loaded!')
+
+    if (trig_flag is not None) and (qual_flag is not None):
+        pre_qual_cut = qual_file['pre_qual_cut'][:]
+        post_qual_cut = qual_file['post_qual_cut'][:]
+        post_st_qual_cut = qual_file['post_st_qual_cut'][:]
+        evt_num = qual_file['evt_num'][:]
+        entry_num = np.arange(len(evt_num), dtype = int)
+        trig_type = qual_file['trig_type'][:]
+
+        clean_evt, clean_entry, clean_st = get_clean_events(pre_qual_cut, post_qual_cut, post_st_qual_cut, 
+                                                            evt_num, entry_num, trig_type, trig_flag = trig_flag, qual_flag = qual_flag) 
+        del pre_qual_cut, post_qual_cut, post_st_qual_cut, evt_num, entry_num, trig_type
     else:
-        pass
-    del first_block, last_block, block_diff
+        clean_evt = qual_file['clean_evt'][:]        
+        clean_entry = qual_file['clean_entry'][:]        
+        clean_st = qual_file['clean_st'][:]        
+        print('total # of clean event:',len(clean_evt))
 
-    return False
+    if len(clean_evt) == 0:
+        print('There are no desired events!')
+        sys.exit(1)
 
-def cliff_error_chunk(cliff_medi, Station, unix_time):
+    del d_path, qual_file
 
-    if Station == 3:
+    return {'clean_evt':clean_evt, 'clean_entry':clean_entry, 'clean_st':clean_st}
 
-        num_Ants = antenna_info()[2]
-        st_4_idx = np.where(num_Ants%4 == 3)[0]
-
-        cliff_threshold_A3_string123= np.array([100,45,100])
-
-        medi_diff = np.abs(cliff_medi[1] - cliff_medi[0])
-        unix_cut = unix_time > 1387451885
-        medi_diff[ant_idx, unix_cut] = np.nan
-
-        st_num = 4
-        qual_num_tot = np.full((st_num, len(cliff_medi[0,0,:])),0,dtype=int)
-        for ant in range(num_Ants):
-            st_idx = ant%4
-            if st_idx == 3:
-                pass
-            else:
-                qual_num_tot[st_idx, medi_diff[ant] > cliff_threshold_A3_string123[st_idx]] += 1
-
-        qual_num_tot[qual_num_tot < 3] = 0
-        qual_num_tot = np.nansum(qual_num_tot, axis = 0)
-        qual_num_tot[qual_num_tot != 0] = 1
-        del medi_diff
-
-    else:
-        qual_num_tot = np.full((len(cliff_medi[0,0,:])),0,dtype=int)
-
-    qcut_flag_chunk(qual_num_tot, 1, 'cliff (entry)')
-
-    return qual_num_tot
-
+"""
 def offset_block_error_chunk(Station, unix_time, roll_mm, pol_type, v_off_thr = v_off_thr, h_off_thr = h_off_thr, off_time_cut = _OffsetBlocksTimeWindowCut):
 
     v_ch_idx = np.where(pol_type == 0)[0]
@@ -523,7 +624,7 @@ def ad_hoc_offset_blk(blk_mean, local_blk_idx, rf_entry_num):
     del st_num, ant_idx_range, off_blk_thr_flag, low_thr_ant, high_thr_ant
 
     return ex_flag
-
+"""
 
 
 

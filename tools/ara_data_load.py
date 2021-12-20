@@ -27,12 +27,13 @@ class ara_geom_loader:
         self.useful_ch_idx = np.arange(num_useful_chs) # need to changed
         self.st = st
         self.yrs = yrs
+        self.st_info = self.geomTool.getStationInfo(self.st, self.yrs)
 
     def get_ele_ch_idx(self):
 
         ele_ch_idx = np.full((num_useful_chs), 0, dtype = int)
         for ant in range(num_useful_chs):
-            ele_ch_idx[ant] = self.geomTool.getStationInfo(self.st, self.yrs).getAntennaInfo(ant).daqChanNum
+            ele_ch_idx[ant] = self.st_info.getAntennaInfo(ant).daqChanNum
         print('electronic channel:',ele_ch_idx)
         return ele_ch_idx
 
@@ -40,7 +41,7 @@ class ara_geom_loader:
 
         pol_ch_idx = np.full((num_useful_chs), 0, dtype = int)
         for ant in range(num_useful_chs):
-            pol_ch_idx[ant] = self.geomTool.getStationInfo(self.st, self.yrs).getAntennaInfo(ant).polType
+            pol_ch_idx[ant] = self.st_info.getAntennaInfo(ant).polType
         print('polarization type:',pol_ch_idx)
         return pol_ch_idx
 
@@ -48,7 +49,7 @@ class ara_geom_loader:
 
         trig_ch_idx = np.full((num_useful_chs), 0, dtype = int)
         for ant in range(num_useful_chs):
-            trig_ch_idx[ant] = self.geomTool.getStationInfo(self.st, self.yrs).getAntennaInfo(ant).getTrigChan()
+            trig_ch_idx[ant] = self.st_info.getAntennaInfo(ant).getTrigChan()
         print('trigger channel:',trig_ch_idx)
         return trig_ch_idx
 
@@ -56,18 +57,21 @@ class ara_geom_loader:
 
         ant_xyz = np.full((num_useful_chs), np.nan, dtype = float)
         for ant in range(num_useful_chs):
-            ant_xyz[ant] = self.geomTool.getStationInfo(self.st, self.yrs).getAntennaInfo(ant).antLocation
+            ant_xyz[ant] = self.st_info.getAntennaInfo(ant).antLocation
         return ant_xyz
 
     def get_cable_delay(self):
         cable_delay = np.full((num_useful_chs), np.nan, dtype = float)
         for ant in range(num_useful_chs):
-            cable_delay[ant] = self.geomTool.getStationInfo(self.st, self.yrs).getAntennaInfo(ant).getCableDelay()
+            cable_delay[ant] = self.st_info.getAntennaInfo(ant).getCableDelay()
         return cable_delay
 
 class ara_root_loader:
 
-    def __init__(self, data, ped, st):
+    def __init__(self, data, ped, st, yrs):
+
+        #geom info
+        self.ara_geom = ara_geom_loader(st, yrs)
 
         # open a data file
         self.file = ROOT.TFile.Open(data)
@@ -93,15 +97,15 @@ class ara_root_loader:
         # get the event
         self.evtTree.GetEntry(evt)
 
-    def get_useful_evt(self):
+    def get_useful_evt(self, cal_type = ara_const.kLatestCalib):
 
-        self.usefulEvt = ROOT.UsefulAtriStationEvent(self.rawEvt, ROOT.AraCalType.kLatestCalib)
+        self.usefulEvt = ROOT.UsefulAtriStationEvent(self.rawEvt, cal_type)
 
     def get_rf_ch_wf(self, ant):
 
-        gr = self.usefulEvt.getGraphFromRFChan(ant)
-        raw_t = np.frombuffer(gr.GetX(),dtype=float,count=-1)
-        raw_v = np.frombuffer(gr.GetY(),dtype=float,count=-1)
+        self.gr = self.usefulEvt.getGraphFromRFChan(ant)
+        raw_t = np.frombuffer(self.gr.GetX(),dtype=float,count=-1)
+        raw_v = np.frombuffer(self.gr.GetY(),dtype=float,count=-1)
 
         return raw_t, raw_v
 
@@ -120,7 +124,7 @@ class ara_root_loader:
 
     def del_usefulEvt(self):
 
-        self.usefulEvt.Delete()
+        #self.usefulEvt.Delete()
         del self.usefulEvt
 
     def get_sub_info(self):
@@ -218,6 +222,7 @@ class ara_uproot_loader:
         self.read_win = np.asarray(self.evtTree['event/numReadoutBlocks'],dtype=int)
         self.time_stamp = np.asarray(self.evtTree['event/timeStamp'],dtype=int)
         self.trigger_info = np.asarray(self.evtTree['event/triggerInfo[4]'],dtype=int)
+        self.trigger_blk = np.asarray(self.evtTree['event/triggerBlock[4]'],dtype=int)
         self.irs_block_number = np.asarray(self.evtTree['event/blockVec/blockVec.irsBlockNumber'])
         self.pps_number = np.asarray(self.evtTree['event/ppsNumber'],dtype=int)
 
@@ -247,18 +252,19 @@ class ara_uproot_loader:
         remove_1_blk = int(trim_1st_blk)
 
         blk_idx_arr = np.asarray(self.irs_block_number[evt][remove_1_blk*num_ddas::num_ddas], dtype = int)
+        blk_idx_len = len(blk_idx_arr)
 
         if modulo_2 == True:
             blk_idx_arr = blk_idx_arr%2
         del remove_1_blk
 
-        return blk_idx_arr
+        return blk_idx_arr, blk_idx_len
 
 class analog_buffer_info_loader:
 
     def __init__(self, st, yrs, incl_cable_delay = False):
 
-        cap_name = os.getcwd() + f'../data/araAtriStation{st}SampleTimingNew.h5'
+        cap_name = os.getcwd() + f'/../data/araAtriStation{st}SampleTimingNew.h5'
         cap_file = h5py.File(cap_name, 'r')
         self.num_idxs = cap_file['cap_arr'][:]
         self.idx_num_arr = cap_file['idx_arr_rm_overlap'][:]
@@ -463,6 +469,41 @@ class analog_buffer_info_loader:
         del amp_edge, high_edge, low_edge, amp_offset, samp_amp_round
 
         return samp_amp_2d, amp_range, samp_amp_range
+
+    def get_median_from_hist(self,freq, bins = None, bin_center = None, bin_width = None):
+
+        if bins is not None:
+            bins_arr = bins
+        if bin_center is not None:
+            bins_arr = bin_center
+        if (bins is not None) and (bin_center is not None):
+            bins_arr = bin_center
+            bins = None
+
+        if bin_width is None:
+            bin_width = np.diff(bins_arr)[0]
+
+        cum_freq = np.nancumsum(freq)
+        n_2 = cum_freq[-1]/2
+        lower_idx = cum_freq < n_2
+        F = np.nansum(freq[lower_idx])
+        f = freq[~lower_idx][0]
+        if bins is not None:
+            if np.any(lower_idx):
+                l = bins_arr[:-1][~lower_idx][0]
+            else:
+                l = bins_arr[0]
+        if bin_center is not None:
+            if np.any(lower_idx):
+                l = bins_arr[lower_idx][-1]
+            else:
+                l = bins_arr[0] - bin_width
+            l += bin_width/2
+
+        median_est = l + ((n_2 - F) / f) * bin_width
+        del cum_freq, n_2, lower_idx, F, f, l   
+ 
+        return median_est
 
 def chunk_range_maker(num_evts, chunk_size = 5000, chunk_i = None):
 
