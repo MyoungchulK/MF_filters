@@ -2,62 +2,41 @@ import os, sys
 import numpy as np
 from tqdm import tqdm
 
-def qual_cut_collector_dat(Data, Ped, Station, Year):
+def qual_cut_collector_dat(Data, Ped):
 
     print('Quality cut starts!')
 
     from tools.ara_data_load import ara_uproot_loader
     from tools.ara_data_load import ara_root_loader
-    from tools.qual import pre_qual_cut_loader
-    from tools.qual import post_qual_cut_loader
-    from tools.qual import get_clean_events
+    from tools.ara_quality_cut import qual_cut_loader
 
     # data config
-    ara_root = ara_root_loader(Data, Ped, Station, Year)
     ara_uproot = ara_uproot_loader(Data)
     ara_uproot.get_sub_info()
-    evt_num = ara_uproot.evt_num
-    entry_num = ara_uproot.entry_num
     num_evts = ara_uproot.num_evts
-    trig_type = ara_uproot.get_trig_type()
+    ara_root = ara_root_loader(Data, Ped, ara_uproot.station_id, ara_uproot.year)
 
     # quality cut config
-    ara_pre_qual = pre_qual_cut_loader(Station, ara_uproot, trim_1st_blk = True)
-    ara_post_qual = post_qual_cut_loader(Station, evt_num)
-    del ara_uproot
+    ara_qual = qual_cut_loader(ara_root, ara_uproot, trim_1st_blk = True)
 
     # pre quality cut
-    pre_qual_cut = ara_pre_qual.run_pre_qual_cut() 
-    del ara_pre_qual
+    pre_qual_cut = ara_qual.pre_qual.run_pre_qual_cut() 
 
     # loop over the events
     for evt in tqdm(range(num_evts)):
-      #if evt < 10:
-
-        # get entry
-        ara_root.get_entry(entry_num[evt])
-
+      #if evt<10:
         # post quality cut
-        ara_post_qual.get_post_qual_cut(ara_root.rawEvt, entry_num[evt]) 
-    del ara_root, num_evts
- 
+        ara_qual.post_qual.get_post_qual_cut(evt)
+
     # post quality cut
-    post_qual_cut, post_st_qual_cut = ara_post_qual.run_post_qual_cut()
-
-    # clean event
-    clean_evt, clean_entry, clean_st = get_clean_events(pre_qual_cut, post_qual_cut, post_st_qual_cut, evt_num, entry_num, trig_type, [0], [0])
-    del entry_num
-
+    post_qual_cut, post_st_qual_cut = ara_qual.post_qual.run_post_qual_cut()  
+    del ara_root, ara_uproot, num_evts, ara_qual
+ 
     print('Quality cut is done!')
 
-    return {'evt_num':evt_num,
-            'trig_type':trig_type,
-            'pre_qual_cut':pre_qual_cut,
+    return {'pre_qual_cut':pre_qual_cut,
             'post_qual_cut':post_qual_cut,
-            'post_st_qual_cut':post_st_qual_cut,
-            'clean_evt':clean_evt,
-            'clean_entry':clean_entry,
-            'clean_st':clean_st}
+            'post_st_qual_cut':post_st_qual_cut}
 
 
 

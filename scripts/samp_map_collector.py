@@ -6,7 +6,6 @@ import h5py
 curr_path = os.getcwd()
 sys.path.append(curr_path+'/../')
 from tools.run import data_info_reader
-from tools.qual import get_qual_cut_results
 from tools.chunk_samp_map import samp_map_collector_dat
 
 def samp_map_loader(Data = None, Ped = None, Output = None):
@@ -20,14 +19,8 @@ def samp_map_loader(Data = None, Ped = None, Output = None):
     #Month = 12
     #Date = 26
 
-    # check clean event
-    clean_info = get_qual_cut_results(Station, Run, trig_flag = [0,2], qual_flag = [0])
-    #clean_info = get_qual_cut_results(Station, Run)
-    for c in clean_info:
-        print(c, clean_info[c].shape)
-
     # collecting wf
-    results = samp_map_collector_dat(Data, Ped, Station, Year, clean_info = clean_info)
+    results = samp_map_collector_dat(Data, Ped)
     for r in results:
         print(r, results[r].shape)
 
@@ -44,7 +37,7 @@ def samp_map_loader(Data = None, Ped = None, Output = None):
     for r in results:
         hf.create_dataset(r, data=results[r], compression="gzip", compression_opts=9)
     del Station, Run, Config, Year, Month, Date
-    del results, clean_info
+    del results
 
     hf.close()
 

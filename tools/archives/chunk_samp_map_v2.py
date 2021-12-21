@@ -11,11 +11,12 @@ def samp_map_collector_dat(Data, Ped):
     from tools.ara_data_load import analog_buffer_info_loader
     from tools.ara_constant import ara_const
     from tools.ara_quality_cut import clean_event_loader
-    from tools.ara_wf_analyzer import hist_loader
 
     # geom. info.
     ara_const = ara_const()
     num_Ants = ara_const.USEFUL_CHAN_PER_STATION
+    num_Buffers = ara_const.SAMPLES_PER_DDA
+    num_Bits = ara_const.BUFFER_BIT_RANGE
     num_Strs = ara_const.DDA_PER_ATRI
 
     # data config
@@ -30,7 +31,7 @@ def samp_map_collector_dat(Data, Ped):
     del cleaner
 
     # output array
-    ara_hist = hist_loader()
+    samp_map = np.full((num_Buffers, num_Bits, num_Ants), 0, dtype = int)
     samp_peak = np.full((num_Ants, len(clean_evt)), np.nan, dtype = float)
 
     # loop over the events
@@ -55,17 +56,22 @@ def samp_map_collector_dat(Data, Ped):
             # stack in sample map
             samp_idx_ant = samp_idx[:,ant][~np.isnan(samp_idx[:,ant])].astype(int)
             raw_v = ara_root.get_rf_ch_wf(int(ant))[1].astype(int)
-            ara_hist.stack_in_hist(samp_idx_ant, raw_v, ant)
+            samp_map[samp_idx_ant, raw_v, ant] += 1
             samp_peak[ant, evt] = np.nanmax(np.abs(raw_v))
             del samp_idx_ant, raw_v
         del samp_idx
-    del ara_const, ara_root, ara_uproot, buffer_info, clean_ant, clean_entry, num_Strs, num_Ants, clean_st
+    del ara_const, ara_root, ara_uproot, clean_entry, num_Strs, clean_st
   
-    samp_medi = ara_hist.get_median_est()
-    samp_map = ara_hist.hist_map
-    buffer_bit_range = ara_hist.y_range
-    buffer_sample_range = ara_hist.x_range
-    del ara_hist
+    samp_medi = np.full((num_Buffers, num_Ants), np.nan, dtype = float)
+    buffer_bit_range = np.arange(num_Bits)
+    bin_width = np.diff(buffer_bit_range)[0]
+    for sam in tqdm(range(num_Buffers)):
+        for ant in clean_ant: 
+
+            samp_medi[sam, ant] = buffer_info.get_median_from_hist(samp_map[sam, :, ant], bin_center = buffer_bit_range, bin_width = bin_width)
+
+    buffer_sample_range = np.arange(num_Buffers)
+    del num_Ants, num_Buffers, num_Bits, bin_width, buffer_info, clean_ant
 
     print('WF collecting is done!')
 

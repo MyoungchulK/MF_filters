@@ -20,7 +20,7 @@ def qual_cut_loader(Data = None, Ped = None, Output = None):
     #Date = 26
 
     # collecting wf
-    results = qual_cut_collector_dat(Data, Ped, Station, Year)
+    results = qual_cut_collector_dat(Data, Ped)
     for r in results:
         print(r, results[r].shape)
 

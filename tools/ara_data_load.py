@@ -4,9 +4,11 @@ import h5py
 import uproot
 import ROOT
 from tqdm import tqdm
+from datetime import datetime
+import re
 
 # custom lib
-from tools.constant import ara_const
+from tools.ara_constant import ara_const
 
 #link AraRoot
 ROOT.gSystem.Load(os.environ.get('ARA_UTIL_INSTALL_DIR')+"/lib/libAraEvent.so")
@@ -24,10 +26,7 @@ class ara_geom_loader:
 
         # create a geomtool
         self.geomTool = ROOT.AraGeomTool.Instance()
-        self.useful_ch_idx = np.arange(num_useful_chs) # need to changed
-        self.st = st
-        self.yrs = yrs
-        self.st_info = self.geomTool.getStationInfo(self.st, self.yrs)
+        self.st_info = self.geomTool.getStationInfo(st, yrs)
 
     def get_ele_ch_idx(self):
 
@@ -209,7 +208,9 @@ class ara_uproot_loader:
             self.station_id = st_arr[0]
             self.num_evts = len(st_arr)
             self.entry_num = np.arange(len(st_arr))
-            del st_arr
+            run_str = re.findall(r'\d+', data[-11:-5])[0]
+            self.run = int(run_str)
+            del st_arr, run_str
         except uproot.exceptions.KeyInFileError:
             self.hasKeyInFileError = True
             print('File is currupted!')
@@ -225,6 +226,11 @@ class ara_uproot_loader:
         self.trigger_blk = np.asarray(self.evtTree['event/triggerBlock[4]'],dtype=int)
         self.irs_block_number = np.asarray(self.evtTree['event/blockVec/blockVec.irsBlockNumber'])
         self.pps_number = np.asarray(self.evtTree['event/ppsNumber'],dtype=int)
+
+        yyyymmdd_str = datetime.fromtimestamp(self.unix_time[0])
+        yyyymmdd = yyyymmdd_str.strftime('%Y%m%d%H%M%S')
+        self.year = int(yyyymmdd[:4]) 
+        del yyyymmdd_str, yyyymmdd
 
     def get_trig_type(self):
 
@@ -289,7 +295,7 @@ class analog_buffer_info_loader:
 
     def get_int_time_info(self, dt = 0.5):
 
-        from tools.wf import wf_interpolator
+        from tools.ara_wf_analyzer import wf_interpolator
         wf_int = wf_interpolator(dt = dt)
 
         self.num_int_idxs = np.full((2, num_useful_chs), 0, dtype = int)
@@ -415,95 +421,6 @@ class analog_buffer_info_loader:
         del remove_1_blk, cap_idx_arr, time_offset
 
         return time_0_in_blk 
-
-    def get_amp_range(self, amp_edge = 100, amp_bin_width = 1):
-
-        amp_range = np.arange(-1*amp_edge,amp_edge, amp_bin_width).astype(int)
-        high_edge = amp_range[-1]
-        low_edge = amp_range[0]
-        amp_offset = len(amp_range)//2
-
-        return amp_range, high_edge, low_edge, amp_offset
-
-    def get_mean_blk_2d(self, blk_idx, blk_mean, amp_edge = 100):
-
-        amp_range, high_edge, low_edge, amp_offset = self.get_amp_range(amp_edge = amp_edge)
-
-        blk_range = np.arange(num_blocks)
-        blk_len = np.count_nonzero(~np.isnan(blk_idx), axis = 0)
-        blk_mean_round = np.round(blk_mean).astype(int)
-
-        blk_mean_round[blk_mean_round > high_edge] = high_edge
-        blk_mean_round[blk_mean_round < low_edge] = low_edge
-        blk_mean_round += amp_offset
-
-        blk_mean_2d = np.full((num_blocks, len(amp_range), num_useful_chs), 0, dtype = int)
-        for evt in tqdm(range(blk_mean.shape[-1])):
-            blk_idx_evt = blk_idx[:blk_len[evt], evt].astype(int)
-            blk_mean_evt = blk_mean_round[:blk_len[evt], :, evt]
-            for ant in range(num_useful_chs):
-                blk_mean_2d[blk_idx_evt, blk_mean_evt[:, ant], ant] += 1
-            del blk_idx_evt, blk_mean_evt
-        del amp_edge, high_edge, low_edge, amp_offset, blk_mean_round, blk_len
-
-        return blk_mean_2d, amp_range, blk_range
-
-    def get_amp_samp_2d(self, samp_idx, samp_v, amp_edge = 1000):
-    
-        amp_range, high_edge, low_edge, amp_offset = self.get_amp_range(amp_edge = amp_edge)
-
-        samp_amp_range = np.arange(num_buffers)
-        samp_amp_round = np.round(samp_v)
-
-        samp_amp_round[samp_amp_round > high_edge] = high_edge
-        samp_amp_round[samp_amp_round < low_edge] = low_edge
-        samp_amp_round += amp_offset
-
-        samp_amp_2d = np.full((num_buffers, len(amp_range), num_useful_chs), 0, dtype = int)
-        for evt in tqdm(range(samp_v.shape[-1])):
-            for ant in range(num_useful_chs):
-                samp_idx_ch = samp_idx[:, ant, evt][~np.isnan(samp_idx[:, ant, evt])].astype(int)
-                samp_amp_ch = samp_amp_round[:, ant, evt][~np.isnan(samp_amp_round[:, ant, evt])].astype(int)
-                samp_amp_2d[samp_idx_ch, samp_amp_ch, ant] += 1
-                del samp_idx_ch, samp_amp_ch
-        del amp_edge, high_edge, low_edge, amp_offset, samp_amp_round
-
-        return samp_amp_2d, amp_range, samp_amp_range
-
-    def get_median_from_hist(self,freq, bins = None, bin_center = None, bin_width = None):
-
-        if bins is not None:
-            bins_arr = bins
-        if bin_center is not None:
-            bins_arr = bin_center
-        if (bins is not None) and (bin_center is not None):
-            bins_arr = bin_center
-            bins = None
-
-        if bin_width is None:
-            bin_width = np.diff(bins_arr)[0]
-
-        cum_freq = np.nancumsum(freq)
-        n_2 = cum_freq[-1]/2
-        lower_idx = cum_freq < n_2
-        F = np.nansum(freq[lower_idx])
-        f = freq[~lower_idx][0]
-        if bins is not None:
-            if np.any(lower_idx):
-                l = bins_arr[:-1][~lower_idx][0]
-            else:
-                l = bins_arr[0]
-        if bin_center is not None:
-            if np.any(lower_idx):
-                l = bins_arr[lower_idx][-1]
-            else:
-                l = bins_arr[0] - bin_width
-            l += bin_width/2
-
-        median_est = l + ((n_2 - F) / f) * bin_width
-        del cum_freq, n_2, lower_idx, F, f, l   
- 
-        return median_est
 
 def chunk_range_maker(num_evts, chunk_size = 5000, chunk_i = None):
 
