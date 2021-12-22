@@ -10,21 +10,6 @@ from tqdm import tqdm
 #from tools.wf import time_pad_maker
 #from tools.fft import freq_pad_maker
 
-class matched_filter_loader:
-
-    def get_band_pass_filter(self, low_freq_cut = 0.13, high_freq_cut = 0.85, order = 10, pass_type = 'band'):
-
-        self.nu, self.de = butter(order, [low_freq_cut, high_freq_cut], btype = pass_type)
-        self.de_pad = 3*len(self.nu)
-    
-    def get_band_passed_wf(self, volt):
-
-        if len(volt) < self.de_pad:
-            bp_wf = filtfilt(self.nu, self.de, volt, padlen = len(volt) - 1)
-        else:
-            bp_wf = filtfilt(self.nu, self.de, volt)
-
-        return bp_wf
 """
 def lag_pad_maker(dt_ns_scale = False):
 

@@ -11,8 +11,7 @@ def raw_wf_collector_dat(Data, Ped, Station, Year, sel_evts = None):
     from tools.ara_data_load import ara_root_loader
     from tools.ara_data_load import analog_buffer_info_loader
     from tools.ara_constant import ara_const
-    from tools.ara_wf_analyzer import wf_interpolator
-    from tools.mf import matched_filter_loader
+    from tools.ara_wf_analyzer import wf_analyzer
   
     # const. info.
     ara_const = ara_const()
@@ -44,14 +43,12 @@ def raw_wf_collector_dat(Data, Ped, Station, Year, sel_evts = None):
     ts = ara_uproot.time_stamp#[sel_entries]
     pps = ara_uproot.pps_number#[sel_entries]
     unix = ara_uproot.unix_time#[sel_entries]
+    trig_type = ara_uproot.get_trig_type()
 
     # wf interpolator
-    wf_int = wf_interpolator()
+    wf_int = wf_analyzer()
     dt = wf_int.dt 
-
-    # band pass filter
-    mf_package = matched_filter_loader()
-    mf_package.get_band_pass_filter()
+    wf_int.get_band_pass_filter()
 
     # output array
     blk_est_range = 50
@@ -118,7 +115,7 @@ def raw_wf_collector_dat(Data, Ped, Station, Year, sel_evts = None):
             int_wf_all[:int_wf_len, 0, ant, evt] = int_t
             int_wf_all[:int_wf_len, 1, ant, evt] = int_v
 
-            bp_v = mf_package.get_band_passed_wf(int_v)
+            bp_v = wf_int.get_int_wf(raw_t, raw_v, apply_band_pass = True)[1]
             bp_wf_all[:int_wf_len, 0, ant, evt] = int_t
             bp_wf_all[:int_wf_len, 1, ant, evt] = bp_v
 
@@ -153,8 +150,10 @@ def raw_wf_collector_dat(Data, Ped, Station, Year, sel_evts = None):
             rest_phase[:ele_fft_len, ant, evt] = np.fft.rfft(int_ele_v)
             del raw_t, raw_v, wf_len, int_t, int_v, int_wf_len, bp_v, freq_evt, fft_len, int_fft_evt, bp_fft_evt
             del ele_t, ele_v, ele_len, int_ele_t, int_ele_v, int_ele_wf_len, ele_freq, ele_fft_len
+            ara_root.del_TGraph()
         del blk_idx_arr, blk_idx_len
-    del evt_len, ara_root, ara_uproot, buffer_info, entry_num, blk_est_range, wf_est_range, num_Ants, num_Samples, wf_int, dt, mf_package, ele_ch
+        ara_root.del_usefulEvt()
+    del evt_len, ara_root, ara_uproot, buffer_info, entry_num, blk_est_range, wf_est_range, num_Ants, num_Samples, wf_int, dt, ele_ch
 
     print('WF collecting is done!')
 
@@ -186,7 +185,8 @@ def raw_wf_collector_dat(Data, Ped, Station, Year, sel_evts = None):
             'evt_num':evt_num,
             'ts':ts,
             'pps':pps,
-            'unix':unix}
+            'unix':unix,
+            'trig_type':trig_type}
 
 
 

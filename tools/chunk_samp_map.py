@@ -31,11 +31,15 @@ def samp_map_collector_dat(Data, Ped):
 
     # output array
     ara_hist = hist_loader()
+
     samp_peak = np.full((num_Ants, len(clean_evt)), np.nan, dtype = float)
+    from tools.ara_quality_cut import post_qual_cut_loader
+    post_qual = post_qual_cut_loader(ara_uproot,ara_root)
+    spikey_evts = post_qual.spikey_evts
 
     # loop over the events
     for evt in tqdm(range(len(clean_evt))):
-      #if clean_entry[evt] < 5000:
+      #if evt < 100:
         # get entry and wf
         ara_root.get_entry(clean_entry[evt])
         ara_root.get_useful_evt(ara_const.kOnlyGoodADC)
@@ -56,11 +60,26 @@ def samp_map_collector_dat(Data, Ped):
             samp_idx_ant = samp_idx[:,ant][~np.isnan(samp_idx[:,ant])].astype(int)
             raw_v = ara_root.get_rf_ch_wf(int(ant))[1].astype(int)
             ara_hist.stack_in_hist(samp_idx_ant, raw_v, ant)
-            samp_peak[ant, evt] = np.nanmax(np.abs(raw_v))
             del samp_idx_ant, raw_v
+            ara_root.del_TGraph()
         del samp_idx
+        ara_root.del_usefulEvt()
+
+        ara_root.get_useful_evt()
+        for ant in clean_ant:
+            raw_v = ara_root.get_rf_ch_wf(int(ant))[1]
+            samp_peak[ant, evt] = np.nanmax(np.abs(raw_v))
+            spikey_evts[ant, evt] = np.nanmax(np.abs(raw_v))
+            del raw_v
+            ara_root.del_TGraph()
+        ara_root.del_usefulEvt()
+
     del ara_const, ara_root, ara_uproot, buffer_info, clean_ant, clean_entry, num_Strs, num_Ants, clean_st
-  
+
+    spikey_ratio = post_qual.get_spikey_ratio(apply_bad_ant = True)
+    print(spikey_ratio)
+    del post_qual, spikey_evts
+
     samp_medi = ara_hist.get_median_est()
     samp_map = ara_hist.hist_map
     buffer_bit_range = ara_hist.y_range
@@ -73,7 +92,8 @@ def samp_map_collector_dat(Data, Ped):
             'buffer_sample_range':buffer_sample_range,
             'samp_map':samp_map, 
             'samp_medi':samp_medi,
-            'samp_peak':samp_peak, 
+            'samp_peak':samp_peak,
+            'spikey_ratio':spikey_ratio,
             'clean_evt':clean_evt}
 
 

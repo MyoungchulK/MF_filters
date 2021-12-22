@@ -295,8 +295,8 @@ class analog_buffer_info_loader:
 
     def get_int_time_info(self, dt = 0.5):
 
-        from tools.ara_wf_analyzer import wf_interpolator
-        wf_int = wf_interpolator(dt = dt)
+        from tools.ara_wf_analyzer import wf_analyzer
+        wf_int = wf_analyzer(dt = dt)
 
         self.num_int_idxs = np.full((2, num_useful_chs), 0, dtype = int)
         self.num_int_idxs_f = np.copy(self.num_int_idxs)

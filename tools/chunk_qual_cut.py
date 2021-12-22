@@ -24,7 +24,7 @@ def qual_cut_collector_dat(Data, Ped):
 
     # loop over the events
     for evt in tqdm(range(num_evts)):
-      #if evt<10:
+      #if evt<100:
         # post quality cut
         ara_qual.post_qual.get_post_qual_cut(evt)
 

@@ -279,13 +279,12 @@ class post_qual_cut_loader:
         if apply_bad_ant == True:
             self.spikey_evts[self.bad_ant] = np.nan
 
-        avg_st_snr = np.full((num_strs, len(self.evt_num)), np.nan, dtype = float)
+        avg_st_snr = np.full((num_strs, len(self.evt_num)), 0, dtype = float)
         for string in range(num_strs):
             avg_st_snr[string] = np.nanmean(self.spikey_evts[string::num_strs], axis = 0)
 
         rest_st = np.delete(np.arange(num_strs, dtype = int), sel_st) # well, index and element is identical...
         spikey_ratio = avg_st_snr[sel_st] / np.nanmean(avg_st_snr[rest_st], axis = 0)
-        #return spikey_ratio
         spikey_ratio_flag = (spikey_ratio > spikey_limit).astype(int)
         del avg_st_snr, rest_st, spikey_ratio
 

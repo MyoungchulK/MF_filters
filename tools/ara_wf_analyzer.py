@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.interpolate import Akima1DInterpolator
 #from scipy.signal import hilbert
+from scipy.signal import butter, filtfilt
 from tqdm import tqdm
 
 # custom lib
@@ -11,7 +12,7 @@ num_Ants = ara_const.USEFUL_CHAN_PER_STATION
 num_Buffers = ara_const.SAMPLES_PER_DDA
 num_Bits = ara_const.BUFFER_BIT_RANGE
 
-class wf_interpolator:
+class wf_analyzer:
 
     def __init__(self, dt = 0.5):
 
@@ -25,6 +26,11 @@ class wf_interpolator:
         self.time_pad_i = time_pad[0]
         self.time_pad_f = time_pad[-1]
 
+    def get_band_pass_filter(self, low_freq_cut = 0.13, high_freq_cut = 0.85, order = 10, pass_type = 'band'):
+
+        self.nu, self.de = butter(order, [low_freq_cut, high_freq_cut], btype = pass_type)
+        self.de_pad = 3*len(self.nu)
+
     def get_int_time(self, raw_ti, raw_tf):
 
         int_ti = self.dt * np.ceil((1/self.dt) * raw_ti)
@@ -37,7 +43,7 @@ class wf_interpolator:
         return int_t
 
     #Akima interpolation from python Akima1DInterpolator library
-    def get_int_wf(self, raw_t, raw_v):
+    def get_int_wf(self, raw_t, raw_v, apply_band_pass = False):
 
         # set time range
         int_t = self.get_int_time(raw_t[0], raw_t[-1])
@@ -47,11 +53,23 @@ class wf_interpolator:
         int_v = akima(int_t)
         del akima
 
+        if apply_band_pass == True:
+            int_v = self.get_band_passed_wf(int_v)
+
         return int_t, int_v
 
-    def get_padded_wf(self, raw_t, raw_v):
+    def get_band_passed_wf(self, volt):
 
-        int_t, int_v = self.get_int_wf(raw_t, raw_v)
+        if len(volt) < self.de_pad:
+            bp_wf = filtfilt(self.nu, self.de, volt, padlen = len(volt) - 1)
+        else:
+            bp_wf = filtfilt(self.nu, self.de, volt)
+
+        return bp_wf
+
+    def get_padded_wf(self, raw_t, raw_v, apply_band_pass = False):
+
+        int_t, int_v = self.get_int_wf(raw_t, raw_v, apply_band_pass = apply_band_pass)
         
         padded_wf = np.full((self.time_pad_len), 0, dtype = float)
         padded_wf[(int_t[0] - time_pad_i)//self.dt:(time_pad_f - int_t[-1])//self.dt] = int_v
