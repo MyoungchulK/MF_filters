@@ -1,0 +1,12 @@
+condor_submit_dag ARA02_2013.dag
+condor_submit_dag ARA02_2014.dag
+condor_submit_dag ARA02_2015.dag
+condor_submit_dag ARA02_2016.dag
+condor_submit_dag ARA02_2017.dag
+condor_submit_dag ARA02_2018.dag
+
+condor_submit_dag ARA03_2013.dag
+condor_submit_dag ARA03_2014.dag
+condor_submit_dag ARA03_2015.dag
+condor_submit_dag ARA03_2016.dag
+condor_submit_dag ARA03_2018.dag

@@ -110,9 +110,9 @@ class ara_root_loader:
 
     def get_ele_ch_wf(self, ch):
 
-        gr = self.usefulEvt.getGraphFromElecChan(ch)
-        raw_t = np.frombuffer(gr.GetX(),dtype=float,count=-1)
-        raw_v = np.frombuffer(gr.GetY(),dtype=float,count=-1)
+        self.gr = self.usefulEvt.getGraphFromElecChan(ch)
+        raw_t = np.frombuffer(self.gr.GetX(),dtype=float,count=-1)
+        raw_v = np.frombuffer(self.gr.GetY(),dtype=float,count=-1)
 
         return raw_t, raw_v
 

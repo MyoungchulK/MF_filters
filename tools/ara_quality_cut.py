@@ -181,21 +181,21 @@ class post_qual_cut_loader:
         # cw (testbad, phase, anita)
         # surface
 
-    def get_timing_error_events(self):
+    def get_timing_error_events(self, raw_t):
 
-        timing_err_flag = int(np.any(np.diff(self.raw_t)<0))
+        timing_err_flag = int(np.any(np.diff(raw_t)<0))
 
         return timing_err_flag
 
-    def get_zero_adc_events(self, zero_adc_limit = 8):
+    def get_zero_adc_events(self, raw_v, raw_len, zero_adc_limit = 8):
 
-        zero_ratio = np.count_nonzero(self.raw_v < zero_adc_limit)/self.raw_len
+        zero_ratio = np.count_nonzero(raw_v < zero_adc_limit)/raw_len
 
         return zero_ratio
 
-    def get_freq_glitch_events(self):
+    def get_freq_glitch_events(self, raw_t, raw_v):
 
-        int_v = self.wf_int.get_int_wf(self.raw_t, self.raw_v)[1]
+        int_v = self.wf_int.get_int_wf(raw_t, raw_v)[1]
 
         fft_peak_idx = np.nanargmax(np.abs(np.fft.rfft(int_v)))
         peak_freq = fft_peak_idx / (len(int_v) * self.dt)
@@ -203,9 +203,9 @@ class post_qual_cut_loader:
 
         return peak_freq
 
-    def get_adc_offset_events(self):
+    def get_adc_offset_events(self, raw_t, raw_v):
 
-        peak_freq = self.get_freq_glitch_events(self.raw_t, self.raw_v)
+        peak_freq = self.get_freq_glitch_events(raw_t, raw_v)
 
         return peak_freq
 
@@ -223,17 +223,17 @@ class post_qual_cut_loader:
 
         return dead_bit_arr
 
-    def get_dead_bit_events(self):
+    def get_dead_bit_events(self, raw_v):
 
-        dead_bit_bool = np.in1d(self.raw_v, self.dead_bit_arr, invert = True)
+        dead_bit_bool = np.in1d(raw_v, self.dead_bit_arr, invert = True)
         dead_bit_flag = int(np.all(dead_bit_bool))
         del dead_bit_bool
 
         return dead_bit_flag
 
-    def get_spikey_events(self):
+    def get_spikey_events(self, raw_v):
 
-        peak_v = np.nanmax(np.abs(self.raw_v))
+        peak_v = np.nanmax(np.abs(raw_v))
 
         return peak_v
 
@@ -243,20 +243,20 @@ class post_qual_cut_loader:
 
         self.ara_root.get_useful_evt(ara_const.kOnlyGoodADC)
         for ant in range(num_ants):
-            self.raw_t, self.raw_v = self.ara_root.get_rf_ch_wf(ant)
-            self.raw_len = len(self.raw_t) 
-            if self.raw_len == 0:
-                del self.raw_t, self.raw_v, self.raw_len
+            raw_t, raw_v = self.ara_root.get_rf_ch_wf(ant)
+            raw_len = len(raw_t) 
+            if raw_len == 0:
+                del raw_t, raw_v, raw_len
                 self.ara_root.del_TGraph()
                 self.ara_root.del_usefulEvt()
                 return
         
-            self.zero_adc_ratio[ant, evt] = self.get_zero_adc_events()
-            self.timing_err_evts[ant, evt] = self.get_timing_error_events()
+            self.zero_adc_ratio[ant, evt] = self.get_zero_adc_events(raw_v, raw_len)
+            self.timing_err_evts[ant, evt] = self.get_timing_error_events(raw_t)
             if self.st == 3:
-                self.dead_bit_evts[ant, evt] = self.get_dead_bit_events()
+                self.dead_bit_evts[ant, evt] = self.get_dead_bit_events(raw_v)
 
-            del self.raw_t, self.raw_v
+            del raw_t, raw_v, raw_len
             self.ara_root.del_TGraph()
         self.ara_root.del_usefulEvt()
 
@@ -265,12 +265,12 @@ class post_qual_cut_loader:
 
         self.ara_root.get_useful_evt()
         for ant in range(num_ants):
-            self.raw_t, self.raw_v = self.ara_root.get_rf_ch_wf(ant)   
+            raw_t, raw_v = self.ara_root.get_rf_ch_wf(ant)   
  
-            self.freq_glitch_evts[ant, evt] = self.get_freq_glitch_events()
-            self.spikey_evts[ant, evt] = self.get_spikey_events()
+            self.freq_glitch_evts[ant, evt] = self.get_freq_glitch_events(raw_t, raw_v)
+            self.spikey_evts[ant, evt] = self.get_spikey_events(raw_v)
 
-            del self.raw_t, self.raw_v
+            del raw_t, raw_v
             self.ara_root.del_TGraph()
         self.ara_root.del_usefulEvt()
 

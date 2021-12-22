@@ -2,7 +2,7 @@ log    = /scratch/mkim/MF_filters/ARA0$(station).Run$(run).log
 output = /scratch/mkim/MF_filters/ARA0$(station).Run$(run).out
 error  = /scratch/mkim/MF_filters/ARA0$(station).Run$(run).err
 
-request_memory = 2GB
+request_memory = 1GB
 
 Universe = vanilla
 getenv = true
