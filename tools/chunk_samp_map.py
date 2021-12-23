@@ -25,14 +25,20 @@ def samp_map_collector_dat(Data, Ped):
     ara_root = ara_root_loader(Data, Ped, ara_uproot.station_id, ara_uproot.year)
 
     # quality cut results
-    cleaner = clean_event_loader(ara_uproot, trig_flag = [0,2], qual_flag = [0])    
-    clean_evt, clean_entry, clean_st, clean_ant = cleaner.get_qual_cut_results()
-    del cleaner
+    #cleaner = clean_event_loader(ara_uproot, trig_flag = [0,2], qual_flag = [0])    
+    #clean_evt, clean_entry, clean_st, clean_ant = cleaner.get_qual_cut_results()
+    #del cleaner
+
+    clean_evt = ara_uproot.evt_num
+    clean_entry = ara_uproot.entry_num
+    clean_st = np.full((4,len(clean_evt)), 0, dtype = int)
+    clean_ant = np.arange(16, dtype = int)
 
     # output array
     ara_hist = hist_loader()
 
     samp_peak = np.full((num_Ants, len(clean_evt)), np.nan, dtype = float)
+    adc_medi = np.copy(samp_peak)
     from tools.ara_quality_cut import post_qual_cut_loader
     post_qual = post_qual_cut_loader(ara_uproot,ara_root)
     spikey_evts = post_qual.spikey_evts
@@ -42,7 +48,7 @@ def samp_map_collector_dat(Data, Ped):
       #if evt < 100:
         # get entry and wf
         ara_root.get_entry(clean_entry[evt])
-        ara_root.get_useful_evt(ara_const.kOnlyGoodADC)
+        ara_root.get_useful_evt(ara_root.cal_type.kOnlyGoodADC)
 
         # sample index
         blk_idx_arr = ara_uproot.get_block_idx(clean_entry[evt], trim_1st_blk = True)[0]
@@ -50,7 +56,7 @@ def samp_map_collector_dat(Data, Ped):
         del blk_idx_arr
 
         # loop over the antennas
-        for ant in clean_ant:
+        for ant in range(num_Ants):
 
             if clean_st[ant%num_Strs, evt] != 0:
                 print('not good string!', ant%num_Strs)
@@ -58,22 +64,27 @@ def samp_map_collector_dat(Data, Ped):
  
             # stack in sample map
             samp_idx_ant = samp_idx[:,ant][~np.isnan(samp_idx[:,ant])].astype(int)
-            raw_v = ara_root.get_rf_ch_wf(int(ant))[1].astype(int)
-            ara_hist.stack_in_hist(samp_idx_ant, raw_v, ant)
+            raw_v = ara_root.get_rf_ch_wf(ant)[1]
+            adc_medi[ant, evt] = np.nanmedian(raw_v)
+            ara_hist.stack_in_hist(samp_idx_ant, raw_v.astype(int), ant)
             del samp_idx_ant, raw_v
             ara_root.del_TGraph()
         del samp_idx
         ara_root.del_usefulEvt()
+            
+        ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
+        for ant in range(num_Ants):
+            raw_v = ara_root.get_rf_ch_wf(ant)[1]
 
-        ara_root.get_useful_evt()
-        for ant in clean_ant:
-            raw_v = ara_root.get_rf_ch_wf(int(ant))[1]
+            if len(raw_v) == 0:
+                continue
+
             samp_peak[ant, evt] = np.nanmax(np.abs(raw_v))
             spikey_evts[ant, evt] = np.nanmax(np.abs(raw_v))
             del raw_v
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()
-
+        
     del ara_const, ara_root, ara_uproot, buffer_info, clean_ant, clean_entry, num_Strs, num_Ants, clean_st
 
     spikey_ratio = post_qual.get_spikey_ratio(apply_bad_ant = True)
@@ -94,6 +105,7 @@ def samp_map_collector_dat(Data, Ped):
             'samp_medi':samp_medi,
             'samp_peak':samp_peak,
             'spikey_ratio':spikey_ratio,
+            'adc_medi':adc_medi,
             'clean_evt':clean_evt}
 
 

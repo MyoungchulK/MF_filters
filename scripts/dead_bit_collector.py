@@ -12,6 +12,12 @@ def dead_bit_loader(Data = None, Ped = None, Output = None):
 
     # collecting info
     Station, Run, Config, Year, Month, Date = data_info_reader(Data)
+    #Station = 3
+    #Run = 13030
+    #Config = -1
+    #Year = 2018
+    #Month = 12
+    #Date = 26
 
     # collecting wf
     results = dead_bit_collector_dat(Data, Ped)

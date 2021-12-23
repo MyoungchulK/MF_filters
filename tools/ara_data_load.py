@@ -91,14 +91,17 @@ class ara_root_loader:
         self.cal = ROOT.AraEventCalibrator.Instance()
         self.cal.setAtriPedFile(ped, st)
 
+        #calibration mode
+        self.cal_type = ROOT.AraCalType
+
     def get_entry(self, evt):
    
         # get the event
         self.evtTree.GetEntry(evt)
 
-    def get_useful_evt(self, cal_type = ara_const.kLatestCalib):
+    def get_useful_evt(self, cal_mode):
 
-        self.usefulEvt = ROOT.UsefulAtriStationEvent(self.rawEvt, cal_type)
+        self.usefulEvt = ROOT.UsefulAtriStationEvent(self.rawEvt, cal_mode)
 
     def get_rf_ch_wf(self, ant):
 

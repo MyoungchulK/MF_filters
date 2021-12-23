@@ -16,13 +16,12 @@ num_blocks = ara_const.BLOCKS_PER_DDA
 num_ants = ara_const.USEFUL_CHAN_PER_STATION
 num_strs = ara_const.DDA_PER_ATRI
 
-def quick_qual_check(dat, evt_num, ser_val, flag_val = 0):
+def quick_qual_check(dat_bool, dat_idx, ser_val):
 
-    idx = (dat != flag_val)
-    idx_len = np.count_nonzero(idx)
-    if idx_len > 0:
-        print(f'Qcut, {ser_val}:', idx_len, evt_num[idx])
-    del idx, idx_len
+    bool_len = np.count_nonzero(dat_bool)
+    if bool_len > 0:
+        print(f'Qcut, {ser_val}:', bool_len, dat_idx[dat_bool])
+    del bool_len
 
 class pre_qual_cut_loader:
 
@@ -46,7 +45,7 @@ class pre_qual_cut_loader:
             bad_evt_num[negative_idx[0] + 1:] = 1
         del negative_idx
 
-        quick_qual_check(bad_evt_num, self.evt_num, 'bad evt num')
+        quick_qual_check(bad_evt_num != 0, self.evt_num, 'bad evt num')
 
         return bad_evt_num
 
@@ -59,7 +58,7 @@ class pre_qual_cut_loader:
             bad_unix_evts[evt] = known_issue.get_bad_unixtime(self.unix_time[evt])
         del known_issue
 
-        quick_qual_check(bad_unix_evts, self.evt_num, 'bad unix time')
+        quick_qual_check(bad_unix_evts != 0, self.evt_num, 'bad unix time')
 
         return bad_unix_evts
         
@@ -71,7 +70,7 @@ class pre_qual_cut_loader:
 
         untagged_soft_evts = (self.blk_len_arr < soft_blk_limit).astype(int)
 
-        quick_qual_check(untagged_soft_evts, self.evt_num, 'untagged soft events')
+        quick_qual_check(untagged_soft_evts != 0, self.evt_num, 'untagged soft events')
 
         return untagged_soft_evts
 
@@ -81,7 +80,7 @@ class pre_qual_cut_loader:
 
         zero_blk_evts = (self.blk_len_arr < zero_blk_limit).astype(int)
 
-        quick_qual_check(zero_blk_evts, self.evt_num, 'zero block')
+        quick_qual_check(zero_blk_evts != 0, self.evt_num, 'zero block')
 
         return zero_blk_evts
 
@@ -100,7 +99,7 @@ class pre_qual_cut_loader:
                     blk_gap_evts[evt] = 1
             del irs_block_evt, first_block_idx, last_block_idx, block_diff
 
-        quick_qual_check(blk_gap_evts, self.evt_num, 'block gap')
+        quick_qual_check(blk_gap_evts != 0, self.evt_num, 'block gap')
 
         return blk_gap_evts
 
@@ -127,7 +126,7 @@ class pre_qual_cut_loader:
             pps_miss_evts[:pps_cut[-1] + 1] = 1
         del pps_num_temp, pps_reset_idx, unix_time_temp, incre_diff, pps_cut
 
-        quick_qual_check(pps_miss_evts, self.evt_num, f'pps miss events')
+        quick_qual_check(pps_miss_evts != 0, self.evt_num, f'pps miss events')
 
         return pps_miss_evts
 
@@ -144,7 +143,7 @@ class pre_qual_cut_loader:
         # time stamp cut
 
         tot_pre_qual_cut_sum = np.nansum(tot_pre_qual_cut, axis = 1)
-        quick_qual_check(tot_pre_qual_cut_sum, self.evt_num, 'total pre qual cut!')
+        quick_qual_check(tot_pre_qual_cut_sum != 0, self.evt_num, 'total pre qual cut!')
 
         if merge_cuts == True:
             return tot_pre_qual_cut_sum
@@ -241,7 +240,7 @@ class post_qual_cut_loader:
 
         self.ara_root.get_entry(evt)
 
-        self.ara_root.get_useful_evt(ara_const.kOnlyGoodADC)
+        self.ara_root.get_useful_evt(ara_root.cal_type.kOnlyGoodADC)
         for ant in range(num_ants):
             raw_t, raw_v = self.ara_root.get_rf_ch_wf(ant)
             raw_len = len(raw_t) 
@@ -263,7 +262,7 @@ class post_qual_cut_loader:
         if np.nansum(self.timing_err_evts[:,evt]) > 0:
             return
 
-        self.ara_root.get_useful_evt()
+        self.ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
         for ant in range(num_ants):
             raw_t, raw_v = self.ara_root.get_rf_ch_wf(ant)   
  
@@ -306,7 +305,7 @@ class post_qual_cut_loader:
         del dat_int
 
         flagged_events_sum = np.nansum(flagged_events, axis = 0)
-        quick_qual_check(flagged_events_sum, self.evt_num, qual_name)
+        quick_qual_check(flagged_events_sum != 0, self.evt_num, qual_name)
 
         if comp_st_flag == True:
             return flagged_events_sum
@@ -327,22 +326,22 @@ class post_qual_cut_loader:
 
         timing_err_sum = np.nansum(self.timing_err_evts, axis = 0)
         tot_post_qual_cut[:,3] = timing_err_sum
-        quick_qual_check(timing_err_sum, self.evt_num,'timing error')
+        quick_qual_check(timing_err_sum != 0, self.evt_num,'timing error')
 
         spikey_limit = 100000
         spkiey_ratio_flag = self.get_spikey_ratio(spikey_limit = spikey_limit, apply_bad_ant = True)
         tot_post_qual_cut[:,4] = spkiey_ratio_flag
-        quick_qual_check(spkiey_ratio_flag, self.evt_num,'spikey ratio')
+        quick_qual_check(spkiey_ratio_flag != 0, self.evt_num,'spikey ratio')
 
         tot_post_qual_cut_sum = np.nansum(tot_post_qual_cut, axis = 1)
-        quick_qual_check(tot_post_qual_cut_sum, self.evt_num,'total post qual cut!')
+        quick_qual_check(tot_post_qual_cut_sum != 0, self.evt_num,'total post qual cut!')
 
 
         tot_st_post_qual_cut =  np.full((num_strs, len(self.evt_num),1), 0, dtype = int)
         tot_st_post_qual_cut[:,:,0] = self.get_string_flag(self.dead_bit_evts, 'dead bit')
 
         tot_st_post_qual_cut_sum = np.nansum(tot_st_post_qual_cut, axis = 2)
-        quick_qual_check(np.nansum(tot_st_post_qual_cut_sum, axis = 0), self.evt_num,'total string post qual cut!')
+        quick_qual_check(np.nansum(tot_st_post_qual_cut_sum, axis = 0) != 0, self.evt_num,'total string post qual cut!')
         del ratio_limit, low_freq_limit, timing_err_sum, spkiey_ratio_flag
 
         if merge_cuts == True:
