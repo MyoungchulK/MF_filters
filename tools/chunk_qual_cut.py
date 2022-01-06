@@ -2,7 +2,7 @@ import os, sys
 import numpy as np
 from tqdm import tqdm
 
-def qual_cut_collector_dat(Data, Ped):
+def qual_cut_collector(Data, Ped):
 
     print('Quality cut starts!')
 
@@ -29,14 +29,13 @@ def qual_cut_collector_dat(Data, Ped):
         ara_qual.post_qual.get_post_qual_cut(evt)
 
     # post quality cut
-    post_qual_cut, post_st_qual_cut = ara_qual.post_qual.run_post_qual_cut()  
+    post_qual_cut = ara_qual.post_qual.run_post_qual_cut()  
     del ara_root, ara_uproot, num_evts, ara_qual
  
     print('Quality cut is done!')
 
     return {'pre_qual_cut':pre_qual_cut,
-            'post_qual_cut':post_qual_cut,
-            'post_st_qual_cut':post_st_qual_cut}
+            'post_qual_cut':post_qual_cut}
 
 
 

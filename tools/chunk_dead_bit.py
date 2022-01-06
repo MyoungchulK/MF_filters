@@ -47,7 +47,8 @@ def dead_bit_collector_dat(Data, Ped):
             # stack in sample map
             raw_v = ara_root.get_rf_ch_wf(ant)[1].astype(int)
             dead_bit[ant, evt] = post_qual.get_dead_bit_events(raw_v)
-            dead_bit_hist[ant] += np.histogram(raw_v, bins = dead_bit_bins)[0].astype(int)
+            if trig_type[evt] == 0:
+                dead_bit_hist[ant] += np.histogram(raw_v, bins = dead_bit_bins)[0].astype(int)
             del raw_v
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()

@@ -14,6 +14,7 @@ ara_const = ara_const()
 num_ddas = ara_const.DDA_PER_ATRI
 num_blocks = ara_const.BLOCKS_PER_DDA
 num_ants = ara_const.USEFUL_CHAN_PER_STATION
+num_strs = ara_const.DDA_PER_ATRI
 
 def quick_qual_check(dat_bool, dat_idx, ser_val):
 
@@ -31,9 +32,9 @@ class pre_qual_cut_loader:
         self.unix_time = ara_uproot.unix_time
         self.irs_block_number = ara_uproot.irs_block_number
         self.pps_number = ara_uproot.pps_number
+        #self.read_win = ara_uproot.read_win
         self.remove_1_blk = int(trim_1st_blk)
-        read_win = ara_uproot.read_win
-        self.blk_len_arr = read_win//num_ddas - self.remove_1_blk
+        self.blk_len_arr = ara_uproot.read_win//num_ddas - self.remove_1_blk
 
     def get_bad_event_number(self):
         
@@ -114,8 +115,35 @@ class pre_qual_cut_loader:
         quick_qual_check(first_few_evts != 0, self.evt_num, f'first few events')
 
         return first_few_evts
-    
-    def run_pre_qual_cut(self):
+    """
+    def get_pps_miss_events(self, first_evt_limit = 7, check_limit = 100, pps_reset = 65536):
+
+        pps_miss_evts = np.full((len(self.evt_num)), 0, dtype = int)
+
+        pps_num_temp = self.pps_number[:check_limit]
+        pps_reset_idx = np.where(np.diff(pps_num_temp) < 0)[0]
+        if len(pps_reset_idx) > 0:
+            pps_num_temp[pps_reset_idx[0]+1:] += pps_limit
+
+        unix_time_temp = self.unix_time[:check_limit]
+
+        incre_diff = np.diff(pps_num_temp) - np.diff(unix_time_temp)
+
+        pps_cut = np.where(incre_diff > 1)[0]
+        if len(pps_cut) == 0 or pps_cut[-1] < first_evt_limit - 1:
+            if self.st == 2:
+                pps_miss_evts[(self.evt_num < first_evt_limit) & (self.unix_time >= 1448485911)] = 1
+            elif self.st == 3:
+                pps_miss_evts[self.evt_num < first_evt_limit] = 1
+        else:
+            pps_miss_evts[:pps_cut[-1] + 1] = 1
+        del pps_num_temp, pps_reset_idx, unix_time_temp, incre_diff, pps_cut
+
+        quick_qual_check(pps_miss_evts != 0, self.evt_num, f'pps miss events')
+
+        return pps_miss_evts
+    """
+    def run_pre_qual_cut(self, merge_cuts = False):
 
         tot_pre_qual_cut = np.full((len(self.evt_num), 6), 0, dtype = int)
 
@@ -124,12 +152,17 @@ class pre_qual_cut_loader:
         tot_pre_qual_cut[:,2] = self.get_untagged_software_events()
         tot_pre_qual_cut[:,3] = self.get_zero_block_events()
         tot_pre_qual_cut[:,4] = self.get_block_gap_events()
+        """tot_pre_qual_cut[:,5] = self.get_pps_miss_events()"""
         tot_pre_qual_cut[:,5] = self.get_first_few_events()
         # time stamp cut
 
-        quick_qual_check(np.nansum(tot_pre_qual_cut, axis = 1) != 0, self.evt_num, 'total pre qual cut!')
+        tot_pre_qual_cut_sum = np.nansum(tot_pre_qual_cut, axis = 1)
+        quick_qual_check(tot_pre_qual_cut_sum != 0, self.evt_num, 'total pre qual cut!')
 
-        return tot_pre_qual_cut
+        if merge_cuts == True:
+            return tot_pre_qual_cut_sum
+        else:
+            return tot_pre_qual_cut
 
 class post_qual_cut_loader:
 
@@ -138,24 +171,28 @@ class post_qual_cut_loader:
         from tools.ara_wf_analyzer import wf_analyzer
         self.wf_int = wf_analyzer(dt = dt)
         self.dt = self.wf_int.dt
+        self.st = ara_uproot.station_id
+        self.run = ara_uproot.run
         self.evt_num = ara_uproot.evt_num
         self.ara_root = ara_root
-        self.st_arr = np.arange(num_ddas, dtype = int)
+        """self.dead_bit_arr = self.get_dead_bit_range()"""
 
-        known_issue = known_issue_loader(ara_uproot.station_id)
-        self.bad_ant = known_issue.get_bad_antenna(ara_uproot.run)
+        known_issue = known_issue_loader(self.st)
+        self.bad_ant = known_issue.get_bad_antenna(self.run)
         del known_issue
 
         self.zero_adc_ratio = np.full((num_ants, len(self.evt_num)), np.nan, dtype = float)
-        self.freq_glitch_evts = np.copy(self.zero_adc_ratio)
-        self.spikey_evts = np.full((len(self.evt_num)), np.nan, dtype = float) 
+        self.freq_glitch_evts = np.copy(self.zero_adc_ratio) 
+        self.adc_offset_evts = np.copy(self.zero_adc_ratio)
         self.timing_err_evts = np.full((num_ants, len(self.evt_num)), 0, dtype = int)
+        """self.dead_bit_evts = np.copy(self.timing_err_evts)"""
+        self.spikey_evts = np.copy(self.zero_adc_ratio)
         # spare
         # cliff (time stamp)?
         # overpower
         # band pass cut(offset block)??
         # cw (testbad, phase, anita)
-        # cal, surface
+        # surface
 
     def get_timing_error_events(self, raw_t):
 
@@ -179,42 +216,54 @@ class post_qual_cut_loader:
 
         return peak_freq
 
-    def get_spikey_ratio(self, dat_ant, sel_st = 0, apply_bad_ant = False):
+    def get_adc_offset_events(self, raw_t, raw_v):
 
-        if apply_bad_ant == True:
-            dat_ant[self.bad_ant] = np.nan
+        peak_freq = self.get_freq_glitch_events(raw_t, raw_v)
 
-        avg_st_snr = np.full((num_ddas), np.nan, dtype = float)
-        for string in range(num_ddas):
-            avg_st_snr[string] = np.nanmean(dat_ant[string::num_ddas])
+        return peak_freq
+    """
+    def get_dead_bit_range(self, dead_bits = 2**7):
 
-        rest_st = np.in1d(self.st_arr, sel_st, invert = True)
-        spikey_ratio = avg_st_snr[sel_st] / np.nanmean(avg_st_snr[rest_st])
-        del avg_st_snr, rest_st
+        tot_bits = 2**12 # 4096
+
+        dead_bit_offset = np.arange(tot_bits/dead_bits, dtype = int)[1::2] * dead_bits
+
+        dead_bit_arr = np.arange(dead_bits, dtype = int)
+        dead_bit_arr = np.repeat(dead_bit_arr[:, np.newaxis], len(dead_bit_offset), axis=1)
+        dead_bit_arr += dead_bit_offset[np.newaxis, :]
+        dead_bit_arr = dead_bit_arr.flatten('F')
+        del tot_bits, dead_bit_offset
+
+        return dead_bit_arr
+    
+    def get_dead_bit_events(self, raw_v):
+
+        dead_bit_bool = np.in1d(raw_v, self.dead_bit_arr, invert = True)
+        dead_bit_flag = int(np.all(dead_bit_bool))
+        del dead_bit_bool
+
+        return dead_bit_flag
+    """
+    def get_dead_bit_events(self):
+    
+        dead_bit_evts = np.full((num_ants, len(self.evt_num)), 0, dtype = int)
+        if self.st == 3 and self.run > 12865:
+            dead_bit_ant = np.array([0,4,8,12], dtype = int)
+            dead_bit_evts[dead_bit_ant] = 1
         
-        return spikey_ratio
+        return dead_bit_evts
 
-    def get_string_flag(self, dat_bool, st_limit = 2, apply_bad_ant = False):
+    def get_spikey_events(self, raw_v):
 
-        dat_int = dat_bool.astype(int)
+        peak_v = np.nanmax(np.abs(raw_v))
 
-        if apply_bad_ant == True:
-            dat_int[self.bad_ant] = 0
-
-        flagged_events = np.full(dat_int.shape, 0, dtype = int)
-        for string in range(num_ddas):
-            dat_int_sum = np.nansum(dat_int[string::num_ddas], axis = 0)
-            flagged_events[string::num_ddas] = (dat_int_sum > st_limit).astype(int)
-            del dat_int_sum
-        del dat_int
-
-        return flagged_events
+        return peak_v
 
     def get_post_qual_cut(self, evt):
 
         self.ara_root.get_entry(evt)
 
-        self.ara_root.get_useful_evt(self.ara_root.cal_type.kOnlyGoodADC)
+        self.ara_root.get_useful_evt(ara_root.cal_type.kOnlyGoodADC)
         for ant in range(num_ants):
             raw_t, raw_v = self.ara_root.get_rf_ch_wf(ant)
             raw_len = len(raw_t) 
@@ -226,48 +275,102 @@ class post_qual_cut_loader:
         
             self.zero_adc_ratio[ant, evt] = self.get_zero_adc_events(raw_v, raw_len)
             self.timing_err_evts[ant, evt] = self.get_timing_error_events(raw_t)
+            if self.st == 3:
+                self.dead_bit_evts[ant, evt] = self.get_dead_bit_events(raw_v)
+
             del raw_t, raw_v, raw_len
             self.ara_root.del_TGraph()
         self.ara_root.del_usefulEvt()
 
         if np.nansum(self.timing_err_evts[:,evt]) > 0:
             return
-        
-        self.ara_root.get_useful_evt(self.ara_root.cal_type.kLatestCalib)
-        v_peak = np.full((num_ants), np.nan, dtype = float)
+
+        self.ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
         for ant in range(num_ants):
             raw_t, raw_v = self.ara_root.get_rf_ch_wf(ant)   
  
             self.freq_glitch_evts[ant, evt] = self.get_freq_glitch_events(raw_t, raw_v)
-            v_peak[ant] = np.nanmax(np.abs(raw_v))
+            self.spikey_evts[ant, evt] = self.get_spikey_events(raw_v)
+
             del raw_t, raw_v
             self.ara_root.del_TGraph()
         self.ara_root.del_usefulEvt()
 
-        self.spikey_evts[evt] = self.get_spikey_ratio(v_peak, apply_bad_ant = True) 
-        del v_peak
+    def get_spikey_ratio(self, sel_st = 0, spikey_limit = 0, apply_bad_ant = False):
+        
+        if apply_bad_ant == True:
+            self.spikey_evts[self.bad_ant] = np.nan
 
-    def run_post_qual_cut(self):
+        avg_st_snr = np.full((num_strs, len(self.evt_num)), np.nan, dtype = float)
+        for string in range(num_strs):
+            avg_st_snr[string] = np.nanmean(self.spikey_evts[string::num_strs], axis = 0)
 
-        tot_post_qual_cut = np.full((num_ants, len(self.evt_num), 5), 0, dtype = int)
+        rest_st = np.delete(np.arange(num_strs, dtype = int), sel_st) # well, index and element is identical...
+        spikey_ratio = avg_st_snr[sel_st] / np.nanmean(avg_st_snr[rest_st], axis = 0)
+        #return spikey_ratio
+        spikey_ratio_flag = (spikey_ratio > spikey_limit).astype(int)
+        del avg_st_snr, rest_st, spikey_ratio
 
-        tot_post_qual_cut[self.bad_ant,:,0] = 1 # knwon bad antenna
-        tot_post_qual_cut[:,:,1] = np.nansum(self.timing_err_evts, axis = 0)[np.newaxis, :]
-        low_freq_limit = 0.13
-        tot_post_qual_cut[:,:,2] = self.get_string_flag(self.freq_glitch_evts < low_freq_limit, apply_bad_ant = True)
+        return spikey_ratio_flag
+
+    def get_string_flag(self, dat_bool, qual_name, st_limit = 2, comp_st_flag = False, apply_bad_ant = False):
+
+        dat_int = dat_bool.astype(int)
+    
+        if apply_bad_ant == True:
+            dat_int[self.bad_ant] = 0
+
+        flagged_events = np.full((num_strs, len(self.evt_num)), 0, dtype = int)
+        for string in range(num_strs):
+            dat_int_sum = np.nansum(dat_int[string::num_strs], axis = 0)
+            flagged_events[string] = (dat_int_sum > st_limit).astype(int)
+            del dat_int_sum
+        del dat_int
+
+        flagged_events_sum = np.nansum(flagged_events, axis = 0)
+        quick_qual_check(flagged_events_sum != 0, self.evt_num, qual_name)
+
+        if comp_st_flag == True:
+            return flagged_events_sum
+        else:       
+            del flagged_events_sum 
+            return flagged_events
+
+    def run_post_qual_cut(self, merge_cuts = False):
+
+        tot_post_qual_cut = np.full((len(self.evt_num), 5), 0, dtype = int)
+
         ratio_limit = 0
-        tot_post_qual_cut[:,:,3] = self.get_string_flag(self.zero_adc_ratio > ratio_limit, apply_bad_ant = True) 
+        tot_post_qual_cut[:,0] = self.get_string_flag(self.zero_adc_ratio > ratio_limit, 'zero_adc', comp_st_flag = True, apply_bad_ant = True)
+        
+        low_freq_limit = 0.13
+        tot_post_qual_cut[:,1] = self.get_string_flag(self.freq_glitch_evts < low_freq_limit, 'freq glitch', comp_st_flag = True, apply_bad_ant = True)
+        tot_post_qual_cut[:,2] = self.get_string_flag(self.adc_offset_evts < low_freq_limit, 'wf offset', comp_st_flag = True, apply_bad_ant = True)
+
+        timing_err_sum = np.nansum(self.timing_err_evts, axis = 0)
+        tot_post_qual_cut[:,3] = timing_err_sum
+        quick_qual_check(timing_err_sum != 0, self.evt_num,'timing error')
+
         spikey_limit = 100000
-        tot_post_qual_cut[:,:,4] = (self.spikey_evts > spikey_limit).astype(int)[np.newaxis, :]
+        spkiey_ratio_flag = self.get_spikey_ratio(spikey_limit = spikey_limit, apply_bad_ant = True)
+        tot_post_qual_cut[:,4] = spkiey_ratio_flag
+        quick_qual_check(spkiey_ratio_flag != 0, self.evt_num,'spikey ratio')
 
-        quick_qual_check(np.nansum(tot_post_qual_cut[:,:,0], axis = 0) != 0, self.evt_num, 'known bad antenna!')
-        quick_qual_check(np.nansum(tot_post_qual_cut[:,:,1], axis = 0) != 0, self.evt_num, 'timing issue!')
-        quick_qual_check(np.nansum(tot_post_qual_cut[:,:,2], axis = 0) != 0, self.evt_num, 'frequency glitch!')
-        quick_qual_check(np.nansum(tot_post_qual_cut[:,:,3], axis = 0) != 0, self.evt_num, 'zero adc ratio!')
-        quick_qual_check(np.nansum(tot_post_qual_cut[:,:,4], axis = 0) != 0, self.evt_num, 'spikey ratio!')
-        quick_qual_check(np.nansum(tot_post_qual_cut, axis = (0,2)) != 0, self.evt_num, 'total post qual cut!')
+        tot_post_qual_cut_sum = np.nansum(tot_post_qual_cut, axis = 1)
+        quick_qual_check(tot_post_qual_cut_sum != 0, self.evt_num,'total post qual cut!')
 
-        return tot_post_qual_cut
+
+        tot_st_post_qual_cut =  np.full((num_strs, len(self.evt_num),1), 0, dtype = int)
+        tot_st_post_qual_cut[:,:,0] = self.get_string_flag(self.dead_bit_evts, 'dead bit')
+
+        tot_st_post_qual_cut_sum = np.nansum(tot_st_post_qual_cut, axis = 2)
+        quick_qual_check(np.nansum(tot_st_post_qual_cut_sum, axis = 0) != 0, self.evt_num,'total string post qual cut!')
+        del ratio_limit, low_freq_limit, timing_err_sum, spkiey_ratio_flag
+
+        if merge_cuts == True:
+            return tot_post_qual_cut_sum, tot_st_post_qual_cut_sum
+        else:
+            return tot_post_qual_cut, tot_st_post_qual_cut
 
 class qual_cut_loader:
 
@@ -292,27 +395,33 @@ class clean_event_loader:
         self.trig_flag = np.asarray(trig_flag)
         self.qual_flag = np.asarray(qual_flag)
 
-    def get_clean_events(self, pre_cut, post_cut):
+        known_issue = known_issue_loader(self.st)
+        self.clean_ant = known_issue.get_good_antenna(self.run)
+        del known_issue
 
-        tot_pre_cut = np.copy(pre_cut)
+    def get_clean_events(self, pre_cut, post_cut, post_cut_st):
+
+        tot_evt_cut = np.append(pre_cut, post_cut, axis = 1)
         if 2 in self.trig_flag:
             print('Untagged software WF filter is excluded!')
-            tot_pre_cut[:, 2] = 0
-        tot_pre_cut = np.nansum(tot_pre_cut, axis = 1)
-        tot_post_cut = np.nansum(post_cut, axis = 2)
+            tot_evt_cut[:, 2] = 0
+        tot_evt_cut = np.nansum(tot_evt_cut, axis = 1)
+        tot_evt_st_cut = np.nansum(post_cut_st, axis = 2)
 
         trig_idx = np.in1d(self.trig_type, self.trig_flag)
-        qual_idx = np.in1d(tot_pre_cut, self.qual_flag)
-        tot_idx = (trig_idx & qual_idx)
+        qual_idx = np.in1d(tot_evt_cut, self.qual_flag)
+        del tot_evt_cut
 
+        tot_idx = (trig_idx & qual_idx)
         clean_evt = self.evt_num[tot_idx]
         clean_entry = self.entry_num[tot_idx]
-        clean_ant = tot_post_cut[:, tot_idx]
-        del trig_idx, qual_idx, tot_idx, tot_pre_cut, tot_post_cut
+        clean_st = tot_evt_st_cut[:, tot_idx]
+        del trig_idx, qual_idx, tot_idx, tot_evt_st_cut
 
+        print('total clean antenna:',self.clean_ant)
         print('total # of clean event:',len(clean_evt))
 
-        return clean_evt, clean_entry, clean_ant
+        return clean_evt, clean_entry, clean_st
 
     def get_qual_cut_results(self):
 
@@ -323,15 +432,258 @@ class clean_event_loader:
 
         pre_qual_cut = qual_file['pre_qual_cut'][:]
         post_qual_cut = qual_file['post_qual_cut'][:]
+        post_st_qual_cut = qual_file['post_st_qual_cut'][:]
             
-        clean_evt, clean_entry, clean_ant = self.get_clean_events(pre_qual_cut, post_qual_cut)
-        del d_path, qual_file, pre_qual_cut, post_qual_cut
+        clean_evt, clean_entry, clean_st = self.get_clean_events(pre_qual_cut, post_qual_cut, post_st_qual_cut)
+        del d_path, qual_file, pre_qual_cut, post_qual_cut, post_st_qual_cut
         
         if len(clean_evt) == 0:
             print('There are no desired events!')
             sys.exit(1)
 
-        return clean_evt, clean_entry, clean_ant
+        return clean_evt, clean_entry, clean_st, self.clean_ant
+
+"""
+def offset_block_error_chunk(Station, unix_time, roll_mm, pol_type, v_off_thr = v_off_thr, h_off_thr = h_off_thr, off_time_cut = _OffsetBlocksTimeWindowCut):
+
+    v_ch_idx = np.where(pol_type == 0)[0]
+    h_ch_idx = np.where(pol_type == 1)[0]
+    
+    thr_flag = np.full(roll_mm[0].shape,0,dtype=int)
+    v_thr_flag = np.copy(thr_flag[v_ch_idx])
+    h_thr_flag = np.copy(thr_flag[h_ch_idx])
+    v_thr_flag[-1*np.abs(roll_mm[0,v_ch_idx]) < v_off_thr] = 1
+    h_thr_flag[-1*np.abs(roll_mm[0,h_ch_idx]) < h_off_thr] = 1
+    thr_flag[v_ch_idx] = v_thr_flag
+    thr_flag[h_ch_idx] = h_thr_flag
+    del v_thr_flag, h_thr_flag
+ 
+    time_flag = np.copy(roll_mm[1])
+    time_flag[thr_flag != 1] = np.nan
+    
+    st_idx = np.array([0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3])
+    st_idx_len = 4
+    pol_type_len = 2
+    thr_flag_sum = np.full((pol_type_len, st_idx_len, len(roll_mm[0,0,:])),0,dtype=int)
+    time_flag_diff = np.full(thr_flag_sum.shape,np.nan)
+    for st in range(st_idx_len):
+        for pol in range(pol_type_len):
+
+             thr_flag_sum[pol,st,:] = np.nansum(thr_flag[(st_idx == st) & (pol_type == pol)], axis=0)
+             
+             time_flag_st_pol = time_flag[(st_idx == st) & (pol_type == pol)]
+             time_flag_diff[pol,st,:] = np.nanmax(time_flag_st_pol, axis=0) - np.nanmin(time_flag_st_pol, axis=0)
+             del time_flag_st_pol
+
+    del thr_flag, time_flag, v_ch_idx, h_ch_idx
+    
+    if Station == 3:
+        thr_flag_sum_3st = np.copy(thr_flag_sum[:,3])
+        thr_flag_sum_3st[:,unix_time > 1387451885] = 0
+        thr_flag_sum[:,3] = thr_flag_sum_3st
+        time_flag_diff_3st = np.copy(time_flag_diff[:,3])
+        time_flag_diff_3st[:,unix_time > 1387451885] = np.nan
+        time_flag_diff[:,3] = time_flag_diff_3st
+        off_time_cut = 20.
+        del thr_flag_sum_3st, time_flag_diff_3st
+    else:
+        pass
+
+    qual_num_tot = np.full((pol_type_len, st_idx_len, len(roll_mm[0,0,:])),0,dtype=int)
+    for st in range(st_idx_len):
+        qual_num_tot[0, st, ((thr_flag_sum[0,st] == 2) & (time_flag_diff[0,st] <= off_time_cut)) & ((thr_flag_sum[1,st] > 0) & (time_flag_diff[1,st] <= off_time_cut))] = 1
+        qual_num_tot[1, st, ((thr_flag_sum[0,st] > 0) & (time_flag_diff[0,st] <= off_time_cut)) & ((thr_flag_sum[1,st] == 2) & (time_flag_diff[1,st] <= off_time_cut))] = 1
+    del thr_flag_sum, time_flag_diff
+    qual_num_tot = np.nansum(qual_num_tot, axis = 0)
+    qual_num_tot[qual_num_tot > 1] = 1
+    qual_num_tot = np.nansum(qual_num_tot, axis = 0)
+    qual_num_tot[qual_num_tot < 2] = 0
+    qual_num_tot[qual_num_tot != 0] = 1
+   
+    qcut_flag_chunk(qual_num_tot, 1, 'offset block (entry)') 
+   
+    return qual_num_tot
+
+def offset_block_error_check(Station, unix_time, roll_mm, off_time_cut = _OffsetBlocksTimeWindowCut):
+
+    if Station == 3:
+        off_time_cut = 20.
+    else:
+        pass
+
+    #time
+    time_flag = np.copy(roll_mm[1])
+    if Station ==3:
+        time_flag_st3_ant0 = np.copy(time_flag[3])
+        time_flag_st3_ant1 = np.copy(time_flag[7])
+        time_flag_st3_ant2 = np.copy(time_flag[11])
+        time_flag_st3_ant3 = np.copy(time_flag[15])
+        time_flag_st3_ant0[unix_time > 1387451885] = np.nan
+        time_flag_st3_ant1[unix_time > 1387451885] = np.nan
+        time_flag_st3_ant2[unix_time > 1387451885] = np.nan
+        time_flag_st3_ant3[unix_time > 1387451885] = np.nan
+        time_flag[3] = np.copy(time_flag_st3_ant0)
+        time_flag[7] = np.copy(time_flag_st3_ant1)
+        time_flag[11] = np.copy(time_flag_st3_ant2)
+        time_flag[15] = np.copy(time_flag_st3_ant3)
+        del time_flag_st3_ant0, time_flag_st3_ant1, time_flag_st3_ant2, time_flag_st3_ant3
+
+    time_idx = np.full(time_flag.shape,0,dtype=int)
+
+    time_st0_pol0_diff = np.nanmax(np.array([time_flag[0],time_flag[4]]), axis = 0) - np.nanmin(np.array([time_flag[0],time_flag[4]]), axis = 0)
+    time_st0_pol1_diff = np.nanmax(np.array([time_flag[8],time_flag[12]]), axis = 0) - np.nanmin(np.array([time_flag[8],time_flag[12]]), axis = 0)
+
+    time_st1_pol0_diff = np.nanmax(np.array([time_flag[1],time_flag[5]]), axis = 0) - np.nanmin(np.array([time_flag[1],time_flag[5]]), axis = 0)
+    time_st1_pol1_diff = np.nanmax(np.array([time_flag[9],time_flag[13]]), axis = 0) - np.nanmin(np.array([time_flag[9],time_flag[13]]), axis = 0)
+
+    time_st2_pol0_diff = np.nanmax(np.array([time_flag[2],time_flag[6]]), axis = 0) - np.nanmin(np.array([time_flag[2],time_flag[6]]), axis = 0)
+    time_st2_pol1_diff = np.nanmax(np.array([time_flag[10],time_flag[14]]), axis = 0) - np.nanmin(np.array([time_flag[10],time_flag[14]]), axis = 0)
+
+    time_st3_pol0_diff = np.nanmax(np.array([time_flag[3],time_flag[7]]), axis = 0) - np.nanmin(np.array([time_flag[3],time_flag[7]]), axis = 0)
+    time_st3_pol1_diff = np.nanmax(np.array([time_flag[11],time_flag[15]]), axis = 0) - np.nanmin(np.array([time_flag[11],time_flag[15]]), axis = 0)
+    del time_flag
+
+    for ant in range(16):
+        time_idx_ant = np.copy(time_idx[ant])
+        if ant == 0 or ant == 4:
+            time_idx_ant[time_st0_pol0_diff <= off_time_cut] = 1
+            time_idx[ant] = np.copy(time_idx_ant)
+        if ant == 8 or ant == 12:
+            time_idx_ant[time_st0_pol1_diff <= off_time_cut] = 1
+            time_idx[ant] = np.copy(time_idx_ant)
+        if ant == 1 or ant == 5:
+            time_idx_ant[time_st1_pol0_diff <= off_time_cut] = 1
+            time_idx[ant] = np.copy(time_idx_ant)
+        if ant == 9 or ant == 13:
+            time_idx_ant[time_st1_pol1_diff <= off_time_cut] = 1
+            time_idx[ant] = np.copy(time_idx_ant)
+        if ant == 2 or ant == 6:
+            time_idx_ant[time_st2_pol0_diff <= off_time_cut] = 1
+            time_idx[ant] = np.copy(time_idx_ant)
+        if ant == 10 or ant == 14:
+            time_idx_ant[time_st2_pol1_diff <= off_time_cut] = 1
+            time_idx[ant] = np.copy(time_idx_ant)
+        if ant == 3 or ant == 7:
+            time_idx_ant[time_st3_pol0_diff <= off_time_cut] = 1
+            if Station == 3:
+                time_idx_ant[unix_time > 1387451885] = 0
+            time_idx[ant] = np.copy(time_idx_ant)
+        if ant == 11 or ant == 15:
+            time_idx_ant[time_st3_pol1_diff <= off_time_cut] = 1
+            if Station == 3:
+                time_idx_ant[unix_time > 1387451885] = 0
+            time_idx[ant] = np.copy(time_idx_ant)
+        del time_idx_ant
+    del time_st0_pol0_diff, time_st1_pol0_diff, time_st2_pol0_diff, time_st3_pol0_diff
+    del time_st0_pol1_diff, time_st1_pol1_diff, time_st2_pol1_diff, time_st3_pol1_diff
+
+
+    time_idx_st0 = np.nansum(np.array([time_idx[0],time_idx[4],time_idx[8],time_idx[12]]),axis=0)
+    time_idx_st1 = np.nansum(np.array([time_idx[1],time_idx[5],time_idx[9],time_idx[13]]),axis=0)
+    time_idx_st2 = np.nansum(np.array([time_idx[2],time_idx[6],time_idx[10],time_idx[14]]),axis=0)
+    time_idx_st3 = np.nansum(np.array([time_idx[3],time_idx[7],time_idx[11],time_idx[15]]),axis=0)
+
+    for ant in range(16):
+        time_idx_ant = np.copy(time_idx[ant])
+        if ant == 0 or ant == 4 or ant == 8 or ant == 12:
+            time_idx_ant[time_idx_st0 < 3] = 0
+            time_idx[ant] = np.copy(time_idx_ant)
+        if ant == 1 or ant == 5 or ant == 9 or ant == 13:
+            time_idx_ant[time_idx_st1 < 3] = 0
+            time_idx[ant] = np.copy(time_idx_ant)
+        if ant == 2 or ant == 6 or ant == 10 or ant == 14:
+            time_idx_ant[time_idx_st2 < 3] = 0
+            time_idx[ant] = np.copy(time_idx_ant)
+        if ant == 3 or ant == 7 or ant == 11 or ant == 15:
+            time_idx_ant[time_idx_st3 < 3] = 0
+            time_idx[ant] = np.copy(time_idx_ant)
+        del time_idx_ant
+    del time_idx_st0, time_idx_st1, time_idx_st2, time_idx_st3
+
+    roll_v = np.copy(roll_mm[0])
+    roll_v[time_idx == 0] = np.nan
+    del time_idx
+    return roll_v
+
+def ad_hoc_offset_blk(blk_mean, local_blk_idx, rf_entry_num):
+
+    st_num = 4
+    num_Ants = antenna_info()[2]
+    ant_idx_range = np.arange(num_Ants)
+    off_blk_ant = np.full((num_Ants, rf_entry_num), -1, dtype = int)
+    st_blk_flag = np.full((rf_entry_num), 0, dtype = int)
+    for evt in tqdm(range(rf_entry_num)):
+        evt_blk = local_blk_idx[:,evt]
+        for st in range(st_num):
+            if st != 3:
+                ant_idx = ant_idx_range[st::st_num]
+            else:
+                ant_idx = np.array([3,7,11])
+            st_blk = evt_blk[ant_idx]
+            if np.isnan(st_blk).all() == True:
+                continue
+            st_blk = st_blk.astype(int)
+            same_blk_counts = np.bincount(st_blk)
+            if np.nanmax(same_blk_counts) > 2:
+                same_blk_val = np.argmax(same_blk_counts)
+                st_blk[st_blk != same_blk_val] = -1
+                off_blk_ant[ant_idx,evt] = st_blk
+                st_blk_flag[evt] += 1
+
+            del ant_idx, st_blk, same_blk_counts
+        del evt_blk
+
+    st_blk_flag = np.repeat(st_blk_flag[np.newaxis, :], num_Ants, axis=0)
+
+    off_blk_flag = np.full(off_blk_ant.shape, 1, dtype = float)
+    off_blk_flag[off_blk_ant < 0] = np.nan
+    off_blk_flag[st_blk_flag < 1] = np.nan
+    del st_blk_flag, off_blk_ant
+
+    off_blk_thr_flag = np.full((rf_entry_num), 1, dtype = float)
+    low_thr_ant = np.array([-19,-11,-12,-20,
+                            -21,-11,-14,-20,
+                            -19,-10,-11,-21,
+                            -18, -9,-11, np.nan])
+    high_thr_ant = np.array([22, 12, 13, 19,
+                             23, 14, 16, 23,
+                             20, 13, 14, 23,
+                             20, 12, 13, np.nan])
+
+    for evt in tqdm(range(rf_entry_num)):
+        low_st_flag = 0
+        high_st_flag = 0
+        for st in range(st_num):
+            if st != 3:
+                ant_idx = ant_idx_range[st::st_num]
+            else:
+                ant_idx = np.array([3,7,11])
+
+            blk_val_flag = off_blk_flag[ant_idx,evt] * blk_mean[ant_idx,evt]
+
+            low_flag_sum = np.nansum((blk_val_flag <= low_thr_ant[ant_idx]).astype(int))
+            if low_flag_sum > 2:
+                low_st_flag +=1
+
+            high_flag_sum = np.nansum((blk_val_flag >= high_thr_ant[ant_idx]).astype(int))
+            if high_flag_sum > 2:
+                high_st_flag +=1
+
+            del ant_idx, blk_val_flag, low_flag_sum, high_flag_sum
+
+        if low_st_flag > 0:
+            off_blk_thr_flag[evt] = np.nan
+        if high_st_flag > 0:
+            off_blk_thr_flag[evt] = np.nan
+        del low_st_flag, high_st_flag
+
+    ex_flag = np.full(off_blk_thr_flag.shape, np.nan, dtype = float)
+    ex_flag[np.isnan(off_blk_thr_flag)] = 1
+    del st_num, ant_idx_range, off_blk_thr_flag, low_thr_ant, high_thr_ant
+
+    return ex_flag
+"""
+
 
 class known_issue_loader:
 
@@ -350,8 +702,8 @@ class known_issue_loader:
         if self.st ==  3:
             if run > 1901 and run < 10001:
                 bad_ant = np.array([3,7,11,15], dtype = int)# all D4 antennas
-            if run > 12865:
-                bad_ant = np.array([0,4,8,12], dtype = int) # all D1 antennas, dead bit issue
+            if run > 10000:
+                bad_ant = np.array([0,4,8,12,3], dtype = int) # all D1 antennas and D4TV
 
         return bad_ant
 
@@ -634,123 +986,10 @@ class known_issue_loader:
         bad_surface_run = self.get_bad_surface_run()
         bad_run = self.get_bad_run()
         knwon_bad_run = np.append(bad_surface_run, bad_run)
-        special_run = self.get_L0_to_L1_Processing_Special_run()
-        knwon_bad_run = np.append(knwon_bad_run, special_run)
-        del bad_surface_run, bad_run, special_run    
+        del bad_surface_run, bad_run    
         print(f'Total number of known bad runs are {len(knwon_bad_run)}')
 
         return knwon_bad_run
-
-    def get_L0_to_L1_Processing_Special_run(self):
-
-        # from http://ara.icecube.wisc.edu/wiki/index.php/Data_processing_and_storage_plan
-        # array for bad run
-        bad_run = np.array([], dtype=int)
-
-        if self.st == 2:
-    
-            # 2014
-            #bad_run = np.append(bad_run, [2848, 2975, 2978, 2979, 3080, 3097, 3099]) # Half disk runs
-            bad_run = np.append(bad_run, [3566, 2956, 2966, 2971, 4440, 2817, 2894, 2837, 2899, 
-                                        2847, 2842, 2817, 4143, 2877, 2946, 2951, 2922, 2920, 
-                                        2930, 2928, 2921, 2909, 2923, 2857, 2917, 2925, 2926, 
-                                        2936, 2927, 2867, 2929, 2817, 2827, 2887, 2832, 2976, 2981]) # small runs
-            #bad_run = np.append(bad_run, [2811, 2812, 2813, 2814, 2815, 2816, 2817, 2818, 2819]) # Moved runs
-
-            # 2015
-            #bad_run = np.append(bad_run, [4820, 4821, 4822, 4823, 4825]) # Half disk runs
-            bad_run = np.append(bad_run, [6166, 6141, 6042]) # small runs
-            #bad_run = np.append(bad_run, [4762, 4763]) # Moved runs
-            
-            # 2016
-            #bad_run = np.append(bad_run, []) # Half disk runs
-            bad_run = np.append(bad_run, [7674, 7678, 7680, 7673, 7681, 7676, 7679]) # small runs
-            #bad_run = np.append(bad_run, 6645) # Moved runs
-
-            # 2017
-            #bad_run = np.append(bad_run, [8530, 8575]) # Half disk runs
-            """bad_run = np.append(bad_run, [8761, 8752, 8758, 8755, 8757, 8753, 8751, 8748, 8750, 
-                                        8749, 8756, 8759, 8754, 8760, 1, 9044, 9049, 9047, 9050, 
-                                        9052, 9048, 9053, 9042, 9043, 9046, 9045, 9041, 9051, 8656, 8657]) # small runs"""
-            bad_run = np.append(bad_run, [8761, 8752, 8758, 8755, 8757, 8753, 8751, 8748, 8750,
-                                        8749, 8756, 8759, 8754, 8760, 9044, 9049, 9047, 9050,
-                                        9052, 9048, 9053, 9042, 9043, 9046, 9045, 9041, 9051, 8656, 8657]) # small runs
-            #bad_run = np.append(bad_run, []) # Moved runs
-            #bad_run = np.append(bad_run, 8530) # Duplicate runs
-
-            # 2018
-            #bad_run = np.append(bad_run, []) # Half disk runs
-            bad_run = np.append(bad_run, [9964, 9968, 9965, 9966, 9967, 9984, 9987, 9986, 9985, 9983, 12338, 9560, 
-                                        12040, 12042, 12043, 12041, 12044, 9769, 9778, 9834, 11632, 11630, 11628, 
-                                        11637, 11638, 11631, 11633, 11635, 11627, 11639, 11640, 11641, 11634, 11636, 
-                                        11629, 12528, 12529, 12436, 12465, 11274, 10435, 10440, 10441, 10434, 10439, 
-                                        10438, 10437, 10436, 9562, 9508, 12445, 12444, 11138, 11139, 11142, 11145, 
-                                        11140, 11144, 11141, 11143, 9772, 9795, 9777, 9779, 11256, 11252, 11240, 11249, 
-                                        11260, 11261, 11273, 11262, 11271, 11253, 11237, 11272, 11250, 11239, 11259, 
-                                        11235, 11246, 11242, 11238, 11258, 11265, 11267, 11247, 11255, 11263, 11241, 
-                                        11264, 11243, 11234, 11257, 11233, 11268, 11245, 11236, 11251, 11248, 11270, 
-                                        11266, 11269, 11254, 11244, 11136, 11129, 11137, 11135, 11134, 11133, 11130, 
-                                        11132, 11128, 11131, 9747, 9783, 9746, 9782, 11458, 11415, 11453, 11454, 11456, 
-                                        11410, 11439, 11451, 11428, 11429, 11452, 11449, 11434, 11412, 11417, 11441, 
-                                        11421, 11444, 11423, 11418, 11427, 11422, 11425, 11413, 11438, 11414, 11440, 
-                                        11442, 11420, 11446, 11432, 11457, 11430, 11426, 11455, 11416, 11459, 11448, 
-                                        11419, 11437, 11436, 11424, 11450, 11409, 11431, 11435, 11445, 11433, 11447, 
-                                        11411, 11443, 9776, 9774, 12586, 9781, 9770, 9824, 9833, 9835, 9836, 9842, 12315, 
-                                        12303, 12319, 12302, 12294, 12298, 12300, 12321, 12311, 12296, 12313, 12310, 
-                                        12297, 12306, 12309, 12295, 12320, 12308, 12317, 12301, 12305, 12318, 12304, 
-                                        12307, 12316, 12299, 12530, 9768, 9784, 9841, 9773, 9811, 12394, 12324, 12322, 
-                                        12323, 11027, 11028, 11041, 11032, 11035, 11024, 11022, 11023, 11034, 11029, 
-                                        11025, 11036, 11042, 11031, 11026, 11039, 11033, 11040, 11020, 11030, 11038, 
-                                        11037, 11021, 10794, 10796, 10797, 10795]) # small runs
-            #bad_run = np.append(bad_run, []) # Moved runs
-            #bad_run = np.append(bad_run, [12446, 11076, 9517, 9519, 9518, 9611, 9612]) # Duplicate runs
-            #bad_run = np.append(bad_run, []) # Bad directory structure runs
-
-        elif self.st == 3:
-
-            # 2014
-            #bad_run = np.append(bad_run, [2116, 2137, 2198]) # Half disk runs
-            bad_run = np.append(bad_run, [2012, 2017, 1957, 1962, 1947, 2165, 2078, 2058, 2053, 2063, 1992, 1967, 
-                                        1977, 1932, 2103, 1927, 1942, 1937, 2033, 2041, 2035, 2031, 2034, 2027]) # small runs
-            #bad_run = np.append(bad_run, [1922, 1924, 1925, 1926, 1927, 929]) # Moved runs
-
-            # 2015
-            """bad_run = np.append(bad_run, [3945, 3943, 3921, 3933, 3947, 3928, 3932, 3934, 3936, 3944, 3966, 3919, 
-                                        3942, 3972, 3953, 3957, 3961, 3927, 3971, 3974, 3925, 3962, 3951, 3965, 
-                                        3968, 3950, 3963, 3931, 3952, 3941, 3940, 3955, 3967, 3946, 3852, 3859, 
-                                        3849, 3858, 3847, 3844, 3851, 3854, 3848, 3855, 3860, 3845, 3853, 3850, 
-                                        3846, 3857, 3856]) # Half disk runs"""
-            #bad_run = np.append(bad_run, []) # small runs
-            #bad_run = np.append(bad_run, [3784, 3785]) # Moved runs
-
-            # 2016
-            #bad_run = np.append(bad_run, []) # Half disk runs
-            bad_run = np.append(bad_run, [6214, 6294, 6289, 6354, 6318, 6337, 6315, 6364, 6305, 6317, 6297, 6291]) # small runs
-            #bad_run = np.append(bad_run, 6159) # Moved runs
-
-            # 2018
-            #bad_run = np.append(bad_run, []) # Half disk runs
-            """bad_run = np.append(bad_run, [1304, 1288, 1304, 1288, 1300, 1302, 1658, 1654, 1662, 1652, 1688, 10066, 
-                                        1689, 1809, 1774, 1796, 1798, 1785, 1766, 1668, 1771, 1650, 1694, 1814, 1700, 
-                                        1686, 1770, 1763, 1791, 1690, 1804, 1767, 1786, 1783, 1680, 1795, 1776, 1775, 
-                                        1768, 1808, 1773, 1788, 1790, 1806, 1779, 1801, 1717, 1799, 1781, 1789, 1764, 
-                                        1811, 1685, 1769, 1671, 1687, 1765, 1805, 1800, 1663, 1675, 1793, 1803, 1780, 
-                                        1784, 82643, 102, 103, 1778, 1684, 1706, 1794, 1810, 10169, 12884, 1360, 1664, 
-                                        1661, 1304, 1288, 1300, 1302, 13040, 1347, 12759, 12925, 1352, 1660, 1345, 
-                                        11933, 11934]) # small runs"""
-            bad_run = np.append(bad_run, [10066,
-                                        82643, 10169, 12884,
-                                        13040, 12759, 12925,
-                                        11933, 11934]) # small runs
-            #bad_run = np.append(bad_run, []) # Moved runs
-            #bad_run = np.append(bad_run, [1726, 1747, 12884, 11335, 1746, 10002, 10029, 10028, 10004, 10020]) # Duplicate runs
-            #bad_run = np.append(bad_run, []) # Bad directory structure runs
-            #bad_run = np.append(bad_run, [1643, 1646, 1726, 1727, 10035, 10042, 10043, 10051, 10052, 10053]) # Consolidated L1 pieces
-
-        else:
-            pass
-
-        return bad_run
 
     def get_bad_surface_run(self):
 

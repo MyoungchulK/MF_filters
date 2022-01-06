@@ -140,3 +140,10 @@ class hist_loader:
                 medi_est[x, ant] = self.get_median_from_hist(x, ant)
 
         return medi_est
+
+def bin_range_maker(data, data_width):
+
+    data_bins = np.linspace(data[0], data[-1], data_width + 1)
+    data_bin_center = (data_bins[1:] + data_bins[:-1]) * 0.5
+
+    return data_bins, data_bin_center

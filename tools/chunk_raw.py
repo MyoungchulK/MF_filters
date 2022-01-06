@@ -86,8 +86,8 @@ def raw_wf_collector_dat(Data, Ped, Station, Year, sel_evts = None):
         
         # get entry and wf
         ara_root.get_entry(sel_entries[evt])
-        #ara_root.get_useful_evt(ara_root.cal_type.kOnlyGoodADC)
-        ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
+        ara_root.get_useful_evt(ara_root.cal_type.kOnlyGoodADC)
+        #ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
 
         # buffer info
         blk_idx_arr, blk_idx_len = ara_uproot.get_block_idx(sel_entries[evt], trim_1st_blk = True)
