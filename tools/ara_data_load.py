@@ -269,6 +269,123 @@ class ara_uproot_loader:
 
         return blk_idx_arr, blk_idx_len
 
+class ara_Hk_uproot_loader:
+
+    def __init__(self, data):
+
+        file = uproot.open(data)
+
+        self.hasKeyInFileError = False
+        try:
+            self.evtTree = file['sensorHkTree']
+            st_arr = np.asarray(self.evtTree['sensorHk/RawAraGenericHeader/stationId'],dtype=int)
+            self.station_id = st_arr[0]
+            self.num_sensors = len(st_arr)
+            self.sensor_entry_num = np.arange(len(st_arr))
+            run_str = re.findall(r'\d+', data[-11:-5])[0]
+            self.run = int(run_str)
+            del st_arr, run_str
+        except uproot.exceptions.KeyInFileError:
+            self.hasKeyInFileError = True
+            print('File is currupted!')
+
+    def get_sub_info(self):
+
+        self.unix_time = np.asarray(self.evtTree['sensorHk/unixTime'],dtype=int)
+        self.unix_time_us = np.asarray(self.evtTree['sensorHk/unixTimeUs'],dtype=int)
+        self.atri_voltage = np.asarray(self.evtTree['sensorHk/atriVoltage'],dtype=int)
+        self.atri_current = np.asarray(self.evtTree['sensorHk/atriVoltage'],dtype=int)
+        self.dda_temperature = np.asarray(self.evtTree['sensorHk/ddaTemp[4]'])#,dtype=int)
+        self.tda_temperature = np.asarray(self.evtTree['sensorHk/tdaTemp[4]'])#,dtype=int)
+        self.dda_volt_curr = np.asarray(self.evtTree['sensorHk/ddaVoltageCurrent[4]'],dtype=int)
+        self.tda_volt_curr = np.asarray(self.evtTree['sensorHk/tdaVoltageCurrent[4]'],dtype=int)
+        self.verId = np.asarray(self.evtTree['sensorHk/RawAraGenericHeader/verId'],dtype=int)
+        self.subVerId = np.asarray(self.evtTree['sensorHk/RawAraGenericHeader/subVerId'],dtype=int)
+        self.softVerMajor = np.asarray(self.evtTree['sensorHk/RawAraGenericHeader/softVerMajor'],dtype=int)
+        self.softVerMinor = np.asarray(self.evtTree['sensorHk/RawAraGenericHeader/softVerMinor'],dtype=int)
+
+        yyyymmdd_str = datetime.fromtimestamp(self.unix_time[0])
+        yyyymmdd = yyyymmdd_str.strftime('%Y%m%d%H%M%S')
+        self.year = int(yyyymmdd[:4])
+        del yyyymmdd_str, yyyymmdd
+
+    def get_voltage(self, volt_curr):
+
+        VoltageADC = (volt_curr & 0xff) << 4
+        VoltageADC = VoltageADC | (volt_curr & 0xf00000) >> 20
+
+        volt = (6.65 / 4096) * VoltageADC
+        del VoltageADC
+
+        return volt
+
+    def get_current(self, volt_curr, diff = 0.1):
+        
+        CurrentADC = (volt_curr & 0x00ff00) >> 4
+        CurrentADC = CurrentADC | (volt_curr & 0x0f0000) >> 16
+
+        curr = CurrentADC * (0.10584 / 4096) / diff
+        del CurrentADC
+
+        return curr
+
+    def get_temperature(self, temperature):
+
+        msb = temperature << 4
+        lsb = temperature >> 12
+        tempADC = msb | lsb
+
+        temp = np.full(temperature.shape,np.nan,dtype = float)
+
+        for poi in range(self.num_sensors):
+            for dda in range(num_ddas):
+
+                isNegative = False
+                if msb[poi, dda] & 0x0800:
+                    isNegative=True
+
+                if isNegative:
+                    tempADC[poi, dda] = ~tempADC[poi, dda] + 1
+                    tempADC[poi, dda] = tempADC[poi, dda] & 0x0fff
+
+                temp[poi, dda] = tempADC[poi, dda] * 0.0625
+                if isNegative:
+                    temp[poi, dda] *= -1
+                del isNegative
+        del msb, lsb, tempADC
+
+        return temp
+
+    def get_atri_voltage_current(self):
+
+        atri_volt = np.full(self.atri_voltage.shape, np.nan, dtype = float)       
+        atri_curr = np.copy(atri_volt)
+
+        volt_var = 0.0605
+        curr_var = 0.0755
+        for poi in range(self.num_sensors):
+            if (self.verId[poi] > 4 or (self.verId[poi] == 4 and self.subVerId[poi] > 1)) or (self.softVerMajor[poi] > 3 or (self.softVerMajor[poi] == 3 and self.softVerMinor[poi] > 11)):
+                atri_volt[poi] = self.atri_voltage[poi] * volt_var
+                atri_curr[poi] = self.atri_current[poi] * curr_var
+            else:
+                atri_volt[poi] = self.atri_current[poi] * volt_var 
+                atri_curr[poi] = self.atri_voltage[poi] * curr_var
+        del volt_var, curr_var
+
+        return atri_volt, atri_curr
+
+    def get_daq_sensor_info(self):
+
+        atri_volt, atri_curr = self.get_atri_voltage_current()
+        dda_volt = self.get_voltage(self.dda_volt_curr)
+        dda_curr = self.get_current(self.dda_volt_curr)
+        dda_temp = self.get_temperature(self.dda_temperature)
+        tda_volt = self.get_voltage(self.tda_volt_curr)
+        tda_curr = self.get_current(self.tda_volt_curr, diff = 0.2)
+        tda_temp = self.get_temperature(self.tda_temperature)
+
+        return atri_volt, atri_curr, dda_volt, dda_curr, dda_temp, tda_volt, tda_curr, tda_temp
+
 class analog_buffer_info_loader:
 
     def __init__(self, st, yrs, incl_cable_delay = False):
