@@ -1,4 +1,3 @@
-import os, sys
 import numpy as np
 from tqdm import tqdm
 
@@ -23,12 +22,14 @@ def samp_map_collector(Data, Ped):
     ara_root = ara_root_loader(Data, Ped, ara_uproot.station_id, ara_uproot.year)
 
     # quality cut results
-    #from tools.ara_quality_cut import clean_event_loader
-    #cleaner = clean_event_loader(ara_uproot, trig_flag = [0,2], qual_flag = [0])    
-    #clean_evt, clean_entry, clean_st, clean_ant = cleaner.get_qual_cut_results()
-    #del cleaner
     clean_evt = ara_uproot.evt_num
     clean_entry = ara_uproot.entry_num
+
+    from tools.ara_quality_cut import pre_qual_cut_loader
+    pre_qual = pre_qual_cut_loader(ara_uproot, trim_1st_blk = True)
+    pre_qual_cut = pre_qual.run_pre_qual_cut()
+    pre_qual_cut_sum = np.nansum(pre_qual_cut, axis = 1)
+    del pre_qual, pre_qual_cut
 
     # output array
     adc_medi = np.full((num_Ants, len(clean_entry)), np.nan, dtype = float)
@@ -45,7 +46,7 @@ def samp_map_collector(Data, Ped):
     # loop over the events
     for evt in tqdm(range(len(clean_evt))):
       #if evt < 100:
-
+        
         # get entry and wf
         ara_root.get_entry(clean_entry[evt])
         ara_root.get_useful_evt(ara_root.cal_type.kOnlyGoodADC)
@@ -64,6 +65,8 @@ def samp_map_collector(Data, Ped):
                 continue
             adc_medi[ant, evt] = np.nanmedian(raw_v)
             zero_adc_ratio[ant, evt] = post_qual.get_zero_adc_events(raw_v, len(raw_v))
+            if pre_qual_cut_sum[evt] != 0:
+                continue
             samp_idx_ant = samp_idx[:,ant][~np.isnan(samp_idx[:,ant])].astype(int)
             if trig_type[evt] == 0:
                 ara_hist.stack_in_hist(samp_idx_ant, raw_v.astype(int), ant)

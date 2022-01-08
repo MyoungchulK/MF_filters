@@ -2,6 +2,7 @@ import os, sys
 import numpy as np
 import re
 from glob import glob
+from tqdm import tqdm
 from datetime import datetime
 from subprocess import call
 
@@ -135,7 +136,107 @@ class run_info_loader:
 
         return config
 
+class batch_info_loader:
 
+    def __init__(self, st):
+
+        self.st = st
+        self.years = np.arange(2013,2019, dtype = int)
+        if self.st == 3:
+            self.years = self.years[self.years != 2017]
+
+    def get_dag_statement(self, run):
+
+        statements = ""
+        statements += f'JOB job_ARA_S{self.st}_R{run} ARA_job.sub \n'
+        statements += f'VARS job_ARA_S{self.st}_R{run} station="{self.st}" run="{run}"\n\n'
+
+        return statements
+
+    def get_dag_file(self, path, file_type = 'event', analyze_blind_dat = False):
+
+        run_list = self.get_dat_list(file_type = file_type, analyze_blind_dat = analyze_blind_dat)[0]
+
+        print('Dag making starts!')
+        dag_file_name = f'{path}A{self.st}.dag'
+        statements = ""
+
+        with open(dag_file_name, 'w') as f:
+            f.write(statements)
+
+            for w in tqdm(run_list):
+                statements = self.get_dag_statement(int(w))
+                with open(dag_file_name, 'a') as f:
+                    f.write(statements)
+
+        print('Dag making is done!')
+        print(f'output is {dag_file_name}')
+
+    def get_shell_statement(self, run, script_line = 'python3 script_executor.py qual_cut'):
+
+        statements = f'{script_line} {self.st} {run}'
+
+        return statements
+
+    def get_dat_list(self, file_type = 'event', analyze_blind_dat = False):
+        
+        if analyze_blind_dat == True:
+            dat_type_2013 = 'full2013Data'
+            dat_type = 'blinded'
+        else:
+            dat_type_2013 = 'burnSample1in10'
+            dat_type = 'unblinded'
+        
+        run_list = []
+        dat_list = []
+        for yrs in self.years:
+            if int(yrs) == 2013:
+                dat_path = f'/data/exp/ARA/{int(yrs)}/filtered/{dat_type_2013}/ARA0{self.st}/root/run[0-9]*/{file_type}[0-9]*.root' 
+            else:
+                dat_path = f'/data/exp/ARA/{int(yrs)}/{dat_type}/L1/ARA0{self.st}/[0-9][0-9][0-9][0-9]/run[0-9][0-9][0-9][0-9][0-9][0-9]/{file_type}[0-9][0-9][0-9][0-9][0-9][0-9].root'
+ 
+            run_yrs_list = []
+            dat_yrs_list = glob(dat_path)
+            for d in dat_yrs_list:
+                run_num = int(re.sub("\D", "", d[-11:]))
+                run_yrs_list.append(run_num)
+                del run_num
+            run_yrs_list = np.asarray(run_yrs_list)
+
+            run_yrs_idx = np.argsort(run_yrs_list)        
+            run_yrs_sort = run_yrs_list[run_yrs_idx]            
+            dat_yrs_sort = []
+            for s in run_yrs_idx:
+                dat_yrs_sort.append(dat_yrs_list[int(s)])
+
+            if self.st == 3 and int(yrs) == 2018:
+                wrong_idx = run_yrs_sort < 10000
+            else:
+                wrong_idx = run_yrs_sort < 100
+            print(f'{int(yrs)} Wrong Run#!:{run_yrs_sort[wrong_idx]}')
+
+            right_idx = ~wrong_idx
+            run_yrs_sort_right = run_yrs_sort[right_idx]
+            dat_yrs_sort_right = []
+            for r in range(len(dat_yrs_sort)):
+                if right_idx[r]:
+                    dat_yrs_sort_right.append(dat_yrs_sort[r])
+
+            run_list.extend(run_yrs_sort_right)
+            dat_list.extend(dat_yrs_sort_right)
+        run_list = np.asarray(run_list)
+        print(f'Total number of runs is {len(run_list)}')
+        
+        # final check
+        for f in range(len(run_list)):
+            run_num = int(re.sub("\D", "", dat_list[f][-11:]))
+            if run_list[f] != run_num:
+                print(run_list[f], run_num)
+                print('Run number doesnt match!')
+                sys.exit(1)
+        print('All Data has a perfect match!')
+
+        return run_list, dat_list
 
 def file_sorter(d_path):
 
@@ -163,82 +264,6 @@ def file_sorter(d_path):
     run_range = np.arange(run_tot[0],run_tot[-1]+1)
 
     return d_list, run_tot, run_range
-
-def evt_num_loader(Station, Run, trig_set = 'all', qual_set = 'all', evt_entry = None, act_evt = None, add_info = None):
-
-    import h5py
-
-    d_path = f'/data/user/mkim/OMF_filter/ARA0{Station}/Info/Info_A{Station}_R{Run}.h5'
-
-    hf = h5py.File(d_path, 'r')
-    evt_num = hf['evt_num'][:]
-    if add_info is not None:  # let say it is onyl working for wf_len (interpolation) for now
-        add_tree = hf[add_info][1]
-        print(f'{add_info} is loaded. size:{add_tree.shape}')
-    else:
-        add_tree = None
-
-    if evt_entry is not None:
-        evt_entry = np.array([evt_entry])
-        act_evt_num = hf['act_evt_num'][:]
-        print(f'Selected act event is', act_evt_num[np.where(evt_num == evt_entry)[0][0]])
-        if evt_entry in evt_num:
-            print(f'Selected event is {evt_entry}')
-            if add_info is not None:
-                add_tree = add_tree[:,evt_entry]
-            else:
-                add_tree = None
-            return evt_entry, add_tree
-        else:
-            print('Selected event is not in event tree!')
-            sys.exit(1)
-    else:
-        pass
-
-    if act_evt is not None:
-        act_evt_num = hf['act_evt_num'][:]
-        act_evt = np.array([act_evt])
-        if act_evt in act_evt_num:
-            print(f'Selected event is {act_evt}')
-            evt_entry = evt_num[act_evt_num == act_evt]
-            print(f'Entry for selected event is {evt_entry}')
-            if add_info is not None:
-                add_tree = add_tree[:,evt_entry]
-            else:
-                add_tree = None
-            return evt_entry, add_tree
-        else:
-            print('Selected event is not in event tree!')
-            sys.exit(1)
-        del act_evt_num
-    else:
-        pass
-
-    trig_num = hf['trig_num'][:]
-    qual_num = hf['qual_num_pyroot'][:]
-    del hf
-    if trig_set != 'all' and qual_set == 'all':
-        evt_entry = evt_num[trig_num == trig_set]
-    elif trig_set == 'all' and qual_set != 'all':
-        evt_entry = evt_num[qual_num == qual_set]
-    elif trig_set != 'all' and qual_set != 'all':
-        evt_entry = evt_num[(trig_num == trig_set) & (qual_num == qual_set)]  
-    elif trig_set == 'all' and qual_set == 'all':
-        evt_entry = np.copy(evt_num)
-   
-    if add_info is not None and len(evt_entry) > 0:  # let say it is onyl working for wf_len (interpolation) for now
-        add_tree = add_tree[:, evt_entry]
-        print(f'Selected size of {add_info} is {add_tree.shape}')
-    else:
-        add_tree = None
- 
-    if len(evt_entry) > 0:    
-        print(f'# of selected event is {len(evt_entry)} from {len(evt_num)}')
-        return evt_entry, add_tree
-    else:
-        print('There is no desired WF! End the scripts!')
-        print(d_path)
-        sys.exit(1)
 
 def context_finder(config_file, key, end_key, empty):
 
@@ -387,104 +412,4 @@ def config_collector(Data, Station, Run, Year):
     print('Collecting conifg. info is done!')
 
     return run_start_info, run_stop_info, masked_ant, rf_block_num, soft_block_num, trig_win_num, delay_enable, delay_num, month, date
-
-def list_maker(glob_path, Station, Year):
-
-    d_list = glob(glob_path)
-    d_run_num = []
-    for d in d_list:
-        run_num = int(re.sub("\D", "", d[-11:]))
-        d_run_num.append(run_num)
-        del run_num
-    d_run_num = np.asarray(d_run_num)
-
-    # sort the run and path
-    d_run_idx = np.argsort(d_run_num)
-    d_run_num_sort = d_run_num[d_run_idx]
-    d_list_sort = []
-    for s in range(len(d_run_num_sort)):
-        d_list_sort.append(d_list[d_run_idx[s]])
-    del d_list, d_run_num, d_run_idx
-
-    if Station ==3 and Year == 2018:
-        digit5_run_idx = np.where(d_run_num_sort >= 10000)[0]
-        print(digit5_run_idx)
-        d_list_sort_2018 = []
-        for s in range(len(digit5_run_idx)):
-            d_list_sort_2018.append(d_list_sort[digit5_run_idx[s]])
-        print(d_run_num_sort)
-        d_run_num_sort = d_run_num_sort[digit5_run_idx]
-        print(d_run_num_sort)
-        d_list_sort = d_list_sort_2018
-    else:
-        pass
-
-    return d_list_sort, d_run_num_sort
-
-def general_data_ped_list(Station, Year):
-
-    # make data list
-    data_list, data_run = list_maker(f'/data/exp/ARA/{Year}/unblinded/L1/ARA0{Station}/[0-9][0-9][0-9][0-9]/run[0-9][0-9][0-9][0-9][0-9][0-9]/event[0-9][0-9][0-9][0-9][0-9][0-9].root', Station, Year)
-    #data_list, data_run = list_maker(f'/data/exp/ARA/{Year}/unblinded/L1/ARA0{Station}/*/run*/event[0-9]*.root', Station, Year)
-
-    # make ped list
-    ped_list, ped_run = list_maker(f'/data/exp/ARA/{Year}/calibration/pedestals/ARA0{Station}/*pedestalValues*', Station, Year)
-
-    # make last year ped list
-    last_Year = int(Year-1)
-    if last_Year == 2013:
-        last_ped_list, last_ped_run = list_maker(f'/data/user/mkim/ARA_{last_Year}_Ped/ARA0{Station}/*pedestalValues*', Station, last_Year)
-    elif Year == 2018 and Station == 3:
-        last_Year = int(Year-2)
-        last_ped_list, last_ped_run = list_maker(f'/data/exp/ARA/{last_Year}/calibration/pedestals/ARA0{Station}/*pedestalValues*', Station, last_Year)
-    else:
-        last_ped_list, last_ped_run = list_maker(f'/data/exp/ARA/{last_Year}/calibration/pedestals/ARA0{Station}/*pedestalValues*', Station, last_Year)
-
-    # total ped list
-    ped_list = last_ped_list + ped_list
-    ped_run = np.append(last_ped_run, ped_run, axis=0)
-
-    return data_list, data_run, ped_list, ped_run
-
-def A235_data_ped_list(Station, Year):
-
-    if Year == 2013 and Station != 5: #when we were full of hope and dream
-
-        # make data list
-        data_list, data_run = list_maker(f'/data/exp/ARA/{Year}/filtered/burnSample1in10/ARA0{Station}/root/*/event[0-9]*.root', Station, Year)
-
-        # total ped list
-        ped_list, ped_run = list_maker(f'/data/user/mkim/ARA_2013_Ped/ARA0{Station}/*pedestalValues*', Station, Year)
-
-    elif Year > 2013 and Year < 2017 and Station != 5:
-
-        # data & ped list
-        data_list, data_run, ped_list, ped_run = general_data_ped_list(Station, Year)
-
-    elif Year == 2017 and Station == 2:
-
-        # data & ped list
-        data_list, data_run, ped_list, ped_run = general_data_ped_list(Station, Year)
-
-    elif Year == 2018:
-
-        # data & ped list
-        data_list, data_run, ped_list, ped_run = general_data_ped_list(Station, Year)
-
-    else:
-
-        print('Wrong Station & Year combination!')
-        print('Choose 1) 2013~2016:ARA2&3, 2) 2017:ARA2, 3) 2018:ARA2&3&5')
-        sys.exit(1)
-
-    return data_list, data_run, ped_list, ped_run
-
-def dag_statement(r, data_list, ped_list, Station, data_run):
-
-    contents = ""
-    contents += f'JOB job_{r} ARA_job.sub \n'
-    #contents += f'VARS job_{r} data="{data_list}" ped="{ped_list}" out="{Output}" station="{Station}" run="{data_run}"\n\n'
-    contents += f'VARS job_{r} data="{data_list}" ped="{ped_list}" station="{Station}" run="{data_run}"\n\n'
-
-    return contents
 
