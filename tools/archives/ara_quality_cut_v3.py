@@ -27,8 +27,8 @@ class pre_qual_cut_loader:
     def __init__(self, ara_uproot, trim_1st_blk = False):
 
         self.st = ara_uproot.station_id
-        self.run = ara_uproot.run
-        self.trig_type = ara_uproot.get_trig_type()
+        #self.run = ara_uproot.run
+        #self.trig_type = ara_uproot.get_trig_type()
         self.evt_num = ara_uproot.evt_num 
         self.unix_time = ara_uproot.unix_time
         self.irs_block_number = ara_uproot.irs_block_number
@@ -63,18 +63,17 @@ class pre_qual_cut_loader:
 
         return bad_unix_evts
         
-    def get_bad_readout_events(self, readout_limit = 26):
+    def get_untagged_software_events(self, soft_blk_limit = 9):
 
-        if (self.st == 2 and self.run > 9748) or (self.st == 3 and self.run > 10000):
-            readout_limit = 28
-        readout_limit -= self.remove_1_blk
+        if np.any(self.unix_time >= 1514764800):
+            soft_blk_limit = 13
+        soft_blk_limit -= self.remove_1_blk
 
-        bad_readout_evts = (self.blk_len_arr < readout_limit).astype(int) 
-        bad_readout_evts[self.trig_type != 0] = 0
+        untagged_soft_evts = (self.blk_len_arr < soft_blk_limit).astype(int)
 
-        quick_qual_check(bad_readout_evts != 0, self.evt_num, 'bad readout events')
+        quick_qual_check(untagged_soft_evts != 0, self.evt_num, 'untagged soft events')
 
-        return bad_readout_evts
+        return untagged_soft_evts
 
     def get_zero_block_events(self, zero_blk_limit = 2):
 
@@ -124,7 +123,7 @@ class pre_qual_cut_loader:
 
         tot_pre_qual_cut[:,0] = self.get_bad_event_number()
         tot_pre_qual_cut[:,1] = self.get_bad_unix_time_events()
-        tot_pre_qual_cut[:,2] = self.get_bad_readout_events()
+        tot_pre_qual_cut[:,2] = self.get_untagged_software_events()
         tot_pre_qual_cut[:,3] = self.get_zero_block_events()
         tot_pre_qual_cut[:,4] = self.get_block_gap_events()
         tot_pre_qual_cut[:,5] = self.get_first_few_events()

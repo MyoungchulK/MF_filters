@@ -33,6 +33,7 @@ def samp_map_collector(Data, Ped):
 
     # output array
     adc_medi = np.full((num_Ants, len(clean_entry)), np.nan, dtype = float)
+    adc_max_min = np.full((2, num_Ants, len(clean_entry)), np.nan, dtype = float)
     ara_hist = hist_loader()
     pps_number = ara_uproot.pps_number
     time_stamp = ara_uproot.time_stamp
@@ -67,6 +68,8 @@ def samp_map_collector(Data, Ped):
             zero_adc_ratio[ant, evt] = post_qual.get_zero_adc_events(raw_v, len(raw_v))
             if pre_qual_cut_sum[evt] != 0:
                 continue
+            adc_max_min[0, ant, evt] = np.nanmax(raw_v)
+            adc_max_min[1, ant, evt] = np.nanmin(raw_v)
             samp_idx_ant = samp_idx[:,ant][~np.isnan(samp_idx[:,ant])].astype(int)
             if trig_type[evt] == 0:
                 ara_hist.stack_in_hist(samp_idx_ant, raw_v.astype(int), ant)
@@ -89,6 +92,7 @@ def samp_map_collector(Data, Ped):
             'samp_map':samp_map, 
             'samp_medi':samp_medi,
             'adc_medi':adc_medi,
+            'adc_max_min':adc_max_min,
             'pps_number':pps_number,
             'time_stamp':time_stamp,
             'unix_time':unix_time,
