@@ -63,18 +63,30 @@ class pre_qual_cut_loader:
 
         return bad_unix_evts
         
-    def get_bad_readout_events(self, readout_limit = 26):
+    def get_bad_readout_win_events(self, readout_limit = 26):
 
-        if (self.st == 2 and self.run > 9748) or (self.st == 3 and self.run > 10000):
-            readout_limit = 28
+        if self.st == 2:
+            if self.run < 4029:
+                readout_limit = 20
+            if self.run > 4028 and self.run < 9749:
+                readout_limit = 26
+            if self.run > 9748:
+                readout_limit = 28
+        if self.st == 3:
+            if self.run < 3104:
+                readout_limit = 20
+            if self.run > 3103 and self.run < 10001:
+                readout_limit = 26
+            if self.run > 10000:
+                readout_limit = 28
         readout_limit -= self.remove_1_blk
 
-        bad_readout_evts = (self.blk_len_arr < readout_limit).astype(int) 
-        bad_readout_evts[self.trig_type != 0] = 0
+        bad_readout_win_evts = (self.blk_len_arr < readout_limit).astype(int) 
+        bad_readout_win_evts[self.trig_type != 0] = 0
 
-        quick_qual_check(bad_readout_evts != 0, self.evt_num, 'bad readout events')
+        quick_qual_check(bad_readout_win_evts != 0, self.evt_num, 'bad readout window events')
 
-        return bad_readout_evts
+        return bad_readout_win_evts
 
     def get_zero_block_events(self, zero_blk_limit = 2):
 
@@ -124,7 +136,7 @@ class pre_qual_cut_loader:
 
         tot_pre_qual_cut[:,0] = self.get_bad_event_number()
         tot_pre_qual_cut[:,1] = self.get_bad_unix_time_events()
-        tot_pre_qual_cut[:,2] = self.get_bad_readout_events()
+        tot_pre_qual_cut[:,2] = self.get_bad_readout_win_events()
         tot_pre_qual_cut[:,3] = self.get_zero_block_events()
         tot_pre_qual_cut[:,4] = self.get_block_gap_events()
         tot_pre_qual_cut[:,5] = self.get_first_few_events()
