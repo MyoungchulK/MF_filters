@@ -651,11 +651,11 @@ class known_issue_loader:
         knwon_bad_run = np.append(bad_surface_run, bad_run)
         special_run = self.get_L0_to_L1_Processing_Special_run()
         knwon_bad_run = np.append(knwon_bad_run, special_run)
-        untagged_calpulser_run = self.get_untagged_calpulser_run()
-        knwon_bad_run = np.append(knwon_bad_run, untagged_calpulser_run) 
-        software_dominant_run = self.get_software_dominant_run()
-        knwon_bad_run = np.append(knwon_bad_run, software_dominant_run)
-        del bad_surface_run, bad_run, special_run, untagged_calpulser_run, software_dominant_run    
+        #untagged_calpulser_run = self.get_untagged_calpulser_run()
+        #knwon_bad_run = np.append(knwon_bad_run, untagged_calpulser_run) 
+        #software_dominant_run = self.get_software_dominant_run()
+        #knwon_bad_run = np.append(knwon_bad_run, software_dominant_run)
+        #del bad_surface_run, bad_run, special_run, untagged_calpulser_run, software_dominant_run    
         print(f'Total number of known bad runs are {len(knwon_bad_run)}')
 
         return knwon_bad_run
@@ -800,7 +800,22 @@ class known_issue_loader:
         bad_run = np.array([], dtype=int)
 
         if self.st == 2:
-            pass
+            bad_run = np.append(bad_run, [1626,  1640,  1641,  1711,  1757,  1771,  1773,  1846,  1847,  1848,  1849,  1850,
+                                          1851,  1853,  1854,  1855,  1856,  1858,  1859,  1860,  1861,  1863,  1864,  1865,
+                                          1866,  1868,  1869,  1870,  1871,  1873,  1874,  1875,  1876,  2303,  2304,  2306,
+                                          2307,  2308,  2309,  2311,  2312,  2313,  2314,  2316,  2317,  2318,  4765,  4827,
+                                          4829,  4830,  8562,  8563,  8567,  8568,  8572,  8577,  9055,  9056,  9057,  9058,
+                                          9059,  9061,  9062,  9063,  9064,  9066,  9067,  9068,  9069,  9071,  9072,  9073,
+                                          9074,  9076,  9077,  9078,  9079,  9081,  9082,  9083,  9084,  9086,  9087,  9088,
+                                          9505,  9510,  9511,  9512,  9513,  9515,  9516,  9517,  9518,  9519,  9520,  9521,
+                                          9522,  9524,  9525,  9526,  9527,  9529,  9530,  9531,  9532,  9533,  9535,  9537,
+                                          9539,  9541,  9543,  9545,  9547,  9549,  9551,  9553,  9555,  9557,  9559,  9561,
+                                          9563,  9564,  9565,  9566,  9567,  9568,  9569,  9570,  9571,  9573,  9575,  9576,
+                                          9594,  9595,  9596,  9597,  9598,  9599,  9600,  9601,  9602,  9603,  9604,  9751,
+                                          9754,  9755,  9759,  9767,  9797,  9799,  9810,  9814,  9815,  9816,  9817,  9821,
+                                          9826,  9831,  9832,  9844,  9845,  9846,  9847,  9848, 10125, 10420, 12128, 12464,
+                                          12502, 12592, 12610])
+
         elif self.st == 3:
             bad_run = np.append(bad_run, [1796, 1797,1799, 1800, 1801, 1802, 1804, 1805, 1806, 1807, 1809, 1810, 1811, 1812, 1814]) # c1
             bad_run = np.append(bad_run, [473, 476, 477, 478, 479, 480, 481, 484, 486, 487, 488, 489, 490, 491,

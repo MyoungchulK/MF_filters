@@ -29,21 +29,21 @@ class run_info_loader:
             dat_type = 'unblinded'
         
         if (self.st == 2 and self.run < a2_2013_run_limit) or (self.st == 3 and self.run < a3_2013_run_limit):
-            dat_path = f'/data/exp/ARA/2013/filtered/{dat_type_2013}/ARA0{self.st}/root/run{self.run}/{file_type}{self.run}.root'
-            dat_ls_path = f'/data/exp/ARA/2013/filtered/{dat_type_2013}/ARA0{self.st}/root/run{self.run}/'
+            dat_path = glob(f'/data/exp/ARA/2013/filtered/{dat_type_2013}/ARA0{self.st}/root/run{self.run}/{file_type}{self.run}.root')
+            dat_ls_path = glob(f'/data/exp/ARA/2013/filtered/{dat_type_2013}/ARA0{self.st}/root/run{self.run}/')
         else:
             run_6_digit = list('000000')
             run_6_digit[-len(str(self.run)):] = str(self.run)
             run_6_digit = "".join(run_6_digit)
             dat_path = glob(f'/data/exp/ARA/*/{dat_type}/L1/ARA0{self.st}/*/run{run_6_digit}/{file_type}{run_6_digit}.root')
             dat_ls_path = glob(f'/data/exp/ARA/*/{dat_type}/L1/ARA0{self.st}/*/run{run_6_digit}/')
-            if len(dat_path) != 1:
-                print('There are no desired run!')
-                print(f'Possible location: {dat_ls_path}')
-                print('Files in the location:', os.listdir(dat_ls_path[0]))
-                sys.exit(1)
-            else:
-                dat_path = dat_path[0]
+        if len(dat_path) != 1:
+            print('There are no desired run!')
+            print(f'Possible location: {dat_ls_path}')
+            print('Files in the location:', os.listdir(dat_ls_path[0]))
+            sys.exit(1)
+        else:
+            dat_path = dat_path[0]
 
         if os.path.exists(dat_path) and os.path.exists(ped_path):
             if verbose:

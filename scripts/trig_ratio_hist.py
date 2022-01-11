@@ -60,7 +60,7 @@ path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
-file_name = f'Trig_Ratio_v1_A{Station}.h5'
+file_name = f'Trig_Ratio_v2_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 
 hf.create_dataset('config_arr', data=config_arr, compression="gzip", compression_opts=9)
