@@ -33,11 +33,41 @@ def dead_bit_collector(Data, Ped):
     pre_qual_cut_sum = np.nansum(pre_qual_cut, axis = 1)
     del pre_qual, pre_qual_cut
 
+    from tools.ara_run_manager import run_info_loader
+    run_info = run_info_loader(ara_uproot.station_id, ara_uproot.run)
+    Data = run_info.get_data_path(file_type = 'sensorHk', manual_stop = True)[0]
+    if Data is None:
+        print('There is no sensorHk file!')
+        dda_volt = np.full((1,4), np.nan, dtype = float)
+    else:
+        from tools.ara_data_load import ara_Hk_uproot_loader
+        ara_Hk_uproot = ara_Hk_uproot_loader(Data)
+        ara_Hk_uproot.get_sub_info()
+        dda_volt_curr = ara_Hk_uproot.dda_volt_curr
+        dda_volt = ara_Hk_uproot.get_voltage(dda_volt_curr)
+        del ara_Hk_uproot, dda_volt_curr
+    del run_info
+
+    dda_range = np.arange(0,20,0.01)
+    dda_bins = np.linspace(0, 20, 2000+1)
+    dda_volt_hist = np.full((len(dda_range), 4), 0, dtype = int)
+    for d in range(4):
+        dda_volt_hist[:,d] = np.histogram(dda_volt[:,d], bins = dda_bins)[0].astype(int)    
+    del dda_volt
+
+    num_evts = ara_uproot.num_evts
+    trig_ratio = np.full((3), np.nan, dtype = float)
+    trig_ratio[0] = np.count_nonzero(trig_type == 0)
+    trig_ratio[1] = np.count_nonzero(trig_type == 1)
+    trig_ratio[2] = np.count_nonzero(trig_type == 2)
+    trig_ratio /= num_evts
+    del num_evts
+
     # loop over the events
     for evt in tqdm(range(len(entry_num))):
       #if evt <100:        
     
-        if pre_qual_cut_sum[evt] != 0:
+        if pre_qual_cut_sum[evt] != 0 or trig_type[evt] != 0:
             continue
 
         # get entry and wf
@@ -49,8 +79,7 @@ def dead_bit_collector(Data, Ped):
 
             # stack in sample map
             raw_v = ara_root.get_rf_ch_wf(ant)[1].astype(int)
-            if trig_type[evt] == 0:
-                dead_bit_hist[ant] += np.histogram(raw_v, bins = dead_bit_bins)[0].astype(int)
+            dead_bit_hist[ant] += np.histogram(raw_v, bins = dead_bit_bins)[0].astype(int)
             del raw_v
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()
@@ -60,8 +89,11 @@ def dead_bit_collector(Data, Ped):
 
     return {'evt_num':evt_num,
             'trig_type':trig_type,
+            'trig_ratio':trig_ratio,
             'dead_bit_range':dead_bit_range,
-            'dead_bit_hist':dead_bit_hist}
+            'dead_bit_hist':dead_bit_hist,
+            'dda_range':dda_range,
+            'dda_volt_hist':dda_volt_hist}
 
 
 

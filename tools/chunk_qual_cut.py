@@ -29,12 +29,42 @@ def qual_cut_collector(Data, Ped):
 
     # post quality cut
     post_qual_cut = ara_qual.post_qual.run_post_qual_cut()  
+
+    num_evts = ara_uproot.num_evts
+    trig_type = ara_uproot.get_trig_type()
+    if num_evts != 0:
+        trig_ratio = np.full((3), np.nan, dtype = float)
+        trig_ratio[0] = np.count_nonzero(trig_type == 0)
+        trig_ratio[1] = np.count_nonzero(trig_type == 1)
+        trig_ratio[2] = np.count_nonzero(trig_type == 2)
+        trig_ratio /= num_evts
+    else:
+        trig_ratio = np.full((3), np.nan, dtype = float)
+    bv_idx = pre_qual_cut[:,6] == 0
+    if np.any(bv_idx):
+        trig_type_wo_bv = trig_type[bv_idx]
+        num_evts_wo_bv = len(trig_type_wo_bv)
+        trig_ratio_wo_bv = np.full((3), np.nan, dtype = float)
+        trig_ratio_wo_bv[0] = np.count_nonzero(trig_type_wo_bv == 0)
+        trig_ratio_wo_bv[1] = np.count_nonzero(trig_type_wo_bv == 1)
+        trig_ratio_wo_bv[2] = np.count_nonzero(trig_type_wo_bv == 2)
+        trig_ratio_wo_bv /= num_evts_wo_bv
+        del num_evts_wo_bv, trig_type_wo_bv
+    else:
+        trig_ratio_wo_bv = np.full((3), np.nan, dtype = float)
+    del trig_type, bv_idx
+
     del ara_root, ara_uproot, num_evts, ara_qual
+
+    print(f'trig ratio:',trig_ratio)
+    print(f'trig ratio wo bv:',trig_ratio_wo_bv)
  
     print('Quality cut is done!')
 
     return {'pre_qual_cut':pre_qual_cut,
-            'post_qual_cut':post_qual_cut}
+            'post_qual_cut':post_qual_cut,
+            'trig_ratio':trig_ratio,
+            'trig_ratio_wo_bv':trig_ratio_wo_bv}
 
 
 

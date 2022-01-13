@@ -34,6 +34,7 @@ tda_temp = []
 
 bin_range = np.arange(0,20,0.01)
 bins = np.linspace(0, 20, 2000+1)
+temp_bins = np.linspace(-20, 20, 2000+1)
 bin_center = (bins[1:] + bins[:-1]) * 0.5
 
 for r in tqdm(range(len(d_run_tot))):
@@ -67,10 +68,10 @@ for r in tqdm(range(len(d_run_tot))):
     for d in range(4):
         dda_volt_run[:,d] = np.histogram(dda_volt_evt[:,d], bins = bins)[0].astype(int)
         dda_curr_run[:,d] = np.histogram(dda_curr_evt[:,d], bins = bins)[0].astype(int)
-        dda_temp_run[:,d] = np.histogram(dda_temp_evt[:,d], bins = bins)[0].astype(int)
+        dda_temp_run[:,d] = np.histogram(dda_temp_evt[:,d], bins = temp_bins)[0].astype(int)
         tda_volt_run[:,d] = np.histogram(tda_volt_evt[:,d], bins = bins)[0].astype(int)
         tda_curr_run[:,d] = np.histogram(tda_curr_evt[:,d], bins = bins)[0].astype(int)
-        tda_temp_run[:,d] = np.histogram(tda_temp_evt[:,d], bins = bins)[0].astype(int)
+        tda_temp_run[:,d] = np.histogram(tda_temp_evt[:,d], bins = temp_bins)[0].astype(int)
 
     dda_volt.append(dda_volt_run)
     dda_curr.append(dda_curr_run)
@@ -105,7 +106,7 @@ path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
-file_name = f'Sensor_Info_v1_A{Station}.h5'
+file_name = f'Sensor_Info_v2_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 
 hf.create_dataset('run_arr', data=run_arr, compression="gzip", compression_opts=9)

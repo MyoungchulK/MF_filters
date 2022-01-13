@@ -1,0 +1,61 @@
+1641	brianclark	spicecore	See DocDB 1589 for depth vs time data
+1642	brianclark	spicecore	See DocDB 1589 for depth vs time data
+1056	brianclark	roofpulse	Vpol, ICL pulser, pointed at WT3
+10046	brianclark	deeppulse	Hole 1 Shallow, 8:44:26 to 9:07 AM NZT
+10047	brianclark	deeppulse	Hole 1 Shallow, 9:15:21 to ~9:35 AM NZT
+10048	brianclark	deeppulse	Hole 22 Shallow, ~10:00  to ~10:18:54 AM NZT
+10049	brianclark	deeppulse	Hole 1 Deep, 10:21:29 to 10:28:30 AM NZT
+10050	brianclark	deeppulse	Hole 1 Deep, ~10:20 to 10:32 AM NZT
+10057	brianclark	roofpulse	Vpol, ICL pulser, pointed at WT3
+10058	brianclark	roofpulse	Hpol, ICL pulser, pulser on 22:45:46 Jan 21 UTC, pointed at WT3
+10059	brianclark	roofpulse	Vpol, ICL pulser, pulser on 23:00:40 Jan 21 UTC, pointed at A2/A5
+10060	brianclark	roofpulse	Hpol, ICL pulser, pointed at A2/A5
+10061	brianclark	roofpulse	Hpol, ICL pulser, pulser on 23:20:37 Jan 21 UTC, pointed at A2/A5
+11335	brianclark	deeppulse	See DocDB 1667; pulse date is June 25 2018; hole 22 shallow 21:28:00-21:43:00 UTC; hole shallow 22 22:03:00-21:18:00 UTC; hole 1 shallow 22:23:42-22:53:42 UTC
+12291	yuepan	bad	In glitch mode
+12292	yuepan	bad	In glitch mode
+12293	yuepan	bad	In glitch mode
+12294	yuepan	bad	In glitch mode
+12295	yuepan	bad	In glitch mode
+12296	yuepan	bad	In glitch mode
+12297	yuepan	bad	In glitch mode
+12298	yuepan	bad	In glitch mode
+12300	yuepan	bad	In glitch mode
+12661	myoungchulkim	deeppulse	See DocDB 1731 and 1738, presented by BK Shin
+12684	yuepan	bad	In glitch mode
+12685	yuepan	bad	In glitch mode
+12686	yuepan	bad	In glitch mode
+12687	yuepan	bad	In glitch mode
+12688	yuepan	bad	In glitch mode
+12689	yuepan	bad	In glitch mode
+12690	yuepan	bad	In glitch mode
+12691	yuepan	bad	In glitch mode
+12692	yuepan	bad	In glitch mode
+12885	myoungchulkim	deeppulse	Don't have a detail record
+13000	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13001	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13002	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13003	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13009	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13010	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13011	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13022	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13023	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13029	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13030	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13031	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13039	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13040	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13041	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13042	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13043	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13044	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13052	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13053	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13061	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13062	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13063	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13078	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13079	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13080	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+13997	yuepan	incomplete	may be incomplete

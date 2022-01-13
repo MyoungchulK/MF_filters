@@ -129,60 +129,10 @@ class pre_qual_cut_loader:
         quick_qual_check(first_few_evts != 0, self.evt_num, f'first few events')
 
         return first_few_evts
-
-    def get_bias_voltage_events(self, volt_cut = [3, 3.5]):
-
-        volt_cut = np.asarray(volt_cut, dtype = float)
-        bias_volt_evts = np.full((len(self.evt_num)), 0, dtype = int)
-
-        from tools.ara_run_manager import run_info_loader
-        run_info = run_info_loader(self.st, self.run)
-        Data = run_info.get_data_path(file_type = 'sensorHk', manual_stop = True)[0]
-        if Data is None:
-            print('There is no sensorHk file!')
-            bias_volt_evts[:] = 1
-            quick_qual_check(bias_volt_evts != 0, self.evt_num, f'bias voltage events')
-            return bias_volt_evts
-        del run_info
-
-        from tools.ara_data_load import ara_Hk_uproot_loader
-        ara_Hk_uproot = ara_Hk_uproot_loader(Data)
-        ara_Hk_uproot.get_sub_info()
-        dda_volt = ara_Hk_uproot.get_voltage(ara_Hk_uproot.dda_volt_curr)
-        sensor_unix = ara_Hk_uproot.unix_time
-        sensor_unix_len = len(sensor_unix)
-        del ara_Hk_uproot
-        if sensor_unix_len == 0:
-            print('There is empty sensorHk file!')
-            bias_volt_evts[:] = 1
-            quick_qual_check(bias_volt_evts != 0, self.evt_num, f'bias voltage events')
-            return bias_volt_evts
-
-        good_dda_bool = np.logical_and(dda_volt > volt_cut[0], dda_volt < volt_cut[1])
-        if sensor_unix_len == 1:
-            print('There is single sensorHk values!')
-            dda_digi_idx = np.array([0], dtype = int)
-            good_digi_bool = np.copy(good_dda_bool)
-        else:
-            dda_digi_idx = np.arange(sensor_unix_len, dtype = int)[1:]
-            good_digi_bool = np.logical_and(good_dda_bool[1:], good_dda_bool[:-1])
-        del dda_volt, good_dda_bool
- 
-        unix_digi = np.digitize(self.unix_time, sensor_unix) 
-        for dda in range(num_ddas):
-            good_digi_idx = dda_digi_idx[good_digi_bool[:, dda]]
-            bias_volt_evts += np.in1d(unix_digi, good_digi_idx, invert =True).astype(int)
-            del good_digi_idx
-        bias_volt_evts[bias_volt_evts != 0] = 1
-        del volt_cut, Data, sensor_unix, sensor_unix_len, unix_digi, dda_digi_idx, good_digi_bool
-
-        quick_qual_check(bias_volt_evts != 0, self.evt_num, f'bias voltage events')
-
-        return bias_volt_evts
     
     def run_pre_qual_cut(self):
 
-        tot_pre_qual_cut = np.full((len(self.evt_num), 7), 0, dtype = int)
+        tot_pre_qual_cut = np.full((len(self.evt_num), 6), 0, dtype = int)
 
         tot_pre_qual_cut[:,0] = self.get_bad_event_number()
         tot_pre_qual_cut[:,1] = self.get_bad_unix_time_events()
@@ -190,7 +140,7 @@ class pre_qual_cut_loader:
         tot_pre_qual_cut[:,3] = self.get_zero_block_events()
         tot_pre_qual_cut[:,4] = self.get_block_gap_events()
         tot_pre_qual_cut[:,5] = self.get_first_few_events()
-        tot_pre_qual_cut[:,6] = self.get_bias_voltage_events()
+        # time stamp cut
 
         quick_qual_check(np.nansum(tot_pre_qual_cut, axis = 1) != 0, self.evt_num, 'total pre qual cut!')
 
@@ -701,8 +651,6 @@ class known_issue_loader:
         knwon_bad_run = np.append(bad_surface_run, bad_run)
         special_run = self.get_L0_to_L1_Processing_Special_run()
         knwon_bad_run = np.append(knwon_bad_run, special_run)
-        ARARunLogDataBase = self.get_ARARunLogDataBase()
-        knwon_bad_run = np.append(knwon_bad_run, ARARunLogDataBase)
         #untagged_calpulser_run = self.get_untagged_calpulser_run()
         #knwon_bad_run = np.append(knwon_bad_run, untagged_calpulser_run) 
         #software_dominant_run = self.get_software_dominant_run()
@@ -711,36 +659,6 @@ class known_issue_loader:
         print(f'Total number of known bad runs are {len(knwon_bad_run)}')
 
         return knwon_bad_run
-
-    def get_list_form_txt(self, logs_file_name):
-
-        bad_run = []
-        logs_file = open(logs_file_name, "r")
-        for lines in logs_file:
-            run_num = int(lines.split('\t')[0])
-            bad_run.append(run_num)
-        bad_run = np.asarray(bad_run)
-        logs_file.close()
-
-        return bad_run
-
-    def get_ARARunLogDataBase(self):
-
-        # https://github.com/yvpan/ARARunLogDataBase/tree/master/logs
-        # array for bad run
-        bad_run = np.array([], dtype=int)
-
-        logs_path = '../data/ARARunLogDataBase/logs/'
-        logs_file_name = f'{logs_path}a{self.st}_log.txt'
-
-        if self.st == 2 or self.st == 3:            
-            bad_run = np.append(bad_run, self.get_list_form_txt(logs_file_name))
-            if self.st == 3:
-                bad_run = bad_run[3:]
-        else:
-            pass
-
-        return bad_run
 
     def get_L0_to_L1_Processing_Special_run(self):
 

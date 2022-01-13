@@ -1,0 +1,88 @@
+9562	brianclark	spicecore	See DocDB 1589 for depth vs time data
+9563	brianclark	spicecore	See DocDB 1589 for depth vs time data
+9564	brianclark	spicecore	See DocDB 1589 for depth vs time data
+9565	brianclark	spicecore	See DocDB 1589 for depth vs time data
+9566	brianclark	spicecore	See DocDB 1589 for depth vs time data
+9567	brianclark	spicecore	See DocDB 1589 for depth vs time data
+9568	brianclark	spicecore	See DocDB 1589 for depth vs time data
+9569	brianclark	spicecore	See DocDB 1589 for depth vs time data
+9570	brianclark	spicecore	See DocDB 1589 for depth vs time data
+9571	brianclark	spicecore	See DocDB 1589 for depth vs time data
+9810	brianclark	surfpulse	Hpol, 6 dB att
+9812	brianclark	surfpulse	Hpol, 15 dB att
+9815	brianclark	surfpulse	Vpol, 6 dB att
+9816	brianclark	surfpulse	Hpol, 6 dB att
+9832	brianclark	deeppulse	Hole 1 Shallow, 8:44:26 to 9:07 AM NZT
+9833	brianclark	deeppulse	Hole 1 Shallow, 9:15:21 to ~9:35 AM NZT
+9834	brianclark	deeppulse	Hole 22 Shallow, ~10:00  to ~10:18:54 AM NZT
+9835	brianclark	deeppulse	Hole 1 Deep, 10:21:29 to 10:28:30 AM NZT
+9836	brianclark	deeppulse	Hole 1 Deep, ~10:20 to 10:32 AM NZT
+9842	brianclark	roofpulse	Vpol, ICL pulser, pointed at WT3
+9844	brianclark	roofpulse	Hpol, 15 dB att
+9845	brianclark	roofpulse	Hpol, ICL pulser, pulser on 22:45:46 Jan 21 UTC, pointed at WT3
+9846	brianclark	roofpulse	Vpol, ICL pulser, pulser on 23:00:40 Jan 21 UTC, pointed at A2/A5
+9847	brianclark	roofpulse	Hpol, ICL pulser, pointed at A2/A5
+9848	brianclark	roofpulse	Hpol, ICL pulser, pulser on 23:20:37 Jan 21 UTC, pointed at A2/A5
+11076	brianclark	deeppulse	See DocDB 1667; pulse date is June 25 2018; hole 22 shallow 21:28:00-21:43:00 UTC; hole shallow 22 22:03:00-21:18:00 UTC; hole 1 shallow 22:23:42-22:53:42 UTC
+12189	myoungchulkim	deeppulse	See DocDB 1731 and 1738, presented by BK Shin
+12446	myoungchulkim	deeppulse	Don't have a detail record
+12549	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12550	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12551	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12557	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12558	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12559	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12568	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12569	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12575	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12576	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12577	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12585	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12586	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12587	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12588	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12589	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12590	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12591	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12592	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12599	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12600	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12601	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12609	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12610	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12611	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12626	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12627	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12628	myoungchulkim	spicecore	See DocDB 1784, 2018-12-23 to 2018-12-31
+12842	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12843	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12844	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12845	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12846	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12847	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12848	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12849	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12850	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12851	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12852	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12853	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12854	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12855	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12856	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12857	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12858	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12859	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12860	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12861	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12862	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12863	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12864	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12865	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12866	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12867	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12868	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12869	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12870	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12871	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12872	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.
+12873	yuepan	trigger delay study	D5 Vpol attenuation sweep 0 to 31 dB with a step of 1 dB.

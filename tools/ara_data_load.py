@@ -356,13 +356,11 @@ class ara_Hk_uproot_loader:
 
         return temp
 
-    def get_atri_voltage_current(self):
+    def get_atri_voltage_current(self, volt_var = 0.0605, curr_var = 0.0755):
 
         atri_volt = np.full(self.atri_voltage.shape, np.nan, dtype = float)       
         atri_curr = np.copy(atri_volt)
 
-        volt_var = 0.0605
-        curr_var = 0.0755
         for poi in range(self.num_sensors):
             if (self.verId[poi] > 4 or (self.verId[poi] == 4 and self.subVerId[poi] > 1)) or (self.softVerMajor[poi] > 3 or (self.softVerMajor[poi] == 3 and self.softVerMinor[poi] > 11)):
                 atri_volt[poi] = self.atri_voltage[poi] * volt_var
@@ -370,7 +368,6 @@ class ara_Hk_uproot_loader:
             else:
                 atri_volt[poi] = self.atri_current[poi] * volt_var 
                 atri_curr[poi] = self.atri_voltage[poi] * curr_var
-        del volt_var, curr_var
 
         return atri_volt, atri_curr
 
