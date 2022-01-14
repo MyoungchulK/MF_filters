@@ -1,76 +1,11 @@
 import os, sys
 import numpy as np
-import ROOT
-from tqdm import tqdm
-import h5py
 
 # custom lib
 from tools.ara_constant import ara_const
 
-#link AraRoot
-ROOT.gSystem.Load(os.environ.get('ARA_UTIL_INSTALL_DIR')+"/lib/libAraEvent.so")
-
 ara_const = ara_const()
-num_ddas = ara_const.DDA_PER_ATRI
-num_blocks = ara_const.BLOCKS_PER_DDA
 num_ants = ara_const.USEFUL_CHAN_PER_STATION
-
-class clean_event_loader:
-
-    def __init__(self, ara_uproot, trig_flag = None, qual_flag = None):
-
-        print(f'Clean event type! Trig type: {trig_flag}, Qual type: {qual_flag}')
-
-        self.st = ara_uproot.station_id
-        self.run = ara_uproot.run
-
-        self.evt_num = ara_uproot.evt_num
-        self.entry_num = ara_uproot.entry_num
-        self.trig_type = ara_uproot.get_trig_type()
-
-        self.trig_flag = np.asarray(trig_flag)
-        self.qual_flag = np.asarray(qual_flag)
-
-    def get_clean_events(self, pre_cut, post_cut):
-
-        tot_pre_cut = np.copy(pre_cut)
-        if 2 in self.trig_flag:
-            print('Untagged software WF filter is excluded!')
-            tot_pre_cut[:, 2] = 0
-        tot_pre_cut = np.nansum(tot_pre_cut, axis = 1)
-        tot_post_cut = np.nansum(post_cut, axis = 2)
-
-        trig_idx = np.in1d(self.trig_type, self.trig_flag)
-        qual_idx = np.in1d(tot_pre_cut, self.qual_flag)
-        tot_idx = (trig_idx & qual_idx)
-
-        clean_evt = self.evt_num[tot_idx]
-        clean_entry = self.entry_num[tot_idx]
-        clean_ant = tot_post_cut[:, tot_idx]
-        del trig_idx, qual_idx, tot_idx, tot_pre_cut, tot_post_cut
-
-        print('total # of clean event:',len(clean_evt))
-
-        return clean_evt, clean_entry, clean_ant
-
-    def get_qual_cut_results(self):
-
-        d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{self.st}/Qual_Cut/'
-        d_path += f'Qual_Cut_A{self.st}_R{self.run}.h5'
-        qual_file = h5py.File(d_path, 'r')
-        print(f'{d_path} is loaded!')
-
-        pre_qual_cut = qual_file['pre_qual_cut'][:]
-        post_qual_cut = qual_file['post_qual_cut'][:]
-            
-        clean_evt, clean_entry, clean_ant = self.get_clean_events(pre_qual_cut, post_qual_cut)
-        del d_path, qual_file, pre_qual_cut, post_qual_cut
-        
-        if len(clean_evt) == 0:
-            print('There are no desired events!')
-            sys.exit(1)
-
-        return clean_evt, clean_entry, clean_ant
 
 class known_issue_loader:
 
@@ -377,8 +312,8 @@ class known_issue_loader:
         knwon_bad_run = np.append(knwon_bad_run, special_run)
         ARARunLogDataBase = self.get_ARARunLogDataBase()
         knwon_bad_run = np.append(knwon_bad_run, ARARunLogDataBase)
-        #untagged_calpulser_run = self.get_untagged_calpulser_run()
-        #knwon_bad_run = np.append(knwon_bad_run, untagged_calpulser_run) 
+        untagged_calpulser_run = self.get_untagged_calpulser_run()
+        knwon_bad_run = np.append(knwon_bad_run, untagged_calpulser_run) 
         #software_dominant_run = self.get_software_dominant_run()
         #knwon_bad_run = np.append(knwon_bad_run, software_dominant_run)
         #del bad_surface_run, bad_run, special_run, untagged_calpulser_run, software_dominant_run    
@@ -386,7 +321,7 @@ class known_issue_loader:
 
         return knwon_bad_run
 
-    def get_list_form_txt(self, logs_file_name):
+    def get_list_from_txt(self, logs_file_name):
 
         bad_run = []
         logs_file = open(logs_file_name, "r")
@@ -408,7 +343,7 @@ class known_issue_loader:
         logs_file_name = f'{logs_path}a{self.st}_log.txt'
 
         if self.st == 2 or self.st == 3:            
-            bad_run = np.append(bad_run, self.get_list_form_txt(logs_file_name))
+            bad_run = np.append(bad_run, self.get_list_from_txt(logs_file_name))
             if self.st == 3:
                 bad_run = bad_run[3:]
         else:
@@ -555,96 +490,14 @@ class known_issue_loader:
         # array for bad run
         bad_run = np.array([], dtype=int)
 
-        if self.st == 2:
-            bad_run = np.append(bad_run, [1626,  1640,  1641,  1711,  1757,  1771,  1773,  1846,  1847,  1848,  1849,  1850,
-                                          1851,  1853,  1854,  1855,  1856,  1858,  1859,  1860,  1861,  1863,  1864,  1865,
-                                          1866,  1868,  1869,  1870,  1871,  1873,  1874,  1875,  1876,  2303,  2304,  2306,
-                                          2307,  2308,  2309,  2311,  2312,  2313,  2314,  2316,  2317,  2318,  4765,  4827,
-                                          4829,  4830,  8562,  8563,  8567,  8568,  8572,  8577,  9055,  9056,  9057,  9058,
-                                          9059,  9061,  9062,  9063,  9064,  9066,  9067,  9068,  9069,  9071,  9072,  9073,
-                                          9074,  9076,  9077,  9078,  9079,  9081,  9082,  9083,  9084,  9086,  9087,  9088,
-                                          9505,  9510,  9511,  9512,  9513,  9515,  9516,  9517,  9518,  9519,  9520,  9521,
-                                          9522,  9524,  9525,  9526,  9527,  9529,  9530,  9531,  9532,  9533,  9535,  9537,
-                                          9539,  9541,  9543,  9545,  9547,  9549,  9551,  9553,  9555,  9557,  9559,  9561,
-                                          9563,  9564,  9565,  9566,  9567,  9568,  9569,  9570,  9571,  9573,  9575,  9576,
-                                          9594,  9595,  9596,  9597,  9598,  9599,  9600,  9601,  9602,  9603,  9604,  9751,
-                                          9754,  9755,  9759,  9767,  9797,  9799,  9810,  9814,  9815,  9816,  9817,  9821,
-                                          9826,  9831,  9832,  9844,  9845,  9846,  9847,  9848, 10125, 10420, 12128, 12464,
-                                          12502, 12592, 12610])
+        untagged_cal_path = '../data/a23_analysis_tools/data/'
+        untagged_cal_file_name = f'{untagged_cal_path}A{self.st}_new_untagged_calpul.txt'
 
-        elif self.st == 3:
-            bad_run = np.append(bad_run, [1796, 1797,1799, 1800, 1801, 1802, 1804, 1805, 1806, 1807, 1809, 1810, 1811, 1812, 1814]) # c1
-            bad_run = np.append(bad_run, [473, 476, 477, 478, 479, 480, 481, 484, 486, 487, 488, 489, 490, 491,
-                                        492, 493, 494, 495, 496, 497, 498, 499, 500, 501, 502, 503, 504, 505, 506,
-                                        507, 508, 801, 815, 892, 893, 894, 895, 896, 898, 899, 900, 901, 903, 904,
-                                        905, 906, 908, 909, 910, 911, 913, 914, 915, 916, 918, 919, 920, 921, 923,
-                                        935, 936, 937, 938, 939, 940, 942, 943, 944, 945, 947, 948, 949, 950, 952,
-                                        953, 954, 955, 957, 958, 959, 960, 961, 962, 964, 965, 966, 967, 969, 970,
-                                        971, 972, 974, 975, 976, 977, 979, 980, 981, 1125, 1126, 1128, 1129, 1130, 
-                                        1131, 1132, 1133, 1134, 1135, 1136, 1138, 1141, 1142, 1143, 1144, 1145, 1146,   
-                                        1148, 1149, 1150, 1151, 1153, 1154, 1155, 1156, 1158, 1159, 1160, 1161, 1163,
-                                        1164, 1165, 1166, 1168, 1169, 1170, 1171, 1173, 1174, 1175, 1176, 1178, 1179, 
-                                        1180, 1181, 1183, 1184, 1185, 1186, 1188, 1189, 1190, 1191, 1193, 1194, 1195, 
-                                        1196, 1197, 1198, 1200, 1201, 1202, 1203, 1205, 1206, 1207, 1208, 1210, 1211, 
-                                        1212, 1213, 1215, 1216, 1217, 1218, 1220, 1221, 1222, 1223, 1225, 1226, 1227, 
-                                        1228, 1229, 1231, 1232, 1233, 1237, 1238, 1239, 1240, 1241, 1243, 1244, 1245, 
-                                        1246, 1248, 1249, 1250, 1251, 1253, 1254, 1255, 1256, 1257, 1258, 1259, 1260, 
-                                        1263, 1264, 1265, 1267, 1268, 1269, 1270, 1272, 1273, 1274, 1275, 1277, 1278,
-                                        1279, 1280, 1282, 1283, 1284, 1285, 1287, 1288, 1289, 1290, 1292, 1293, 1294,
-                                        1295, 1308, 1312, 1313, 1322, 1330, 1331, 1332, 1333, 1334, 1335, 1337, 1338, 
-                                        1339, 1340, 1341, 1342, 1344, 1345, 1346, 1347, 1349, 1350, 1351, 1352, 1354, 
-                                        1355, 1356, 1357, 1359, 1360, 1361, 1362, 1364, 1365, 1366, 1367, 1369, 1370, 
-                                        1371, 1372, 1374, 1375, 1376, 1377, 1379, 1380, 1381, 1382, 1384, 1385, 1387, 
-                                        1389, 1390, 1391, 1392, 1394, 1395, 1396, 1397, 1399, 1400, 1401, 1402, 1404, 
-                                        1405, 1406, 1407, 1413, 1414, 1416, 1417, 1418, 1419, 1421, 1422, 1423, 1424,
-                                        1426, 1427, 1428]) # c2
-            bad_run = np.append(bad_run, [3421, 3422, 3423, 3424, 3426, 3427, 3428, 3517, 3788, 3844, 3845, 3846, 3847, 
-                                        3848, 3849, 3850, 3851, 3852, 3853, 3854, 3857, 3858, 3859, 3860, 3881, 3882, 
-                                        3883, 3884, 3885, 3886, 3887, 3888, 3889, 3890, 3891, 3916, 3917, 3918, 3919, 
-                                        3920, 3921, 3922, 3923, 3924, 3925, 3926, 3927, 3928, 3929, 3930, 3931, 3932,
-                                        3933, 3934, 3935, 3936, 3937, 3938, 3939, 3940, 3941, 3942, 3943, 3944, 3945, 
-                                        3946, 3947, 3948, 3949, 3950, 3951, 3952, 3953, 3954, 3955, 3956, 3957, 3958, 
-                                        3959, 3960, 3961, 3962, 3963, 3964, 3965, 3966, 3967, 3968, 3969, 3970, 3971, 
-                                        3972, 3973, 3974, 3975, 4009, 4010, 4011, 4012, 4013, 4014, 4015, 4016, 4017, 
-                                        4018, 4019, 4020, 4021, 4022, 4023, 4024, 4025, 4026, 4027, 4028, 4029, 4030, 
-                                        4031, 4032, 4033, 4034, 4035, 4036, 4037, 4038, 4039, 4040, 4041, 4042, 4043, 
-                                        4044, 4045, 4046, 4047, 4048, 4049, 4050, 4051, 4052, 4053, 4054, 4055, 4056, 
-                                        4057, 4058, 4059, 4060, 4061, 4062, 4063, 4064, 4065, 4066, 4067, 4068, 4069, 
-                                        4070, 4071, 4072, 4914, 4916, 4917, 4918, 4919, 4921, 4922, 4923, 4924, 4926,
-                                        4927, 4928, 4929, 4931, 4932, 4933, 4934, 4936, 4937, 4938, 4939, 4941, 4942,
-                                        4943, 4944, 4946, 4947, 4948, 4949, 4951, 4952, 4953, 4954, 4956, 4957, 4958, 
-                                        4959, 7757, 7758, 7760, 7761, 7762, 7763, 7765, 7766, 7767, 7768, 7770, 7771,
-                                        7772]) # c3
-            bad_run = np.append(bad_run, [6509, 7146, 7147, 7148, 7149, 7150, 7151, 7152, 7153, 7154, 7155, 7156, 7157,
-                                        7171, 7172, 7173, 7174, 7175, 7176, 7177, 7178, 7179, 7180, 7181, 7182, 7183, 7184, 
-                                        7185, 7186, 7187, 7188, 7189, 7190, 7191, 7192, 7193, 7194, 7195, 7196, 7197, 7198,
-                                        7199, 7200, 7201, 7202, 7203, 7204, 7205, 7206, 7207, 7208, 7209, 7210, 7211, 7212,
-                                        7213, 7214, 7215, 7216, 7217, 7218, 7219, 7220, 7221, 7222, 7223, 7224, 7225, 7226, 
-                                        7227, 7228, 7229, 7230, 7231, 7232, 7233, 7234, 7235, 7236, 7237, 7238, 7239, 7240,
-                                        7241, 7242, 7243, 7244, 7245, 7246, 7247, 7248, 7249, 7250, 7251, 7252, 7253]) # c4
-            bad_run = np.append(bad_run, [2263, 2264, 2265, 2266, 2267, 2268, 2269, 2270, 2271, 2272, 2273, 2274, 2388,
-                                        2389, 2390, 2391, 2392, 2393, 2394, 2395, 2396, 2397, 2398, 2399, 2467, 2468,
-                                        2469, 2471,2472]) # c5
+        if self.st == 3:
+            untagged_cal_file = np.loadtxt(untagged_cal_file_name)
+            untagged_cal_run = untagged_cal_file[:, 0].astype(int)
 
-            # new list
-            bad_run = np.append(bad_run, [10001, 10002, 10003, 10006, 10007, 10008, 10009, 10010, 10012, 10013, 10014, 10015,
-                                         10017, 10019, 10020, 10021, 10022, 10023, 10024, 10025, 10026, 10027, 10028, 10029,
-                                         10030, 10032, 10034, 10035, 10036, 10040, 10041, 10042, 10043, 10044, 10045, 10046,
-                                         10047, 10048, 10049, 10050, 10051, 10052, 10053, 10055, 10056, 10057, 10058, 10059,
-                                         10060, 10061, 10062, 10063, 10064, 10065, 10067, 10075, 10076, 10077, 10081, 10083,
-                                         10167, 10168, 10513, 10590, 10591, 10592, 10593, 10594, 10659, 10660, 10661, 10662,
-                                         10663, 10664, 10665, 10666, 10682, 10683, 10684, 10716, 10717, 10718, 10719, 10720,
-                                         10875, 10876, 10877, 10878, 10879, 10880, 10882, 10883, 10884, 10885, 10886, 10887,
-                                         10888, 10889, 10891, 10892, 10893, 10894, 10895, 11085, 11086, 11088, 11089, 11090,
-                                         11091, 11092, 11093, 11094, 11123, 11325, 11326, 11650, 11651, 11652, 11653, 11723,
-                                         11724, 11725, 11726, 11728, 11729, 11755, 11756, 11757, 11758, 11759, 11760, 11761,
-                                         11762, 11825, 11826, 11827, 11828, 11829, 11831, 12105, 12106, 12107, 12108, 12109,
-                                         12111, 12294, 12295, 12296, 12297, 12298, 12456, 12457, 12458, 12686, 12687, 12688,
-                                         12689, 12690, 12795, 12797, 12799, 12800, 12801, 12802, 12803, 12804, 12805, 12806,
-                                         12807, 12809, 12810, 12811, 12812, 12813, 12814, 12815, 12816, 12817, 12818, 12819,
-                                         12820, 12821, 12822, 12823, 12824, 12825, 12826, 12827, 12828, 12829, 12830, 12866,
-                                         12870])
-
+            bad_run = np.append(bad_run, untagged_cal_run)
         else:
             pass
 

@@ -94,7 +94,8 @@ def samp_map_collector(Data, Ped):
             adc_max_min[1, ant, evt] = np.nanmin(raw_v)
             #if pre_qual_cut_sum[evt] == 0 and trig_type[evt] == 0:
             #if pre_qual_cut_sum[evt] == 0 and trig_type[evt] != 1:
-            if trig_type[evt] != 1:
+            #if trig_type[evt] != 1:
+            if trig_type[evt] == 0:
                 samp_idx_ant = samp_idx[:,ant][~np.isnan(samp_idx[:,ant])].astype(int)
                 ara_hist.stack_in_hist(samp_idx_ant, raw_v.astype(int), ant)
                 del samp_idx_ant 
