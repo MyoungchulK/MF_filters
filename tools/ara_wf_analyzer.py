@@ -88,12 +88,13 @@ class wf_analyzer:
 
 class hist_loader:
 
-    def __init__(self, x_len = num_Buffers, y_len = num_Bits, y_sym_range = False):
+    def __init__(self, x_len = num_Buffers, y_len = num_Bits, chs = num_Ants, y_sym_range = False):
 
         self.x_len = x_len
         self.x_range = np.arange(self.x_len)
         self.y_range, self.y_offset, self.y_binwidth = self.get_y_range(y_len, y_sym_range = y_sym_range) 
-        self.hist_map = np.full((self.x_len, y_len, num_Ants), 0, dtype = int)
+        self.chs = chs
+        self.hist_map = np.full((self.x_len, y_len, self.chs), 0, dtype = int)
        
     def get_y_range(self, y_len, y_bins = 1, y_sym_range = False):
 
@@ -107,7 +108,7 @@ class hist_loader:
 
         return y_range, y_offset, y_binwidth 
  
-    def stack_in_hist(self, x, y, ant):
+    def stack_in_hist(self, x, y, ant = 0):
 
         self.hist_map[x, y + self.y_offset, ant] += 1
 
@@ -132,12 +133,14 @@ class hist_loader:
 
         return median_est
 
-    def get_median_est(self):
+    def get_median_est(self, nan_to_zero = False):
 
-        medi_est = np.full((self.x_len, num_Ants), np.nan, dtype = float)
+        medi_est = np.full((self.x_len, self.chs), np.nan, dtype = float)
         for x in tqdm(self.x_range):
-            for ant in range(num_Ants):
+            for ant in range(self.chs):
                 medi_est[x, ant] = self.get_median_from_hist(x, ant)
+        if nan_to_zero == True:
+            medi_est[np.isnan(medi_est)] = 0
 
         return medi_est
 

@@ -9,19 +9,18 @@ sys.path.append(curr_path+'/../')
 from tools.ara_run_manager import run_info_loader
 from tools.utility import size_checker
 
-def script_loader(Key = None, Station = None, Run = None):
+def script_loader(Key = None, Station = None, Run = None, Debug = True):
 
     # get run info
     run_info = run_info_loader(Station, Run)
-    #Data, Ped = run_info.get_data_path(file_type = 'sensorHk', verbose = True)
     Data, Ped = run_info.get_data_path(analyze_blind_dat = True, verbose = True)
     Station, Run, Config, Year, Month, Date = run_info.get_data_info()
     del run_info   
  
     # run the chunk code
-    module = import_module(f'tools.chunk_{Key}')
+    module = import_module(f'tools.chunk_{Key}_test')
     method = getattr(module, f'{Key}_collector')
-    results = method(Data, Ped)
+    results = method(Data, Ped, Debug)
     del module, method
 
     # create output dir
@@ -29,21 +28,29 @@ def script_loader(Key = None, Station = None, Run = None):
     print(f'Output path check:{Output}')
     if not os.path.exists(Output):
         os.makedirs(Output)
-    h5_file_name = f'{Output}{Key}_A{Station}_R{Run}.h5'
-    hf = h5py.File(h5_file_name, 'w')
-    
-    #saving result
-    hf.create_dataset('config', data=np.array([Station, Run, Config, Year, Month, Date]), compression="gzip", compression_opts=9)
-    for r in results:
-        print(r, results[r].shape)
-        hf.create_dataset(r, data=results[r], compression="gzip", compression_opts=9)
+    ped_file_name = f'{Output}pedestalValues.run{Run}_test.'
+    if Debug:
+        ped_file_name +='h5'
+        hf = h5py.File(ped_file_name, 'w')
+        #saving result
+        hf.create_dataset('config', data=np.array([Station, Run, Config, Year, Month, Date]), compression="gzip", compression_opts=9)
+        for r in results:
+            print(r, results[r].shape)
+            hf.create_dataset(r, data=results[r], compression="gzip", compression_opts=9)
+        hf.close()
+    else:
+        ped_file_name +='dat'
+        #saving result
+        for r in results:
+            print(r, results[r].shape)
+            np.savetxt(ped_file_name, results[r], fmt='%i')
+
     del Key, Station, Run, Config, Year, Month, Date, Output
     del results
-    hf.close()
-    print(f'output is {h5_file_name}')
+    print(f'output is {ped_file_name}')
 
     # quick size check
-    size_checker(h5_file_name)  
+    size_checker(ped_file_name)  
  
 if __name__ == "__main__":
 

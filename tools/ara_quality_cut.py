@@ -131,20 +131,35 @@ class pre_qual_cut_loader:
 
         return first_few_evts
 
+    def get_sensor_file_path(self):
+
+        from tools.ara_run_manager import run_info_loader
+        run_info = run_info_loader(self.st, self.run)
+        Data = run_info.get_data_path(file_type = 'sensorHk', manual_stop = True)[0]
+        del run_info        
+
+        return Data
+
+    def get_no_sensor_file_events(self):
+
+        no_sensor_file_evts = np.full((len(self.evt_num)), 0, dtype = int)
+
+        Data = self.get_sensor_file_path()
+        if Data is None:
+            no_sensor_file_evts[:] = 1
+            
+        quick_qual_check(no_sensor_file_evts != 0, self.evt_num, f'no sensor file events')
+
+        return no_sensor_file_evts
+
     def get_bias_voltage_events(self, volt_cut = [3, 3.5]):
 
         volt_cut = np.asarray(volt_cut, dtype = float)
         bias_volt_evts = np.full((len(self.evt_num)), 0, dtype = int)
 
-        from tools.ara_run_manager import run_info_loader
-        run_info = run_info_loader(self.st, self.run)
-        Data = run_info.get_data_path(file_type = 'sensorHk', manual_stop = True)[0]
+        Data = self.get_sensor_file_path()       
         if Data is None:
-            print('There is no sensorHk file!')
-            bias_volt_evts[:] = 1
-            quick_qual_check(bias_volt_evts != 0, self.evt_num, f'bias voltage events')
             return bias_volt_evts
-        del run_info
 
         from tools.ara_data_load import ara_Hk_uproot_loader
         ara_Hk_uproot = ara_Hk_uproot_loader(Data)
@@ -183,7 +198,7 @@ class pre_qual_cut_loader:
     
     def run_pre_qual_cut(self):
 
-        tot_pre_qual_cut = np.full((len(self.evt_num), 7), 0, dtype = int)
+        tot_pre_qual_cut = np.full((len(self.evt_num), 8), 0, dtype = int)
 
         tot_pre_qual_cut[:,0] = self.get_bad_event_number()
         tot_pre_qual_cut[:,1] = self.get_bad_unix_time_events()
@@ -192,6 +207,7 @@ class pre_qual_cut_loader:
         tot_pre_qual_cut[:,4] = self.get_block_gap_events()
         tot_pre_qual_cut[:,5] = self.get_first_few_events()
         tot_pre_qual_cut[:,6] = self.get_bias_voltage_events()
+        tot_pre_qual_cut[:,7] = self.get_no_sensor_file_events()
 
         quick_qual_check(np.nansum(tot_pre_qual_cut, axis = 1) != 0, self.evt_num, 'total pre qual cut!')
 
@@ -281,7 +297,7 @@ class post_qual_cut_loader:
 
         self.ara_root.get_entry(evt)
 
-        self.ara_root.get_useful_evt(self.ara_root.cal_type.kOnlyGoodADC)
+        self.ara_root.get_useful_evt(self.ara_root.cal_type.kOnlyADCWithOut1stBlockAndBadSamples )
         for ant in range(num_ants):
             raw_t, raw_v = self.ara_root.get_rf_ch_wf(ant)
             raw_len = len(raw_t) 

@@ -19,6 +19,8 @@ num_ddas = ara_const.DDA_PER_ATRI
 num_samples = ara_const.SAMPLES_PER_BLOCK
 num_blocks = ara_const.BLOCKS_PER_DDA
 num_buffers = ara_const.SAMPLES_PER_DDA
+num_eles = ara_const.CHANNELS_PER_ATRI
+num_chs = ara_const.RFCHAN_PER_DDA
 
 class ara_geom_loader:
 
@@ -538,6 +540,45 @@ class analog_buffer_info_loader:
         del remove_1_blk, cap_idx_arr, time_offset
 
         return time_0_in_blk 
+
+class repeder_loader:
+       
+    def __init__(self, ara_uproot, trim_1st_blk = False):
+
+        self.sample_range = np.arange(num_samples, dtype = int)
+        self.ara_uproot = ara_uproot
+        self.trim_1st_blk = trim_1st_blk
+       
+        dda_range = np.arange(num_ddas, dtype = int)
+        ch_range = np.arange(num_chs, dtype = int)
+        blk_range = np.arange(num_blocks, dtype = int)
+        ped_len = num_ddas * num_chs * num_blocks
+        self.ped_range = np.arange(ped_len, dtype = int)
+
+        self.ped_arr = np.full((ped_len, num_samples + 3), 0, dtype = int)
+        self.ped_arr[:, 0] = np.tile(dda_range, (num_chs, num_blocks)).flatten('F')
+        self.ped_arr[:, 1] = np.repeat(blk_range[:, np.newaxis], num_eles, axis = 1).flatten()
+        self.ped_arr[:, 2] = np.tile(ch_range, ped_len // num_chs)
+        del dda_range, ch_range, blk_range, ped_len 
+
+    def get_samp_idx(self, evt):
+
+        blk_idx_arr, blk_len = self.ara_uproot.get_block_idx(int(evt), trim_1st_blk = self.trim_1st_blk)
+        samp_idx = np.repeat(self.sample_range[:, np.newaxis], blk_len, axis = 1)
+        samp_idx += (blk_idx_arr * num_samples)[np.newaxis, :]
+        samp_idx = np.reshape(samp_idx, (num_samples * blk_len), order = 'F')
+        del blk_idx_arr, blk_len
+
+        return samp_idx
+
+    def get_pedestal_foramt(self, samp_medi_int, ele_ch):
+
+        ped_ch_range = self.ped_range[ele_ch::num_eles]
+        for row in tqdm(ped_ch_range):
+            samp_idxs = self.ped_arr[int(row), 1] * num_samples
+            self.ped_arr[int(row), 3:] = samp_medi_int[samp_idxs:samp_idxs + num_samples]
+            del samp_idxs
+        del ped_ch_range
 
 def chunk_range_maker(num_evts, chunk_size = 5000, chunk_i = None):
 

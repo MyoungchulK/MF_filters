@@ -28,7 +28,6 @@ def samp_map_collector(Data, Ped):
     from tools.ara_quality_cut import pre_qual_cut_loader
     pre_qual = pre_qual_cut_loader(ara_uproot, trim_1st_blk = True)
     pre_qual_cut = pre_qual.run_pre_qual_cut()
-    #pre_qual_cut[:,6] = 0
     pre_qual_cut_sum = np.nansum(pre_qual_cut, axis = 1)
     del pre_qual, pre_qual_cut
 
@@ -74,7 +73,7 @@ def samp_map_collector(Data, Ped):
         
         # get entry and wf
         ara_root.get_entry(clean_entry[evt])
-        ara_root.get_useful_evt(ara_root.cal_type.kOnlyGoodADC)
+        ara_root.get_useful_evt(ara_root.cal_type.kOnlyADCWithOut1stBlockAndBadSamples)
 
         # sample index
         blk_idx_arr = ara_uproot.get_block_idx(clean_entry[evt], trim_1st_blk = True)[0]
@@ -92,10 +91,10 @@ def samp_map_collector(Data, Ped):
             zero_adc_ratio[ant, evt] = post_qual.get_zero_adc_events(raw_v, len(raw_v))
             adc_max_min[0, ant, evt] = np.nanmax(raw_v)
             adc_max_min[1, ant, evt] = np.nanmin(raw_v)
-            #if pre_qual_cut_sum[evt] == 0 and trig_type[evt] == 0:
+            if pre_qual_cut_sum[evt] == 0 and trig_type[evt] == 0:
             #if pre_qual_cut_sum[evt] == 0 and trig_type[evt] != 1:
             #if trig_type[evt] != 1:
-            if trig_type[evt] == 0:
+            #if trig_type[evt] == 0:
                 samp_idx_ant = samp_idx[:,ant][~np.isnan(samp_idx[:,ant])].astype(int)
                 ara_hist.stack_in_hist(samp_idx_ant, raw_v.astype(int), ant)
                 del samp_idx_ant 
