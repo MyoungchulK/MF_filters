@@ -1,0 +1,3 @@
+
+JOB job_ARA_S3_R11650 ARA_job.sub 
+VARS job_ARA_S3_R11650 station="3" run="11650"

@@ -59,12 +59,14 @@ class ara_geom_loader:
         ant_xyz = np.full((num_useful_chs), np.nan, dtype = float)
         for ant in range(num_useful_chs):
             ant_xyz[ant] = self.st_info.getAntennaInfo(ant).antLocation
+        print('antenna location:',ant_xyz)
         return ant_xyz
 
     def get_cable_delay(self):
         cable_delay = np.full((num_useful_chs), np.nan, dtype = float)
         for ant in range(num_useful_chs):
             cable_delay[ant] = self.st_info.getAntennaInfo(ant).getCableDelay()
+        print('cable delay:',cable_delay)
         return cable_delay
 
 class ara_root_loader:
@@ -410,7 +412,7 @@ class analog_buffer_info_loader:
 
         self.blk_time = 20.
 
-        print('number of samples in even/odd block is loaded!')
+        print('number of samples in even/odd block are loaded!')
 
     def get_int_time_info(self, dt = 0.5):
 
@@ -574,7 +576,7 @@ class repeder_loader:
     def get_pedestal_foramt(self, samp_medi_int, ele_ch):
 
         ped_ch_range = self.ped_range[ele_ch::num_eles]
-        for row in tqdm(ped_ch_range):
+        for row in tqdm(ped_ch_range, ascii=False):
             samp_idxs = self.ped_arr[int(row), 1] * num_samples
             self.ped_arr[int(row), 3:] = samp_medi_int[samp_idxs:samp_idxs + num_samples]
             del samp_idxs

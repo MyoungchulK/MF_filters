@@ -24,7 +24,8 @@ def script_loader(Key = None, Station = None, Run = None, Debug = True):
     del module, method
 
     # create output dir
-    Output = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/{Key}/'
+    #Output = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/{Key}/'
+    Output = '/home/mkim/repeder/'
     print(f'Output path check:{Output}')
     if not os.path.exists(Output):
         os.makedirs(Output)

@@ -13,9 +13,31 @@ class run_info_loader:
         self.st = st
         self.run = run
 
-    def get_data_path(self, file_type = 'event', analyze_blind_dat = False, verbose = False, manual_stop = False):
+    def get_ped_path(self, verbose = False, return_none = False):
 
         ped_path = f'/data/user/mkim/OMF_filter/ARA0{self.st}/Ped/pedestalValues.run{self.run}.dat'
+
+        if os.path.exists(ped_path):
+            if verbose:
+                print(f'ped_path:{ped_path}')
+        else:
+            print('There is no desired pedestal!')
+            if return_none == True:
+                return None
+            else:
+                sys.exit(1)
+
+        return ped_path
+
+    def get_6_digit_run_number(self):
+
+        run_6_digit = list('000000')
+        run_6_digit[-len(str(self.run)):] = str(self.run)
+        run_6_digit = "".join(run_6_digit)
+
+        return run_6_digit
+
+    def get_data_path(self, file_type = 'event', analyze_blind_dat = False, verbose = False, return_none = False):
 
         if analyze_blind_dat == True:
             a2_2013_run_limit = 2820
@@ -29,46 +51,54 @@ class run_info_loader:
             dat_type = 'unblinded'
         
         if (self.st == 2 and self.run < a2_2013_run_limit) or (self.st == 3 and self.run < a3_2013_run_limit):
-            dat_goal = f'/data/exp/ARA/2013/filtered/{dat_type_2013}/ARA0{self.st}/root/run{self.run}/{file_type}{self.run}.root'
-            dat_path = glob(dat_goal)
-            dat_ls_path = glob(f'/data/exp/ARA/2013/filtered/{dat_type_2013}/ARA0{self.st}/root/run{self.run}/')
+            dat_ls_path = f'/data/exp/ARA/2013/filtered/{dat_type_2013}/ARA0{self.st}/root/run{self.run}/'
+            dat_name = f'{file_type}{self.run}.root'
         else:
-            run_6_digit = list('000000')
-            run_6_digit[-len(str(self.run)):] = str(self.run)
-            run_6_digit = "".join(run_6_digit)
-            dat_goal = f'/data/exp/ARA/*/{dat_type}/L1/ARA0{self.st}/*/run{run_6_digit}/{file_type}{run_6_digit}.root'
-            dat_path = glob(dat_goal)
-            dat_ls_path = glob(f'/data/exp/ARA/*/{dat_type}/L1/ARA0{self.st}/*/run{run_6_digit}/')
+            run_6_digit = self.get_6_digit_run_number()
+            dat_ls_path = f'/data/exp/ARA/*/{dat_type}/L1/ARA0{self.st}/*/run{run_6_digit}/'
+            dat_name = f'{file_type}{run_6_digit}.root'
+        dat_goal = dat_ls_path + dat_name
+        dat_path = glob(dat_goal)
+        dat_ls_path = glob(dat_ls_path)
+
         if len(dat_path) != 1:
-            print('There are no desired run!')
-            print(f'File on the search: {dat_goal}')
-            print(f'Possible location: {dat_ls_path}')
-            print('Files in the location:', os.listdir(dat_ls_path[0]))
-            if manual_stop == True:
-                return None, None
+            if self.st == 3 and (self.run == 2198 or self.run == 3517):
+                dat_path = dat_path[0]
             else:
-                sys.exit(1)
+                print('There is no desired data!')
+                print(f'File on the search: {dat_goal}')
+                print(f'Possible location: {dat_ls_path}')
+                print('Files in the location:', os.listdir(dat_ls_path[0]))
+                if return_none == True:
+                    return None
+                else:
+                    sys.exit(1)
         else:
             dat_path = dat_path[0]
-        
-        #dat_path = dat_path[0]
-        if os.path.exists(dat_path) and os.path.exists(ped_path):
+      
+        if os.path.exists(dat_path):
             if verbose:
                 print(f'dat_path:{dat_path}')
-                print(f'ped_path:{ped_path}')
         else:
-            print('There are no desired run!')
-            if manual_stop == True:
-                return None, None
+            print('There is no desired data!')
+            if return_none == True:
+                return None
             else:
                 sys.exit(1)
+
+        return dat_path
+
+    def get_data_ped_path(self, file_type = 'event', analyze_blind_dat = False, verbose = False, return_none = False):
+
+        dat_path = self.get_data_path(file_type = file_type, analyze_blind_dat = analyze_blind_dat, verbose = verbose, return_none = return_none)
+        ped_path = self.get_ped_path(verbose = verbose, return_none = return_none)
 
         return dat_path, ped_path
 
     def get_data_info(self):
 
         # salvage just number
-        dat_path = self.get_data_path()[0]
+        dat_path = self.get_data_path()
         dat_path_num = re.sub("\D", "", dat_path)
 
         config = self.get_config_number() 
@@ -85,7 +115,7 @@ class run_info_loader:
             date = int(dat_path_num[9:11])
 
         if self.st != station or self.run != run_num:
-            print('There are no desired run!')
+            print('Station and Run number are different!')
             sys.exit(1)
         else:
             print(f'data info. 1)station:{station} 2)run:{run_num} 3)config:{config} 4)year:{year} 5)month:{month} 6)date:{date}')
@@ -169,7 +199,9 @@ class batch_info_loader:
 
     def get_dag_file(self, path, file_type = 'event', analyze_blind_dat = False):
 
-        run_list = self.get_dat_list(file_type = file_type, analyze_blind_dat = analyze_blind_dat)[0]
+        lists = self.get_dat_list(file_type = file_type, analyze_blind_dat = analyze_blind_dat)
+
+        self.get_list_in_txt(path, lists)
 
         print('Dag making starts!')
         dag_file_name = f'{path}A{self.st}.dag'
@@ -178,7 +210,7 @@ class batch_info_loader:
         with open(dag_file_name, 'w') as f:
             f.write(statements)
 
-            for w in tqdm(run_list):
+            for w in tqdm(lists[0]):
                 statements = self.get_dag_statement(int(w))
                 with open(dag_file_name, 'a') as f:
                     f.write(statements)
@@ -186,11 +218,24 @@ class batch_info_loader:
         print('Dag making is done!')
         print(f'output is {dag_file_name}')
 
-    def get_shell_statement(self, run, script_line = 'python3 script_executor.py qual_cut'):
+    def get_list_in_txt(self, path, lists):
 
-        statements = f'{script_line} {self.st} {run}'
+        print('Text list making starts!')
+        txt_path = f'{path}/txt/'
+        if not os.path.exists(txt_path):
+            os.makedirs(txt_path)
 
-        return statements
+        label = ['run', 'bad_run', 'dupl_run']
+        for t in range(3):
+            print(f'Make {label[t]} list')
+            
+            txt_name = f'{txt_path}A{self.st}_{label[t]}_list.txt'
+            with open(txt_name, 'w') as f:
+                for l in tqdm(range(len(lists[t*2]))):
+                    statements = f'{lists[2*t][l]} {lists[2*t + 1][l]} \n'
+                    f.write(statements)                    
+
+        print('Text list making is done!')
 
     def get_dat_list(self, file_type = 'event', analyze_blind_dat = False):
         
@@ -203,17 +248,25 @@ class batch_info_loader:
         
         run_list = []
         dat_list = []
+        bad_run_list = []
+        bad_dat_list =[]
         for yrs in self.years:
             if int(yrs) == 2013:
                 dat_path = f'/data/exp/ARA/{int(yrs)}/filtered/{dat_type_2013}/ARA0{self.st}/root/run[0-9]*/{file_type}[0-9]*.root' 
             else:
                 dat_path = f'/data/exp/ARA/{int(yrs)}/{dat_type}/L1/ARA0{self.st}/[0-9][0-9][0-9][0-9]/run[0-9][0-9][0-9][0-9][0-9][0-9]/{file_type}[0-9][0-9][0-9][0-9][0-9][0-9].root'
- 
+
+            print(dat_path) 
             run_yrs_list = []
-            dat_yrs_list = glob(dat_path)
-            for d in dat_yrs_list:
-                run_num = int(re.sub("\D", "", d[-11:]))
+            dat_yrs_list_old = glob(dat_path)
+            dat_yrs_list = []
+            for d in dat_yrs_list_old:
+                num_in_str = d[-11:]
+                if num_in_str.find('_') != -1:
+                    continue
+                run_num = int(re.sub("\D", "", num_in_str))
                 run_yrs_list.append(run_num)
+                dat_yrs_list.append(d)
                 del run_num
             run_yrs_list = np.asarray(run_yrs_list)
 
@@ -227,7 +280,15 @@ class batch_info_loader:
                 wrong_idx = run_yrs_sort < 10000
             else:
                 wrong_idx = run_yrs_sort < 100
-            print(f'{int(yrs)} Wrong Run#!:{run_yrs_sort[wrong_idx]}')
+            bad_run = run_yrs_sort[wrong_idx]
+            bad_dat = []
+            print(f'{int(yrs)} Wrong Run#!:{bad_run}')
+            for w in range(len(wrong_idx)):
+                if wrong_idx[w]:
+                    bad_dat.append(dat_yrs_sort[w])
+                    print(dat_yrs_sort[w])
+            bad_run_list.extend(bad_run)
+            bad_dat_list.extend(bad_dat)
 
             right_idx = ~wrong_idx
             run_yrs_sort_right = run_yrs_sort[right_idx]
@@ -239,18 +300,42 @@ class batch_info_loader:
             run_list.extend(run_yrs_sort_right)
             dat_list.extend(dat_yrs_sort_right)
         run_list = np.asarray(run_list)
+        bad_run_list = np.asarray(bad_run_list)
+
+        # duplication check
+        dupl_run_list = []
+        dupl_dat_list = []
+        dupl = np.unique(run_list, return_index = True, return_counts=True)
+        dupl_run_num = dupl[0][dupl[2] > 1]
+        for d in dupl_run_num:
+            d = int(d)
+            dupl_run_idx = np.where(run_list == d)[0]
+            print(f'Duplicated Runs:{d}')
+            for i in dupl_run_idx:    
+                i = int(i)
+                dupl_path = dat_list[i]
+                print(f'{dupl_path}')
+                dupl_run_list.append(d)
+                dupl_dat_list.append(dupl_path)
+        dupl_run_list = np.asarray(dupl_run_list)
+
+        run_list = run_list[dupl[1]]
+        dat_list_new = []
+        for d in dupl[1]:
+            d = int(d)
+            dat_list_new.append(dat_list[d])
         print(f'Total number of runs is {len(run_list)}')
-        
+       
         # final check
         for f in range(len(run_list)):
-            run_num = int(re.sub("\D", "", dat_list[f][-11:]))
+            run_num = int(re.sub("\D", "", dat_list_new[f][-11:]))
             if run_list[f] != run_num:
                 print(run_list[f], run_num)
                 print('Run number doesnt match!')
                 sys.exit(1)
         print('All Data has a perfect match!')
 
-        return run_list, dat_list
+        return run_list, dat_list_new, bad_run_list, bad_dat_list, dupl_run_list, dupl_dat_list
 
 def file_sorter(d_path):
 

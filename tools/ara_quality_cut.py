@@ -24,7 +24,7 @@ def quick_qual_check(dat_bool, dat_idx, ser_val):
 
 class pre_qual_cut_loader:
 
-    def __init__(self, ara_uproot, trim_1st_blk = False):
+    def __init__(self, ara_uproot, trim_1st_blk = False, analyze_blind_dat = False):
 
         self.st = ara_uproot.station_id
         self.run = ara_uproot.run
@@ -36,6 +36,8 @@ class pre_qual_cut_loader:
         self.remove_1_blk = int(trim_1st_blk)
         read_win = ara_uproot.read_win
         self.blk_len_arr = read_win//num_ddas - self.remove_1_blk
+
+        self.sensor_dat = self.get_sensor_file_path(analyze_blind_dat = analyze_blind_dat)
 
     def get_bad_event_number(self):
         
@@ -64,28 +66,64 @@ class pre_qual_cut_loader:
 
         return bad_unix_evts
         
-    def get_bad_readout_win_events(self, readout_limit = 26):
+    def get_bad_readout_win_events(self, trig_type_idx = 0):
 
-        if self.st == 2:
-            if self.run < 4029:
-                readout_limit = 20
-            if self.run > 4028 and self.run < 9749:
-                readout_limit = 26
-            if self.run > 9748:
-                readout_limit = 28
-        if self.st == 3:
-            if self.run < 3104:
-                readout_limit = 20
-            if self.run > 3103 and self.run < 10001:
-                readout_limit = 26
-            if self.run > 10000:
-                readout_limit = 28
+        if trig_type_idx == 0 or trig_type_idx == 1:
+            if self.st == 2:
+                if self.run < 4029:
+                    readout_limit = 20
+                elif self.run > 4028 and self.run < 9749:
+                    readout_limit = 26
+                elif self.run > 9748:
+                    readout_limit = 28
+            elif self.st == 3:
+                if self.run < 3104:
+                    readout_limit = 20
+                elif self.run > 3103 and self.run < 10001:
+                    readout_limit = 26
+                elif self.run > 10000:
+                    readout_limit = 28
+        else:
+            if self.st == 2:
+                if self.run < 9505:
+                    readout_limit = 8
+                else:
+                    readout_limit = 12
+            elif self.st == 3:
+                if self.run < 10001: 
+                    readout_limit = 8
+                else:
+                    readout_limit = 12
         readout_limit -= self.remove_1_blk
 
-        bad_readout_win_evts = (self.blk_len_arr < readout_limit).astype(int) 
-        bad_readout_win_evts[self.trig_type != 0] = 0
+        bad_readout_win_bool = self.blk_len_arr < readout_limit
+        rf_bool = self.trig_type == trig_type_idx
+        bad_readout_win_evts = np.logical_and(bad_readout_win_bool, rf_bool)
+        del bad_readout_win_bool, rf_bool
 
-        quick_qual_check(bad_readout_win_evts != 0, self.evt_num, 'bad readout window events')
+        return bad_readout_win_evts
+
+    def get_bad_rf_readout_win_events(self):
+
+        bad_readout_win_evts = self.get_bad_readout_win_events()
+
+        quick_qual_check(bad_readout_win_evts != 0, self.evt_num, 'bad rf readout window events')
+
+        return bad_readout_win_evts
+
+    def get_bad_cal_readout_win_events(self):
+
+        bad_readout_win_evts = self.get_bad_readout_win_events(trig_type_idx = 1)
+
+        quick_qual_check(bad_readout_win_evts != 0, self.evt_num, 'bad cal readout window events') 
+
+        return bad_readout_win_evts
+
+    def get_bad_soft_readout_win_events(self):
+
+        bad_readout_win_evts = self.get_bad_readout_win_events(trig_type_idx = 2)
+
+        quick_qual_check(bad_readout_win_evts != 0, self.evt_num, 'bad soft readout window events')
 
         return bad_readout_win_evts
 
@@ -131,11 +169,11 @@ class pre_qual_cut_loader:
 
         return first_few_evts
 
-    def get_sensor_file_path(self):
+    def get_sensor_file_path(self, analyze_blind_dat = False):
 
         from tools.ara_run_manager import run_info_loader
         run_info = run_info_loader(self.st, self.run)
-        Data = run_info.get_data_path(file_type = 'sensorHk', manual_stop = True)[0]
+        Data = run_info.get_data_path(file_type = 'sensorHk', analyze_blind_dat = analyze_blind_dat, verbose = True, return_none = True)
         del run_info        
 
         return Data
@@ -144,8 +182,7 @@ class pre_qual_cut_loader:
 
         no_sensor_file_evts = np.full((len(self.evt_num)), 0, dtype = int)
 
-        Data = self.get_sensor_file_path()
-        if Data is None:
+        if self.sensor_dat is None:
             no_sensor_file_evts[:] = 1
             
         quick_qual_check(no_sensor_file_evts != 0, self.evt_num, f'no sensor file events')
@@ -157,12 +194,11 @@ class pre_qual_cut_loader:
         volt_cut = np.asarray(volt_cut, dtype = float)
         bias_volt_evts = np.full((len(self.evt_num)), 0, dtype = int)
 
-        Data = self.get_sensor_file_path()       
-        if Data is None:
+        if self.sensor_dat is None:
             return bias_volt_evts
 
         from tools.ara_data_load import ara_Hk_uproot_loader
-        ara_Hk_uproot = ara_Hk_uproot_loader(Data)
+        ara_Hk_uproot = ara_Hk_uproot_loader(self.sensor_dat)
         ara_Hk_uproot.get_sub_info()
         dda_volt = ara_Hk_uproot.get_voltage(ara_Hk_uproot.dda_volt_curr)
         sensor_unix = ara_Hk_uproot.unix_time
@@ -190,7 +226,7 @@ class pre_qual_cut_loader:
             bias_volt_evts += np.in1d(unix_digi, good_digi_idx, invert =True).astype(int)
             del good_digi_idx
         bias_volt_evts[bias_volt_evts != 0] = 1
-        del volt_cut, Data, sensor_unix, sensor_unix_len, unix_digi, dda_digi_idx, good_digi_bool
+        del volt_cut, sensor_unix, sensor_unix_len, unix_digi, dda_digi_idx, good_digi_bool
 
         quick_qual_check(bias_volt_evts != 0, self.evt_num, f'bias voltage events')
 
@@ -198,16 +234,18 @@ class pre_qual_cut_loader:
     
     def run_pre_qual_cut(self):
 
-        tot_pre_qual_cut = np.full((len(self.evt_num), 8), 0, dtype = int)
+        tot_pre_qual_cut = np.full((len(self.evt_num), 10), 0, dtype = int)
 
         tot_pre_qual_cut[:,0] = self.get_bad_event_number()
         tot_pre_qual_cut[:,1] = self.get_bad_unix_time_events()
-        tot_pre_qual_cut[:,2] = self.get_bad_readout_win_events()
-        tot_pre_qual_cut[:,3] = self.get_zero_block_events()
-        tot_pre_qual_cut[:,4] = self.get_block_gap_events()
-        tot_pre_qual_cut[:,5] = self.get_first_few_events()
-        tot_pre_qual_cut[:,6] = self.get_bias_voltage_events()
-        tot_pre_qual_cut[:,7] = self.get_no_sensor_file_events()
+        tot_pre_qual_cut[:,2] = self.get_bad_rf_readout_win_events()
+        tot_pre_qual_cut[:,3] = self.get_bad_cal_readout_win_events()
+        tot_pre_qual_cut[:,4] = self.get_bad_soft_readout_win_events()
+        tot_pre_qual_cut[:,5] = self.get_zero_block_events()
+        tot_pre_qual_cut[:,6] = self.get_block_gap_events()
+        tot_pre_qual_cut[:,7] = self.get_first_few_events()
+        tot_pre_qual_cut[:,8] = self.get_bias_voltage_events()
+        tot_pre_qual_cut[:,9] = self.get_no_sensor_file_events()
 
         quick_qual_check(np.nansum(tot_pre_qual_cut, axis = 1) != 0, self.evt_num, 'total pre qual cut!')
 

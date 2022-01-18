@@ -1,0 +1,6 @@
+3 /data/exp/ARA/2015/blinded/L1/ARA02/1125/run000003/event000003.root 
+11 /data/exp/ARA/2015/blinded/L1/ARA02/1127/run000011/event000011.root 
+50 /data/exp/ARA/2015/blinded/L1/ARA02/1201/run000050/event000050.root 
+59 /data/exp/ARA/2015/blinded/L1/ARA02/1201/run000059/event000059.root 
+60 /data/exp/ARA/2015/blinded/L1/ARA02/1201/run000060/event000060.root 
+0 /data/exp/ARA/2016/blinded/L1/ARA02/0207/run000000/event000000.root 

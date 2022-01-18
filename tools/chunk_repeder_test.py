@@ -33,14 +33,15 @@ def repeder_collector(Data, Ped, debug = False):
     if len(clean_entry) == 0:
         print('There is no passed events! Use all events...')
         clean_entry = entry_num[trig_type != 1]
-        clean_evt = evt_num[trig_trig != 1]
+        clean_evt = evt_num[trig_type != 1]
     print(f'Number of clean event is {len(clean_entry)}')
     del entry_num, evt_num, trig_type
 
     # output array
     ara_repeder = repeder_loader(ara_uproot, trim_1st_blk = True)
-    del ara_uproot
     if debug:
+        print('Debug mode!')
+        ele_ch = ara_root.ara_geom.get_ele_ch_idx()
         ara_hist = hist_loader(chs = num_eles)
         buffer_bit_range = ara_hist.y_range
         buffer_sample_range = ara_hist.x_range
@@ -48,6 +49,7 @@ def repeder_collector(Data, Ped, debug = False):
         samp_medi = np.full((num_buffers, num_eles), np.nan, dtype = float)
         samp_medi_int = np.full((num_buffers, num_eles), 0, dtype = int)
         del ara_hist
+    del ara_uproot
 
     for ant in range(num_eles):
       #if ant < 1:
@@ -57,7 +59,7 @@ def repeder_collector(Data, Ped, debug = False):
         ara_hist = hist_loader(chs = 1)
 
         # loop over the events
-        for evt in tqdm(clean_entry):
+        for evt in tqdm(clean_entry, ascii=True):
           #if evt < 10:
        
             # get entry and wf
@@ -90,7 +92,7 @@ def repeder_collector(Data, Ped, debug = False):
     del ara_repeder
 
     if debug:
-        repeder_dict = {'ped_arr':ped_arr,'clean_evt':clean_evt,'buffer_bit_range':buffer_bit_range,'buffer_sample_range':buffer_sample_range,'samp_medi':samp_medi,'samp_medi_int':samp_medi_int,'samp_map':samp_map}
+        repeder_dict = {'ped_arr':ped_arr,'ele_ch':ele_ch,'clean_evt':clean_evt,'buffer_bit_range':buffer_bit_range,'buffer_sample_range':buffer_sample_range,'samp_medi':samp_medi,'samp_medi_int':samp_medi_int,'samp_map':samp_map}
     else:
         repeder_dict = {'ped_arr':ped_arr}
 

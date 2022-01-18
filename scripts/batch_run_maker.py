@@ -7,7 +7,7 @@ curr_path = os.getcwd()
 sys.path.append(curr_path+'/../')
 from tools.ara_run_manager import batch_info_loader
 
-def batch_run_loader(Station = None, Output = None):
+def batch_run_loader(Station = None, Output = None, Analyze_Blind = False):
 
     batch_info = batch_info_loader(Station)
 
@@ -15,11 +15,11 @@ def batch_run_loader(Station = None, Output = None):
     if not os.path.exists(Output):
         os.makedirs(Output)
 
-    batch_info.get_dag_file(Output)    
+    batch_info.get_dag_file(Output, analyze_blind_dat = Analyze_Blind)    
 
 if __name__ == "__main__":
 
-    if len (sys.argv) < 3:
+    if len (sys.argv) < 4:
         Usage = """
 
     If it is data,
@@ -27,6 +27,7 @@ if __name__ == "__main__":
 
     <Station ex)2>
     <Output ex)/home/mkim/analysis/MF_filters/scripts/batch_run/wipac/>
+    <Analyze_Blind ex)0 or 1>
 
         """ %(sys.argv[0])
         print(Usage)
@@ -35,6 +36,7 @@ if __name__ == "__main__":
     # argv
     station=int(sys.argv[1])
     output=str(sys.argv[2])
+    blind=bool(int(sys.argv[3]))
 
-    batch_run_loader(Station = station, Output = output)
+    batch_run_loader(Station = station, Output = output, Analyze_Blind = blind)
  

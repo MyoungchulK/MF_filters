@@ -1,7 +1,7 @@
 import numpy as np
 from tqdm import tqdm
 
-def repeder_collector(Data, Ped, debug = False):
+def repeder_collector(Data, Ped = '0', debug = False):
 
     print('Making pedestal starts!')
 
@@ -28,9 +28,9 @@ def repeder_collector(Data, Ped, debug = False):
     entry_num = ara_uproot.entry_num
     evt_num = ara_uproot.evt_num
 
-    pre_qual = pre_qual_cut_loader(ara_uproot, trim_1st_blk = True)
+    pre_qual = pre_qual_cut_loader(ara_uproot, trim_1st_blk = True, analyze_blind_dat = True)
     pre_qual_cut = pre_qual.run_pre_qual_cut()
-    pre_qual_cut[:,7] = 0 # exclude sensor file cut
+    pre_qual_cut[:,-1] = 0 # exclude sensor file cut
     pre_qual_cut_sum = np.nansum(pre_qual_cut, axis = 1)
     del pre_qual, pre_qual_cut
 
@@ -40,21 +40,25 @@ def repeder_collector(Data, Ped, debug = False):
     if len(clean_entry) == 0:
         print('There is no passed events! Use all events...')
         clean_entry = entry_num[trig_type != 1]
-        clean_evt = evt_num[trig_trig != 1]
+        clean_evt = evt_num[trig_type != 1]
     print(f'Number of clean event is {len(clean_entry)}')
     del entry_num, evt_num, trig_type, pre_qual_cut_sum
 
     # output array
     ara_repeder = repeder_loader(ara_uproot, trim_1st_blk = True)
-    del ara_uproot
+    ele_ch = ara_root.ara_geom.get_ele_ch_idx()
+    samp_medi_int = np.full((num_buffers, num_eles), 0, dtype = int)
     if debug:
+        print('Debug mode!')
         ara_hist = hist_loader(chs = num_eles)
         buffer_bit_range = ara_hist.y_range
         buffer_sample_range = ara_hist.x_range
         samp_map = ara_hist.hist_map
         samp_medi = np.full((num_buffers, num_eles), np.nan, dtype = float)
-        samp_medi_int = np.full((num_buffers, num_eles), 0, dtype = int)
         del ara_hist
+    else:
+        print('Lite mode!')
+    del ara_uproot
 
     for ant in range(num_eles):
       #if ant < 1:
@@ -83,10 +87,10 @@ def repeder_collector(Data, Ped, debug = False):
 
         samp_medi_ant = ara_hist.get_median_est(nan_to_zero = True)
         samp_medi_ant_int = samp_medi_ant.astype(int)
+        samp_medi_int[:, ant] = samp_medi_ant_int[:, 0]
         if debug:
             samp_map[:, :, ant] = ara_hist.hist_map[:, :, 0]
             samp_medi[:, ant] = samp_medi_ant[:, 0]
-            samp_medi_int[:, ant] = samp_medi_ant_int[:, 0]
         del ara_hist
 
         ara_repeder.get_pedestal_foramt(samp_medi_ant_int[:, 0], ant)
@@ -97,9 +101,9 @@ def repeder_collector(Data, Ped, debug = False):
     del ara_repeder
 
     if debug:
-        repeder_dict = {'ped_arr':ped_arr,'clean_evt':clean_evt,'buffer_bit_range':buffer_bit_range,'buffer_sample_range':buffer_sample_range,'samp_medi':samp_medi,'samp_medi_int':samp_medi_int,'samp_map':samp_map}
+        repeder_dict = {'ped_arr':ped_arr,'ele_ch':ele_ch,'clean_evt':clean_evt,'buffer_bit_range':buffer_bit_range,'buffer_sample_range':buffer_sample_range,'samp_medi':samp_medi,'samp_medi_int':samp_medi_int,'samp_map':samp_map}
     else:
-        repeder_dict = {'ped_arr':ped_arr}
+        repeder_dict = {'ped_arr':ped_arr,'ele_ch':ele_ch,'clean_evt':clean_evt,'samp_medi_int':samp_medi_int}
 
     print('Pedestal making is done!')
 

@@ -42,7 +42,7 @@ def samp_map_collector(Data, Ped):
 
     from tools.ara_run_manager import run_info_loader
     run_info = run_info_loader(ara_uproot.station_id, ara_uproot.run)
-    Data = run_info.get_data_path(file_type = 'sensorHk', manual_stop = True)[0]
+    Data = run_info.get_data_path(file_type = 'sensorHk', return_none = True)
     if Data is None:
         print('There is no sensorHk file!')
         sensor_unix = np.asarray([unix_time[0]])
