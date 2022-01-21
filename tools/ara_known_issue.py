@@ -312,8 +312,8 @@ class known_issue_loader:
         knwon_bad_run = np.append(knwon_bad_run, special_run)
         ARARunLogDataBase = self.get_ARARunLogDataBase()
         knwon_bad_run = np.append(knwon_bad_run, ARARunLogDataBase)
-        untagged_calpulser_run = self.get_untagged_calpulser_run()
-        knwon_bad_run = np.append(knwon_bad_run, untagged_calpulser_run) 
+        #untagged_calpulser_run = self.get_untagged_calpulser_run()
+        #knwon_bad_run = np.append(knwon_bad_run, untagged_calpulser_run) 
         #software_dominant_run = self.get_software_dominant_run()
         #knwon_bad_run = np.append(knwon_bad_run, software_dominant_run)
         #del bad_surface_run, bad_run, special_run, untagged_calpulser_run, software_dominant_run    

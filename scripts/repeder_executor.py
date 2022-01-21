@@ -12,8 +12,8 @@ from tools.utility import size_checker
 def script_loader(Key = None, Station = None, Run = None, Debug = False):
 
     # get run info
-    run_info = run_info_loader(Station, Run)
-    Data = run_info.get_data_path(analyze_blind_dat = True, verbose = True)
+    run_info = run_info_loader(Station, Run, analyze_blind_dat = True)
+    Data = run_info.get_data_path(verbose = True)
     Station, Run, Config, Year, Month, Date = run_info.get_data_info()
     del run_info   
  

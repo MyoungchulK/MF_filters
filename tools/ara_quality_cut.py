@@ -172,8 +172,8 @@ class pre_qual_cut_loader:
     def get_sensor_file_path(self, analyze_blind_dat = False):
 
         from tools.ara_run_manager import run_info_loader
-        run_info = run_info_loader(self.st, self.run)
-        Data = run_info.get_data_path(file_type = 'sensorHk', analyze_blind_dat = analyze_blind_dat, verbose = True, return_none = True)
+        run_info = run_info_loader(self.st, self.run, analyze_blind_dat = analyze_blind_dat)
+        Data = run_info.get_data_path(file_type = 'sensorHk', verbose = True, return_none = True)
         del run_info        
 
         return Data

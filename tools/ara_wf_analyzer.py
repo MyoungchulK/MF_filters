@@ -136,7 +136,7 @@ class hist_loader:
     def get_median_est(self, nan_to_zero = False):
 
         medi_est = np.full((self.x_len, self.chs), np.nan, dtype = float)
-        for x in tqdm(self.x_range, ascii=False):
+        for x in tqdm(self.x_range, ascii=True):
             for ant in range(self.chs):
                 medi_est[x, ant] = self.get_median_from_hist(x, ant)
         if nan_to_zero == True:

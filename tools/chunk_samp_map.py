@@ -26,8 +26,12 @@ def samp_map_collector(Data, Ped):
     clean_entry = ara_uproot.entry_num
 
     from tools.ara_quality_cut import pre_qual_cut_loader
-    pre_qual = pre_qual_cut_loader(ara_uproot, trim_1st_blk = True)
+    pre_qual = pre_qual_cut_loader(ara_uproot, trim_1st_blk = True, analyze_blind_dat = False)
     pre_qual_cut = pre_qual.run_pre_qual_cut()
+    
+    print(pre_qual_cut.shape)
+    pre_qual_cut[:,-1] = 0    
+
     pre_qual_cut_sum = np.nansum(pre_qual_cut, axis = 1)
     del pre_qual, pre_qual_cut
 
@@ -41,8 +45,8 @@ def samp_map_collector(Data, Ped):
     trig_type = ara_uproot.get_trig_type()
 
     from tools.ara_run_manager import run_info_loader
-    run_info = run_info_loader(ara_uproot.station_id, ara_uproot.run)
-    Data = run_info.get_data_path(file_type = 'sensorHk', return_none = True)
+    run_info = run_info_loader(ara_uproot.station_id, ara_uproot.run, analyze_blind_dat = False)
+    Data = run_info.get_data_path(file_type = 'sensorHk', return_none = True, verbose = True)
     if Data is None:
         print('There is no sensorHk file!')
         sensor_unix = np.asarray([unix_time[0]])
@@ -68,7 +72,7 @@ def samp_map_collector(Data, Ped):
     zero_adc_ratio = post_qual.zero_adc_ratio 
 
     # loop over the events
-    for evt in tqdm(range(len(clean_evt))):
+    for evt in tqdm(range(len(clean_evt)), ascii = True):
       #if evt < 100:
         
         # get entry and wf
@@ -91,6 +95,10 @@ def samp_map_collector(Data, Ped):
             zero_adc_ratio[ant, evt] = post_qual.get_zero_adc_events(raw_v, len(raw_v))
             adc_max_min[0, ant, evt] = np.nanmax(raw_v)
             adc_max_min[1, ant, evt] = np.nanmin(raw_v)
+        
+            if np.nanmax(raw_v) > 2500:
+                continue
+
             if pre_qual_cut_sum[evt] == 0 and trig_type[evt] == 0:
             #if pre_qual_cut_sum[evt] == 0 and trig_type[evt] != 1:
             #if trig_type[evt] != 1:

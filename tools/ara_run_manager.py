@@ -8,10 +8,11 @@ from subprocess import call
 
 class run_info_loader:
 
-    def __init__(self, st, run):
+    def __init__(self, st, run, analyze_blind_dat = False):
 
         self.st = st
         self.run = run
+        self.analyze_blind_dat = analyze_blind_dat
 
     def get_ped_path(self, verbose = False, return_none = False):
 
@@ -37,9 +38,9 @@ class run_info_loader:
 
         return run_6_digit
 
-    def get_data_path(self, file_type = 'event', analyze_blind_dat = False, verbose = False, return_none = False):
+    def get_data_path(self, file_type = 'event', verbose = False, return_none = False):
 
-        if analyze_blind_dat == True:
+        if self.analyze_blind_dat == True:
             a2_2013_run_limit = 2820
             a3_2013_run_limit = 1930
             dat_type_2013 = 'full2013Data'
@@ -65,7 +66,7 @@ class run_info_loader:
             if self.st == 3 and (self.run == 2198 or self.run == 3517):
                 dat_path = dat_path[0]
             else:
-                print('There is no desired data!')
+                print(f'There is no desired {file_type} data!')
                 print(f'File on the search: {dat_goal}')
                 print(f'Possible location: {dat_ls_path}')
                 print('Files in the location:', os.listdir(dat_ls_path[0]))
@@ -78,9 +79,9 @@ class run_info_loader:
       
         if os.path.exists(dat_path):
             if verbose:
-                print(f'dat_path:{dat_path}')
+                print(f'{file_type}_dat_path:{dat_path}')
         else:
-            print('There is no desired data!')
+            print(f'There is no desired {file_type} data!')
             if return_none == True:
                 return None
             else:
@@ -88,9 +89,9 @@ class run_info_loader:
 
         return dat_path
 
-    def get_data_ped_path(self, file_type = 'event', analyze_blind_dat = False, verbose = False, return_none = False):
+    def get_data_ped_path(self, file_type = 'event', verbose = False, return_none = False):
 
-        dat_path = self.get_data_path(file_type = file_type, analyze_blind_dat = analyze_blind_dat, verbose = verbose, return_none = return_none)
+        dat_path = self.get_data_path(file_type = file_type, verbose = verbose, return_none = return_none)
         ped_path = self.get_ped_path(verbose = verbose, return_none = return_none)
 
         return dat_path, ped_path
@@ -104,7 +105,10 @@ class run_info_loader:
         config = self.get_config_number() 
         year = int(dat_path_num[:4])
         if year == 2013:
-            station = int(dat_path_num[7:9])
+            if self.analyze_blind_dat == True:
+                station = int(dat_path_num[8:10])
+            else:
+                station = int(dat_path_num[7:9])
             run_num = int(re.sub("\D", "", dat_path[-11:]))
             month = -1
             date = -1
