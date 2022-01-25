@@ -22,22 +22,3 @@ class ara_const:
         self.USEFUL_CHAN_PER_STATION = 16
         self.BUFFER_BIT_RANGE = 4096 # 12bits
         
-        """
-        # calibration mode
-        self.kNoCalib                         = ROOT.AraCalType.kNoCalib                         # The 260 samples straight from raw data
-        self.kJustUnwrap                      = ROOT.AraCalType.kJustUnwrap                      # The X good samples from raw data (260-hitbus)
-        self.kJustPed                         = ROOT.AraCalType.kJustPed                         # Just subtract peds
-        self.kADC                             = ROOT.AraCalType.kADC                             # Same as kNoCalib -- i.e. useless
-        self.kVoltageTime                     = ROOT.AraCalType.kVoltageTime                     # Using 1 and 2.6
-        self.kFirstCalib                      = ROOT.AraCalType.kFirstCalib                      # First attempt at a calibration by RJN
-        self.kFirstCalibPlusCables            = ROOT.AraCalType.kFirstCalibPlusCables            # Same as First Calib but also doing the cable delays
-        self.kSecondCalib                     = ROOT.AraCalType.kSecondCalib                     # Same as first calib but also doing the clock alignment
-        self.kSecondCalibPlusCables           = ROOT.AraCalType.kSecondCalibPlusCables           # Same as second calib but also doing the clock alignment
-        self.kSecondCalibPlusCablesUnDiplexed = ROOT.AraCalType.kSecondCalibPlusCablesUnDiplexed # Same as secondCalibPlusCableDelays but with the undiplexing of diplexed channels in ARA_STATION1
-        self.kLatestCalib                     = ROOT.AraCalType.kLatestCalib                     # Currenly this is kSecondCalibPlusCables
-        self.kLatestCalib14to20_Bug           = ROOT.AraCalType.kLatestCalib14to20_Bug           # new calibration type: everything except voltage calibration. Will reproduce "kLatestCalib" bug present from between ~2014 to September 2020. Use with caution!
-        self.kLatestCalibWithOutZeroMean      = ROOT.AraCalType.kLatestCalibWithOutZeroMean      # Performs every calibration except the ADC and Voltage zero meaning
-        self.kOnlyPed                         = ROOT.AraCalType.kOnlyPed                         # Get the pedestal values for the corresponding raw WF
-        self.kOnlyGoodPed                     = ROOT.AraCalType.kOnlyGoodPed                     # Get the pedestal values for the corresponding raw WF without bad samples
-        self.kOnlyGoodADC                     = ROOT.AraCalType.kOnlyGoodADC                     # Get the raw ADC WF without bad samples and pedestal subtraction
-        """

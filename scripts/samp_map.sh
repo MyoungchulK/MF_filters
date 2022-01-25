@@ -1,9 +1,5 @@
 source ../../AraSoft/for_local_araroot.sh
 
-python3 script_executor.py samp_map 3 10025
-python3 script_executor.py samp_map 3 10026
-python3 script_executor.py samp_map 3 10027
-python3 script_executor.py samp_map 3 10028
 python3 script_executor.py samp_map 3 10029
 python3 script_executor.py samp_map 3 10030
 python3 script_executor.py samp_map 3 10032

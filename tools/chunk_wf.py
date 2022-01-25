@@ -12,7 +12,7 @@ def wf_collector(Data, Ped, Station, Year, sel_evts = None):
     from tools.ara_data_load import analog_buffer_info_loader
     from tools.ara_constant import ara_const
     from tools.ara_wf_analyzer import wf_analyzer
-  
+
     # const. info.
     ara_const = ara_const()
     num_Ants = ara_const.USEFUL_CHAN_PER_STATION
@@ -86,8 +86,10 @@ def wf_collector(Data, Ped, Station, Year, sel_evts = None):
         
         # get entry and wf
         ara_root.get_entry(sel_entries[evt])
-        ara_root.get_useful_evt(ara_root.cal_type.kOnlyADCWithOut1stBlockAndBadSamples)
-        #ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
+        #ara_root.get_useful_evt(ara_root.cal_type.kOnlyADCWithOut1stBlock)
+        #ara_root.get_useful_evt(ara_root.cal_type.kOnlyADCWithOut1stBlockAndBadSamples)
+        #ara_root.get_useful_evt(ara_root.cal_type.kOnlyPedWithOut1stBlockAndBadSamples)
+        ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
 
         # buffer info
         blk_idx_arr, blk_idx_len = ara_uproot.get_block_idx(sel_entries[evt], trim_1st_blk = True)

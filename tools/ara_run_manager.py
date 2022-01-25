@@ -189,7 +189,7 @@ class batch_info_loader:
     def __init__(self, st):
 
         self.st = st
-        self.years = np.arange(2013,2019, dtype = int)
+        self.years = np.arange(2013,2020, dtype = int)
         if self.st == 3:
             self.years = self.years[self.years != 2017]
 

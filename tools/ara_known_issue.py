@@ -39,12 +39,48 @@ class known_issue_loader:
 
         return good_ant
 
+    def get_unchecked_unixtime(self, unix_time):
+
+        bad_unix_time = False
+
+        """if self.st == 2:
+
+            if (( and ) or 
+            ( and )):
+
+                bad_unix_time = True
+        """
+        if self.st == 3:
+
+            if ((unix_time>=1383884594 and unix_time<=1383886064) or # 1751 2013/11/08 unknown signal
+            (unix_time>=1516349134 and unix_time<=1516349760) or # 10034 2018/01/19 unknown hpol signal
+            (unix_time>=1518047608 and unix_time<=1518049306) or # 10158 2018/02/07 unknown signal 
+            (unix_time>=1521727312 and unix_time<=1521748910) or # 10436 ~ 10437 2018/03/22 unknown signal
+            (unix_time>=1526664593 and unix_time<=1526665370) or # 10974 2018/05/18 unknown signal
+            (unix_time>=1527926151 and unix_time<=1527943352) or # 11109 ~ 11110 2018/06/02 unknown signal
+            (unix_time>=1530769887 and unix_time<=1530773070) or # 11428 2018/07/04 unknown signal
+            (unix_time>=1530777833 and unix_time<=1530788625) or # 11430 2018/07/05 unknown signal
+            (unix_time>=1530788637 and unix_time<=1530789085) or # 11431 2018/07/05 unknown signal
+            (unix_time>=1530799442 and unix_time<=1530810237) or # 11432 2018/07/05 unknown signal
+            (unix_time==1534243026) or # 11802 2018/08/14 evt7 possible untagged calpulser
+            (unix_time>=1542402000 and unix_time<=1542403662) or # 12734 2018/11/16 unknown signal
+            (unix_time>=1545944323 and unix_time<=1545947134) or # 13049 ~ 13050 2018/11/16 unknown signal
+            (unix_time>=1546022641 and unix_time<=1546025431) or # 13059 2018/12/28 unknown signal
+            (unix_time>=1546276704 and unix_time<=1546287501)): # 13086 2018/12/31 possible noise mode
+
+                bad_unix_time = True
+
+        elif self.st == 5:
+            pass
+
+        return bad_unix_time
+
     def get_bad_unixtime(self, unix_time):
 
         # masked unixtime(2014~2016) from brian's analysis
         # https://github.com/clark2668/a23_analysis_tools/blob/a7093ab2cbd6b743e603c23b9f296bf2bcce032f/tools_Cuts.h#L503
 
-        bad_unit_time = False
+        bad_unix_time = False
 
         if self.st == 2:
 
@@ -183,7 +219,7 @@ class known_issue_loader:
             (unix_time>=1476221400 and unix_time<=1476222300)): # from run 8069 balloon 22hr // has CW contam cal pulsers
             # (unix_time>=1476479700 and unix_time<=1476481800) # from run 8084 balloon 22hr
 
-                bad_unit_time = True
+                bad_unix_time = True
 
         elif self.st == 3:
 
@@ -296,12 +332,12 @@ class known_issue_loader:
             (unix_time>=1475530500 and unix_time<=1475531700) or # from run 7584 could be balloon
             (unix_time>=1476221400 and unix_time<=1476222600)): # from run 7625 could be balloon
 
-                bad_unit_time = True
+                bad_unix_time = True
 
         elif self.st == 5:
             pass
 
-        return bad_unit_time
+        return bad_unix_time
 
     def get_knwon_bad_run(self):
 

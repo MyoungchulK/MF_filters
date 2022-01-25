@@ -52,7 +52,7 @@ class pre_qual_cut_loader:
 
         return bad_evt_num
 
-    def get_bad_unix_time_events(self, add_unchecked_unix_time = False):
+    def get_bad_unix_time_events(self):
 
         from tools.ara_known_issue import known_issue_loader
         ara_known_issue = known_issue_loader(self.st)
@@ -60,11 +60,6 @@ class pre_qual_cut_loader:
         bad_unix_evts = np.full((len(self.unix_time)), 0, dtype = int)
         for evt in range(len(self.unix_time)):
             bad_unix_evts[evt] = ara_known_issue.get_bad_unixtime(self.unix_time[evt])
-        
-        if add_unchecked_unix_time == True:
-            for evt in range(len(self.unix_time)):
-                if ara_known_issue.get_unchecked_unixtime(self.unix_time[evt]):
-                   bad_unix_evts[evt] = 1 
         del ara_known_issue
 
         quick_qual_check(bad_unix_evts != 0, self.evt_num, 'bad unix time')
@@ -237,38 +232,12 @@ class pre_qual_cut_loader:
 
         return bias_volt_evts
    
-    def get_no_calpulser_events(self, ratio_cut = 0.02, apply_bias_volt = None):
-     
-        no_cal_evts = np.full((len(self.evt_num)), 0, dtype = int)
-        if self.st == 3 and self.run < 1429:
-            return no_cal_evts
-
-        if apply_bias_volt is not None:
-            trig_type_evt = self.trig_type[apply_bias_volt == 0]
-        else:
-            trig_type_evt = self.trig_type
-       
-        num_evts = len(trig_type_evt)
-        if num_evts != 0:
-            num_cal_evts = np.count_nonzero(trig_type_evt == 1)
-            cal_evt_ratio = num_cal_evts / num_evts
-        else:
-            cal_evt_ratio = np.nan
-        del num_evts
-
-        if cal_evt_ratio < ratio_cut:
-            no_cal_evts[:] = 1
-
-        quick_qual_check(no_cal_evts != 0, self.evt_num, f'no calpulser events')
-
-        return no_cal_evts
-
     def run_pre_qual_cut(self):
 
-        tot_pre_qual_cut = np.full((len(self.evt_num), 11), 0, dtype = int)
+        tot_pre_qual_cut = np.full((len(self.evt_num), 10), 0, dtype = int)
 
         tot_pre_qual_cut[:,0] = self.get_bad_event_number()
-        tot_pre_qual_cut[:,1] = self.get_bad_unix_time_events(add_unchecked_unix_time = True)
+        tot_pre_qual_cut[:,1] = self.get_bad_unix_time_events()
         tot_pre_qual_cut[:,2] = self.get_bad_rf_readout_win_events()
         tot_pre_qual_cut[:,3] = self.get_bad_cal_readout_win_events()
         tot_pre_qual_cut[:,4] = self.get_bad_soft_readout_win_events()
@@ -276,8 +245,7 @@ class pre_qual_cut_loader:
         tot_pre_qual_cut[:,6] = self.get_block_gap_events()
         tot_pre_qual_cut[:,7] = self.get_first_few_events()
         tot_pre_qual_cut[:,8] = self.get_bias_voltage_events()
-        tot_pre_qual_cut[:,9] = self.get_no_calpulser_events(apply_bias_volt = tot_pre_qual_cut[:,8])
-        tot_pre_qual_cut[:,10] = self.get_no_sensor_file_events()
+        tot_pre_qual_cut[:,9] = self.get_no_sensor_file_events()
 
         quick_qual_check(np.nansum(tot_pre_qual_cut, axis = 1) != 0, self.evt_num, 'total pre qual cut!')
 
