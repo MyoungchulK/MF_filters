@@ -66,7 +66,22 @@ class known_issue_loader:
             (unix_time>=1542402000 and unix_time<=1542403662) or # 12734 2018/11/16 unknown signal
             (unix_time>=1545944323 and unix_time<=1545947134) or # 13049 ~ 13050 2018/11/16 unknown signal
             (unix_time>=1546022641 and unix_time<=1546025431) or # 13059 2018/12/28 unknown signal
-            (unix_time>=1546276704 and unix_time<=1546287501)): # 13086 2018/12/31 possible noise mode
+            (unix_time>=1546276704 and unix_time<=1546287501) or # 13086 2018/12/31 possible noise mode
+            (unix_time>=1546553509 and unix_time<=1546554116) or # 13113 2019/01/03 unknown signal
+            (unix_time>=1548202563 and unix_time<=1548213359) or # 13265 2019/01/22 unknown signal
+            (unix_time>=1548285602 and unix_time<=1548300827) or # 13273 ~ 13274 2019/01/23 unknown signal
+            (unix_time>=1548358209 and unix_time<=1548377141) or # 13282 ~ 13283 2019/01/24 unknown signal
+            (unix_time>=1548382029 and unix_time<=1548382641) or # 13284 2019/01/24 unknown signal
+            (unix_time>=1548444038 and unix_time<=1548454827) or # 13291 2019/01/25 unknown signal
+            (unix_time>=1548903559 and unix_time<=1548903984) or # 13338 2019/01/30 unknown signal
+            (unix_time>=1549067558 and unix_time<=1549067752) or # 13356 2019/02/01 unknown signal
+            (unix_time>=1549916886 and unix_time<=1549918464) or # 13443 ~ 13444 2019/02/11 unknown signal
+            (unix_time>=1550288014 and unix_time<=1550288043) or # 13482 2019/02/15 unknown signal
+            (unix_time>=1571810125 and unix_time<=1571813629) or # 16020 ~ 16021 2019/10/22 ~ 23 possible surface activity
+            (unix_time==1574488878) or # 16307 2019/11/22 possible surface activity
+            (unix_time>=1574883653 and unix_time<=1574898070) or # 16347 ~ 16348 2019/11/27 possible noise mode
+            (unix_time>=1575062329 and unix_time<=1575073417) or # 16365 ~ 16366 2019/11/29 possible pulser signal
+            (unix_time>=1575824828 and unix_time<=1575829147)): # 16450 2019/12/08 possible pulser signal
 
                 bad_unix_time = True
 
@@ -344,15 +359,15 @@ class known_issue_loader:
         bad_surface_run = self.get_bad_surface_run()
         bad_run = self.get_bad_run()
         knwon_bad_run = np.append(bad_surface_run, bad_run)
-        special_run = self.get_L0_to_L1_Processing_Special_run()
-        knwon_bad_run = np.append(knwon_bad_run, special_run)
+        L0_to_L1_Processing = self.get_L0_to_L1_Processing_run()
+        knwon_bad_run = np.append(knwon_bad_run, L0_to_L1_Processing)
         ARARunLogDataBase = self.get_ARARunLogDataBase()
         knwon_bad_run = np.append(knwon_bad_run, ARARunLogDataBase)
         #untagged_calpulser_run = self.get_untagged_calpulser_run()
         #knwon_bad_run = np.append(knwon_bad_run, untagged_calpulser_run) 
         #software_dominant_run = self.get_software_dominant_run()
         #knwon_bad_run = np.append(knwon_bad_run, software_dominant_run)
-        #del bad_surface_run, bad_run, special_run, untagged_calpulser_run, software_dominant_run    
+        #del bad_surface_run, bad_run, L0_to_L1_Processing, untagged_calpulser_run, software_dominant_run    
         print(f'Total number of known bad runs are {len(knwon_bad_run)}')
 
         return knwon_bad_run
@@ -375,7 +390,7 @@ class known_issue_loader:
         # array for bad run
         bad_run = np.array([], dtype=int)
 
-        logs_path = '../data/ARARunLogDataBase/logs/'
+        logs_path = '../data/ARARunLogDataBase/'
         logs_file_name = f'{logs_path}a{self.st}_log.txt'
 
         if self.st == 2 or self.st == 3:            
@@ -387,114 +402,22 @@ class known_issue_loader:
 
         return bad_run
 
-    def get_L0_to_L1_Processing_Special_run(self):
+    def get_L0_to_L1_Processing_run(self):
 
         # from http://ara.icecube.wisc.edu/wiki/index.php/Data_processing_and_storage_plan
         # array for bad run
         bad_run = np.array([], dtype=int)
 
-        if self.st == 2:
-    
-            # 2014
-            #bad_run = np.append(bad_run, [2848, 2975, 2978, 2979, 3080, 3097, 3099]) # Half disk runs
-            bad_run = np.append(bad_run, [3566, 2956, 2966, 2971, 4440, 2817, 2894, 2837, 2899, 
-                                        2847, 2842, 2817, 4143, 2877, 2946, 2951, 2922, 2920, 
-                                        2930, 2928, 2921, 2909, 2923, 2857, 2917, 2925, 2926, 
-                                        2936, 2927, 2867, 2929, 2817, 2827, 2887, 2832, 2976, 2981]) # small runs
-            #bad_run = np.append(bad_run, [2811, 2812, 2813, 2814, 2815, 2816, 2817, 2818, 2819]) # Moved runs
+        Year = np.arange(2014, 2020, dtype = int)
+        Type = 'small'
+        small_run_path = '../data/Data_processing_and_storage_plan/'
+       
+        if self.st == 2 or self.st == 3: 
+            for yrs in Year:
+                small_run_file_name = f'a{self.st}_{int(yrs)}_{Type}_run.txt'
+                small_run = np.loadtxt(small_run_path + small_run_file_name, dtype = int)    
 
-            # 2015
-            #bad_run = np.append(bad_run, [4820, 4821, 4822, 4823, 4825]) # Half disk runs
-            bad_run = np.append(bad_run, [6166, 6141, 6042]) # small runs
-            #bad_run = np.append(bad_run, [4762, 4763]) # Moved runs
-            
-            # 2016
-            #bad_run = np.append(bad_run, []) # Half disk runs
-            bad_run = np.append(bad_run, [7674, 7678, 7680, 7673, 7681, 7676, 7679]) # small runs
-            #bad_run = np.append(bad_run, 6645) # Moved runs
-
-            # 2017
-            #bad_run = np.append(bad_run, [8530, 8575]) # Half disk runs
-            """bad_run = np.append(bad_run, [8761, 8752, 8758, 8755, 8757, 8753, 8751, 8748, 8750, 
-                                        8749, 8756, 8759, 8754, 8760, 1, 9044, 9049, 9047, 9050, 
-                                        9052, 9048, 9053, 9042, 9043, 9046, 9045, 9041, 9051, 8656, 8657]) # small runs"""
-            bad_run = np.append(bad_run, [8761, 8752, 8758, 8755, 8757, 8753, 8751, 8748, 8750,
-                                        8749, 8756, 8759, 8754, 8760, 9044, 9049, 9047, 9050,
-                                        9052, 9048, 9053, 9042, 9043, 9046, 9045, 9041, 9051, 8656, 8657]) # small runs
-            #bad_run = np.append(bad_run, []) # Moved runs
-            #bad_run = np.append(bad_run, 8530) # Duplicate runs
-
-            # 2018
-            #bad_run = np.append(bad_run, []) # Half disk runs
-            bad_run = np.append(bad_run, [9964, 9968, 9965, 9966, 9967, 9984, 9987, 9986, 9985, 9983, 12338, 9560, 
-                                        12040, 12042, 12043, 12041, 12044, 9769, 9778, 9834, 11632, 11630, 11628, 
-                                        11637, 11638, 11631, 11633, 11635, 11627, 11639, 11640, 11641, 11634, 11636, 
-                                        11629, 12528, 12529, 12436, 12465, 11274, 10435, 10440, 10441, 10434, 10439, 
-                                        10438, 10437, 10436, 9562, 9508, 12445, 12444, 11138, 11139, 11142, 11145, 
-                                        11140, 11144, 11141, 11143, 9772, 9795, 9777, 9779, 11256, 11252, 11240, 11249, 
-                                        11260, 11261, 11273, 11262, 11271, 11253, 11237, 11272, 11250, 11239, 11259, 
-                                        11235, 11246, 11242, 11238, 11258, 11265, 11267, 11247, 11255, 11263, 11241, 
-                                        11264, 11243, 11234, 11257, 11233, 11268, 11245, 11236, 11251, 11248, 11270, 
-                                        11266, 11269, 11254, 11244, 11136, 11129, 11137, 11135, 11134, 11133, 11130, 
-                                        11132, 11128, 11131, 9747, 9783, 9746, 9782, 11458, 11415, 11453, 11454, 11456, 
-                                        11410, 11439, 11451, 11428, 11429, 11452, 11449, 11434, 11412, 11417, 11441, 
-                                        11421, 11444, 11423, 11418, 11427, 11422, 11425, 11413, 11438, 11414, 11440, 
-                                        11442, 11420, 11446, 11432, 11457, 11430, 11426, 11455, 11416, 11459, 11448, 
-                                        11419, 11437, 11436, 11424, 11450, 11409, 11431, 11435, 11445, 11433, 11447, 
-                                        11411, 11443, 9776, 9774, 12586, 9781, 9770, 9824, 9833, 9835, 9836, 9842, 12315, 
-                                        12303, 12319, 12302, 12294, 12298, 12300, 12321, 12311, 12296, 12313, 12310, 
-                                        12297, 12306, 12309, 12295, 12320, 12308, 12317, 12301, 12305, 12318, 12304, 
-                                        12307, 12316, 12299, 12530, 9768, 9784, 9841, 9773, 9811, 12394, 12324, 12322, 
-                                        12323, 11027, 11028, 11041, 11032, 11035, 11024, 11022, 11023, 11034, 11029, 
-                                        11025, 11036, 11042, 11031, 11026, 11039, 11033, 11040, 11020, 11030, 11038, 
-                                        11037, 11021, 10794, 10796, 10797, 10795]) # small runs
-            #bad_run = np.append(bad_run, []) # Moved runs
-            #bad_run = np.append(bad_run, [12446, 11076, 9517, 9519, 9518, 9611, 9612]) # Duplicate runs
-            #bad_run = np.append(bad_run, []) # Bad directory structure runs
-
-        elif self.st == 3:
-
-            # 2014
-            #bad_run = np.append(bad_run, [2116, 2137, 2198]) # Half disk runs
-            bad_run = np.append(bad_run, [2012, 2017, 1957, 1962, 1947, 2165, 2078, 2058, 2053, 2063, 1992, 1967, 
-                                        1977, 1932, 2103, 1927, 1942, 1937, 2033, 2041, 2035, 2031, 2034, 2027]) # small runs
-            #bad_run = np.append(bad_run, [1922, 1924, 1925, 1926, 1927, 929]) # Moved runs
-
-            # 2015
-            """bad_run = np.append(bad_run, [3945, 3943, 3921, 3933, 3947, 3928, 3932, 3934, 3936, 3944, 3966, 3919, 
-                                        3942, 3972, 3953, 3957, 3961, 3927, 3971, 3974, 3925, 3962, 3951, 3965, 
-                                        3968, 3950, 3963, 3931, 3952, 3941, 3940, 3955, 3967, 3946, 3852, 3859, 
-                                        3849, 3858, 3847, 3844, 3851, 3854, 3848, 3855, 3860, 3845, 3853, 3850, 
-                                        3846, 3857, 3856]) # Half disk runs"""
-            #bad_run = np.append(bad_run, []) # small runs
-            #bad_run = np.append(bad_run, [3784, 3785]) # Moved runs
-
-            # 2016
-            #bad_run = np.append(bad_run, []) # Half disk runs
-            bad_run = np.append(bad_run, [6214, 6294, 6289, 6354, 6318, 6337, 6315, 6364, 6305, 6317, 6297, 6291]) # small runs
-            #bad_run = np.append(bad_run, 6159) # Moved runs
-
-            # 2018
-            #bad_run = np.append(bad_run, []) # Half disk runs
-            """bad_run = np.append(bad_run, [1304, 1288, 1304, 1288, 1300, 1302, 1658, 1654, 1662, 1652, 1688, 10066, 
-                                        1689, 1809, 1774, 1796, 1798, 1785, 1766, 1668, 1771, 1650, 1694, 1814, 1700, 
-                                        1686, 1770, 1763, 1791, 1690, 1804, 1767, 1786, 1783, 1680, 1795, 1776, 1775, 
-                                        1768, 1808, 1773, 1788, 1790, 1806, 1779, 1801, 1717, 1799, 1781, 1789, 1764, 
-                                        1811, 1685, 1769, 1671, 1687, 1765, 1805, 1800, 1663, 1675, 1793, 1803, 1780, 
-                                        1784, 82643, 102, 103, 1778, 1684, 1706, 1794, 1810, 10169, 12884, 1360, 1664, 
-                                        1661, 1304, 1288, 1300, 1302, 13040, 1347, 12759, 12925, 1352, 1660, 1345, 
-                                        11933, 11934]) # small runs"""
-            bad_run = np.append(bad_run, [10066,
-                                        82643, 10169, 12884,
-                                        13040, 12759, 12925,
-                                        11933, 11934]) # small runs
-            #bad_run = np.append(bad_run, []) # Moved runs
-            #bad_run = np.append(bad_run, [1726, 1747, 12884, 11335, 1746, 10002, 10029, 10028, 10004, 10020]) # Duplicate runs
-            #bad_run = np.append(bad_run, []) # Bad directory structure runs
-            #bad_run = np.append(bad_run, [1643, 1646, 1726, 1727, 10035, 10042, 10043, 10051, 10052, 10053]) # Consolidated L1 pieces
-
-        else:
-            pass
+                bad_run = np.append(bad_run, small_run)
 
         return bad_run
 
@@ -526,7 +449,7 @@ class known_issue_loader:
         # array for bad run
         bad_run = np.array([], dtype=int)
 
-        untagged_cal_path = '../data/a23_analysis_tools/data/'
+        untagged_cal_path = '../data/a23_analysis_tools/'
         untagged_cal_file_name = f'{untagged_cal_path}A{self.st}_new_untagged_calpul.txt'
 
         if self.st == 3:
@@ -638,14 +561,17 @@ class known_issue_loader:
         if self.st == 2:
 
             ## 2013 ##
+            # L1 data is already excluded the calibration run written in wiki
 
             ## 2014 ##
             # 2014 rooftop pulsing, http://ara.icecube.wisc.edu/wiki/index.php/Run_Log_2014
-            bad_run = np.append(bad_run, [3120, 3242])
+            bad_run = np.append(bad_run, 3120)
 
             # 2014 surface pulsing
             # originally flagged by 2884, 2895, 2903, 2912, 2916
             # going to throw all runs jan 14-20
+            bad_run = np.append(bad_run, np.arange(2884, 2918+1))
+            """
             bad_run = np.append(bad_run, 2884) # jan 14 2014 surface pulser runs. actual problem causer
             bad_run = np.append(bad_run, [2885, 2889, 2890, 2891, 2893]) # exclusion by proximity
 
@@ -661,6 +587,7 @@ class known_issue_loader:
 
             bad_run = np.append(bad_run, 2916) # jan 20 2014 surface pulser runs. actual problem causer
             bad_run = np.append(bad_run, 2918) # exclusion by proximity
+            """
 
             # surface pulsing from m richman (identified by MYL http://ara.physics.wisc.edu/cgi-bin/DocDB/ShowDocument?docid=1889 slide 14)
             bad_run = np.append(bad_run, [2938, 2939])
@@ -668,24 +595,28 @@ class known_issue_loader:
             # 2014 Cal pulser sweep, http://ara.icecube.wisc.edu/wiki/index.php/Run_Log_2014
             bad_run = np.append(bad_run, np.arange(3139, 3162+1))
             bad_run = np.append(bad_run, np.arange(3164, 3187+1))
+            
+            # 2014 rooftop pulsing
+            bad_run = np.append(bad_run, 3242)
+
+            # 2014 Cal pulser sweep, http://ara.icecube.wisc.edu/wiki/index.php/Run_Log_2014
             bad_run = np.append(bad_run, np.arange(3289, 3312+1))
 
-            """
             # ARA02 stopped sending data to radproc. Alert emails sent by radproc.
             # http://ara.icecube.wisc.edu/wiki/index.php/Run_Log_2014
             # http://ara.icecube.wisc.edu/wiki/index.php/Drop_29_3_2014_ara02
             bad_run = np.append(bad_run, 3336)
-            """
 
             # 2014 L2 Scaler Masking Issue.
             # Cal pulsers sysemtatically do not reconstruct correctly, rate is only 1 Hz
             # Excluded because configuration was not "science good"
             bad_run = np.append(bad_run, np.arange(3464, 3504+1))
+            bad_run = np.append(bad_run, 3505)
 
             # 2014 Trigger Length Window Sweep, http://ara.icecube.wisc.edu/wiki/index.php/Run_Log_2014
             bad_run = np.append(bad_run, np.arange(3578, 3598+1))
 
-            """
+            
             # http://ara.icecube.wisc.edu/wiki/index.php/Run_Log_2014
             # 2014, 4th June, Checking the functionality of the L1Scaler mask.
             bad_run = np.append(bad_run, 3695) # Masiking Ch0,1, 14
@@ -712,7 +643,7 @@ class known_issue_loader:
             # 2014, 14th Aug, Finally changed trigger window size to 170ns.
             # http://ara.icecube.wisc.edu/wiki/index.php/File:Gmail_-_-Ara-c-_ARA_Operations_Meeting_Tomorrow_at_0900_CDT.pdf
             bad_run = np.append(bad_run, 4069)
-            """
+            
             
             ## 2015 ##
             # ??
@@ -742,12 +673,14 @@ class known_issue_loader:
             # 2015 ICL pulsing, Dec, http://ara.physics.wisc.edu/cgi-bin/DocDB/ShowDocument?docid=1269 (page 7)
             bad_run = np.append(bad_run, 6527)
 
+
             ## 2016 ##
-            """
+            # 2016 03/11/2016 Switched to D5 Vpol pulser for timing check.
+            bad_run = np.append(bad_run, 7005)           
+ 
             # http://ara.icecube.wisc.edu/wiki/index.php/Run_Log_2016
             # 2016, 21st July, Reduced trigger delay by 100ns.
             bad_run = np.append(bad_run, 7623)
-            """
 
             # 2016 cal pulser sweep, Jan 2015?, http://ara.icecube.wisc.edu/wiki/index.php/Run_Log_2016
             bad_run = np.append(bad_run, np.arange(7625, 7686+1))
@@ -763,6 +696,7 @@ class known_issue_loader:
             # Badly misreconstructing runs
             # run 8100. Loaded new firmware which contains the individual trigger delays which were lost since PCIE update in 12/2015.
             bad_run = np.append(bad_run, np.arange(8100, 8246+1))
+
 
             ## 2017 ##
             # http://ara.icecube.wisc.edu/wiki/index.php/Run_Log_2017
@@ -790,9 +724,10 @@ class known_issue_loader:
             bad_run = np.append(bad_run, np.arange(9231, 9262+1)) # 05/04/2017, D5 VPol: 9231 is 0 dB, ... , 9262 is 31 dB
             bad_run = np.append(bad_run, np.arange(9267, 9298+1)) # 05/05/2017, D5 HPol: 9267 is 0 dB, ... , 9298 is 31 dB
 
+
             ## 2018 ##
-            # http://ara.icecube.wisc.edu/wiki/index.php/Run_Log_2018
-            # SPICEcore Run, http://ara.physics.wisc.edu/docs/0015/001589/002/SPICEcore-drop-log-8-Jan-2018.xlsx
+            # now using ARARunLogDataBase
+
 
             ## 2019 ##
             # http://ara.icecube.wisc.edu/wiki/index.php/Run_Log_2019
@@ -839,17 +774,6 @@ class known_issue_loader:
             bad_run = np.append(bad_run, np.arange(14194, 14219+1))
             bad_run = np.append(bad_run, np.arange(14229, 14237+1))
 
-            # need more investigation
-            #bad_run = np.append(bad_run, 4829)
-            #bad_run = np.append(bad_run, [8562, 8563, 8567, 8568, 8572])
-            #bad_run = np.append(bad_run, 8577)
-            #bad_run = np.append(bad_run, [9748, 9750])
-            #bad_run = np.append(bad_run, np.arange(9522, 9849))
-
-            # short run
-            #bad_run = np.append(bad_run, 6480)
-            #bad_run = np.append(bad_run, 10125)
-
         elif self.st == 3:
 
             ## 2013 ##
@@ -872,20 +796,23 @@ class known_issue_loader:
 
             ## 2014 ##
             # 2014 Rooftop Pulser, http://ara.icecube.wisc.edu/wiki/index.php/Run_Log_2014
-            bad_run = np.append(bad_run, [2235, 2328])
+            bad_run = np.append(bad_run, 2235)
 
             # 2014 Cal Pulser Sweep, http://ara.icecube.wisc.edu/wiki/index.php/Run_Log_2014
             bad_run = np.append(bad_run, np.arange(2251, 2274+1))
-            bad_run = np.append(bad_run, np.arange(2376, 2399+1))
 
-            """
+            # 2014 Rooftop Pulser
+            bad_run = np.append(bad_run, 2328)
+
+            # 2014 Cal Pulser Sweep, http://ara.icecube.wisc.edu/wiki/index.php/Run_Log_2014
+            bad_run = np.append(bad_run, np.arange(2376, 2399+1))
+            
             # http://ara.icecube.wisc.edu/wiki/index.php/Run_Log_2014
             # 2014, 6th Aug, Switched to new readout window: 25 blocks, pre-trigger: 14 blocks.
             bad_run = np.append(bad_run, 3063)
 
             # 2014, 14th Aug, Finally changed trigger window size to 170ns.
             bad_run = np.append(bad_run, 3103)
-            """ 
             
             ## 2015 ##
             # 2015 surface or deep pulsing
@@ -915,54 +842,26 @@ class known_issue_loader:
             bad_run = np.append(bad_run, np.arange(4914, 4960+1))
 
             ## 2016 ##
+            # 2016 03/11/2016 Switched to D5 Vpol pulser for timing check.
+            bad_run = np.append(bad_run, 6508)
 
-            """
-            http://ara.icecube.wisc.edu/wiki/index.php/Run_Log_2016
+            #http://ara.icecube.wisc.edu/wiki/index.php/Run_Log_2016
             # 2016, 21st July, Reduced trigger delay by 100ns.
             bad_run = np.append(bad_run, 7124)
-            """
 
             # More events with no RF/deep triggers, seems to precede coming test
             bad_run = np.append(bad_run, 7125)
 
             # 2016 Cal Pulser Sweep, http://ara.icecube.wisc.edu/wiki/index.php/Run_Log_2014
             bad_run = np.append(bad_run, np.arange(7126, 7253+1))
-
-            """
+            
             # http://ara.icecube.wisc.edu/wiki/index.php/Run_Log_2016
             # 2016 Loaded new firmware which contains the individual trigger delays which were lost since PCIE update in 12/2015.
             bad_run = np.append(bad_run, 7658)
-            """
+
 
             ## 2018 ##
-            # http://ara.icecube.wisc.edu/wiki/index.php/Run_Log_2018
-            # SPICEcore Run, http://ara.physics.wisc.edu/docs/0015/001589/002/SPICEcore-drop-log-8-Jan-2018.xlsx
-
-            """
-            # need more investigation
-            bad_run = np.append(bad_run, np.arange(12788, 12832))
-            bad_run = np.append(bad_run, np.arange(12866, 13087))
-
-            # short run
-            bad_run = np.append(bad_run, 1125)
-            bad_run = np.append(bad_run, 1126)
-            bad_run = np.append(bad_run, 1129)
-            bad_run = np.append(bad_run, 1130)
-            bad_run = np.append(bad_run, 1132)
-            bad_run = np.append(bad_run, 1133)
-            bad_run = np.append(bad_run, 1139)
-            bad_run = np.append(bad_run, 1140)
-            bad_run = np.append(bad_run, 1141)
-            bad_run = np.append(bad_run, 1143)
-            bad_run = np.append(bad_run, 10025)
-            bad_run = np.append(bad_run, 10055)
-            bad_run = np.append(bad_run, 11333)
-            bad_run = np.append(bad_run, 11418)
-            bad_run = np.append(bad_run, 11419)
-            bad_run = np.append(bad_run, 12252)
-            bad_run = np.append(bad_run, 12681)
-            bad_run = np.append(bad_run, 12738)
-            """
+            # now using ARARunLogDataBase
 
         elif self.st == 5:
 

@@ -23,8 +23,9 @@ def wf_collector(Data, Ped, Station, Year, sel_evts = None):
     ara_uproot.get_sub_info()
     evt_num = ara_uproot.evt_num
     entry_num = ara_uproot.entry_num
-    buffer_info = analog_buffer_info_loader(ara_uproot.station_id, ara_uproot.year, incl_cable_delay = True)
-    buffer_info.get_int_time_info()
+    if Station == 2 or Station == 3:
+        buffer_info = analog_buffer_info_loader(ara_uproot.station_id, ara_uproot.year, incl_cable_delay = True)
+        buffer_info.get_int_time_info()
     ara_root = ara_root_loader(Data, Ped, ara_uproot.station_id, ara_uproot.year)
     ele_ch = ara_root.ara_geom.get_ele_ch_idx()
     print('Evt examples:',evt_num[:20])
@@ -87,23 +88,24 @@ def wf_collector(Data, Ped, Station, Year, sel_evts = None):
         # get entry and wf
         ara_root.get_entry(sel_entries[evt])
         #ara_root.get_useful_evt(ara_root.cal_type.kOnlyADCWithOut1stBlock)
-        #ara_root.get_useful_evt(ara_root.cal_type.kOnlyADCWithOut1stBlockAndBadSamples)
+        ara_root.get_useful_evt(ara_root.cal_type.kOnlyADCWithOut1stBlockAndBadSamples)
         #ara_root.get_useful_evt(ara_root.cal_type.kOnlyPedWithOut1stBlockAndBadSamples)
-        ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
+        #ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
 
         # buffer info
         blk_idx_arr, blk_idx_len = ara_uproot.get_block_idx(sel_entries[evt], trim_1st_blk = True)
         blk_idx[:blk_idx_len, evt] = blk_idx_arr
 
-        buffer_info.get_num_samp_in_blk(blk_idx_arr)
-        buffer_info.get_num_int_samp_in_blk(blk_idx_arr)       
-        num_samps_in_blk[:blk_idx_len, :, evt] = buffer_info.samp_in_blk
-        num_int_samps_in_blk[:blk_idx_len, :, evt] = buffer_info.int_samp_in_blk
+        if Station == 2 or Station == 3:
+            buffer_info.get_num_samp_in_blk(blk_idx_arr)
+            buffer_info.get_num_int_samp_in_blk(blk_idx_arr)       
+            num_samps_in_blk[:blk_idx_len, :, evt] = buffer_info.samp_in_blk
+            num_int_samps_in_blk[:blk_idx_len, :, evt] = buffer_info.int_samp_in_blk
 
-        samp_idx[:, :blk_idx_len, :, evt] = buffer_info.get_samp_idx(blk_idx_arr)
-        time_arr[:, :blk_idx_len, :, evt] = buffer_info.get_time_arr(blk_idx_arr, trim_1st_blk = True)
-        int_time_arr[:, :blk_idx_len, :, evt] = buffer_info.get_time_arr(blk_idx_arr, trim_1st_blk = True, use_int_dat = True)
-
+            samp_idx[:, :blk_idx_len, :, evt] = buffer_info.get_samp_idx(blk_idx_arr)
+            time_arr[:, :blk_idx_len, :, evt] = buffer_info.get_time_arr(blk_idx_arr, trim_1st_blk = True)
+            int_time_arr[:, :blk_idx_len, :, evt] = buffer_info.get_time_arr(blk_idx_arr, trim_1st_blk = True, use_int_dat = True)
+        
         # loop over the antennas
         for ant in range(num_Ants):        
 
@@ -116,6 +118,9 @@ def wf_collector(Data, Ped, Station, Year, sel_evts = None):
             int_wf_len = len(int_t)
             int_wf_all[:int_wf_len, 0, ant, evt] = int_t
             int_wf_all[:int_wf_len, 1, ant, evt] = int_v
+            
+            if Station != 2 and Station != 3:
+                continue
 
             bp_v = wf_int.get_int_wf(raw_t, raw_v, apply_band_pass = True)[1]
             bp_wf_all[:int_wf_len, 0, ant, evt] = int_t
@@ -155,7 +160,7 @@ def wf_collector(Data, Ped, Station, Year, sel_evts = None):
             ara_root.del_TGraph()
         del blk_idx_arr, blk_idx_len
         ara_root.del_usefulEvt()
-    del evt_len, ara_root, ara_uproot, buffer_info, entry_num, blk_est_range, wf_est_range, num_Ants, num_Samples, wf_int, dt, ele_ch
+    #del evt_len, ara_root, ara_uproot, buffer_info, entry_num, blk_est_range, wf_est_range, num_Ants, num_Samples, wf_int, dt, ele_ch
 
     print('WF collecting is done!')
 

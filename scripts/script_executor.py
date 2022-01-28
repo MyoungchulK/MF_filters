@@ -14,7 +14,7 @@ def script_loader(Key = None, Station = None, Run = None):
     # get run info
     run_info = run_info_loader(Station, Run, analyze_blind_dat = False)
     #Data, Ped = run_info.get_data_ped_path(file_type = 'sensorHk', verbose = True)
-    Data, Ped = run_info.get_data_ped_path(verbose = True)
+    Data, Ped = run_info.get_data_ped_path(verbose = True, return_dat_only = True)
     Station, Run, Config, Year, Month, Date = run_info.get_data_info()
     del run_info   
  

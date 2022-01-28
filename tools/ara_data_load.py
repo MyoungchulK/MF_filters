@@ -244,6 +244,9 @@ class ara_uproot_loader:
         pulserTime = np.array([254,245,245,400,400], dtype = int)
 
         trig_type = np.full(len(self.time_stamp), 0, dtype = int)
+        if self.station_id == 100:
+            print('ARA Staton 1 ID!!!!!!!!!!!')
+            self.station_id = 1
         trig_type[np.abs(self.time_stamp - pulserTime[self.station_id - 1]) < 1e4] = 1
         trig_type[self.trigger_info[:,2] == 1] = 2
         del pulserTime
@@ -277,7 +280,13 @@ class ara_Hk_uproot_loader:
 
     def __init__(self, data):
 
-        file = uproot.open(data)
+        self.empty_file_error = False
+        try:
+            file = uproot.open(data)
+        except ValueError:
+            self.empty_file_error = True
+            print('sensorHk is empty!')
+            return
 
         self.hasKeyInFileError = False
         try:

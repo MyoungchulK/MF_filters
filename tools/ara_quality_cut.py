@@ -204,6 +204,9 @@ class pre_qual_cut_loader:
 
         from tools.ara_data_load import ara_Hk_uproot_loader
         ara_Hk_uproot = ara_Hk_uproot_loader(self.sensor_dat)
+        if ara_Hk_uproot.empty_file_error == True:
+            print('There is empty sensorHk file!')
+            return bias_volt_evts
         ara_Hk_uproot.get_sub_info()
         dda_volt = ara_Hk_uproot.get_voltage(ara_Hk_uproot.dda_volt_curr)
         sensor_unix = ara_Hk_uproot.unix_time

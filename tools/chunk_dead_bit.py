@@ -51,7 +51,6 @@ def dead_bit_collector(Data, Ped):
     Data = run_info.get_data_path(file_type = 'sensorHk', return_none = True, verbose = True)
     if Data is None:
         print('There is no sensorHk file!')
-        sensor_unix = np.asarray([unix_time[0]])
         dda_volt = np.full((1,4), np.nan, dtype = float)
         dda_curr = np.copy(dda_volt)
         dda_temp = np.copy(dda_volt)
@@ -60,32 +59,54 @@ def dead_bit_collector(Data, Ped):
         tda_temp = np.copy(dda_volt)
         atri_volt = np.full((1), np.nan, dtype = float)
         atri_curr = np.copy(atri_volt)
+        is_sensor[:] = 0
     else:
         from tools.ara_data_load import ara_Hk_uproot_loader
         ara_Hk_uproot = ara_Hk_uproot_loader(Data)
-        ara_Hk_uproot.get_sub_info()
-        sensor_unix = ara_Hk_uproot.unix_time
-        atri_volt, atri_curr, dda_volt, dda_curr, dda_temp, tda_volt, tda_curr, tda_temp = ara_Hk_uproot.get_daq_sensor_info()
+        if ara_Hk_uproot.empty_file_error == True:
+            print('There is empty sensorHk file!')
+            dda_volt = np.full((1,4), np.nan, dtype = float)
+            dda_curr = np.copy(dda_volt)
+            dda_temp = np.copy(dda_volt)
+            tda_volt = np.copy(dda_volt)
+            tda_curr = np.copy(dda_volt)
+            tda_temp = np.copy(dda_volt)
+            atri_volt = np.full((1), np.nan, dtype = float)
+            atri_curr = np.copy(atri_volt)
+            is_sensor[:] = 0
+        else:
+            ara_Hk_uproot.get_sub_info()
+            atri_volt, atri_curr, dda_volt, dda_curr, dda_temp, tda_volt, tda_curr, tda_temp = ara_Hk_uproot.get_daq_sensor_info()
         del ara_Hk_uproot
     del run_info
 
-    dda_range = np.arange(0,20,0.01)
-    dda_bins = np.linspace(0, 20, 2000+1)
-    dda_volt_hist = np.full((len(dda_range), 4), 0, dtype = int)
+    dda_volt_range = np.arange(0,10,0.1)
+    dda_volt_bins = np.linspace(0, 10, 100+1)
+    dda_volt_hist = np.full((len(dda_volt_range), 4), 0, dtype = int)
+    dda_curr_range = np.arange(0,1,0.01)
+    dda_curr_bins = np.linspace(0, 1, 100+1)
     dda_curr_hist = np.copy(dda_volt_hist)
-    dda_temp_hist = np.copy(dda_volt_hist)
+    tda_volt_range = np.arange(0,5,0.05)
+    tda_volt_bins = np.linspace(0, 5, 100+1)
     tda_volt_hist = np.copy(dda_volt_hist)
+    tda_curr_range = np.arange(0,0.3,0.003)
+    tda_curr_bins = np.linspace(0, 0.3, 100+1)
     tda_curr_hist = np.copy(dda_volt_hist)
+    temp_range = np.arange(-20,20,0.4)
+    temp_bins = np.linspace(-20,20,100+1)
+    dda_temp_hist = np.copy(dda_volt_hist)
     tda_temp_hist = np.copy(dda_volt_hist)
     for d in range(4):
-        dda_volt_hist[:,d] = np.histogram(dda_volt[:,d], bins = dda_bins)[0].astype(int)    
-        dda_curr_hist[:,d] = np.histogram(dda_curr[:,d], bins = dda_bins)[0].astype(int)    
-        dda_temp_hist[:,d] = np.histogram(dda_temp[:,d], bins = dda_bins)[0].astype(int)    
-        tda_volt_hist[:,d] = np.histogram(tda_volt[:,d], bins = dda_bins)[0].astype(int)    
-        tda_curr_hist[:,d] = np.histogram(tda_curr[:,d], bins = dda_bins)[0].astype(int)    
-        tda_temp_hist[:,d] = np.histogram(tda_temp[:,d], bins = dda_bins)[0].astype(int)    
-    atri_volt_hist = np.histogram(atri_volt, bins = dda_bins)[0].astype(int)
-    atri_curr_hist = np.histogram(atri_curr, bins = dda_bins)[0].astype(int)
+        dda_volt_hist[:,d] = np.histogram(dda_volt[:,d], bins = dda_volt_bins)[0].astype(int)    
+        dda_curr_hist[:,d] = np.histogram(dda_curr[:,d], bins = dda_curr_bins)[0].astype(int)    
+        dda_temp_hist[:,d] = np.histogram(dda_temp[:,d], bins = temp_bins)[0].astype(int)    
+        tda_volt_hist[:,d] = np.histogram(tda_volt[:,d], bins = tda_volt_bins)[0].astype(int)    
+        tda_curr_hist[:,d] = np.histogram(tda_curr[:,d], bins = tda_curr_bins)[0].astype(int)    
+        tda_temp_hist[:,d] = np.histogram(tda_temp[:,d], bins = temp_bins)[0].astype(int)    
+    atri_range = np.arange(0,15,0.15)
+    atri_bins = np.linspace(0,15,100+1)
+    atri_volt_hist = np.histogram(atri_volt, bins = atri_bins)[0].astype(int)
+    atri_curr_hist = np.histogram(atri_curr, bins = atri_bins)[0].astype(int)
     del atri_volt, atri_curr, dda_volt, dda_curr, dda_temp, tda_volt, tda_curr, tda_temp
 
     trig_ratio = np.full((3), np.nan, dtype = float)
@@ -179,10 +200,10 @@ def dead_bit_collector(Data, Ped):
     cliff_rf_w_cut[:, ~clean_rf_evt_idx] = np.nan
     del clean_rf_evt_idx, wo_bias_rf_evt_idx
 
-    cliff_range = np.arange(-num_bits, num_bits)
-    cliff_bins = np.linspace(-num_bits, num_bits, num_bits*2 + 1)
+    cliff_range = np.arange(-2500, 2500, 5)
+    cliff_bins = np.linspace(-2500, 2500, 1000 + 1)
 
-    cliff_hist = np.full((num_ants, num_bits*2), 0, dtype = int)
+    cliff_hist = np.full((num_ants, len(cliff_range)), 0, dtype = int)
     cliff_rf_hist = np.copy(cliff_hist)
     cliff_rf_hist_wo_bias_cut = np.copy(cliff_hist)
     cliff_rf_hist_w_cut = np.copy(cliff_hist)
@@ -209,7 +230,6 @@ def dead_bit_collector(Data, Ped):
             'cliff_rf_wo_bias_cut':cliff_rf_wo_bias_cut,
             'cliff_rf_w_cut':cliff_rf_w_cut,
             'cliff_range':cliff_range,
-            'cliff_bins':cliff_bins,
             'cliff_hist':cliff_hist,
             'cliff_rf_hist':cliff_rf_hist,
             'cliff_rf_hist_wo_bias_cut':cliff_rf_hist_wo_bias_cut,
@@ -219,7 +239,12 @@ def dead_bit_collector(Data, Ped):
             'dead_bit_rf_hist':dead_bit_rf_hist,
             'dead_bit_rf_hist_wo_bias_cut':dead_bit_rf_hist_wo_bias_cut,
             'dead_bit_rf_hist_w_cut':dead_bit_rf_hist_w_cut,
-            'dda_range':dda_range,
+            'dda_volt_range':dda_volt_range,
+            'dda_curr_range':dda_curr_range,
+            'tda_volt_range':tda_volt_range,
+            'tda_curr_range':tda_curr_range,
+            'temp_range':temp_range,
+            'atri_range':atri_range,
             'dda_volt_hist':dda_volt_hist,
             'dda_curr_hist':dda_curr_hist,
             'dda_temp_hist':dda_temp_hist,

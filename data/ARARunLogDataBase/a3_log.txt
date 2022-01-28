@@ -1,6 +1,4 @@
-1641	brianclark	spicecore	See DocDB 1589 for depth vs time data
-1642	brianclark	spicecore	See DocDB 1589 for depth vs time data
-1056	brianclark	roofpulse	Vpol, ICL pulser, pointed at WT3
+3157	myoungchulkim	ped and data duplication	See OSU diffuse wiki
 10046	brianclark	deeppulse	Hole 1 Shallow, 8:44:26 to 9:07 AM NZT
 10047	brianclark	deeppulse	Hole 1 Shallow, 9:15:21 to ~9:35 AM NZT
 10048	brianclark	deeppulse	Hole 22 Shallow, ~10:00  to ~10:18:54 AM NZT

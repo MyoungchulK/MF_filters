@@ -89,10 +89,13 @@ class run_info_loader:
 
         return dat_path
 
-    def get_data_ped_path(self, file_type = 'event', verbose = False, return_none = False):
+    def get_data_ped_path(self, file_type = 'event', verbose = False, return_none = False, return_dat_only = False):
 
         dat_path = self.get_data_path(file_type = file_type, verbose = verbose, return_none = return_none)
-        ped_path = self.get_ped_path(verbose = verbose, return_none = return_none)
+        if return_dat_only == True:
+            ped_path = '0'
+        else:
+            ped_path = self.get_ped_path(verbose = verbose, return_none = return_none)
 
         return dat_path, ped_path
 

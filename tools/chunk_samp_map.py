@@ -99,30 +99,32 @@ def samp_map_collector(Data, Ped):
 
             # stack in sample map
             raw_v = ara_root.get_rf_ch_wf(ant)[1]
-            if trig_type[evt] == 0:
-                dead_bit_hist[ant] += np.histogram(raw_v, bins = dead_bit_bins)[0].astype(int)
             if len(raw_v) == 0:
                 adc_medi[ant, evt] = 0
                 cliff_evt[ant, evt] = 0
                 zero_adc_ratio[ant, evt] = 1
                 adc_max_min[0, ant, evt] = 0
                 adc_max_min[1, ant, evt] = 0
+                ara_root.del_TGraph()
                 continue
+            dead_bit_hist_wf = np.histogram(raw_v, bins = dead_bit_bins)[0].astype(int)
+            if trig_type[evt] == 0:
+                dead_bit_hist[ant] += dead_bit_hist_wf
             cliff_evt[ant, evt] = np.nanmedian(raw_v[:samp_in_blk[0,ant]]) - np.nanmedian(raw_v[-samp_in_blk[-1,ant]:])
             adc_medi[ant, evt] = np.nanmedian(raw_v)
             zero_adc_ratio[ant, evt] = post_qual.get_zero_adc_events(raw_v, len(raw_v))
             adc_max_min[0, ant, evt] = np.nanmax(raw_v)
             adc_max_min[1, ant, evt] = np.nanmin(raw_v)
         
-            #if pre_qual_cut_sum[evt] == 0 and trig_type[evt] == 0:
+            if pre_qual_cut_sum[evt] == 0 and trig_type[evt] == 0:
             #if pre_qual_cut_sum[evt] == 0 and trig_type[evt] != 1:
             #if trig_type[evt] != 1:
-            if trig_type[evt] == 0:
-                dead_bit_hist_w_cut[ant] += np.histogram(raw_v, bins = dead_bit_bins)[0].astype(int)
+            #if trig_type[evt] == 0:
+                dead_bit_hist_w_cut[ant] += dead_bit_hist_wf
                 samp_idx_ant = samp_idx[:,ant][~np.isnan(samp_idx[:,ant])].astype(int)
                 ara_hist.stack_in_hist(samp_idx_ant, raw_v.astype(int), ant)
                 del samp_idx_ant 
-            del raw_v
+            del raw_v, dead_bit_hist_wf
             ara_root.del_TGraph()
         del samp_idx, samp_in_blk
         ara_root.del_usefulEvt()
