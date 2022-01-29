@@ -12,19 +12,20 @@ from tools.utility import size_checker
 def script_loader(Key = None, Station = None, Run = None, Act_Evt = None):
 
     # get run info
-    run_info = run_info_loader(Station, Run, analyze_blind_dat = False)
-    Data, Ped = run_info.get_data_ped_path(verbose = True, return_dat_only = True)
-    Station, Run, Config, Year, Month, Date = run_info.get_data_info()
-    del run_info   
+    #run_info = run_info_loader(Station, Run, analyze_blind_dat = False)
+    #Data, Ped = run_info.get_data_ped_path(verbose = True, return_dat_only = True)
+    #Station, Run, Config, Year, Month, Date = run_info.get_data_info()
+    #del run_info   
 
-    #Data = '/data/exp/ARA/2022/filtered/L0/ARA01/0101/run23291/event23291.root'
+    Data = '/data/exp/ARA/2022/filtered/L0/ARA01/0101/run23291/event23291.root'
     #Ped = '/home/mkim/ped/run_023290/pedestalValues.run023290.dat'
-    #Station = 1
-    #Run = 23291
-    #Config = -1
-    #Year = 2022
-    #Month = 1
-    #Date = 1 
+    Ped = '0'
+    Station = 1
+    Run = 23291
+    Config = -1
+    Year = 2022
+    Month = 1
+    Date = 1 
 
     # run the chunk code
     module = import_module(f'tools.chunk_{Key}')
