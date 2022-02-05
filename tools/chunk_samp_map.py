@@ -39,6 +39,7 @@ def samp_map_collector(Data, Ped):
     adc_medi = np.full((num_Ants, len(clean_entry)), np.nan, dtype = float)
     adc_max_min = np.full((2, num_Ants, len(clean_entry)), np.nan, dtype = float)
     cliff_evt = np.full((num_Ants, len(clean_entry)), np.nan, dtype = float)
+    cliff_blk = np.full((2, len(clean_entry)), np.nan, dtype = float)
     ara_hist = hist_loader()
     pps_number = ara_uproot.pps_number
     time_stamp = ara_uproot.time_stamp
@@ -68,9 +69,21 @@ def samp_map_collector(Data, Ped):
     else:
         from tools.ara_data_load import ara_Hk_uproot_loader
         ara_Hk_uproot = ara_Hk_uproot_loader(Data)
-        ara_Hk_uproot.get_sub_info()
-        sensor_unix = ara_Hk_uproot.unix_time
-        atri_volt, atri_curr, dda_volt, dda_curr, dda_temp, tda_volt, tda_curr, tda_temp = ara_Hk_uproot.get_daq_sensor_info()
+        if ara_Hk_uproot.empty_file_error == True:
+            print('There is empty sensorHk file!')
+            sensor_unix = np.asarray([unix_time[0]])
+            dda_volt = np.full((1,4), np.nan, dtype = float)
+            dda_curr = np.copy(dda_volt)
+            dda_temp = np.copy(dda_volt)
+            tda_volt = np.copy(dda_volt)
+            tda_curr = np.copy(dda_volt)
+            tda_temp = np.copy(dda_volt)
+            atri_volt = np.full((1), np.nan, dtype = float)
+            atri_curr = np.copy(atri_volt)
+        else:
+            ara_Hk_uproot.get_sub_info()
+            sensor_unix = ara_Hk_uproot.unix_time
+            atri_volt, atri_curr, dda_volt, dda_curr, dda_temp, tda_volt, tda_curr, tda_temp = ara_Hk_uproot.get_daq_sensor_info()
         del ara_Hk_uproot
     del run_info 
 
@@ -89,7 +102,11 @@ def samp_map_collector(Data, Ped):
         # sample index
         blk_idx_arr = ara_uproot.get_block_idx(clean_entry[evt], trim_1st_blk = True)[0]
         samp_idx = buffer_info.get_samp_idx(blk_idx_arr, ch_shape = True)   
-
+        if len(blk_idx_arr) == 0:
+            cliff_blk[:, evt] = 0
+        else:
+            cliff_blk[0, evt] = blk_idx_arr[0]
+            cliff_blk[1, evt] = blk_idx_arr[-1]
         buffer_info.get_num_samp_in_blk(blk_idx_arr)
         samp_in_blk = buffer_info.samp_in_blk
         del blk_idx_arr
@@ -163,6 +180,7 @@ def samp_map_collector(Data, Ped):
             'dead_bit_hist':dead_bit_hist,
             'dead_bit_hist_w_cut':dead_bit_hist_w_cut,
             'cliff_evt':cliff_evt,
+            'cliff_blk':cliff_blk,
             'samp_map':samp_map}
 
 

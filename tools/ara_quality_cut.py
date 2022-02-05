@@ -338,7 +338,7 @@ class post_qual_cut_loader:
     def get_spikey_ratio(self, dat_ant, sel_st = 0, apply_bad_ant = False):
 
         if apply_bad_ant == True:
-            dat_ant[self.bad_ant] = np.nan
+            dat_ant[self.bad_ant != 0] = np.nan
 
         avg_st_snr = np.full((num_ddas), np.nan, dtype = float)
         for string in range(num_ddas):
@@ -355,7 +355,7 @@ class post_qual_cut_loader:
         dat_int = dat_bool.astype(int)
 
         if apply_bad_ant == True:
-            dat_int[self.bad_ant] = 0
+            dat_int[self.bad_ant != 0] = 0
 
         flagged_events = np.full(dat_int.shape, 0, dtype = int)
         for string in range(num_ddas):
@@ -407,7 +407,7 @@ class post_qual_cut_loader:
 
         tot_post_qual_cut = np.full((num_ants, len(self.evt_num), 5), 0, dtype = int)
 
-        tot_post_qual_cut[self.bad_ant,:,0] = 1 # knwon bad antenna
+        tot_post_qual_cut[self.bad_ant != 0,:,0] = 1 # knwon bad antenna
         tot_post_qual_cut[:,:,1] = np.nansum(self.timing_err_evts, axis = 0)[np.newaxis, :]
         low_freq_limit = 0.13
         tot_post_qual_cut[:,:,2] = self.get_string_flag(self.freq_glitch_evts < low_freq_limit, apply_bad_ant = True)

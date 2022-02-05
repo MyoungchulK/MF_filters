@@ -148,7 +148,9 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Dead_Bit_RF_wo_Bad_Runs_v16_sub_A{Station}.h5'
+ver_id = 18
+
+file_name = f'Dead_Bit_RF_wo_Bad_Runs_v{ver_id}_sub_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('config_arr', data=np.asarray(config_arr), compression="gzip", compression_opts=9)
 hf.create_dataset('config_arr_all', data=np.asarray(config_arr_all), compression="gzip", compression_opts=9)
@@ -170,7 +172,7 @@ print('file is in:',path+file_name)
 size_checker(path+file_name)
 del hf, config_arr, config_arr_all, run_arr, run_arr_all, trig_ratio, trig_ratio_wo_bv, trig_ratio_wo_cal, is_sensor, num_evts, pre_cut, evt_type, rf_evt_type, bias_rf_evt_type, bias_only_rf_evt_type 
 
-file_name = f'Dead_Bit_RF_wo_Bad_Runs_v16_sensor_A{Station}.h5'
+file_name = f'Dead_Bit_RF_wo_Bad_Runs_v{ver_id}_sensor_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('dda_volt', data=np.asarray(dda_volt), compression="gzip", compression_opts=9)
 hf.create_dataset('dda_curr', data=np.asarray(dda_curr), compression="gzip", compression_opts=9)
@@ -186,7 +188,7 @@ print('file is in:',path+file_name)
 size_checker(path+file_name)
 del hf, dda_volt, dda_curr, dda_temp, tda_volt, tda_curr, tda_temp, atri_volt, atri_curr
 
-file_name = f'Dead_Bit_RF_wo_Bad_Runs_v16_cliff_A{Station}.h5'
+file_name = f'Dead_Bit_RF_wo_Bad_Runs_v{ver_id}_cliff_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('cliff', data=np.asarray(cliff), compression="gzip", compression_opts=9)
 hf.create_dataset('cliff_rf', data=np.asarray(cliff_rf), compression="gzip", compression_opts=9)
@@ -198,7 +200,7 @@ print('file is in:',path+file_name)
 size_checker(path+file_name)
 del hf, cliff, cliff_rf, cliff_rf_wo_bias_cut, cliff_rf_w_cut
 
-file_name = f'Dead_Bit_RF_wo_Bad_Runs_v16_dead_bit_A{Station}.h5'
+file_name = f'Dead_Bit_RF_wo_Bad_Runs_v{ver_id}_dead_bit_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('dead_bit', data=np.asarray(dead_bit), compression="gzip", compression_opts=9)
 hf.create_dataset('dead_bit_rf', data=np.asarray(dead_bit_rf), compression="gzip", compression_opts=9)
