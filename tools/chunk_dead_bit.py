@@ -80,20 +80,39 @@ def dead_bit_collector(Data, Ped):
         del ara_Hk_uproot
     del run_info
 
-    dda_volt_range = np.arange(0,10,0.1)
-    dda_volt_bins = np.linspace(0, 10, 100+1)
+
+    if ara_uproot.station_id == 2:
+        dda_volt_range = np.arange(3, 3.5, 0.005)
+        dda_volt_bins = np.linspace(3, 3.5, 100+1)
+        dda_curr_range = np.arange(0, 0.5, 0.005)
+        dda_curr_bins = np.linspace(0, 0.5, 100+1)
+        tda_volt_range = np.arange(3, 3.5, 0.005)
+        tda_volt_bins = np.linspace(3, 3.5, 100+1)
+        tda_curr_range = np.arange(0.16, 0.21, 0.0005)
+        tda_curr_bins = np.linspace(0.16, 0.21, 100+1)
+        temp_range = np.arange(-20,20,0.4)
+        temp_bins = np.linspace(-20,20,100+1)
+        atri_range = np.arange(0, 4.5, 0.045)
+        atri_bins = np.linspace(0, 4.5, 100+1) 
+
+    else:
+        dda_volt_range = np.arange(0,10,0.1)
+        dda_volt_bins = np.linspace(0, 10, 100+1)
+        dda_curr_range = np.arange(0,1,0.01)
+        dda_curr_bins = np.linspace(0, 1, 100+1)
+        tda_volt_range = np.arange(0,5,0.05)
+        tda_volt_bins = np.linspace(0, 5, 100+1)
+        tda_curr_range = np.arange(0,0.3,0.003)
+        tda_curr_bins = np.linspace(0, 0.3, 100+1)
+        temp_range = np.arange(-20,20,0.4)
+        temp_bins = np.linspace(-20,20,100+1)
+        atri_range = np.arange(0,15,0.15)
+        atri_bins = np.linspace(0,15,100+1)   
+ 
     dda_volt_hist = np.full((len(dda_volt_range), 4), 0, dtype = int)
-    dda_curr_range = np.arange(0,1,0.01)
-    dda_curr_bins = np.linspace(0, 1, 100+1)
     dda_curr_hist = np.copy(dda_volt_hist)
-    tda_volt_range = np.arange(0,5,0.05)
-    tda_volt_bins = np.linspace(0, 5, 100+1)
     tda_volt_hist = np.copy(dda_volt_hist)
-    tda_curr_range = np.arange(0,0.3,0.003)
-    tda_curr_bins = np.linspace(0, 0.3, 100+1)
     tda_curr_hist = np.copy(dda_volt_hist)
-    temp_range = np.arange(-20,20,0.4)
-    temp_bins = np.linspace(-20,20,100+1)
     dda_temp_hist = np.copy(dda_volt_hist)
     tda_temp_hist = np.copy(dda_volt_hist)
     for d in range(4):
@@ -103,8 +122,6 @@ def dead_bit_collector(Data, Ped):
         tda_volt_hist[:,d] = np.histogram(tda_volt[:,d], bins = tda_volt_bins)[0].astype(int)    
         tda_curr_hist[:,d] = np.histogram(tda_curr[:,d], bins = tda_curr_bins)[0].astype(int)    
         tda_temp_hist[:,d] = np.histogram(tda_temp[:,d], bins = temp_bins)[0].astype(int)    
-    atri_range = np.arange(0,15,0.15)
-    atri_bins = np.linspace(0,15,100+1)
     atri_volt_hist = np.histogram(atri_volt, bins = atri_bins)[0].astype(int)
     atri_curr_hist = np.histogram(atri_curr, bins = atri_bins)[0].astype(int)
     del atri_volt, atri_curr, dda_volt, dda_curr, dda_temp, tda_volt, tda_curr, tda_temp

@@ -113,39 +113,88 @@ class known_issue_loader:
             (unix_time==1484539534) or # 8527 2017/01/15 ev2905 unknown signal
             (unix_time==1484586356) or # 8529 2017/01/16 ev109945 unknown signal
             (unix_time==1484780668) or # 8540 2017/01/18 ev94709 unknown signal
-            
-
-
+            (unix_time==1484786214) or # 8540 2017/01/18 ev133130 unknown signal
+            (unix_time==1484794191) or # 8541 2017/01/18 ev39070 unknown signal
+            (unix_time==1484849482) or # 8544 2017/01/19 ev113601 unknown signal
+            (unix_time>=1484858727 and unix_time<=1484858793) or # 8545 2017/01/19 unknown signal
+            (unix_time==1484873486) or # 8545 2017/01/19 ev129213 unknown signal           
             (unix_time>=1484920230 and unix_time<=1484941825) or # 8549 2017/01/20 unknown signal
+            (unix_time>=1484941834 and unix_time<=1484985027) or # 8550 ~ 8551 2017/01/20 unknown signal            
             (unix_time>=1485127509 and unix_time<=1485166161) or # 8562 ~ 8563 2017/01/22 only software
-            (unix_time==1485184191) or # 8564 2017/01/23 ev125637 unknown signal
+            (unix_time>=1485166183 and unix_time<=1485217628) or # 8564 ~ 8566 2017/01/23 unknown signal            
             (unix_time>=1485217646 and unix_time<=1485239239) or # 8567 2017/01/23 only software
             (unix_time>=1485239686 and unix_time<=1485261281) or # 8569 2017/01/24 unknown signal
+            (unix_time>=1485275601 and unix_time<=1485277009) or # 8570 2017/01/24 unknwon signal
             (unix_time>=1485595456 and unix_time<=1485690018) or # 8591 ~ 8595 2017/01/28 unknown signal
+            (unix_time>=1485690030 and unix_time<=1485691228) or # 8596 2017/01/29 unknown signal
+            (unix_time==1485752464) or # 8598 2017/01/29 ev128769 unknown signal
             (unix_time>=1486168830 and unix_time<=1486190425) or # 8622 2017/02/03 unknown signal
             (unix_time>=1486475432 and unix_time<=1486699107) or # 8640 ~ 8652 2017/02/07 ~ 09 unknown signal
-            (unix_time>=1487136780  and unix_time<=1487202291) or # 8680 ~ 8683 2017/02/14 ~ 15 unknown signal
+            (unix_time>=1487136780 and unix_time<=1487202291) or # 8680 ~ 8683 2017/02/14 ~ 15 unknown signal
+            (unix_time>=1487209220 and unix_time<=1487230815) or # 8684 2017/02/15 unknown signal
             (unix_time==1487287677) or # 8687 2017/02/16 ev93962 unknown signal
+            (unix_time==1487737935) or # 8713 2017/02/21 ev91749 unknown signal 
             (unix_time==1487828177) or # 8717 2017/02/22 ev125435 unknown signal
             (unix_time>=1487854672 and unix_time<=1487876266) or # 8720 2017/02/23 unknown signal
+            (unix_time==1487891823) or # 8721 2017/02/23 ev105986 unknown signal 
             (unix_time>=1488408765 and unix_time<=1488430359) or # 8763 2017/03/01 unknown signal
+            (unix_time>=1488749304 and unix_time<=1488749444) or # 8782 2017/03/05 unknown signal
+            (unix_time==1488789009) or # 8785 2017/03/06 ev20944 unknown signal
+            (unix_time==1488803885) or # 8785 2017/03/06 ev123098 unknown signal
+            (unix_time==1488819624) or # 8786 2017/03/06 ev82291 unknown signal
             (unix_time>=1488829221 and unix_time<=1488850797) or # 8787 2017/03/06 unknown signal
+            (unix_time>=1488851843 and unix_time<=1488873438) or # 8789 2017/03/06 unknown signal            
             (unix_time>=1488873446 and unix_time<=1488895038) or # 8790 2017/03/07 unknown signal
+            (unix_time>=1488916652 and unix_time<=1488938248) or # 8792 2017/03/07 unknown signal
+            (unix_time>=1489226852 and unix_time<=1489240906) or # 8810 2017/03/11 unknown signal
+            (unix_time==1490012910) or # 8856 2017/03/20 ev4283 unknown signal           
+            (unix_time>=1490481308 and unix_time<=1490481616) or # 8881 2017/03/25 unknown signal
+            (unix_time==1491385142) or # 8933 2017/04/05 ev45771 unknown signal 
+            (unix_time>=1491398237 and unix_time<=1491404695) or # 8933 ~ 8934 2017/04/05 unknown signal
+            (unix_time>=1491636026 and unix_time<=1491642052) or # 8947 2017/04/07 unknown signal
+            (unix_time>=1494298072 and unix_time<=1494310350) or # 9315 2017/05/08 unknown signal
+            (unix_time==1495264665) or # 9369 2017/05/19 ev78691 unknown signal
+            (unix_time>=1495282918 and unix_time<=1495283656) or # 9371 2017/05/20 unknown signal
             (unix_time>=1514952103 and unix_time<=1514973698) or # 9511 2018/01/02 unknown signal
             (unix_time>=1515057615 and unix_time<=1515058703) or # 9516 2018/01/04 only software
             (unix_time>=1515279938 and unix_time<=1515301534) or # 9530 2018/01/06 unknown signal
             (unix_time>=1515352635 and unix_time<=1515356375) or # 9557 ~ 9559 2018/01/07 unknown signal
+            (unix_time>=1516135871 and unix_time<=1516140648) or # 9755 ~ 9759 2018/01/16 unknown signal 
+            (unix_time==1516399622) or # 9813 2018/01/19 ev534 unknown signal
             (unix_time>=1518035003 and unix_time<=1518056598) or # 9916 2018/02/07 unknown signal
+            (unix_time>=1519366238 and unix_time<=1519368402) or # 10001 2018/02/22 unknown signal
             (unix_time==1521786112) or # 10185 2018/03/22 ev36449 unknown signal
+            (unix_time>=1528963594 and unix_time<=1528967442) or # 10948 2018/06/14 unknown signal
             (unix_time>=1529919692 and unix_time<=1529967349) or # 11071 ~ 11076 2018/06/25 unknown signal
+            (unix_time>=1530292340 and unix_time<=1530294903) or # 11109 2018/06/29 unknown signal
+            (unix_time>=1530432024 and unix_time<=1530442821) or # 11124 2018/07/01 unknown signal
+            (unix_time>=1532659100 and unix_time<=1532662001) or # 11214 2018/07/26 unknown signal
+            (unix_time>=1536270217 and unix_time<=1536270417) or # 11606 2018/09/06 unknown signal
+            (unix_time==1536594391) or # 11651 2018/09/10 ev46296 unknown signal
+            (unix_time>=1536615278 and unix_time<=1536620571) or # 11654 ~ 11655 2018/09/10 unknown signal
+            (unix_time>=1537528259 and unix_time<=1537529685) or # 11750 2018/09/21 unknown signal
+            (unix_time>=1537653570 and unix_time<=1537654170) or # 11765 2018/09/22 unknown signal
+            (unix_time==1537817429) or # 11781 2018/09/24 ev54262 unknown signal
+            (unix_time>=1540683879 and unix_time<=1540686065) or # 12084 2018/10/27 unknown signal
+            (unix_time>=1540879759 and unix_time<=1540882966) or # 12104 2018/10/29 unknown signal
             (unix_time>=1541133032 and unix_time<=1541143829) or # 12131 2018/11/01 unknown signal
-            (unix_time>=1543000389 and unix_time<=1543000400) or # 12345 2018/11/23 unknown signal
-            (unix_time>=1543193056 and unix_time<=1543193062) or # 12365 2018/11/25 unknown signal
+            (unix_time>=1542394856 and unix_time<=1542405653) or # 12259 2018/11/16 unknown signal
+            (unix_time>=1543000089 and unix_time<=1543000501) or # 12345 2018/11/23 unknown signal
+            (unix_time==1543004788) or # 12345 2018/11/23 ev39161 unknown signal 
+            (unix_time>=1543174423 and unix_time<=1543193164) or # 12364 ~ 12365 2018/11/25 unknown signal
+            (unix_time>=1543272737 and unix_time<=1543281657) or # 12374 ~ 12375 2018/11/26 unknown signal
+            (unix_time>=1544060237 and unix_time<=1544061739) or # 12421 2018/12/05 unknow daq error
+            (unix_time==1544173852) or # 12430 2018/12/07 ev2921 unknown signal
+            (unix_time>=1544178891 and unix_time<=1544179107) or # 12430 2018/12/07 unknown daq error
+            (unix_time>=1544216543 and unix_time<=1544217194) or # 12435 2018/12/07 unknown signal
             (unix_time>=1544287259 and unix_time<=1544315436) or # 12441 ~ 12443 2018/12/08 unknown signal
             (unix_time>=1544473656 and unix_time<=1544512049) or # 12446 ~ 12449 2018/12/10 unknown signal
+            (unix_time>=1544654007 and unix_time<=1544654489) or # 12464 2018/12/12 unknown signal
+            (unix_time>=1544789738 and unix_time<=1544790291) or # 12470 2018/12/14 unknown signal
             (unix_time>=1544814958 and unix_time<=1544825752) or # 12473 2018/12/14 unknown signal
             (unix_time>=1545096700 and unix_time<=1545107496) or # 12502 2018/12/17 unknown signal
-            (unix_time>=1545442000 and unix_time<=1545442425) or # 12540 2018/12/21 unknown signal
+            (unix_time>=1545433692 and unix_time<=1545433902) or # 12540 2018/12/21 unknown signal
+            (unix_time>=1545441082 and unix_time<=1545442425) or # 12540 2018/12/21 unknown signal
             (unix_time>=1545508000 and unix_time<=1545519104) or # 12547 ~ 12548 2018/12/22 unknown signal
             (unix_time>=1545763692 and unix_time<=1545786218) or # 12574 ~ 12576 2018/12/25 unknown signal
             (unix_time>=1545862246 and unix_time<=1545870745) or # 12585 2018/12/26 unknown signal
@@ -154,14 +203,40 @@ class known_issue_loader:
             (unix_time>=1546033422 and unix_time<=1546040180) or # 12608 2018/12/28 unknown signal
             (unix_time>=1546112069 and unix_time<=1546144477) or # 12616 ~ 12618 2018/12/29 unknown signal
             (unix_time>=1546144477 and unix_time<=1546295392) or # 12633 ~ 12634 2018/12/31 unknown signal
-            #(unix_time>= and unix_time<=) or # 12616 2018/12/29 unknown signal
-
-
-
-
-
-
-            (unix_time>=1460489979 and unix_time<=1460511573)): # 7100 2016/04/12 unknown daq error
+            (unix_time>=1546317014 and unix_time<=1546327811) or # 12637 2018/12/31 unknown signal
+            (unix_time>=1546372078 and unix_time<=1546393678) or # 12643 ~ 12644 2019/01/01 unknown signal
+            (unix_time==1546527774) or # 12660 2019/01/03 ev2268 unknown signal
+            (unix_time>=1546723827 and unix_time<=1546734624) or # 12680 2019/01/01 unknown signal
+            (unix_time==1546743335) or # 12681 2019/01/05 ev48667 unknown signal
+            (unix_time>=1546745437 and unix_time<=1546756234) or # 12682 2019/01/05 unknown signal
+            (unix_time>=1546832915 and unix_time<=1546843712) or # 12691 2019/01/06 unknown signal
+            (unix_time>=1547078029 and unix_time<=1547088827) or # 12717 2019/01/09 unknown signal
+            (unix_time>=1547154704 and unix_time<=1547165498) or # 12725 2019/01/10 unknown signal
+            (unix_time>=1547176314 and unix_time<=1547187110) or # 12727 2019/01/10 unknown signal
+            (unix_time==1547238967) or # 12733 2019/01/11 ev42737 unknown signal
+            (unix_time>=1547409505 and unix_time<=1547417218) or # 12752 2019/01/13 unknown signal
+            (unix_time>=1547859028 and unix_time<=1547868920) or # 12778 ~ 12779 2019/01/18 unknown signal
+            (unix_time>=1548619137 and unix_time<=1548640740) or # 12922 ~ 12923 2019/01/27 unknown signal
+            (unix_time>=1548700875 and unix_time<=1548706609) or # 12930 2019/01/28 unknown signal
+            (unix_time>=1548870785 and unix_time<=1548903191) or # 12948 ~ 12950 2019/01/30 unknown signal
+            (unix_time>=1549064973 and unix_time<=1549067340) or # 12967 2019/02/01 unknown signal
+            (unix_time>=1549324753 and unix_time<=1549325527) or # 12994 2019/02/04 unknown signal
+            (unix_time==1549392031) or # 13001 2019/02/05 ev8850 unknown signal
+            (unix_time==1550713678) or # 13167 2019/02/20 ev24484 unknown signal
+            (unix_time==1551536370) or # 13253 2019/03/02 ev6148 unknown signal
+            (unix_time>=1554112083 and unix_time<=1554112319) or # 13583 2019/04/01 unknown signal
+            (unix_time==1554558561) or # 13685 2019/04/06 ev2205 unknown signal
+            (unix_time==1554616905) or # 13691 2019/04/06 ev20905 unknown signal
+            (unix_time==1554726152) or # 13702 2019/04/08 ev30542 unknown signal
+            (unix_time==1555253840) or # 13806 2019/04/14 ev33746 unknown signal
+            (unix_time==1555307059) or # 13811 2019/04/14 ev29231 unknown signal
+            (unix_time==1555330618) or # 13814 2019/04/15 ev34245 unknown signal
+            (unix_time>=1563301523 and unix_time<=1563312320) or # 15246 2019/07/16 unknown signal
+            (unix_time==1564205064) or # 15340 2019/07/26 ev14551 unknown signal
+            (unix_time==1564217347) or # 15341 2019/07/27 ev21787 unknown signal
+            (unix_time==1564234689) or # 15343 2019/07/27 ev51097 unknown signal
+            (unix_time>=1564787556 and unix_time<=1564792632) or # 15401 2019/08/02 unknown signal
+            (unix_time>=1564814402 and unix_time<=1564819157)): # 15404 2019/08/02 unknown signal
 
                 bad_unix_time = True
         

@@ -1,54 +1,7 @@
 source ../../AraSoft/for_local_araroot.sh
 
-python3 script_executor.py samp_map 2 12104 
-python3 script_executor.py samp_map 2 12259
-python3 script_executor.py samp_map 2 12345
-python3 script_executor.py samp_map 2 12364
-python3 script_executor.py samp_map 2 12365
-python3 script_executor.py samp_map 2 12374
-python3 script_executor.py samp_map 2 12375
-python3 script_executor.py samp_map 2 12421
-python3 script_executor.py samp_map 2 12430
-python3 script_executor.py samp_map 2 12435
-python3 script_executor.py samp_map 2 12464
-python3 script_executor.py samp_map 2 12470
-python3 script_executor.py samp_map 2 12540
-python3 script_executor.py samp_map 2 12637
-python3 script_executor.py samp_map 2 12643
-python3 script_executor.py samp_map 2 12644
-python3 script_executor.py samp_map 2 12660
-python3 script_executor.py samp_map 2 12680
-python3 script_executor.py samp_map 2 12681
-python3 script_executor.py samp_map 2 12682
-python3 script_executor.py samp_map 2 12691
-python3 script_executor.py samp_map 2 12717
-python3 script_executor.py samp_map 2 12725
-python3 script_executor.py samp_map 2 12726
-python3 script_executor.py samp_map 2 12727
-python3 script_executor.py samp_map 2 12733
-python3 script_executor.py samp_map 2 12752
-python3 script_executor.py samp_map 2 12778
-python3 script_executor.py samp_map 2 12779
-python3 script_executor.py samp_map 2 12922
-python3 script_executor.py samp_map 2 12923
-python3 script_executor.py samp_map 2 12930
-python3 script_executor.py samp_map 2 12948
-python3 script_executor.py samp_map 2 12949
-python3 script_executor.py samp_map 2 12950
-python3 script_executor.py samp_map 2 12965
-python3 script_executor.py samp_map 2 12967
-python3 script_executor.py samp_map 2 12994
-python3 script_executor.py samp_map 2 13001
-python3 script_executor.py samp_map 2 13167
-python3 script_executor.py samp_map 2 13253
-python3 script_executor.py samp_map 2 13583
-python3 script_executor.py samp_map 2 13685
-python3 script_executor.py samp_map 2 13690
-python3 script_executor.py samp_map 2 13691
-python3 script_executor.py samp_map 2 13702
-python3 script_executor.py samp_map 2 13806
-python3 script_executor.py samp_map 2 13811
-python3 script_executor.py samp_map 2 13814
+
+
 python3 script_executor.py samp_map 2 15246
 python3 script_executor.py samp_map 2 15340
 python3 script_executor.py samp_map 2 15341
