@@ -148,7 +148,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-ver_id = 19
+ver_id = 20
 
 file_name = f'Dead_Bit_RF_wo_Bad_Runs_v{ver_id}_sub_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
