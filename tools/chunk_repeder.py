@@ -58,17 +58,16 @@ def repeder_collector(Data, Ped = '0', debug = False):
         del ara_hist
     else:
         print('Lite mode!')
-    del ara_uproot
+    del ara_uproot, num_buffers
 
-    for ant in range(num_eles):
+    for ant in tqdm(range(num_eles)):
       #if ant < 1:
 
-        print(f'Ele. Ch:{ant}')
         # sample map
         ara_hist = hist_loader(chs = 1)
 
         # loop over the events
-        for evt in tqdm(clean_entry):
+        for evt in clean_entry:
           #if evt < 10:
        
             # get entry and wf
@@ -76,7 +75,7 @@ def repeder_collector(Data, Ped = '0', debug = False):
             ara_root.get_useful_evt(ara_root.cal_type.kOnlyADCWithOut1stBlock)
 
             # sample index
-            samp_idx = ara_repeder.get_samp_idx(evt)
+            samp_idx = ara_repeder.get_samp_idx(int(evt))
 
             # stack in sample map
             raw_v = ara_root.get_ele_ch_wf(ant)[1].astype(int)
@@ -85,17 +84,18 @@ def repeder_collector(Data, Ped = '0', debug = False):
             ara_root.del_TGraph()
             ara_root.del_usefulEvt()
 
-        samp_medi_ant = ara_hist.get_median_est(nan_to_zero = True)
+        samp_medi_ant = ara_hist.get_median_est(nan_to_zero = True)[:, 0]
         samp_medi_ant_int = samp_medi_ant.astype(int)
-        samp_medi_int[:, ant] = samp_medi_ant_int[:, 0]
+        samp_medi_int[:, ant] = samp_medi_ant_int
         if debug:
             samp_map[:, :, ant] = ara_hist.hist_map[:, :, 0]
-            samp_medi[:, ant] = samp_medi_ant[:, 0]
+            samp_medi[:, ant] = samp_medi_ant
+        ara_hist.del_hist_map()
         del ara_hist
 
-        ara_repeder.get_pedestal_foramt(samp_medi_ant_int[:, 0], ant)
+        ara_repeder.get_pedestal_foramt(samp_medi_ant_int, ant)
         del samp_medi_ant, samp_medi_ant_int
-    del ara_root, clean_entry, num_eles, num_buffers
+    del ara_root, clean_entry, num_eles
 
     ped_arr = ara_repeder.ped_arr
     del ara_repeder

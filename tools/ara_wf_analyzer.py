@@ -136,13 +136,17 @@ class hist_loader:
     def get_median_est(self, nan_to_zero = False):
 
         medi_est = np.full((self.x_len, self.chs), np.nan, dtype = float)
-        for x in tqdm(self.x_range, ascii=False):
+        for x in range(self.x_len):
             for ant in range(self.chs):
                 medi_est[x, ant] = self.get_median_from_hist(x, ant)
         if nan_to_zero == True:
             medi_est[np.isnan(medi_est)] = 0
 
         return medi_est
+
+    def del_hist_map(self):
+
+        del self.hist_map
 
 def bin_range_maker(data, data_width):
 

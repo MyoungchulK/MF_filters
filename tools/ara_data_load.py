@@ -574,7 +574,7 @@ class repeder_loader:
 
     def get_samp_idx(self, evt):
 
-        blk_idx_arr, blk_len = self.ara_uproot.get_block_idx(int(evt), trim_1st_blk = self.trim_1st_blk)
+        blk_idx_arr, blk_len = self.ara_uproot.get_block_idx(evt, trim_1st_blk = self.trim_1st_blk)
         samp_idx = np.repeat(self.sample_range[:, np.newaxis], blk_len, axis = 1)
         samp_idx += (blk_idx_arr * num_samples)[np.newaxis, :]
         samp_idx = np.reshape(samp_idx, (num_samples * blk_len), order = 'F')
@@ -585,7 +585,7 @@ class repeder_loader:
     def get_pedestal_foramt(self, samp_medi_int, ele_ch):
 
         ped_ch_range = self.ped_range[ele_ch::num_eles]
-        for row in tqdm(ped_ch_range, ascii=False):
+        for row in ped_ch_range:
             samp_idxs = self.ped_arr[int(row), 1] * num_samples
             self.ped_arr[int(row), 3:] = samp_medi_int[samp_idxs:samp_idxs + num_samples]
             del samp_idxs
