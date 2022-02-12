@@ -14,22 +14,22 @@ num_Bits = ara_const.BUFFER_BIT_RANGE
 
 class wf_analyzer:
 
-    def __init__(self, dt = 0.5, use_time_pad = False, use_band_pass = False):
+    def __init__(self, dt = 0.5):
 
         self.dt = dt
-        self.use_time_pad = use_time_pad
-        self.use_band_pass = use_band_pass
-        
-        if self.use_time_pad:
-            self.get_time_pad()
-        if self.use_band_pass:
-            self.get_band_pass_filter()
 
     def get_time_pad(self, pad_range = 1216, pad_offset = 400):
 
-        self.pad_t = np.arange(-1*pad_range/2 + pad_offset, pad_range/2 + pad_offset, self.dt)
-        self.pad_len = len(self.pad_t)
-        self.pad_v = np.full((self.pad_len, num_Ants), np.nan, dtype = float)
+        # make long pad that can contain all 16 antenna wf length in the same range
+        self.time_pad = np.arange(-1*p_range/2 + p_offset, p_range/2 + p_offset, p_dt)
+        self.time_pad_len = len(self.time_pad)
+        self.time_pad_i = time_pad[0]
+        self.time_pad_f = time_pad[-1]
+
+    def get_band_pass_filter(self, low_freq_cut = 0.13, high_freq_cut = 0.85, order = 10, pass_type = 'band'):
+
+        self.nu, self.de = butter(order, [low_freq_cut, high_freq_cut], btype = pass_type)
+        self.de_pad = 3*len(self.nu)
 
     def get_int_time(self, raw_ti, raw_tf):
 
@@ -42,10 +42,21 @@ class wf_analyzer:
 
         return int_t
 
-    def get_band_pass_filter(self, low_freq_cut = 0.13, high_freq_cut = 0.85, order = 10, pass_type = 'band'):
+    #Akima interpolation from python Akima1DInterpolator library
+    def get_int_wf(self, raw_t, raw_v, apply_band_pass = False):
 
-        self.nu, self.de = butter(order, [low_freq_cut, high_freq_cut], btype = pass_type)
-        self.de_pad = 3*len(self.nu)
+        # set time range
+        int_t = self.get_int_time(raw_t[0], raw_t[-1])
+
+        # akima interpolation!
+        akima = Akima1DInterpolator(raw_t, raw_v)
+        int_v = akima(int_t)
+        del akima
+
+        if apply_band_pass == True:
+            int_v = self.get_band_passed_wf(int_v)
+
+        return int_t, int_v
 
     def get_band_passed_wf(self, volt):
 
@@ -56,29 +67,15 @@ class wf_analyzer:
 
         return bp_wf
 
-    def get_int_wf(self, raw_t, raw_v, ant):
+    def get_padded_wf(self, raw_t, raw_v, apply_band_pass = False):
 
-        # akima interpolation!
-        akima = Akima1DInterpolator(raw_t, raw_v)
+        int_t, int_v = self.get_int_wf(raw_t, raw_v, apply_band_pass = apply_band_pass)
+        
+        padded_wf = np.full((self.time_pad_len), 0, dtype = float)
+        padded_wf[(int_t[0] - time_pad_i)//self.dt:(time_pad_f - int_t[-1])//self.dt] = int_v
+        del int_y, int_v
 
-        if self.use_time_pad:
-            int_v = akima(self.pad_t)
-            int_t = ~np.isnan(int_v) # actually index
-            int_v = int_v[int_t]
-        else:
-            int_t = self.get_int_time(raw_t[0], raw_t[-1])
-            int_v = akima(int_t)
-        del akima
-            
-        if self.use_band_pass:
-            int_v = self.get_band_passed_wf(int_v)
-
-        if self.use_time_pad:
-            self.pad_v[:, ant] = np.nan
-            self.pad_v[int_t, ant] = int_v
-            return
-        else:
-            return int_t, int_v
+        return padded_wf
 
     def get_peak(self, x, y):
 

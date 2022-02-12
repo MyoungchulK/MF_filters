@@ -16,15 +16,16 @@ class py_interferometers:
 
     def __init__(self, pad_len, dt, radius, st, run = None):
 
+        self.pad_len = pad_len
         self.dt = dt
         self.radius = radius
         self.st = st
         self.run = run
-        self.lags = correlation_lags(pad_len, pad_len, 'full') * self.dt
+        self.lags = correlation_lags(self.pad_len, self.pad_len, 'full') * self.dt
         self.lag_len = len(self.lags)
         self.pairs = self.get_pair_info()
-        self.pair_len = self.pairs.shape[0]
-        self.p0, self.p1, self.t_factor = self.get_coval_time()
+        self.table = self.get_arrival_time_tables()
+        self.p0, self.p1 = self.get_coval_indexs()
 
     def get_pair_info(self):
 
@@ -40,13 +41,12 @@ class py_interferometers:
         h_pairs = np.asarray(list(combinations(good_ant[good_ant > 7], 2)))
         pairs = np.append(v_pairs, h_pairs, axis = 0)
         self.v_pairs_len = len(v_pairs)
+        self.pair_len = pairs.shape[0]
         del v_pairs, h_pairs, good_ant
 
         return pairs
 
     def get_arrival_time_tables(self):
-
-        # year calculator....
 
         table_path = '../table/'
         table_name = f'Table_A{self.st}_R{self.radius}.h5'
@@ -82,38 +82,29 @@ class py_interferometers:
 
         return table
 
-    def get_coval_time(self):
+    def get_coval_indexs(self):
 
-        table = self.get_arrival_time_tables()
-
-        p0 =  ((table - self.lags[0])/self.dt).astype(int)
+        p0 =  ((self.table - self.lags[0])/self.dt).astype(int)
         p0[p0 < 0] = 0
         p0[p0 >= self.lag_len - 1] = self.lag_len - 2
         p1 = p0 + 1
 
-        t_factor = np.full(p0.shape, 0, dtype=float)
-        for p in range(self.pair_len):    
-            p0_t = self.lags[p0[:,:,p]]
-            p1_t = self.lags[p1[:,:,p]]
-            t_factor[:,:,p] = (table[:,:,p] - p0_t)/(p1_t - p0_t)
-            del p0_t, p1_t
-        del table
+        return p0, p1
 
-        return p0, p1, t_factor
+    def get_cross_correlation(self, pad_v, pad_bool):
 
-    def get_cross_correlation(self, pad_v):
+        #01 array
+        pad_01 = pad_bool.astype(int)
 
-        # 01 array
-        pad_nan = np.isnan(pad_v)
-        pad_01 = (~pad_nan).astype(int)
+        # mean and rms
+        pad_rms = np.nanstd(pad_v, axis = 0)
+        pad_mean = np.nanmean(pad_v, axis = 0)
 
         # bias normalization
-        pad_mean = np.nanmean(pad_v, axis = 0)
-        pad_rms = np.nanstd(pad_v, axis = 0)
-        pad_v -= pad_mean[np.newaxis, :]
-        pad_v /= pad_rms[np.newaxis, :]
-        pad_v[pad_nan] = 0
-        del pad_nan, pad_mean, pad_rms
+        pad_v[pad_bool] -= pad_mean[np.newaxis, :]
+        pad_v[pad_bool] /= pad_rms[np.newaxis, :]
+        del pad_rms, pad_mean
+        pair_v_len = np.count_nonzero(pad_bool, axis = 0)[self.pairs[:, 0]]
 
         #correlation
         corr = np.full((self.lag_len, self.pair_len), 0, dtype = float)
@@ -127,9 +118,12 @@ class py_interferometers:
         del pad_01
 
         # unbias normalization
+        corr *= pair_v_len[np.newaxis, :]
+        corr /= self.pad_len
         corr /= corr_01
         corr[np.isnan(corr)] = 0 #convert x/nan result
-        del corr_01
+        corr[np.isinf(corr)] = 0 #convert nan/nan result
+        del corr_01, pair_v_len
 
         # hilbert
         corr = np.abs(hilbert(corr, axis = 0))
@@ -139,14 +133,15 @@ class py_interferometers:
     def get_coval_sample(self, corr):
 
         # array for sampled value
-        coval = np.full(self.t_factor.shape, 0, dtype=float)
+        coval = np.full(self.p0.shape, 0, dtype=float)
 
         # manual interpolation
         for p in range(self.pair_len):
             corr_val = corr[:,p]
-            corr_val0 = corr_val[self.p0[:,:,p]]
-            coval[:,:,p] = ((corr_val[self.p1[:,:,p]] - corr_val0) * self.t_factor[:,:,p] + corr_val0)
-            del corr_val, corr_val0
+            p0_val = self.p0[:,:,p]
+            p1_val = self.p1[:,:,p]
+            coval[:,:,p] = ((corr_val[p1_val] - corr_val[p0_val]) * ((self.table[:,:,p] - self.lags[p0_val]) / (self.lags[p1_val] - self.lags[p0_val])) + corr_val[p0_val])
+            del corr_val, p0_val, p1_val
 
         # remove csky bin if arrival time was bad (<-100ns)
         coval[self.bad_arr] = 0

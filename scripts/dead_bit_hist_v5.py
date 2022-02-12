@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 curr_path = os.getcwd()
 sys.path.append(curr_path+'/../')
-from tools.run import file_sorter
+from tools.ara_run_manager import file_sorter
 from tools.utility import size_checker
 from tools.ara_known_issue import known_issue_loader
 

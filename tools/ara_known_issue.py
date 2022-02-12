@@ -13,7 +13,7 @@ class known_issue_loader:
 
         self.st = st
       
-    def get_bad_antenna(self, run, good_ant_true = False):
+    def get_bad_antenna(self, run, good_ant_true = False, print_ant_idx = False):
 
         # masked antenna
         bad_ant = np.full((num_ants), 0, dtype = bool)
@@ -33,6 +33,9 @@ class known_issue_loader:
 
         if good_ant_true == True:
             bad_ant = ~bad_ant
+
+        if print_ant_idx == True:
+            bad_ant = ant_idx[bad_ant]
 
         return bad_ant.astype(int)
 

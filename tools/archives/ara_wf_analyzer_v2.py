@@ -26,13 +26,7 @@ class wf_analyzer:
         self.time_pad_i = self.time_pad[0]
         self.time_pad_f = self.time_pad[-1]
 
-    def get_pad_arr(self):
-
         self.pad_arr = np.full((self.time_pad_len, num_Ants), 0, dtype = float)
-
-    def del_pad_arr(self):
-
-        del self.pad_arr
 
     def get_band_pass_filter(self, low_freq_cut = 0.13, high_freq_cut = 0.85, order = 10, pass_type = 'band'):
 
@@ -51,7 +45,7 @@ class wf_analyzer:
         return int_t
 
     #Akima interpolation from python Akima1DInterpolator library
-    def get_int_wf(self, raw_t, raw_v, apply_band_pass = False):
+    def get_int_wf(self, raw_t, raw_v, use_time_pad = False, apply_band_pass = False):
 
         # set time range
         int_t = self.get_int_time(raw_t[0], raw_t[-1])
@@ -76,6 +70,8 @@ class wf_analyzer:
         return bp_wf
 
     def get_padded_wf(self, raw_t, raw_v, ant, apply_band_pass = False):
+
+        self.pad_arr[:, ant] = 0
 
         int_t, int_v = self.get_int_wf(raw_t, raw_v, apply_band_pass = apply_band_pass)
 

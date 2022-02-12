@@ -9,7 +9,7 @@ def reco_collector(Data, Ped):
     from tools.ara_data_load import ara_root_loader
     from tools.ara_constant import ara_const
     from tools.ara_quality_cut import pre_qual_cut_loader
-    from tools.ara_wf_analyzer_temp import wf_analyzer
+    from tools.ara_wf_analyzer import wf_analyzer
     from tools.ara_py_interferometers import py_interferometers
 
     # geom. info.
@@ -34,18 +34,16 @@ def reco_collector(Data, Ped):
     pre_qual_cut_sum = np.nansum(pre_qual_cut_temp, axis = 1)
     del pre_qual, pre_qual_cut_temp
 
-    clean_evt_idx = np.logical_and(pre_qual_cut_sum == 0, trig_type == 1)
+    clean_evt_idx = np.logical_and(pre_qual_cut_sum == 0, trig_type == 0)
     clean_evt = evt_num[clean_evt_idx]   
     print(f'Number of clean event is {len(clean_evt)}') 
     del pre_qual_cut_sum
 
     # wf analyzer
-    wf_int = wf_analyzer()
-    wf_int.get_band_pass_filter()
-    wf_int.get_time_pad()
+    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True)
 
     # interferometers
-    ara_int = py_interferometers(wf_int.time_pad_len, wf_int.dt, 41, ara_uproot.station_id, ara_uproot.run)
+    ara_int = py_interferometers(wf_int.pad_len, wf_int.dt, 41, ara_uproot.station_id, ara_uproot.run)
 
     # output arr
     corr_v = []
@@ -62,21 +60,17 @@ def reco_collector(Data, Ped):
         ara_root.get_entry(evt)
         ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
    
-        wf_int.get_pad_arr()
         # loop over the antennas
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            #wf_int.get_padded_wf(raw_t, raw_v, ant, apply_band_pass = True)
-            wf_int.get_padded_wf(raw_t, raw_v, ant, apply_band_pass = False)
+            wf_int.get_int_wf(raw_t, raw_v, ant)
             del raw_t, raw_v
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()
     
-        corr_v_evt, corr_h_evt = ara_int.get_sky_map(wf_int.pad_arr)
+        corr_v_evt, corr_h_evt = ara_int.get_sky_map(wf_int.pad_v)
         corr_v.append(corr_v_evt)
         corr_h.append(corr_h_evt)
-
-        wf_int.del_pad_arr()
     del ara_root, ara_uproot, num_evts, num_ants, clean_evt_idx, wf_int, ara_int
 
     corr_v = np.asarray(corr_v)
