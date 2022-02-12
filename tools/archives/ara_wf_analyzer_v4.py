@@ -14,12 +14,10 @@ num_Bits = ara_const.BUFFER_BIT_RANGE
 
 class wf_analyzer:
 
-    def __init__(self, dt = 0.5, use_time_pad = False, use_band_pass = False):
+    def __init__(self, dt = 0.5, use_band_pass = False):
 
         self.dt = dt
-       
-        if use_time_pad:
-            self.get_time_pad() 
+        
         if use_band_pass:
             self.get_band_pass_filter()
 
@@ -27,6 +25,8 @@ class wf_analyzer:
 
         self.nu, self.de = butter(order, [low_freq_cut, high_freq_cut], btype = pass_type)
         self.de_pad = 3*len(self.nu)
+    
+        return
 
     def get_band_passed_wf(self, volt):
 
@@ -37,11 +37,25 @@ class wf_analyzer:
 
         return bp_wf
 
-    def get_time_pad(self, pad_range = 1220, pad_offset = 400):
+    def get_time_pad(self, dynamic_pad_len = None, fill_pad = None):
 
-        self.pad_t = np.arange(-1*pad_range/2 + pad_offset, pad_range/2 + pad_offset, self.dt)
-        self.pad_len = len(self.pad_t)
-        self.pad_v = np.full((self.pad_len, num_Ants), np.nan, dtype = float)
+        if dynamic_pad_len is not None:
+            self.pad_t = np.arange(dynamic_pad_len[0], dynamic_pad_len[1] + self.dt/2, self.dt)
+        else:
+            pad_range = 1216
+            pad_offset = 400
+            self.pad_t = np.arange(-1*pad_range/2 + pad_offset, pad_range/2 + pad_offset, self.dt)
+        
+        if fill_pad is not None:
+            self.pad_v = np.full((len(self.pad_t), num_Ants), fill_pad, dtype = float)
+        else:
+            self.pad_v = np.full((len(self.pad_t), num_Ants), 0, dtype = float)
+        
+        return
+
+    def del_time_pad(self):
+
+        del self.pad_t, self.pad_v
 
     def get_int_time(self, raw_ti, raw_tf):
 
@@ -72,7 +86,6 @@ class wf_analyzer:
             int_v = self.get_band_passed_wf(int_v)
 
         if use_time_pad:
-            self.pad_v[:, ant] = np.nan
             self.pad_v[int_t, ant] = int_v
             return
         else:
@@ -99,7 +112,7 @@ class hist_loader:
        
     def get_y_range(self, y_len, y_bins = 1, y_sym_range = False):
 
-        if y_sym_rang:
+        if y_sym_range == True:
             y_offset = y_len//2
             y_range = np.arange(-1*y_offset, y_offset, y_bins).astype(int)
         else:
@@ -140,7 +153,7 @@ class hist_loader:
         for x in range(self.x_len):
             for ant in range(self.chs):
                 medi_est[x, ant] = self.get_median_from_hist(x, ant)
-        if nan_to_zero:
+        if nan_to_zero == True:
             medi_est[np.isnan(medi_est)] = 0
 
         return medi_est

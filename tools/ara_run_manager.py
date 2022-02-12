@@ -50,8 +50,12 @@ class run_info_loader:
             a3_2013_run_limit = 1902
             dat_type_2013 = 'burnSample1in10'
             dat_type = 'unblinded'
-        
-        if (self.st == 2 and self.run < a2_2013_run_limit) or (self.st == 3 and self.run < a3_2013_run_limit):
+       
+        if self.analyze_blind_dat == True and self.st == 2 and self.run == 2814: 
+            run_6_digit = self.get_6_digit_run_number()
+            dat_ls_path = f'/data/exp/ARA/*/{dat_type}/L1/ARA0{self.st}/*/run{run_6_digit}/'
+            dat_name = f'{file_type}{run_6_digit}.root' 
+        elif (self.st == 2 and self.run < a2_2013_run_limit) or (self.st == 3 and self.run < a3_2013_run_limit):
             dat_ls_path = f'/data/exp/ARA/2013/filtered/{dat_type_2013}/ARA0{self.st}/root/run{self.run}/'
             if self.analyze_blind_dat == True and self.st == 2 and (self.run == 2811 or self.run == 2812 or self.run == 2813 or self.run == 2815 or self.run == 2816 or self.run == 2818 or self.run == 2819):
                 run_6_digit = self.get_6_digit_run_number()

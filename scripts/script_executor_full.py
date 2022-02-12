@@ -12,7 +12,8 @@ from tools.utility import size_checker
 def script_loader(Key = None, Station = None, Run = None):
 
     # get run info
-    run_info = run_info_loader(Station, Run, analyze_blind_dat = True)
+    analyze_blind_dat = True
+    run_info = run_info_loader(Station, Run, analyze_blind_dat = analyze_blind_dat)
     Data, Ped = run_info.get_data_ped_path(verbose = True, return_dat_only = True)
     Station, Run, Config, Year, Month, Date = run_info.get_data_info()
     del run_info   
@@ -20,7 +21,7 @@ def script_loader(Key = None, Station = None, Run = None):
     # run the chunk code
     module = import_module(f'tools.chunk_{Key}')
     method = getattr(module, f'{Key}_collector')
-    results = method(Data, Ped)
+    results = method(Data, Ped, analyze_blind_dat = analyze_blind_dat)
     del module, method
 
     # create output dir

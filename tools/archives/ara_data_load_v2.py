@@ -176,7 +176,7 @@ class ara_root_loader:
         for iblk in range(blk_len):
             blk_idx_arr[iblk] = block_vec[num_ddas * (iblk + remove_1_blk)].getBlock()
 
-        if modulo_2:
+        if modulo_2 == True:
             blk_idx_arr = blk_idx_arr%2
         del blk_len, remove_1_blk, block_vec
 
@@ -270,7 +270,7 @@ class ara_uproot_loader:
         blk_idx_arr = np.asarray(self.irs_block_number[evt][remove_1_blk*num_ddas::num_ddas], dtype = int)
         blk_idx_len = len(blk_idx_arr)
 
-        if modulo_2:
+        if modulo_2 == True:
             blk_idx_arr = blk_idx_arr%2
         del remove_1_blk
 
@@ -415,7 +415,7 @@ class analog_buffer_info_loader:
         self.num_idxs = self.num_idxs[:,ele_ch]
         self.idx_num_arr = self.idx_num_arr[:,:,ele_ch]
         self.time_num_arr = self.time_num_arr[:,:,ele_ch]
-        if incl_cable_delay:
+        if incl_cable_delay == True:
             self.time_num_arr -= cable_delay[np.newaxis, np.newaxis, :]
         del ele_ch, cable_delay
 
@@ -463,20 +463,22 @@ class analog_buffer_info_loader:
                 del an_cap, int_ti, int_tf, an_int_ti, int_t_mid, int_t_mid_len, int_t_last, int_t_last_len
         del offset_arr, time_wo_nan, wf_int
 
-    def get_num_samp_in_blk(self, blk_idx_arr, use_int_dat = False):
+    def get_num_samp_in_blk(self, blk_idx_arr):
+
+        self.samp_in_blk = self.num_idxs[blk_idx_arr%2]
+
+    def get_num_int_samp_in_blk(self, blk_idx_arr):
 
         cap_idx_arr = blk_idx_arr%2
-        if use_int_dat:
-            self.int_samp_in_blk = np.full((len(cap_idx_arr), num_useful_chs), 0, dtype = int)
-            self.int_samp_in_blk[:-1] = self.num_int_idxs[cap_idx_arr[:-1]]
-            self.int_samp_in_blk[-1] = self.num_int_idxs_f[cap_idx_arr[-1]]
-        else:
-            self.samp_in_blk = self.num_idxs[cap_idx_arr%2]
+
+        self.int_samp_in_blk = np.full((len(blk_idx_arr), num_useful_chs), 0, dtype = int)
+        self.int_samp_in_blk[:-1] = self.num_int_idxs[cap_idx_arr[:-1]]
+        self.int_samp_in_blk[-1] = self.num_int_idxs_f[cap_idx_arr[-1]]
         del cap_idx_arr
 
     def get_num_samps(self, use_int_dat = False):
 
-        if use_int_dat:
+        if use_int_dat == True:
             num_samp_in_blks = self.int_samp_in_blk
         else:
             num_samp_in_blks = self.samp_in_blk
@@ -487,7 +489,7 @@ class analog_buffer_info_loader:
 
     def get_mean_blk(self, ant, raw_v, use_int_dat = False):
 
-        if use_int_dat:
+        if use_int_dat == True:
             samp_in_blk_ant = self.int_samp_in_blk[:, ant]
         else:
             samp_in_blk_ant = self.samp_in_blk[:, ant]
@@ -508,32 +510,47 @@ class analog_buffer_info_loader:
 
         samp_idx = self.idx_num_arr[:, blk_idx_arr%2]
         samp_idx += (blk_idx_arr * num_samples)[np.newaxis, :, np.newaxis]
-        if ch_shape:
+        if ch_shape == True:
             samp_idx = np.reshape(samp_idx, (num_samples * len(blk_idx_arr), num_useful_chs), order='F')
 
         return samp_idx
 
-    def get_time_arr(self, blk_idx_arr, trim_1st_blk = False, ch_shape = False, use_int_dat = False, return_min_max = False):
+    def get_time_arr(self, blk_idx_arr, trim_1st_blk = False, ch_shape = False, use_int_dat = False):
 
         remove_1_blk = int(trim_1st_blk)
         cap_idx_arr = blk_idx_arr%2
 
-        time_offset = self.blk_time * (np.arange(len(cap_idx_arr)) + remove_1_blk) - self.blk_time * (cap_idx_arr)
-        if use_int_dat:        
-            time_arr = np.full((num_samples, len(cap_idx_arr), num_useful_chs), np.nan, dtype = float)
+        time_offset = self.blk_time * (np.arange(len(blk_idx_arr)) + remove_1_blk) - self.blk_time * (cap_idx_arr)
+        if use_int_dat == True:        
+            time_arr = np.full((num_samples, len(blk_idx_arr), num_useful_chs), np.nan, dtype = float)
             time_arr[:, :-1] = self.int_time_num_arr[:, cap_idx_arr[:-1]]
             time_arr[:, -1] = self.int_time_f_num_arr[:, cap_idx_arr[-1]]
         else:
             time_arr = self.time_num_arr[:, cap_idx_arr]
         time_arr += time_offset[np.newaxis, : , np.newaxis]
-        if ch_shape:
-            time_arr = np.reshape(time_arr, (num_samples * len(cap_idx_arr), num_useful_chs), order='F')
+        if ch_shape == True:
+            time_arr = np.reshape(time_arr, (num_samples * len(blk_idx_arr), num_useful_chs), order='F')
         del remove_1_blk, cap_idx_arr, time_offset 
 
-        if return_min_max:
-            time_arr = np.asarray([np.nanmin(time_arr), np.nanmax(time_arr)], dtype = float)
-
         return time_arr
+
+    def get_time_0_in_blk(self, blk_idx_arr, trim_1st_blk = False, use_int_dat = False):
+
+        remove_1_blk = int(trim_1st_blk)
+        cap_idx_arr = blk_idx_arr%2
+
+        time_offset = self.blk_time * (np.arange(len(blk_idx_arr)) + remove_1_blk) - self.blk_time * (cap_idx_arr)
+        if use_int_dat == True:
+            time_0_in_blk = np.full((len(blk_idx_arr), num_useful_chs), np.nan, dtype = float)
+            time_0_in_blk[:-1] = np.nanmin(self.int_time_num_arr, axis = 0)[cap_idx_arr[:-1]]
+            time_0_in_blk[-1] = np.nanmin(self.int_time_f_num_arr, axis = 0)[cap_idx_arr[-1]]
+        else:
+            time_0_in_blk = np.nanmin(self.time_num_arr, axis = 0)
+            time_0_in_blk = time_0_in_blk[cap_idx_arr]
+        time_0_in_blk += time_offset[: , np.newaxis]
+        del remove_1_blk, cap_idx_arr, time_offset
+
+        return time_0_in_blk 
 
 class repeder_loader:
        

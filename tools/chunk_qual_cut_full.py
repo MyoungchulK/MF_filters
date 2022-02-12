@@ -1,7 +1,7 @@
 import numpy as np
 from tqdm import tqdm
 
-def qual_cut_full_collector(Data, Ped):
+def qual_cut_full_collector(Data, Ped, analyze_blind_dat = True):
 
     print('Quality cut starts!')
 
@@ -16,7 +16,7 @@ def qual_cut_full_collector(Data, Ped):
     trig_type = ara_uproot.get_trig_type()
 
     # quality cut
-    pre_qual = pre_qual_cut_loader(ara_uproot, trim_1st_blk = True, analyze_blind_dat = True)
+    pre_qual = pre_qual_cut_loader(ara_uproot, trim_1st_blk = True, analyze_blind_dat = analyze_blind_dat)
     pre_qual_cut = pre_qual.run_pre_qual_cut()
     del pre_qual, ara_uproot
 

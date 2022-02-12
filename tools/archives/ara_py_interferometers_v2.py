@@ -14,20 +14,18 @@ num_ants = ara_const.USEFUL_CHAN_PER_STATION
 
 class py_interferometers:
 
-    def __init__(self, pad_len, dt, radius, st, yrs, run = None):
+    def __init__(self, dt, radius, st, yrs, run = None):
 
         self.dt = dt
         self.radius = radius
         self.st = st
         self.yrs = yrs
         self.run = run
-        self.lags = correlation_lags(pad_len, pad_len, 'same') * self.dt
-        self.lag_len = len(self.lags)
 
         self.pairs = self.get_pair_info()
         self.pair_len = self.pairs.shape[0]
-        self.p0_idx, self.int_factor = self.get_coval_time()
-        self.table_shape = self.p0_idx.shape
+        self.table = self.get_arrival_time_tables()
+        self.table_shape = self.table.shape
 
     def get_pair_info(self):
 
@@ -85,31 +83,12 @@ class py_interferometers:
 
         return table
 
-    def get_coval_time(self):
+    def get_correlation_lag(self, pad_len):
+        
+        self.lags = correlation_lags(pad_len, pad_len, 'full') * self.dt
+        self.lag_len = len(self.lags)
 
-        table = self.get_arrival_time_tables()
-
-        p0_idx = np.floor((table - self.lags[0])/self.dt).astype(int)
-        p0_idx[p0_idx < 0] = 0
-        p0_idx[p0_idx >= self.lag_len - 1] = self.lag_len - 2
-
-        int_factor = (table - self.dt * p0_idx.astype(float))/self.dt
-        del table
-
-        return p0_idx, int_factor
-
-    def get_fft_correlation(self, pad_v, apply_floor = False):
-
-        pad_v = np.fft.fft(pad_v, axis = 0)
-        corr = pad_v[:, self.pairs[:, 0]] * pad_v[:, self.pairs[:, 1]].conjugate()
-        corr = np.real(np.fft.ifft(corr, axis = 0))
-        corr = np.roll(corr, self.lag_len//2, axis = 0)
-
-        if apply_floor:
-            corr[corr < 0] = 0 
-            corr = np.floor(corr).astype(int)
-
-        return corr
+        return
 
     def get_cross_correlation(self, pad_v):
 
@@ -125,32 +104,47 @@ class py_interferometers:
         pad_v[pad_nan] = 0
         del pad_nan, pad_mean, pad_rms
 
-        # fft correlation
-        corr = self.get_fft_correlation(pad_v)
-        corr_01 = self.get_fft_correlation(pad_01, apply_floor = True)
+        #correlation
+        corr = np.full((self.lag_len, self.pair_len), 0, dtype = float)
+        corr_01 = np.copy(corr)
+        for p in range(self.pair_len):
+            p_1st = self.pairs[p, 0]
+            p_2nd = self.pairs[p, 1]
+            corr[:, p] = correlate(pad_v[:, p_1st], pad_v[:, p_2nd], 'full', method='fft')
+            corr_01[:, p] = correlate(pad_01[:, p_1st], pad_01[:, p_2nd], 'full', method='direct')
+            del p_1st, p_2nd
         del pad_01
 
         # unbias normalization
         corr /= corr_01
-        corr[np.isnan(corr) | np.isinf(corr)] = 0 #convert x/nan result
+        corr[np.isnan(corr)] = 0 #convert x/nan result
         del corr_01
 
         # hilbert
         corr = np.abs(hilbert(corr, axis = 0))
- 
+
         return corr
-       
+        
     def get_coval_sample(self, corr, sum_pol = False):
 
+        p0_idx = np.floor((self.table - self.lags[0])/self.dt).astype(int)
+        p0_idx[p0_idx < 0] = 0
+        p0_idx[p0_idx >= self.lag_len - 1] = self.lag_len - 2
+
+        int_factor = (self.table - self.dt * p0_idx.astype(float))/self.dt
         corr_diff = corr[1:] - corr[:-1]
 
+        # array for sampled value
         coval = np.full(self.table_shape, 0, dtype=float)
+        # manual interpolation
         for p in range(self.pair_len):
-            coval[:,:,p] = (corr_diff[:,p][self.p0_idx[:,:,p]] * self.int_factor[:,:,p] + corr[:,p][self.p0_idx[:,:,p]])
+            coval[:,:,p] = (corr_diff[:,p][p0_idx[:,:,p]] * int_factor[:,:,p] + corr[:,p][p0_idx[:,:,p]])
+        del p0_idx, int_factor, corr_diff
+
+        # remove csky bin if arrival time was bad (<-100ns)
         coval[self.bad_arr] = 0
-        del corr_diff
    
-        if sum_pol:
+        if sum_pol == True:
             corr_v = np.nansum(coval[:,:,:self.v_pairs_len],axis=2)
             corr_h = np.nansum(coval[:,:,self.v_pairs_len:],axis=2)
             coval = np.asarray([corr_v, corr_h])
@@ -159,6 +153,9 @@ class py_interferometers:
 
     def get_sky_map(self, pad_v):
         
+        # lags
+        self.get_correlation_lag(len(pad_v[:,0]))
+
         # correlation
         corr = self.get_cross_correlation(pad_v)
 

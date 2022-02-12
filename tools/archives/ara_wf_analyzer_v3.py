@@ -17,27 +17,15 @@ class wf_analyzer:
     def __init__(self, dt = 0.5, use_time_pad = False, use_band_pass = False):
 
         self.dt = dt
-       
-        if use_time_pad:
-            self.get_time_pad() 
-        if use_band_pass:
+        self.use_time_pad = use_time_pad
+        self.use_band_pass = use_band_pass
+        
+        if self.use_time_pad:
+            self.get_time_pad()
+        if self.use_band_pass:
             self.get_band_pass_filter()
 
-    def get_band_pass_filter(self, low_freq_cut = 0.13, high_freq_cut = 0.85, order = 10, pass_type = 'band'):
-
-        self.nu, self.de = butter(order, [low_freq_cut, high_freq_cut], btype = pass_type)
-        self.de_pad = 3*len(self.nu)
-
-    def get_band_passed_wf(self, volt):
-
-        if len(volt) < self.de_pad:
-            bp_wf = filtfilt(self.nu, self.de, volt, padlen = len(volt) - 1)
-        else:
-            bp_wf = filtfilt(self.nu, self.de, volt)
-
-        return bp_wf
-
-    def get_time_pad(self, pad_range = 1220, pad_offset = 400):
+    def get_time_pad(self, pad_range = 1216, pad_offset = 400):
 
         self.pad_t = np.arange(-1*pad_range/2 + pad_offset, pad_range/2 + pad_offset, self.dt)
         self.pad_len = len(self.pad_t)
@@ -54,12 +42,26 @@ class wf_analyzer:
 
         return int_t
 
-    def get_int_wf(self, raw_t, raw_v, ant, use_time_pad = False, use_band_pass = False):
+    def get_band_pass_filter(self, low_freq_cut = 0.13, high_freq_cut = 0.85, order = 10, pass_type = 'band'):
+
+        self.nu, self.de = butter(order, [low_freq_cut, high_freq_cut], btype = pass_type)
+        self.de_pad = 3*len(self.nu)
+
+    def get_band_passed_wf(self, volt):
+
+        if len(volt) < self.de_pad:
+            bp_wf = filtfilt(self.nu, self.de, volt, padlen = len(volt) - 1)
+        else:
+            bp_wf = filtfilt(self.nu, self.de, volt)
+
+        return bp_wf
+
+    def get_int_wf(self, raw_t, raw_v, ant):
 
         # akima interpolation!
         akima = Akima1DInterpolator(raw_t, raw_v)
 
-        if use_time_pad:
+        if self.use_time_pad:
             int_v = akima(self.pad_t)
             int_t = ~np.isnan(int_v) # actually index
             int_v = int_v[int_t]
@@ -68,10 +70,10 @@ class wf_analyzer:
             int_v = akima(int_t)
         del akima
             
-        if use_band_pass:
+        if self.use_band_pass:
             int_v = self.get_band_passed_wf(int_v)
 
-        if use_time_pad:
+        if self.use_time_pad:
             self.pad_v[:, ant] = np.nan
             self.pad_v[int_t, ant] = int_v
             return
@@ -99,7 +101,7 @@ class hist_loader:
        
     def get_y_range(self, y_len, y_bins = 1, y_sym_range = False):
 
-        if y_sym_rang:
+        if y_sym_range == True:
             y_offset = y_len//2
             y_range = np.arange(-1*y_offset, y_offset, y_bins).astype(int)
         else:
@@ -140,7 +142,7 @@ class hist_loader:
         for x in range(self.x_len):
             for ant in range(self.chs):
                 medi_est[x, ant] = self.get_median_from_hist(x, ant)
-        if nan_to_zero:
+        if nan_to_zero == True:
             medi_est[np.isnan(medi_est)] = 0
 
         return medi_est
