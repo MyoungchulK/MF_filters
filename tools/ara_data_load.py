@@ -56,9 +56,11 @@ class ara_geom_loader:
 
     def get_ant_xyz(self):
 
-        ant_xyz = np.full((num_useful_chs), np.nan, dtype = float)
+        ant_xyz = np.full((3, num_useful_chs), np.nan, dtype = float)
         for ant in range(num_useful_chs):
-            ant_xyz[ant] = self.st_info.getAntennaInfo(ant).antLocation
+            ant_xyz[0, ant] = self.st_info.getAntennaInfo(ant).antLocation[0]
+            ant_xyz[1, ant] = self.st_info.getAntennaInfo(ant).antLocation[1]
+            ant_xyz[2, ant] = self.st_info.getAntennaInfo(ant).antLocation[2]
         print('antenna location:',ant_xyz)
         return ant_xyz
 
@@ -400,7 +402,7 @@ class analog_buffer_info_loader:
 
     def __init__(self, st, yrs, incl_cable_delay = False):
 
-        cap_name = os.getcwd() + f'/../data/araAtriStation{st}SampleTimingNew.h5'
+        cap_name = os.getcwd() + f'/../data/analog_buffer/araAtriStation{st}SampleTimingNew.h5'
         cap_file = h5py.File(cap_name, 'r')
         self.num_idxs = cap_file['cap_arr'][:]
         self.idx_num_arr = cap_file['idx_arr_rm_overlap'][:]

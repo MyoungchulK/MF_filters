@@ -1,14 +1,10 @@
 import os, sys
 import numpy as np
-import ROOT
 from tqdm import tqdm
 import h5py
 
 # custom lib
 from tools.ara_constant import ara_const
-
-#link AraRoot
-ROOT.gSystem.Load(os.environ.get('ARA_UTIL_INSTALL_DIR')+"/lib/libAraEvent.so")
 
 ara_const = ara_const()
 num_ddas = ara_const.DDA_PER_ATRI

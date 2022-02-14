@@ -160,9 +160,6 @@ def cliff_collector(Data, Ped):
         del samp_in_blk
     del ara_root, ara_uproot, buffer_info, num_evts
 
-    print(np.nanmax(cliff_adc),np.nanmin(cliff_adc))
-    print(np.nanmax(cliff),np.nanmin(cliff))
-
     cliff_adc_rf = np.copy(cliff_adc)
     cliff_adc_rf[:, trig_type != 0] = np.nan
     cliff_adc_rf_wo_bias_cut = np.copy(cliff_adc)
