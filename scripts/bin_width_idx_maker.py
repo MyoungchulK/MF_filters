@@ -11,8 +11,10 @@ def sample_idx_table_maker(CPath = curr_path, Station = None, Output = None):
 
     debug = True
 
-    dpath = '/cvmfs/ara.opensciencegrid.org/trunk/centos7/source/AraRoot/AraEvent/calib/ATRI/'
-    dname = f'araAtriStation{Station}SampleTimingNew.txt'
+    #dpath = '/cvmfs/ara.opensciencegrid.org/trunk/centos7/source/AraRoot/AraEvent/calib/ATRI/'
+    dpath = '/home/mkim/analysis/AraSoft/AraRoot/AraEvent/calib/ATRI/'
+    #dname = f'araAtriStation{Station}SampleTimingNew.txt'
+    dname = f'araAtriStation{Station}SampleTimingNew_2019DataSet.txt'
    
     dda_num = 4
     rf_per_dda = 8
