@@ -2,7 +2,7 @@ import os
 import numpy as np
 from tqdm import tqdm
 
-def ped_collector(Data, Ped, analyze_blind_dat = True):
+def ped_collector(Data, Ped, analyze_blind_dat = False):
 
     print('Ped starts!')
 

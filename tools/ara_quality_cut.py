@@ -443,7 +443,8 @@ class qual_cut_loader:
         total_qual_cut = np.append(pre_qual_cut, post_qual_cut, axis = 1)
         del pre_qual_cut, post_qual_cut
 
-        quick_qual_check(np.nansum(total_qual_cut, axis = 1) != 0, self.pre_qual.evt_num, 'total qual cut!')
+        if self.verbose:
+            quick_qual_check(np.nansum(total_qual_cut, axis = 1) != 0, self.pre_qual.evt_num, 'total qual cut!')
 
         return total_qual_cut
 
@@ -458,12 +459,14 @@ class qual_cut_loader:
         d_path += f'{d_key}/'
         d_path += f'qual_cut_A{st}_R{run}.h5'
         qual_file = h5py.File(d_path, 'r')
-        print(f'quality cut path:', d_path)
+        if self.verbose:
+            print(f'quality cut path:', d_path)
 
         evt_num = qual_file['evt_num'][:]
         total_qual_cut = qual_file['total_qual_cut'][:]
 
-        quick_qual_check(np.nansum(total_qual_cut, axis = 1) != 0, evt_num, 'total qual cut!')
+        if self.verbose:
+            quick_qual_check(np.nansum(total_qual_cut, axis = 1) != 0, evt_num, 'total qual cut!')
         del d_key, d_path, qual_file, evt_num
 
         return total_qual_cut
