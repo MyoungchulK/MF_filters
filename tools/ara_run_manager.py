@@ -14,9 +14,29 @@ class run_info_loader:
         self.run = run
         self.analyze_blind_dat = analyze_blind_dat
 
-    def get_ped_path(self, verbose = False, return_none = False):
+    def get_result_path(self, file_type = 'qual_cut', verbose = False, return_none = False):
 
-        ped_path = f'/data/user/mkim/OMF_filter/ARA0{self.st}/Ped/pedestalValues.run{self.run}.dat'
+        blind_type = ''
+        if self.analyze_blind_dat:
+            blind_type = '_full'
+
+        result_path = f'/data/user/mkim/OMF_filter/ARA0{self.st}/{file_type}{blind_type}/{file_type}{blind_type}_A{self.st}_R{self.run}.dat'
+
+        if os.path.exists(result_path):
+            if verbose:
+                print(f'{file_type}{blind_type}_path:{result_path}')
+        else:
+            print('There is no desired results!')
+            if return_none == True:
+                return None
+            else:
+                sys.exit(1)
+
+        return result_path
+
+    def get_ped_path(self, file_type = 'values', verbose = False, return_none = False):
+
+        ped_path = f'/data/user/mkim/OMF_filter/ARA0{self.st}/ped/ped_{file_type}_A{self.st}_R{self.run}.dat'
 
         if os.path.exists(ped_path):
             if verbose:

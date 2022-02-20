@@ -18,9 +18,11 @@ def cliff_collector(Data, Ped):
     # data config
     ara_uproot = ara_uproot_loader(Data)
     ara_uproot.get_sub_info()
-    buffer_info = analog_buffer_info_loader(ara_uproot.station_id, ara_uproot.year, incl_cable_delay = True)
+    buffer_info = analog_buffer_info_loader(ara_uproot.station_id, ara_uproot.run, ara_uproot.year, incl_cable_delay = True)
     ara_root = ara_root_loader(Data, Ped, ara_uproot.station_id, ara_uproot.year)
     num_evts = ara_uproot.num_evts
+
+    print(ara_uproot.unix_time[0],ara_uproot.unix_time[-1])
 
     #output array
     cliff_adc = np.full((num_ants, num_evts), np.nan, dtype = float)

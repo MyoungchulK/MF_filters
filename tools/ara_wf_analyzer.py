@@ -19,7 +19,7 @@ class wf_analyzer:
         self.dt = dt
        
         if use_time_pad:
-            self.get_time_pad() 
+            self.get_time_pad(add_double_pad = True) 
         if use_band_pass:
             self.get_band_pass_filter()
 
@@ -37,11 +37,23 @@ class wf_analyzer:
 
         return bp_wf
 
-    def get_time_pad(self, pad_range = 1220, pad_offset = 400):
+    def get_time_pad(self, add_double_pad = False):
 
-        self.pad_t = np.arange(-1*pad_range/2 + pad_offset, pad_range/2 + pad_offset, self.dt)
+        # from a3 length
+        pad_i = -179.5
+        pad_f = 953
+        pad_w = int((pad_f - pad_i) / self.dt) + 1
+        if add_double_pad:
+            half_pad_t = pad_w * self.dt / 2
+            pad_i -= half_pad_t
+            pad_f += half_pad_t
+            pad_w = np.copy(int((pad_f - pad_i) / self.dt) + 1)
+            del half_pad_t
+
+        self.pad_t = np.linspace(pad_i, pad_f, pad_w, dtype = float)
         self.pad_len = len(self.pad_t)
         self.pad_v = np.full((self.pad_len, num_Ants), np.nan, dtype = float)
+        print(f'time pad length: {self.pad_len * self.dt} ns')
 
     def get_int_time(self, raw_ti, raw_tf):
 
@@ -49,7 +61,8 @@ class wf_analyzer:
         int_tf = self.dt * np.floor((1/self.dt) * raw_tf)
     
         # set time range by dt
-        int_t = np.arange(int_ti, int_tf+self.dt/2, self.dt)
+        #int_t = np.arange(int_ti, int_tf+self.dt/2, self.dt)
+        int_t = np.linspace(int_ti, int_tf, int((int_tf - int_ti) / self.dt) + 1, dtype = float)
         del int_ti, int_tf
 
         return int_t

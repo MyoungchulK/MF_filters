@@ -150,21 +150,9 @@ def sample_idx_table_maker(CPath = curr_path, Station = None, Output = None):
     hf.close()
     del hf 
 
-    h5_file_name_cap = dname[:-4]
-    h5_file_name_cap += f'_CapNum_Only'
-    h5_file_name_cap += f'.h5'
-    hf = h5py.File(Output+h5_file_name_cap, 'w')
-    hf.create_dataset('cap_arr', data=cap_arr, compression="gzip", compression_opts=9)
-    hf.close()
-    del hf
-
     print(f'output is {Output}{h5_file_name}')
-    file_size = np.round(os.path.getsize(Output+h5_file_name)/1204/1204,2)
+    file_size = np.round(os.path.getsize(Output+h5_file_name)/1024/1024,2)
     print('file size is', file_size, 'MB')
-
-    print(f'output is {Output}{h5_file_name_cap}')
-    file_size_cap = np.round(os.path.getsize(Output+h5_file_name_cap)/1204/1204,2)
-    print('file size is', file_size_cap, 'MB')
 
     print('done!')
  

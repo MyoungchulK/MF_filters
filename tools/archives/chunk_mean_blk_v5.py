@@ -9,7 +9,7 @@ def mean_blk_collector(Data, Ped):
     from tools.ara_data_load import ara_root_loader
     from tools.ara_data_load import analog_buffer_info_loader
     from tools.ara_constant import ara_const
-    from tools.ara_quality_cut import qual_cut_loader
+    from tools.ara_quality_cut import pre_qual_cut_loader
     from tools.ara_wf_analyzer import wf_analyzer
 
     # geom. info.
@@ -28,6 +28,12 @@ def mean_blk_collector(Data, Ped):
     trig_type = ara_uproot.get_trig_type()
     unix_time = ara_uproot.unix_time
 
+    pre_qual = pre_qual_cut_loader(ara_uproot, trim_1st_blk = True)
+    pre_qual_cut = pre_qual.run_pre_qual_cut()
+    pre_qual_cut[:, -1] = 0
+    pre_qual_cut_sum = np.nansum(pre_qual_cut, axis = 1)
+    del pre_qual, pre_qual_cut
+
     from tools.ara_run_manager import run_info_loader
     from tools.ara_data_load import ara_Hk_uproot_loader
     run_info = run_info_loader(ara_uproot.station_id, ara_uproot.run, analyze_blind_dat = False)
@@ -39,18 +45,13 @@ def mean_blk_collector(Data, Ped):
     # wf analyzer
     wf_int = wf_analyzer(use_band_pass = True)
 
-    ara_qual = qual_cut_loader()
-    total_qual_cut = ara_qual.load_qual_cut_result(ara_uproot.station_id, ara_uproot.run)
-    qual_cut_sum = np.nansum(total_qual_cut, axis = 1) 
-    del ara_qual, total_qual_cut
-
-    clean_evt_idx = np.logical_and(qual_cut_sum == 0, trig_type == 0)
+    clean_evt_idx = np.logical_and(pre_qual_cut_sum == 0, trig_type == 0)
     clean_evt = evt_num[clean_evt_idx]   
     clean_entry = entry_num[clean_evt_idx]
     clean_unix = unix_time[clean_evt_idx]
     clean_len = len(clean_evt)   
     print(f'Number of clean event is {clean_len}') 
-    del qual_cut_sum, clean_evt_idx, evt_num, entry_num, trig_type, unix_time
+    del pre_qual_cut_sum, clean_evt_idx, evt_num, entry_num, trig_type, unix_time
 
     # output array
     blk_est_range = 50

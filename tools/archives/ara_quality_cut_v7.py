@@ -8,11 +8,10 @@ from tools.ara_constant import ara_const
 
 ara_const = ara_const()
 num_ddas = ara_const.DDA_PER_ATRI
-num_blks = ara_const.BLOCKS_PER_DDA
+num_blocks = ara_const.BLOCKS_PER_DDA
 num_ants = ara_const.USEFUL_CHAN_PER_STATION
 num_eles = ara_const.CHANNELS_PER_ATRI
 num_samps = ara_const.SAMPLES_PER_BLOCK
-num_chs = ara_const.RFCHAN_PER_DDA
 
 def quick_qual_check(dat_bool, dat_idx, ser_val):
 
@@ -23,138 +22,23 @@ def quick_qual_check(dat_bool, dat_idx, ser_val):
 
 class pre_qual_cut_loader:
 
-    def __init__(self, ara_uproot, analyze_blind_dat = False, verbose = False):
+    def __init__(self, ara_uproot, trim_1st_blk = False, analyze_blind_dat = False):
 
         self.st = ara_uproot.station_id
         self.run = ara_uproot.run
+        self.trig_type = ara_uproot.get_trig_type()
         self.evt_num = ara_uproot.evt_num 
         self.num_evts = ara_uproot.num_evts
-        self.trig_type = ara_uproot.get_trig_type()
         self.unix_time = ara_uproot.unix_time
-        self.irs_block_number = ara_uproot.irs_block_number & 0x1ff
-        self.channel_mask = ara_uproot.channel_mask
-        self.blk_len = ara_uproot.read_win//num_ddas
-        self.verbose = verbose
+        self.irs_block_number = ara_uproot.irs_block_number
+        self.remove_1_blk = int(trim_1st_blk)
+        self.blk_len_arr = ara_uproot.read_win//num_ddas - self.remove_1_blk
 
         from tools.ara_run_manager import run_info_loader
-        self.run_info = run_info_loader(self.st, self.run, analyze_blind_dat = analyze_blind_dat)
-        self.sensor_dat = self.run_info.get_data_path(file_type = 'sensorHk', verbose = self.verbose, return_none = True)
-
-    def get_daq_structure_errors(self):
-
-        bi_ch_mask = 1 << np.arange(num_chs, dtype = int)
-        dda_ch = np.arange(num_ddas, dtype = int)
-        dda_idx = (self.channel_mask & 0x300) >> 8
-
-        daq_st_err = np.full((self.num_evts, 5), 0, dtype = int)
-        # bad block lengh
-        # bad block index
-        # block gap
-        # bad dda index
-        # bad channel mask
-
-        for evt in range(self.num_evts):
-
-            # bad block length
-            blk_idx_evt = np.asarray(self.irs_block_number[evt], dtype = int)
-            daq_st_err[evt, 0] = len(blk_idx_evt) % num_ddas
-            if daq_st_err[evt, 0] != 0:
-                continue
-
-            # bad block index
-            blk_idx_reshape = np.reshape(blk_idx_evt, (-1, num_ddas))
-            daq_st_err[evt, 1] = int(np.any(blk_idx_reshape != blk_idx_reshape[:,0][:, np.newaxis]))
-            del blk_idx_evt
-
-            # block gap
-            for dda in range(num_ddas):
-                blk_idx_dda = blk_idx_reshape[:, dda]
-                first_block_idx = blk_idx_dda[0]
-                last_block_idx = blk_idx_dda[-1]
-                block_diff = len(blk_idx_dda) - 1
-
-                if first_block_idx + block_diff != last_block_idx:
-                    if num_blks - first_block_idx + last_block_idx != block_diff:
-                        daq_st_err[evt, 2] += 1
-                del first_block_idx, last_block_idx, block_diff, blk_idx_dda
-            del blk_idx_reshape
-
-            # bad dda channel
-            dda_idx_evt = np.asarray(dda_idx[evt], dtype = int)
-            dda_idx_reshape = np.reshape(dda_idx_evt, (-1, num_ddas))
-            daq_st_err[evt, 3] = int(np.any(dda_idx_reshape != dda_ch[np.newaxis, :]))
-            del dda_idx_reshape, dda_idx_evt
-
-            # bad channel mask
-            ch_mask_evt = np.asarray(self.channel_mask[evt], dtype = int)
-            ch_mask_reshape = np.repeat(ch_mask_evt[:, np.newaxis], num_chs, axis = 1)
-            ch_mask_bit = ch_mask_reshape & bi_ch_mask[np.newaxis, :]
-            daq_st_err[evt, 4] = int(np.any(ch_mask_bit != bi_ch_mask[np.newaxis, :]))
-            del ch_mask_reshape, ch_mask_bit, ch_mask_evt
-        del bi_ch_mask, dda_ch, dda_idx
-
-        if self.verbose:
-            quick_qual_check(daq_st_err[:, 0] != 0, self.evt_num, 'bad block length events')
-            quick_qual_check(daq_st_err[:, 1] != 0, self.evt_num, 'bad block index events')
-            quick_qual_check(daq_st_err[:, 2] != 0, self.evt_num, 'block gap events')
-            quick_qual_check(daq_st_err[:, 3] != 0, self.evt_num, 'bad dda index events')
-            quick_qual_check(daq_st_err[:, 4] != 0, self.evt_num, 'bad channel mask events')
-
-        return daq_st_err
-
-    def get_readout_window_errors(self):
-
-        rf_read_win_len, soft_read_win_len = self.get_read_win_limit()
-
-        read_win_err = np.full((self.num_evts, 4), 0, dtype = int) 
-        # single block
-        # bad rf readout window
-        # bad cal readout window
-        # bad soft readout window
-    
-        read_win_err[:, 0] = (self.blk_len < 2).astype(int)
-        read_win_err[:, 1] = np.logical_and(self.blk_len < rf_read_win_len, self.trig_type == 0).astype(int)
-        read_win_err[:, 2] = np.logical_and(self.blk_len < rf_read_win_len, self.trig_type == 1).astype(int)
-        read_win_err[:, 3] = np.logical_and(self.blk_len < soft_read_win_len, self.trig_type == 2).astype(int)
-        del rf_read_win_len, soft_read_win_len
-
-        if self.verbose:
-            quick_qual_check(read_win_err[:, 0] != 0, self.evt_num, 'single block events')         
-            quick_qual_check(read_win_err[:, 1] != 0, self.evt_num, 'bad rf readout window events')         
-            quick_qual_check(read_win_err[:, 2] != 0, self.evt_num, 'bad cal readout window events')         
-            quick_qual_check(read_win_err[:, 3] != 0, self.evt_num, 'bad soft readout window events')         
-
-        return read_win_err
-
-    def get_read_win_limit(self):
-
-        if self.st == 2:
-            if self.run < 4029:
-                rf_readout_limit = 20
-            elif self.run > 4028 and self.run < 9749:
-                rf_readout_limit = 26
-            elif self.run > 9748:
-                rf_readout_limit = 28
-        elif self.st == 3:
-            if self.run < 3104:
-                rf_readout_limit = 20
-            elif self.run > 3103 and self.run < 10001:
-                rf_readout_limit = 26
-            elif self.run > 10000:
-                rf_readout_limit = 28
-            
-        if self.st == 2:
-            if self.run < 9505:
-                soft_readout_limit = 8
-            else:
-                soft_readout_limit = 12
-        elif self.st == 3:
-            if self.run < 10001:
-                soft_readout_limit = 8
-            else:
-                soft_readout_limit = 12
-
-        return rf_readout_limit, soft_readout_limit
+        run_info = run_info_loader(self.st, self.run, analyze_blind_dat = analyze_blind_dat)
+        self.sensor_dat = run_info.get_data_path(file_type = 'sensorHk', verbose = True, return_none = True)
+        self.ped_dat = run_info.get_ped_path(verbose = True)
+        del run_info
 
     def get_bad_event_number(self):
         
@@ -165,8 +49,7 @@ class pre_qual_cut_loader:
             bad_evt_num[negative_idx[0] + 1:] = 1
         del negative_idx
 
-        if self.verbose:
-            quick_qual_check(bad_evt_num != 0, self.evt_num, 'bad evt num')
+        quick_qual_check(bad_evt_num != 0, self.evt_num, 'bad evt num')
 
         return bad_evt_num
 
@@ -184,12 +67,101 @@ class pre_qual_cut_loader:
                 if ara_known_issue.get_unchecked_unixtime(self.unix_time[evt]):
                    bad_unix_evts[evt] = 1 
         del ara_known_issue
-        
-        if self.verbose:
-            quick_qual_check(bad_unix_evts != 0, self.evt_num, 'bad unix time')
+
+        quick_qual_check(bad_unix_evts != 0, self.evt_num, 'bad unix time')
 
         return bad_unix_evts
         
+    def get_bad_readout_win_events(self, trig_type_idx = 0):
+
+        if trig_type_idx == 0 or trig_type_idx == 1:
+            if self.st == 2:
+                if self.run < 4029:
+                    readout_limit = 20
+                elif self.run > 4028 and self.run < 9749:
+                    readout_limit = 26
+                elif self.run > 9748:
+                    readout_limit = 28
+            elif self.st == 3:
+                if self.run < 3104:
+                    readout_limit = 20
+                elif self.run > 3103 and self.run < 10001:
+                    readout_limit = 26
+                elif self.run > 10000:
+                    readout_limit = 28
+        else:
+            if self.st == 2:
+                if self.run < 9505:
+                    readout_limit = 8
+                else:
+                    readout_limit = 12
+            elif self.st == 3:
+                if self.run < 10001: 
+                    readout_limit = 8
+                else:
+                    readout_limit = 12
+        readout_limit -= self.remove_1_blk
+
+        bad_readout_win_bool = self.blk_len_arr < readout_limit
+        rf_bool = self.trig_type == trig_type_idx
+        bad_readout_win_evts = np.logical_and(bad_readout_win_bool, rf_bool)
+        del bad_readout_win_bool, rf_bool
+
+        return bad_readout_win_evts
+
+    def get_bad_rf_readout_win_events(self):
+
+        bad_readout_win_evts = self.get_bad_readout_win_events()
+
+        quick_qual_check(bad_readout_win_evts != 0, self.evt_num, 'bad rf readout window events')
+
+        return bad_readout_win_evts
+
+    def get_bad_cal_readout_win_events(self):
+
+        bad_readout_win_evts = self.get_bad_readout_win_events(trig_type_idx = 1)
+
+        quick_qual_check(bad_readout_win_evts != 0, self.evt_num, 'bad cal readout window events') 
+
+        return bad_readout_win_evts
+
+    def get_bad_soft_readout_win_events(self):
+
+        bad_readout_win_evts = self.get_bad_readout_win_events(trig_type_idx = 2)
+
+        quick_qual_check(bad_readout_win_evts != 0, self.evt_num, 'bad soft readout window events')
+
+        return bad_readout_win_evts
+
+    def get_zero_block_events(self, zero_blk_limit = 2):
+
+        zero_blk_limit -= self.remove_1_blk
+
+        zero_blk_evts = (self.blk_len_arr < zero_blk_limit).astype(int)
+
+        quick_qual_check(zero_blk_evts != 0, self.evt_num, 'zero block')
+
+        return zero_blk_evts
+
+    def get_block_gap_events(self):
+
+        blk_gap_evts = np.full((self.num_evts), 0, dtype = int)
+
+        for evt in range(self.num_evts):
+            irs_block_evt = self.irs_block_number[evt]
+            first_block_idx = irs_block_evt[0]
+            last_block_idx = irs_block_evt[-1]
+            block_diff = len(irs_block_evt)//num_ddas - 1
+
+            if first_block_idx + block_diff != last_block_idx:
+                if num_blocks - first_block_idx + last_block_idx != block_diff:
+                    blk_gap_evts[evt] = 1
+            del irs_block_evt, first_block_idx, last_block_idx, block_diff
+
+        quick_qual_check(blk_gap_evts != 0, self.evt_num, 'block gap')
+
+        return blk_gap_evts
+
     def get_first_few_events(self, first_evt_limit = 7):
 
         first_few_evts = np.full((self.num_evts), 0, dtype = int)
@@ -199,8 +171,7 @@ class pre_qual_cut_loader:
         if self.st == 3:
             first_few_evts[self.evt_num < first_evt_limit] = 1
 
-        if self.verbose:
-            quick_qual_check(first_few_evts != 0, self.evt_num, f'first few events')
+        quick_qual_check(first_few_evts != 0, self.evt_num, f'first few events')
 
         return first_few_evts
 
@@ -211,8 +182,7 @@ class pre_qual_cut_loader:
         if self.sensor_dat is None:
             no_sensor_file_evts[:] = 1
             
-        if self.verbose:
-            quick_qual_check(no_sensor_file_evts != 0, self.evt_num, f'no sensor file events')
+        quick_qual_check(no_sensor_file_evts != 0, self.evt_num, f'no sensor file events')
 
         return no_sensor_file_evts
 
@@ -237,8 +207,7 @@ class pre_qual_cut_loader:
         if sensor_unix_len == 0:
             print('There is empty sensorHk file!')
             bias_volt_evts[:] = 1
-            if self.verbose:
-                quick_qual_check(bias_volt_evts != 0, self.evt_num, f'bias voltage events')
+            quick_qual_check(bias_volt_evts != 0, self.evt_num, f'bias voltage events')
             return bias_volt_evts
 
         good_dda_bool = np.logical_and(dda_volt > volt_cut[0], dda_volt < volt_cut[1])
@@ -259,8 +228,7 @@ class pre_qual_cut_loader:
         bias_volt_evts[bias_volt_evts != 0] = 1
         del volt_cut, sensor_unix, sensor_unix_len, unix_digi, dda_digi_idx, good_digi_bool
 
-        if self.verbose:
-            quick_qual_check(bias_volt_evts != 0, self.evt_num, f'bias voltage events')
+        quick_qual_check(bias_volt_evts != 0, self.evt_num, f'bias voltage events')
 
         return bias_volt_evts
    
@@ -285,54 +253,49 @@ class pre_qual_cut_loader:
         if cal_evt_ratio < ratio_cut:
             no_cal_evts[:] = 1
 
-        if self.verbose:
-            quick_qual_check(no_cal_evts != 0, self.evt_num, f'no calpulser events')
+        quick_qual_check(no_cal_evts != 0, self.evt_num, f'no calpulser events')
 
         return no_cal_evts
 
-    def get_pedestal_block_events(self, apply_daq_err = None):
+    def get_zero_pedestal_events(self, apply_blk_gap = None):
 
-        ped_count_dat = self.run_info.get_ped_path(file_type = 'counts', verbose = self.verbose)
-        ped_counts = np.loadtxt(ped_count_dat, dtype = int)
-        zero_ped_counts = np.nanmin(ped_counts, axis = 1) < 1
-        ped_blk_counts = np.nanmin(ped_counts, axis = 1) ==1
-        del ped_counts, ped_count_dat
+        ped = np.loadtxt(self.ped_dat, dtype = int)
+        zero_samp = np.any(ped[:, 3:].astype(int) < 1, axis = 1).astype(int)
+        zero_ped_blk = np.nansum(np.reshape(zero_samp, (-1, num_eles)), axis = 1)
+        del ped, zero_samp
 
-        ped_blk_evts = np.full((self.num_evts, 2), 0, dtype = int)
+        zero_ped_evts = np.full((self.num_evts), 0, dtype = int)
         for evt in range(self.num_evts):
-            if apply_daq_err is not None and apply_daq_err[evt] != 0:
+            if apply_blk_gap is not None and apply_blk_gap[evt] != 0:
                 continue
-            irs_block_evt = np.unique(self.irs_block_number[evt][num_ddas:]).astype(int) 
-            ped_blk_evts[evt, 0] = np.nansum(zero_ped_counts[irs_block_evt])
             
-            if self.trig_type[evt] == 1:
-                continue
-            ped_blk_evts[evt, 1] = np.nansum(ped_blk_counts[irs_block_evt])
+            irs_block_evt = np.unique(self.irs_block_number[evt])  
+            zero_ped_evts[evt] = np.nansum(zero_ped_blk[irs_block_evt])
             del irs_block_evt
-        del ped_blk_counts
+        del zero_ped_blk
 
-        if self.verbose:
-            quick_qual_check(ped_blk_evts[:, 0] != 0, self.evt_num, f'zero pedestal events')
-            quick_qual_check(ped_blk_evts[:, 1] != 0, self.evt_num, f'pedestal block events')
+        quick_qual_check(zero_ped_evts != 0, self.evt_num, f'zero pedestal events')
 
-        return ped_blk_evts
+        return zero_ped_evts
 
-    def run_pre_qual_cut(self, use_for_ped_qual = False):
+    def run_pre_qual_cut(self):
 
-        tot_pre_qual_cut = np.full((self.num_evts, 16), 0, dtype = int)
-        tot_pre_qual_cut[:, :5] = self.get_daq_structure_errors()
-        tot_pre_qual_cut[:, 5:9] = self.get_readout_window_errors()
-        tot_pre_qual_cut[:, 9] = self.get_bad_event_number()
-        tot_pre_qual_cut[:, 10] = self.get_bad_unix_time_events(add_unchecked_unix_time = True)
-        tot_pre_qual_cut[:, 11] = self.get_first_few_events()
-        tot_pre_qual_cut[:, 12] = self.get_bias_voltage_events()
-        tot_pre_qual_cut[:, 13] = self.get_no_calpulser_events(apply_bias_volt = tot_pre_qual_cut[:,12])
-        #tot_pre_qual_cut[:, 14] = self.get_no_sensor_file_events()
-        if use_for_ped_qual == False:
-            tot_pre_qual_cut[:, 14:] = self.get_pedestal_block_events(apply_daq_err = np.nansum(tot_pre_qual_cut[:, :5], axis = 1))
+        tot_pre_qual_cut = np.full((self.num_evts, 11), 0, dtype = int)
 
-        if self.verbose:
-            quick_qual_check(np.nansum(tot_pre_qual_cut, axis = 1) != 0, self.evt_num, 'total pre qual cut!')
+        tot_pre_qual_cut[:, 0] = self.get_bad_event_number()
+        tot_pre_qual_cut[:, 1] = self.get_bad_unix_time_events(add_unchecked_unix_time = True)
+        tot_pre_qual_cut[:, 2] = self.get_bad_rf_readout_win_events()
+        tot_pre_qual_cut[:, 3] = self.get_bad_cal_readout_win_events()
+        tot_pre_qual_cut[:, 4] = self.get_bad_soft_readout_win_events()
+        tot_pre_qual_cut[:, 5] = self.get_zero_block_events()
+        tot_pre_qual_cut[:, 6] = self.get_block_gap_events()
+        tot_pre_qual_cut[:, 7] = self.get_first_few_events()
+        tot_pre_qual_cut[:, 8] = self.get_bias_voltage_events()
+        tot_pre_qual_cut[:, 9] = self.get_no_calpulser_events(apply_bias_volt = tot_pre_qual_cut[:,8])
+        #tot_pre_qual_cut[:, 10] = self.get_no_sensor_file_events()
+        tot_pre_qual_cut[:, 10] = self.get_zero_pedestal_events(apply_blk_gap = tot_pre_qual_cut[:,6])
+
+        #quick_qual_check(np.nansum(tot_pre_qual_cut, axis = 1) != 0, self.evt_num, 'total pre qual cut!')
 
         return tot_pre_qual_cut
 
@@ -356,9 +319,17 @@ class post_qual_cut_loader:
 
         # spare
         # cw (testbad, phase, anita)
-        # cliff       
- 
+        
+        self.ped_blk_evts = np.full((num_ants, self.num_evts), 0, dtype = int)
         """self.freq_glitch_evts = np.copy(self.ped_blk_evts)"""
+
+    def get_pedestal_block_events(self, raw_v):
+
+        raw_v_in_blk = np.reshape(raw_v, (-1, num_samps)).astype(int)
+        ped_blk_wf = np.nansum(np.all(raw_v_in_blk == 0, axis = 1).astype(int))
+        del raw_v_in_blk
+
+        return ped_blk_wf
 
     def get_freq_glitch_events(self, raw_t, raw_v, ant, low_freq_limit = 0.13):
 
@@ -383,6 +354,14 @@ class post_qual_cut_loader:
         del blk_len_arr
 
         self.ara_root.get_entry(evt)
+        self.ara_root.get_useful_evt(self.ara_root.cal_type.kJustPed)
+        for ant in range(num_ants):
+            raw_v = self.ara_root.get_rf_ch_wf(ant)[1]
+        
+            self.ped_blk_evts[ant, evt] = self.get_pedestal_block_events(raw_v[num_samps:])
+            del raw_v
+            self.ara_root.del_TGraph()
+        self.ara_root.del_usefulEvt()
         """
         self.ara_root.get_useful_evt(self.ara_root.cal_type.kLatestCalib)
         for ant in range(num_ants):
@@ -411,14 +390,16 @@ class post_qual_cut_loader:
 
     def get_post_qual_cut_value(self):
 
-        return self.freq_glitch_evts
+        return self.ped_blk_evts, self.freq_glitch_evts
 
     def run_post_qual_cut(self):
 
         tot_post_qual_cut = np.full((self.num_evts, 2), 0, dtype = int)
 
+        tot_post_qual_cut[:, 0] = np.nansum(self.ped_blk_evts, axis = 0)
         """tot_post_qual_cut[:, 1] = self.get_channel_cerrelation_flag(self.freq_glitch_evts, apply_bad_ant = True)"""
 
+        quick_qual_check(tot_post_qual_cut[:, 0] != 0, self.evt_num, 'pedestal block events!')
         """quick_qual_check(tot_post_qual_cut[:, 1] != 0, self.evt_num, 'frequency glitch!')"""
         #quick_qual_check(np.nansum(tot_post_qual_cut, axis = 1) != 0, self.evt_num, 'total post qual cut!')
         
@@ -426,14 +407,13 @@ class post_qual_cut_loader:
 
 class qual_cut_loader:
 
-    def __init__(self, analyze_blind_dat = False, verbose = False):
+    def __init__(self, analyze_blind_dat = False):
 
         self.analyze_blind_dat = analyze_blind_dat
-        self.verbose = verbose
 
-    def get_qual_cut_class(self, ara_root, ara_uproot, dt = 0.5):
+    def get_qual_cut_class(self, ara_root, ara_uproot, dt = 0.5, trim_1st_blk = False):
 
-        self.pre_qual = pre_qual_cut_loader(ara_uproot, analyze_blind_dat = self.analyze_blind_dat, verbose = self.verbose)
+        self.pre_qual = pre_qual_cut_loader(ara_uproot, trim_1st_blk = trim_1st_blk, analyze_blind_dat = self.analyze_blind_dat)
         self.post_qual = post_qual_cut_loader(ara_uproot, ara_root, dt = dt)
 
     def get_qual_cut_result(self):

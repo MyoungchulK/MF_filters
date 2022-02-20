@@ -22,7 +22,7 @@ class ara_raytrace_loader:
 
         self.ara_sim = ROOT
         self.ice_model = np.array([n0, nf, l], dtype = float)
-        #print('ice model:', self.ice_model)
+        print('ice model:', self.ice_model)
 
         # header
         self.ara_sim.gInterpreter.ProcessLine('#include "'+os.environ.get('ARA_UTIL_INSTALL_DIR')+'/../source/AraSim/RayTrace.h"')
@@ -52,9 +52,9 @@ class ara_raytrace_loader:
         self.theta_bin = theta_bin
         self.phi_bin = phi_bin
         self.radius_bin = radius_bin
-        #print('theta range:', self.theta_bin)
-        #print('phi range:', self.phi_bin)
-        #print('radius range:', self.radius_bin)
+        print('theta range:', self.theta_bin)
+        print('phi range:', self.phi_bin)
+        print('radius range:', self.radius_bin)
 
         r_4d = np.tile(self.radius_bin[np.newaxis, np.newaxis, :, np.newaxis], (len(self.theta_bin), len(self.phi_bin), 1, num_ants))
         x_4d = r_4d * np.sin(self.theta_bin)[:, np.newaxis, np.newaxis, np.newaxis] * np.cos(self.phi_bin)[np.newaxis, :, np.newaxis, np.newaxis]
@@ -96,9 +96,9 @@ class ara_raytrace_loader:
 
         self.num_ray_sol = 2
         arr_time_table = np.full((len(self.theta_bin), len(self.phi_bin), len(self.radius_bin), num_ants, self.num_ray_sol), np.nan, dtype = float)
-        #print('arrival time table size:', arr_time_table.shape)
+        print('arrival time table size:', arr_time_table.shape)
 
-        for t in tqdm(range(len(self.theta_bin)), ascii = True):
+        for t in tqdm(range(len(self.theta_bin)), ascii = False):
             for p in range(len(self.phi_bin)):
                 for r in range (len(self.radius_bin)):
                     for a in range(num_ants):

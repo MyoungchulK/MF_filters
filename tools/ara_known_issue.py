@@ -29,7 +29,7 @@ class known_issue_loader:
             if run > 12865:
                 st_idx = 0
                 bad_ant[st_idx::4] = 1 # all D1 antennas, dead bit issue
-                bad_ant[3::4] = 1 # all D4 antennas, duplication issue
+                #bad_ant[3::4] = 1 # all D4 antennas, duplication issue
 
         if good_ant_true == True:
             bad_ant = ~bad_ant
@@ -112,6 +112,7 @@ class known_issue_loader:
             (unix_time==1463141756) or # 7251 2016/05/13 ev89961 unknown signal  
             (unix_time>=1467446591 and unix_time<=1467468181) or # 7526 2016/07/02 unknown signal
             (unix_time>=1468892061 and unix_time<=1468897890) or # 7610 2016/07/18 unknown signal
+            (unix_time>=1469121769 and unix_time<=1469121836) or # 7624 2016/07/21 unknown signal
             (unix_time==1472429614) or # 7836 2016/08/28 ev66045 unknown signal
             (unix_time>=1472439514 and unix_time<=1472439944) or # 7836 2016/08/28 unknown signal
             (unix_time==1472507046) or # 7841 2016/08/29 ev7308 unknown signal
@@ -245,6 +246,7 @@ class known_issue_loader:
             (unix_time==1555253840) or # 13806 2019/04/14 ev33746 unknown signal
             (unix_time==1555307059) or # 13811 2019/04/14 ev29231 unknown signal
             (unix_time==1555330618) or # 13814 2019/04/15 ev34245 unknown signal
+            (unix_time>=1560373936 and unix_time<=1560374098) or # 14805 2019/06/12 unknown signal
             (unix_time>=1563301523 and unix_time<=1563312320) or # 15246 2019/07/16 unknown signal
             (unix_time==1564205064) or # 15340 2019/07/26 ev14551 unknown signal
             (unix_time==1564217347) or # 15341 2019/07/27 ev21787 unknown signal
@@ -281,6 +283,7 @@ class known_issue_loader:
             (unix_time>=1530788637 and unix_time<=1530789085) or # 11431 2018/07/05 unknown signal
             (unix_time>=1530799442 and unix_time<=1530810237) or # 11432 2018/07/05 unknown signal
             (unix_time==1534243026) or # 11802 2018/08/14 evt7 possible untagged calpulser
+            (unix_time>=1538405062 and unix_time<=1538405098) or # 12252 2018/10/01 unknown signal
             (unix_time>=1542394027 and unix_time<=1542404823) or # 12734 2018/11/16 unknown signal
             (unix_time==1544579661) or # 12896 2018/12/11 evt10965 possible untagged calpulser
             (unix_time>=1544651797 and unix_time<=1544674421) or # 12903 ~ 12905 2018/12/12 unknown signal

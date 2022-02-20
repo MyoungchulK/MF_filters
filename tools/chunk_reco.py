@@ -43,7 +43,7 @@ def reco_collector(Data, Ped):
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True)
 
     # interferometers
-    ara_int = py_interferometers(wf_int.pad_len, wf_int.dt, 41, ara_uproot.station_id, ara_uproot.year, ara_uproot.run)
+    ara_int = py_interferometers(wf_int.pad_len, wf_int.dt, ara_uproot.station_id, ara_uproot.year, ara_uproot.run)
 
     # output arr
     corr_v = []

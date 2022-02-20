@@ -225,7 +225,6 @@ class ara_uproot_loader:
             self.entry_num = np.arange(len(st_arr))
             run_str = re.findall(r'\d+', data[-11:-5])[0]
             self.run = int(run_str)
-            print('total events:', self.num_evts)
             del st_arr, run_str
         except uproot.exceptions.KeyInFileError:
             self.hasKeyInFileError = True
@@ -241,7 +240,6 @@ class ara_uproot_loader:
         self.trigger_info = np.asarray(self.evtTree['event/triggerInfo[4]'],dtype=int)
         self.trigger_blk = np.asarray(self.evtTree['event/triggerBlock[4]'],dtype=int)
         self.irs_block_number = np.asarray(self.evtTree['event/blockVec/blockVec.irsBlockNumber'])
-        self.channel_mask = np.asarray(self.evtTree['event/blockVec/blockVec.channelMask'])
         self.pps_number = np.asarray(self.evtTree['event/ppsNumber'],dtype=int)
 
         yyyymmdd_str = datetime.fromtimestamp(self.unix_time[0])
