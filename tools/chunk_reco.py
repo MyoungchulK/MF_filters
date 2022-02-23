@@ -1,14 +1,14 @@
 import numpy as np
 from tqdm import tqdm
 
-def reco_collector(Data, Ped):
+def reco_collector(Data, Ped, analyze_blind_dat = False):
 
     print('Collecting reco starts!')
 
     from tools.ara_data_load import ara_uproot_loader
     from tools.ara_data_load import ara_root_loader
     from tools.ara_constant import ara_const
-    from tools.ara_quality_cut import pre_qual_cut_loader
+    from tools.ara_quality_cut import qual_cut_loader
     from tools.ara_wf_analyzer import wf_analyzer
     from tools.ara_py_interferometers import py_interferometers
 
@@ -19,31 +19,25 @@ def reco_collector(Data, Ped):
 
     # data config
     ara_uproot = ara_uproot_loader(Data)
-    ara_uproot.get_sub_info()
     ara_root = ara_root_loader(Data, Ped, ara_uproot.station_id, ara_uproot.year)
     num_evts = ara_uproot.num_evts
     evt_num = ara_uproot.evt_num
     trig_type = ara_uproot.get_trig_type()
 
     # qulity cut
-    from tools.ara_quality_cut import pre_qual_cut_loader
-    pre_qual = pre_qual_cut_loader(ara_uproot, trim_1st_blk = True)
-    pre_qual_cut = pre_qual.run_pre_qual_cut()
-    pre_qual_cut_temp = np.copy(pre_qual_cut)
-    pre_qual_cut_temp[:, -1] = 0
-    pre_qual_cut_sum = np.nansum(pre_qual_cut_temp, axis = 1)
-    del pre_qual, pre_qual_cut_temp
-
-    clean_evt_idx = np.logical_and(pre_qual_cut_sum == 0, trig_type == 1)
+    ara_qual = qual_cut_loader(analyze_blind_dat = analyze_blind_dat, verbose = True)
+    total_qual_cut = ara_qual.load_qual_cut_result(ara_uproot.station_id, ara_uproot.run)
+    qual_cut_sum = np.nansum(total_qual_cut, axis = 1)   
+    clean_evt_idx = np.logical_and(qual_cut_sum == 0, trig_type == 1)
     clean_evt = evt_num[clean_evt_idx]   
     print(f'Number of clean event is {len(clean_evt)}') 
-    del pre_qual_cut_sum
+    del qual_cut_sum
 
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True)
 
     # interferometers
-    ara_int = py_interferometers(wf_int.pad_len, wf_int.dt, ara_uproot.station_id, ara_uproot.year, ara_uproot.run)
+    ara_int = py_interferometers(41, 0, wf_int.pad_len, wf_int.dt, ara_uproot.station_id, ara_uproot.year, ara_uproot.run)
 
     # output arr
     corr_v = []
@@ -81,7 +75,7 @@ def reco_collector(Data, Ped):
     return {'evt_num':evt_num,
             'clean_evt':clean_evt,
             'trig_type':trig_type,
-            'pre_qual_cut':pre_qual_cut,
+            'total_qual_cut':total_qual_cut,
             'corr_v':corr_v,
             'corr_h':corr_h}
 

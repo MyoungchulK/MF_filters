@@ -223,17 +223,28 @@ class ara_uproot_loader:
             self.station_id = st_arr[0]
             self.num_evts = len(st_arr)
             self.entry_num = np.arange(len(st_arr))
+            self.evt_num = np.asarray(self.evtTree['event/eventNumber'],dtype=int)
             run_str = re.findall(r'\d+', data[-11:-5])[0]
             self.run = int(run_str)
+            self.year = self.get_year()
             print('total events:', self.num_evts)
             del st_arr, run_str
         except uproot.exceptions.KeyInFileError:
             self.hasKeyInFileError = True
             print('File is currupted!')
 
+    def get_year(self):
+
+        first_unix_time = np.asarray(self.evtTree['event/unixTime'],dtype=int)[0]
+        yyyymmdd_str = datetime.fromtimestamp(first_unix_time)
+        yyyymmdd = yyyymmdd_str.strftime('%Y%m%d%H%M%S')
+        year = int(yyyymmdd[:4])
+        del yyyymmdd_str, yyyymmdd, first_unix_time
+
+        return year
+
     def get_sub_info(self):
 
-        self.evt_num = np.asarray(self.evtTree['event/eventNumber'],dtype=int)
         self.unix_time = np.asarray(self.evtTree['event/unixTime'],dtype=int)
         self.read_win = np.asarray(self.evtTree['event/numReadoutBlocks'],dtype=int)
         self.irs_block_number = np.asarray(self.evtTree['event/blockVec/blockVec.irsBlockNumber']) & 0x1ff
@@ -242,11 +253,6 @@ class ara_uproot_loader:
         #self.pps_number = np.asarray(self.evtTree['event/ppsNumber'],dtype=int)
         #self.trigger_blk = np.asarray(self.evtTree['event/triggerBlock[4]'],dtype=int)
         #self.unix_time_us = np.asarray(self.evtTree['event/unixTimeUs'],dtype=int)
-
-        yyyymmdd_str = datetime.fromtimestamp(self.unix_time[0])
-        yyyymmdd = yyyymmdd_str.strftime('%Y%m%d%H%M%S')
-        self.year = int(yyyymmdd[:4]) 
-        del yyyymmdd_str, yyyymmdd
 
     def get_trig_type(self):
 

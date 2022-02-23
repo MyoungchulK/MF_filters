@@ -128,16 +128,14 @@ class py_interferometers:
 
     def get_cross_correlation(self, pad_v, return_debug_dat = False):
 
-        # normalization factor by wf weight
-        nor_fac = fftconvolve(pad_v**2, self.pad_one, 'same', axes = 0)
-        nor_fac = np.sqrt(nor_fac[::-1, self.pairs[:, 0]] * nor_fac[:, self.pairs[:, 1]])
-
         # fft correlation w/ multiple array at once
         corr = fftconvolve(pad_v[:, self.pairs[:, 0]], pad_v[::-1, self.pairs[:, 1]], 'same', axes = 0)
         if return_debug_dat:
             corr_nonorm = np.copy(corr)
 
-        # normalization
+        # normalization factor by wf weight
+        nor_fac = fftconvolve(pad_v**2, self.pad_one, 'same', axes = 0)
+        nor_fac = np.sqrt(nor_fac[::-1, self.pairs[:, 0]] * nor_fac[:, self.pairs[:, 1]])
         corr /= nor_fac
         corr[np.isnan(corr) | np.isinf(corr)] = 0 # convert x/nan result
 
