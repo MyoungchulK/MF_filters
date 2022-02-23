@@ -37,7 +37,7 @@ class wf_analyzer:
 
         return bp_wf
 
-    def get_time_pad(self, add_double_pad = False):
+    def get_time_pad(self, add_double_pad = False, fill_pad_v = 0):
 
         # from a3 length
         pad_i = -179.5
@@ -52,7 +52,7 @@ class wf_analyzer:
 
         self.pad_t = np.linspace(pad_i, pad_f, pad_w, dtype = float)
         self.pad_len = len(self.pad_t)
-        self.pad_v = np.full((self.pad_len, num_Ants), np.nan, dtype = float)
+        self.pad_v = np.full((self.pad_len, num_Ants), fill_pad_v, dtype = float)
         print(f'time pad length: {self.pad_len * self.dt} ns')
 
     def get_int_time(self, raw_ti, raw_tf):
@@ -85,7 +85,7 @@ class wf_analyzer:
             int_v = self.get_band_passed_wf(int_v)
 
         if use_time_pad:
-            self.pad_v[:, ant] = np.nan
+            self.pad_v[:, ant] = 0
             self.pad_v[int_t, ant] = int_v
             return
         else:

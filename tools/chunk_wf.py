@@ -103,9 +103,12 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     pairs = ara_int.pairs
     lags = ara_int.lags
     corr = np.full((ara_int.lag_len, ara_int.pair_len, sel_evt_len), np.nan, dtype = float)
-    bp_corr = np.copy(corr)
+    corr_nonorm = np.copy(corr)
     corr_01 = np.copy(corr)
+    bp_corr = np.copy(corr)
+    bp_corr_nonorm = np.copy(corr)
     bp_corr_01 = np.copy(corr)
+    
     coval = np.full((ara_int.table_shape[0], ara_int.table_shape[1], ara_int.table_shape[2], sel_evt_len), np.nan, dtype = float)
     bp_coval = np.copy(coval)
     sky_map = np.full((ara_int.table_shape[0], ara_int.table_shape[1], 2, sel_evt_len), np.nan, dtype = float) 
@@ -164,9 +167,10 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
             wf_int.get_int_wf(raw_t, raw_v, ant, use_time_pad = True, use_band_pass = False)
             ara_root.del_TGraph()
-        corr_evt, corr_01_evt = ara_int.get_cross_correlation(wf_int.pad_v)
+        corr_evt, corr_nonorm_evt, corr_01_evt = ara_int.get_cross_correlation(wf_int.pad_v, return_debug_dat = True)
         coval_evt = ara_int.get_coval_sample(corr_evt, sum_pol = False)
         corr[:,:,evt] = corr_evt
+        corr_nonorm[:,:,evt] = corr_nonorm_evt
         corr_01[:,:,evt] = corr_01_evt
         coval[:,:,:,evt] = coval_evt
         sky_map[:,:,0,evt] = np.nansum(coval_evt[:,:,:v_pairs_len],axis=2)
@@ -176,9 +180,10 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
             wf_int.get_int_wf(raw_t, raw_v, ant, use_time_pad = True, use_band_pass = True)
             ara_root.del_TGraph()
-        bp_corr_evt, bp_corr_01_evt = ara_int.get_cross_correlation(wf_int.pad_v)
+        bp_corr_evt, bp_corr_nonorm_evt, bp_corr_01_evt = ara_int.get_cross_correlation(wf_int.pad_v, return_debug_dat = True)
         bp_coval_evt = ara_int.get_coval_sample(bp_corr_evt, sum_pol = False)
         bp_corr[:,:,evt] = bp_corr_evt
+        bp_corr_nonorm[:,:,evt] = bp_corr_nonorm_evt
         bp_corr_01[:,:,evt] = bp_corr_01_evt
         bp_coval[:,:,:,evt] = bp_coval_evt
         bp_sky_map[:,:,0,evt] = np.nansum(bp_coval_evt[:,:,:v_pairs_len],axis=2)
@@ -288,6 +293,8 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'lags':lags,
             'corr':corr,
             'bp_corr':bp_corr,
+            'corr_nonorm':corr_nonorm,
+            'bp_corr_nonorm':bp_corr_nonorm,
             'corr_01':corr_01,
             'bp_corr_01':bp_corr_01,
             'coval':coval,

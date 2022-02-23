@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from scipy.signal import correlate
+from scipy.signal import fftconvolve
 from scipy.signal import correlation_lags
 from scipy.signal import hilbert
 from tqdm import tqdm
@@ -28,6 +28,7 @@ class py_interferometers:
 
         self.pairs = self.get_pair_info()
         self.pair_len = self.pairs.shape[0]
+        self.pad_one = np.full((pad_len, num_ants), 1, dtype = float)
         self.p0_idx, self.int_factor = self.get_coval_time()
         self.table_shape = self.p0_idx.shape
 
@@ -51,44 +52,6 @@ class py_interferometers:
 
         return pairs
 
-    def get_fft_correlation(self, pad_v, apply_floor = False):
-
-        pad_v = np.fft.fft(pad_v, axis = 0)
-        corr = pad_v[:, self.pairs[:, 0]] * pad_v[:, self.pairs[:, 1]].conjugate()
-        corr = np.real(np.fft.ifft(corr, axis = 0))
-        corr = np.roll(corr, self.lag_len//2, axis = 0)
-
-        if apply_floor:
-            corr[corr < 1] = 0
-            corr = np.floor(corr).astype(int)
-
-        return corr
-    
-    def get_fft_01_correlation(self, pad_v):
-
-        corr_01 = 
-
-    def get_cross_correlation(self, pad_v):
-
-        # 01 array
-        pad_nan = np.isnan(pad_v)
-        pad_01 = (~pad_nan).astype(int)
-        pad_v[pad_nan] = 0
-
-        # fft correlation
-        corr = self.get_fft_correlation(pad_v)
-        del pad_01
-       
-        # unbias normalization
-        corr /= corr_01
-        corr[np.isnan(corr) | np.isinf(corr)] = 0 #convert x/nan result
-        del corr_01
-
-        # hilbert
-        corr = np.abs(hilbert(corr, axis = 0))
-
-        return corr, corr_01
-    
     def get_arrival_time_tables(self):
 
         table_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA03/arr_time_table/'
@@ -162,6 +125,30 @@ class py_interferometers:
             coval = np.asarray([corr_v, corr_h])
 
         return coval
+
+    def get_cross_correlation(self, pad_v, return_debug_dat = False):
+
+        # normalization factor by wf weight
+        nor_fac = fftconvolve(pad_v**2, self.pad_one, 'same', axes = 0)
+        nor_fac = np.sqrt(nor_fac[::-1, self.pairs[:, 0]] * nor_fac[:, self.pairs[:, 1]])
+
+        # fft correlation w/ multiple array at once
+        corr = fftconvolve(pad_v[:, self.pairs[:, 0]], pad_v[::-1, self.pairs[:, 1]], 'same', axes = 0)
+        if return_debug_dat:
+            corr_nonorm = np.copy(corr)
+
+        # normalization
+        corr /= nor_fac
+        corr[np.isnan(corr) | np.isinf(corr)] = 0 # convert x/nan result
+
+        # hilbert
+        corr = np.abs(hilbert(corr, axis = 0))
+
+        if return_debug_dat:
+            return corr, corr_nonorm, nor_fac
+        else:
+            del nor_fac
+            return corr
 
     def get_sky_map(self, pad_v):
         
