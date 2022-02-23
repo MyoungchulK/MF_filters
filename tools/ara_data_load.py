@@ -145,7 +145,7 @@ class ara_root_loader:
 
         self.evt_num = self.rawEvt.eventNumber
         self.unix_time = self.rawEvt.unixTime
-        self.unix_time_us = self.rawEvt.unixTimeUs
+        #self.unix_time_us = self.rawEvt.unixTimeUs
         self.read_win = self.rawEvt.numReadoutBlocks
         self.time_stamp = self.rawEvt.timeStamp
 
@@ -235,14 +235,13 @@ class ara_uproot_loader:
 
         self.evt_num = np.asarray(self.evtTree['event/eventNumber'],dtype=int)
         self.unix_time = np.asarray(self.evtTree['event/unixTime'],dtype=int)
-        self.unix_time_us = np.asarray(self.evtTree['event/unixTimeUs'],dtype=int)
         self.read_win = np.asarray(self.evtTree['event/numReadoutBlocks'],dtype=int)
-        self.time_stamp = np.asarray(self.evtTree['event/timeStamp'],dtype=int)
-        self.trigger_info = np.asarray(self.evtTree['event/triggerInfo[4]'],dtype=int)
-        self.trigger_blk = np.asarray(self.evtTree['event/triggerBlock[4]'],dtype=int)
-        self.irs_block_number = np.asarray(self.evtTree['event/blockVec/blockVec.irsBlockNumber'])
+        self.irs_block_number = np.asarray(self.evtTree['event/blockVec/blockVec.irsBlockNumber']) & 0x1ff
         self.channel_mask = np.asarray(self.evtTree['event/blockVec/blockVec.channelMask'])
-        self.pps_number = np.asarray(self.evtTree['event/ppsNumber'],dtype=int)
+
+        #self.pps_number = np.asarray(self.evtTree['event/ppsNumber'],dtype=int)
+        #self.trigger_blk = np.asarray(self.evtTree['event/triggerBlock[4]'],dtype=int)
+        #self.unix_time_us = np.asarray(self.evtTree['event/unixTimeUs'],dtype=int)
 
         yyyymmdd_str = datetime.fromtimestamp(self.unix_time[0])
         yyyymmdd = yyyymmdd_str.strftime('%Y%m%d%H%M%S')
@@ -251,25 +250,30 @@ class ara_uproot_loader:
 
     def get_trig_type(self):
 
+        time_stamp = np.asarray(self.evtTree['event/timeStamp'],dtype=int)
+        trigger_info = np.asarray(self.evtTree['event/triggerInfo[4]'],dtype=int)
+
         pulserTime = np.array([254,245,245,400,400], dtype = int)
 
-        trig_type = np.full(len(self.time_stamp), 0, dtype = int)
+        trig_type = np.full(len(time_stamp), 0, dtype = int)
         if self.station_id == 100:
             print('ARA Staton 1 ID!!!!!!!!!!!')
             self.station_id = 1
-        trig_type[np.abs(self.time_stamp - pulserTime[self.station_id - 1]) < 1e4] = 1
-        trig_type[self.trigger_info[:,2] == 1] = 2
-        del pulserTime
+        trig_type[np.abs(time_stamp - pulserTime[self.station_id - 1]) < 1e4] = 1
+        trig_type[trigger_info[:,2] == 1] = 2
+        del pulserTime, time_stamp, trigger_info
 
         return trig_type
 
     def get_trig_ant(self, trig_ch_idx):
 
+        trigger_info = np.asarray(self.evtTree['event/triggerInfo[4]'],dtype=int)
+
         trig_ch_idx_bit = 1 << trig_ch_idx
-        trig_ant = np.repeat(self.trigger_info[:,0][np.newaxis, :], len(trig_ch_idx), axis=0) & trig_ch_idx_bit[:,np.newaxis]
+        trig_ant = np.repeat(trigger_info[:,0][np.newaxis, :], len(trig_ch_idx), axis=0) & trig_ch_idx_bit[:,np.newaxis]
         trig_ant[trig_ant != 0] = 1
         trig_ant = trig_ant.astype(int)
-        del trig_ch_idx_bit
+        del trig_ch_idx_bit, trigger_info
 
         return trig_ant
 

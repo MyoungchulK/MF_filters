@@ -41,7 +41,7 @@ def std_collector(Data, Ped, analyze_blind_dat = False):
     ara_qual = qual_cut_loader(analyze_blind_dat = analyze_blind_dat, verbose = True)
     total_qual_cut = ara_qual.load_qual_cut_result(ara_uproot.station_id, ara_uproot.run)
     qual_cut_sum = np.nansum(total_qual_cut, axis = 1)
-    daq_qual_sum = np.nansum(total_qual_cut[:, :5], axis = 1)
+    daq_qual_sum = np.nansum(total_qual_cut[:, :6], axis = 1)
     del ara_qual
 
     clean_evt_idx = np.logical_and(qual_cut_sum == 0, trig_type == 0)
@@ -58,13 +58,14 @@ def std_collector(Data, Ped, analyze_blind_dat = False):
     for evt in tqdm(range(num_evts)):
       #if evt <100:        
    
-        # sample index
-        blk_idx_arr, blk_len_arr = ara_uproot.get_block_idx(evt, trim_1st_blk = True)
-        if blk_len_arr == 0 or daq_qual_sum[evt] != 0:
+        if daq_qual_sum[evt] != 0:
             continue
+
+        # sample index
+        blk_idx_arr = ara_uproot.get_block_idx(evt, trim_1st_blk = True)[0]
         buffer_info.get_num_samp_in_blk(blk_idx_arr)
         samp_in_blk = buffer_info.samp_in_blk
-        del blk_idx_arr, blk_len_arr 
+        del blk_idx_arr 
 
         # get entry and wf
         ara_root.get_entry(evt)
@@ -103,7 +104,7 @@ def std_collector(Data, Ped, analyze_blind_dat = False):
     std_hist = np.full((num_eles, len(std_range)), 0, dtype = int)
     std_rf_hist = np.copy(std_hist)
     std_rf_w_cut_hist = np.copy(std_hist)
-    for ant in tqdm(range(num_eles)):
+    for ant in range(num_eles):
         std_hist[ant] = np.histogram(std[ant], bins = std_bins)[0].astype(int)
         std_rf_hist[ant] = np.histogram(std_rf[ant], bins = std_bins)[0].astype(int)
         std_rf_w_cut_hist[ant] = np.histogram(std_rf_w_cut[ant], bins = std_bins)[0].astype(int)
@@ -127,7 +128,7 @@ def std_collector(Data, Ped, analyze_blind_dat = False):
     cliff_hist = np.copy(cliff_adc_hist)
     cliff_rf_hist = np.copy(cliff_adc_hist)
     cliff_rf_hist_w_cut = np.copy(cliff_adc_hist)
-    for ant in tqdm(range(num_ants)):
+    for ant in range(num_ants):
         cliff_adc_hist[ant] = np.histogram(cliff_adc[ant], bins = cliff_bins)[0].astype(int)
         cliff_adc_rf_hist[ant] = np.histogram(cliff_adc_rf[ant], bins = cliff_bins)[0].astype(int)
         cliff_adc_rf_hist_w_cut[ant] = np.histogram(cliff_adc_rf_w_cut[ant], bins = cliff_bins)[0].astype(int)

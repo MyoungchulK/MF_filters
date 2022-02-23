@@ -64,19 +64,23 @@ class py_interferometers:
 
         return corr
     
-    def get_fft_01_correlation(self, pad_v):
-
-        corr_01 = 
-
     def get_cross_correlation(self, pad_v):
 
         # 01 array
         pad_nan = np.isnan(pad_v)
         pad_01 = (~pad_nan).astype(int)
+
+        # bias normalization
+        pad_mean = np.nanmean(pad_v, axis = 0)
+        pad_rms = np.nanstd(pad_v, axis = 0)
+        pad_v -= pad_mean[np.newaxis, :]
+        pad_v /= pad_rms[np.newaxis, :]
         pad_v[pad_nan] = 0
+        del pad_nan, pad_mean, pad_rms
 
         # fft correlation
         corr = self.get_fft_correlation(pad_v)
+        corr_01 = self.get_fft_correlation(pad_01, apply_floor = True)
         del pad_01
        
         # unbias normalization

@@ -31,7 +31,7 @@ class pre_qual_cut_loader:
         self.num_evts = ara_uproot.num_evts
         self.trig_type = ara_uproot.get_trig_type()
         self.unix_time = ara_uproot.unix_time
-        self.irs_block_number = ara_uproot.irs_block_number & 0x1ff
+        self.irs_block_number = ara_uproot.irs_block_number
         self.channel_mask = ara_uproot.channel_mask
         self.blk_len = ara_uproot.read_win//num_ddas
         self.verbose = verbose

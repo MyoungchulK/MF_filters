@@ -7,7 +7,7 @@ from importlib import import_module
 curr_path = os.getcwd()
 sys.path.append(curr_path+'/../')
 from tools.ara_run_manager import run_info_loader
-from tools.utility import size_checker
+from tools.ara_utility import size_checker
 
 def script_loader(Key = None, Station = None, Run = None, Act_Evt = None, analyze_blind_dat = False):
 

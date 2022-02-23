@@ -4,9 +4,9 @@
 data=$1
 station=$2
 run=$3
-ped=pedestalValues.run${run}.dat
-out=/data/user/mkim/OMF_filter/ARA0${station}/Ped/${ped}
-qual=/data/user/mkim/OMF_filter/ARA0${station}/qual_cut_full/qual_cut_full_A${station}_R${run}.txt
+ped=ped_values_A${station}_R${run}.dat
+out=/data/user/mkim/OMF_filter/ARA0${station}/ped/${ped}
+qual=/data/user/mkim/OMF_filter/ARA0${station}/ped/ped_qualities_A${station}_R${run}.dat
 
 # run the reconstruction script
 export HDF5_USE_FILE_LOCKING='FALSE'

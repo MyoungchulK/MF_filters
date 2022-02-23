@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # load in variables
-key=trig_ratio
+key=std
 station=$1
 run=$2
 

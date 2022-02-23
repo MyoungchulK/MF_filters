@@ -21,7 +21,7 @@ def daq_check_collector(Data, Ped, analyze_blind_dat = False):
     evt_num = ara_uproot.evt_num
     trig_type = ara_uproot.get_trig_type()
 
-    irs_block_number = ara_uproot.irs_block_number &0x1ff
+    irs_block_number = ara_uproot.irs_block_number
     channel_mask = ara_uproot.channel_mask
 
     blk_len = np.full((num_evts), 0, dtype = int)

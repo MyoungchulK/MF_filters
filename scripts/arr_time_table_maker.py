@@ -5,7 +5,7 @@ import h5py
 # custom lib
 curr_path = os.getcwd()
 sys.path.append(curr_path+'/../')
-from tools.utility import size_checker
+from tools.ara_utility import size_checker
 from tools.ara_sim_load import ara_raytrace_loader
 
 def arr_time_table_loader(Station = None, Year = None):

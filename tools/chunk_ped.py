@@ -8,7 +8,7 @@ def ped_collector(Data, Ped, analyze_blind_dat = False):
 
     from tools.ara_data_load import ara_uproot_loader
     from tools.ara_quality_cut import pre_qual_cut_loader
-    from tools.utility import size_checker
+    from tools.ara_utility import size_checker
     from tools.ara_constant import ara_const
     
     # geom. info.
@@ -98,7 +98,7 @@ def ped_collector(Data, Ped, analyze_blind_dat = False):
     # ped counter
     ped_counts = np.full((num_blks, num_eles), 0, dtype = int)
    
-    irs_block_number = ara_uproot.irs_block_number & 0x1ff
+    irs_block_number = ara_uproot.irs_block_number
     channel_mask = ara_uproot.channel_mask 
     dda_number = ((channel_mask & 0x300) >> 8) * num_chs
     bi_ch_mask = 1 << np.arange(num_chs, dtype = int)
