@@ -38,6 +38,7 @@ class pre_qual_cut_loader:
 
         from tools.ara_run_manager import run_info_loader
         self.run_info = run_info_loader(self.st, self.run, analyze_blind_dat = analyze_blind_dat)
+        self.sensor_dat = self.run_info.get_data_path(file_type = 'sensorHk', verbose = self.verbose, return_none = True)
 
     def get_daq_structure_errors(self):
 
@@ -203,18 +204,36 @@ class pre_qual_cut_loader:
 
         return first_few_evts
 
+    def get_no_sensor_file_events(self):
+
+        no_sensor_file_evts = np.full((self.num_evts), 0, dtype = int)
+
+        if self.sensor_dat is None:
+            no_sensor_file_evts[:] = 1
+            
+        if self.verbose:
+            quick_qual_check(no_sensor_file_evts != 0, self.evt_num, f'no sensor file events')
+
+        return no_sensor_file_evts
+
     def get_bias_voltage_events(self, volt_cut = [3, 3.5]):
 
         volt_cut = np.asarray(volt_cut, dtype = float)
         bias_volt_evts = np.full((self.num_evts), 0, dtype = int)
 
-        sensor_dat = self.run_info.get_result_path(file_type = 'sensor', verbose = self.verbose, force_blind = True)
-        sensor_hf = h5py.File(sensor_dat, 'r')
-        sensor_unix = sensor_hf['unix_time'][:]
-        if any(np.isnan(sensor_unix)):
+        if self.sensor_dat is None:
+            return bias_volt_evts
+
+        from tools.ara_data_load import ara_Hk_uproot_loader
+        ara_Hk_uproot = ara_Hk_uproot_loader(self.sensor_dat)
+        if ara_Hk_uproot.empty_file_error == True:
             print('There is empty sensorHk file!')
             return bias_volt_evts
+        ara_Hk_uproot.get_sub_info()
+        dda_volt = ara_Hk_uproot.get_voltage(ara_Hk_uproot.dda_volt_curr)
+        sensor_unix = ara_Hk_uproot.unix_time
         sensor_unix_len = len(sensor_unix)
+        del ara_Hk_uproot
         if sensor_unix_len == 0:
             print('There is empty sensorHk file!')
             bias_volt_evts[:] = 1
@@ -222,8 +241,6 @@ class pre_qual_cut_loader:
                 quick_qual_check(bias_volt_evts != 0, self.evt_num, f'bias voltage events')
             return bias_volt_evts
 
-        dda_volt = sensor_hf['dda_volt'][:]
-        del sensor_dat, sensor_hf
         good_dda_bool = np.logical_and(dda_volt > volt_cut[0], dda_volt < volt_cut[1])
         if sensor_unix_len == 1:
             print('There is single sensorHk values!')
@@ -273,34 +290,6 @@ class pre_qual_cut_loader:
 
         return no_cal_evts
 
-    def get_no_calpulser_rate_events(self, cal_rate_cut = 0):
-
-        if self.st == 3 and self.run < 1429:
-            no_cal_rate_evts = np.full((self.num_evts), 0, dtype = int)
-            return no_cal_rate_evts
-
-        evt_rate_dat = self.run_info.get_result_path(file_type = 'evt_rate', verbose = self.verbose, force_blind = True)
-        evt_rate_hf = h5py.File(evt_rate_dat, 'r')
-        evt_rate_bins = evt_rate_hf['evt_rate_bins'][:-1]
-        cal_evt_rate = evt_rate_hf['cal_evt_rate'][:] 
-        del evt_rate_dat, evt_rate_hf
-
-        min_to_sec_arr = np.arange(60, dtype = int)
-        cal_cut_idx = cal_evt_rate < cal_rate_cut
-        
-        bad_unix_sec = evt_rate_bins[cal_cut_idx]
-        bad_unix_sec = np.repeat(bad_unix_sec[:, np.newaxis], len(min_to_sec_arr), axis = 1)
-        bad_unix_sec += min_to_sec_arr[np.newaxis, :]
-        bad_unix_sec = bad_unix_sec.flatten()
-        
-        no_cal_rate_evts = np.in1d(self.unix_time, bad_unix_sec).astype(int)
-        del min_to_sec_arr, cal_cut_idx, bad_unix_sec, cal_evt_rate    
-    
-        if self.verbose:
-            quick_qual_check(no_cal_rate_evts != 0, self.evt_num, f'no calpulser rate events')
-
-        return no_cal_rate_evts
-
     def get_pedestal_block_events(self, apply_daq_err = None):
 
         ped_count_dat = self.run_info.get_ped_path(file_type = 'counts', verbose = self.verbose)
@@ -330,7 +319,7 @@ class pre_qual_cut_loader:
 
     def run_pre_qual_cut(self, use_for_ped_qual = False):
 
-        tot_pre_qual_cut = np.full((self.num_evts, 17), 0, dtype = int)
+        tot_pre_qual_cut = np.full((self.num_evts, 16), 0, dtype = int)
         tot_pre_qual_cut[:, :5] = self.get_daq_structure_errors()
         tot_pre_qual_cut[:, 5:9] = self.get_readout_window_errors()
         tot_pre_qual_cut[:, 9] = self.get_bad_event_number()
@@ -338,9 +327,9 @@ class pre_qual_cut_loader:
         tot_pre_qual_cut[:, 11] = self.get_first_few_events()
         tot_pre_qual_cut[:, 12] = self.get_bias_voltage_events()
         tot_pre_qual_cut[:, 13] = self.get_no_calpulser_events(apply_bias_volt = tot_pre_qual_cut[:,12])
-        tot_pre_qual_cut[:, 14] = self.get_no_calpulser_rate_events()
+        #tot_pre_qual_cut[:, 14] = self.get_no_sensor_file_events()
         if use_for_ped_qual == False:
-            tot_pre_qual_cut[:, 15:] = self.get_pedestal_block_events(apply_daq_err = np.nansum(tot_pre_qual_cut[:, :5], axis = 1))
+            tot_pre_qual_cut[:, 14:] = self.get_pedestal_block_events(apply_daq_err = np.nansum(tot_pre_qual_cut[:, :5], axis = 1))
 
         if self.verbose:
             quick_qual_check(np.nansum(tot_pre_qual_cut, axis = 1) != 0, self.evt_num, 'total pre qual cut!')

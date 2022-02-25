@@ -54,32 +54,20 @@ class py_interferometers:
 
     def get_arrival_time_tables(self):
 
-        table_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA03/arr_time_table/'
-        #table_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{self.st}/arr_time_table/'
-        #table_name = f'arr_time_table_A{self.st}_Y{self.yrs}.h5'
-        table_name = f'Table_A2_R41.h5'
+        table_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{self.st}/arr_time_table/'
+        table_name = f'arr_time_table_A{self.st}_Y{self.yrs}.h5'
         print('arrival time table:', table_path+table_name)        
 
         table_hf = h5py.File(table_path + table_name, 'r')
-
-        axis = table_hf['Table_Axis']
-        theta = axis['Thata(rad)'][:] - np.radians(90) # zenith to elevation angle
-        phi = axis['Phi(rad)'][:]
-
-        # remove bad antenna
-        arr_table0 = table_hf['Arr_Table']
-        arr_table = arr_table0['Arr_Table(ns)'][:]
-        arr_table = arr_table[:,:,0,:,0]
-        """
-        theta = table_hf['theta_bin'][:] - np.radians(90) # zenith to elevation angle
+        theta = table_hf['theta_bin'][:] - 90 # zenith to elevation angle
         phi = table_hf['phi_bin'][:]
         radius_arr = table_hf['radius_bin'][:]
         r_idx = np.where(radius_arr == self.radius)[0][0]
+        print(f'selected R: {radius_arr[r_idx]} m')
         #num_ray_sol = table_hf['num_ray_sol'][0]
-
-        # remove bad antenna
         arr_table = table_hf['arr_time_table'][:,:,r_idx,:,self.ray_sol]
-        """
+        del r_idx, radius_arr#, num_ray_sol
+        
         table = np.full((len(theta), len(phi), self.pair_len), np.nan, dtype = float)
         table_p1 = np.copy(table)
         table_p2 = np.copy(table)

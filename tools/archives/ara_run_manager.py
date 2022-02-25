@@ -14,15 +14,13 @@ class run_info_loader:
         self.run = run
         self.analyze_blind_dat = analyze_blind_dat
 
-    def get_result_path(self, file_type = 'qual_cut', file_format = 'h5', verbose = False, return_none = False, force_blind = False):
+    def get_result_path(self, file_type = 'qual_cut', verbose = False, return_none = False):
 
         blind_type = ''
         if self.analyze_blind_dat:
             blind_type = '_full'
-        if force_blind:
-            blind_type = '_full'
 
-        result_path = f'/data/user/mkim/OMF_filter/ARA0{self.st}/{file_type}{blind_type}/{file_type}{blind_type}_A{self.st}_R{self.run}.{file_format}'
+        result_path = f'/data/user/mkim/OMF_filter/ARA0{self.st}/{file_type}{blind_type}/{file_type}{blind_type}_A{self.st}_R{self.run}.dat'
 
         if os.path.exists(result_path):
             if verbose:

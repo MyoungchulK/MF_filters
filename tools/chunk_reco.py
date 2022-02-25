@@ -31,7 +31,7 @@ def reco_collector(Data, Ped, analyze_blind_dat = False):
     clean_evt_idx = np.logical_and(qual_cut_sum == 0, trig_type == 1)
     clean_evt = evt_num[clean_evt_idx]   
     print(f'Number of clean event is {len(clean_evt)}') 
-    del qual_cut_sum
+    del qual_cut_sum, ara_qual
 
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True)

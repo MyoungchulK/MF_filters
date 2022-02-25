@@ -17,11 +17,19 @@ def evt_rate_collector(Data, Ped, analyze_blind_dat = False):
     # output array
     sec_to_min = 60
     unix_time_min = unix_time // sec_to_min
-    evt_rate_bins = np.linspace(np.nanmin(unix_time_min), np.nanmax(unix_time_min), np.nanmax(unix_time_min) - np.nanmin(unix_time_min) + 1, dtype = int)
-    evt_rate = np.histogram(unix_time_min, bins = evt_rate_bins)[0] / sec_to_min
-    rf_evt_rate = np.histogram(unix_time_min[trig_type == 0], bins = evt_rate_bins)[0] / sec_to_min
-    cal_evt_rate = np.histogram(unix_time_min[trig_type == 1], bins = evt_rate_bins)[0] / sec_to_min
-    soft_evt_rate = np.histogram(unix_time_min[trig_type == 2], bins = evt_rate_bins)[0] / sec_to_min
+    unix_time_min_len = unix_time_min[-1] - unix_time_min[0] + 1
+
+    evt_rate_bins = np.linspace(unix_time_min[0] * sec_to_min, unix_time_min[-1] * sec_to_min, unix_time_min_len, dtype =int)
+    last_unix_time = unix_time[-1]
+    if evt_rate_bins[-1] != last_unix_time:
+        evt_rate_bins = np.append(evt_rate_bins, last_unix_time)
+    sec_to_min_arr = np.diff(evt_rate_bins)
+    del sec_to_min, unix_time_min_len, last_unix_time
+
+    evt_rate = np.histogram(unix_time, bins = evt_rate_bins)[0] / sec_to_min_arr
+    rf_evt_rate = np.histogram(unix_time[trig_type == 0], bins = evt_rate_bins)[0] / sec_to_min_arr
+    cal_evt_rate = np.histogram(unix_time[trig_type == 1], bins = evt_rate_bins)[0] / sec_to_min_arr
+    soft_evt_rate = np.histogram(unix_time[trig_type == 2], bins = evt_rate_bins)[0] / sec_to_min_arr
     del ara_uproot
 
     print('Event rate collecting is done!')
@@ -30,6 +38,7 @@ def evt_rate_collector(Data, Ped, analyze_blind_dat = False):
             'trig_type':trig_type,
             'unix_time':unix_time,
             'unix_time_min':unix_time_min,
+            'sec_to_min_arr':sec_to_min_arr,
             'evt_rate_bins':evt_rate_bins,
             'evt_rate':evt_rate,
             'rf_evt_rate':rf_evt_rate,

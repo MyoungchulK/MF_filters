@@ -13,7 +13,7 @@ def arr_time_table_loader(Station = None, Year = None):
     print('Collecting arrival time starts!')
 
     # arasim raytracer
-    ara_ray = ara_raytrace_loader(1.35,1.78,0.0132)
+    ara_ray = ara_raytrace_loader(1.35, 1.78, 0.0132, verbose = True)
 
     # get posisiton for vertex and antenna
     ara_ray.get_src_trg_position(Station, Year)

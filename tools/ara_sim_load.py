@@ -18,11 +18,13 @@ num_ants = ara_const.USEFUL_CHAN_PER_STATION
 
 class ara_raytrace_loader:
 
-    def __init__(self, n0, nf, l):
+    def __init__(self, n0, nf, l, verbose = False):
 
+        self.verbose = verbose
         self.ara_sim = ROOT
         self.ice_model = np.array([n0, nf, l], dtype = float)
-        print('ice model:', self.ice_model)
+        if self.verbose:
+            print('ice model:', self.ice_model)
 
         # header
         self.ara_sim.gInterpreter.ProcessLine('#include "'+os.environ.get('ARA_UTIL_INSTALL_DIR')+'/../source/AraSim/RayTrace.h"')
@@ -42,7 +44,7 @@ class ara_raytrace_loader:
         # link ray trace output format
         self.ara_sim.gInterpreter.ProcessLine('Vector src; Vector rec; std::vector<RayTrace::TraceRecord> paths;')
 
-    def get_src_trg_position(self, st, yrs, theta_bin = np.linspace(-89.5, 89.5, 179 + 1), phi_bin = np.linspace(-179.5, 179.5, 359 + 1), radius_bin = np.array([41,300])):
+    def get_src_trg_position(self, st, yrs, theta_bin = np.linspace(0.5, 179.5, 179 + 1), phi_bin = np.linspace(-179.5, 179.5, 359 + 1), radius_bin = np.array([41,300]), debug = False):
 
         from tools.ara_data_load import ara_geom_loader
         ara_geom = ara_geom_loader(st, yrs)
@@ -52,14 +54,19 @@ class ara_raytrace_loader:
         self.theta_bin = theta_bin
         self.phi_bin = phi_bin
         self.radius_bin = radius_bin
-        print('theta range:', self.theta_bin)
-        print('phi range:', self.phi_bin)
-        print('radius range:', self.radius_bin)
+        if self.verbose:
+            print(f'antenna position (A{st} Y{yrs}):', self.ant_pos.T)
+            print('theta range:', self.theta_bin)
+            print('phi range:', self.phi_bin)
+            print('radius range:', self.radius_bin)
+        theta_radian = np.radians(self.theta_bin)
+        phi_radian = np.radians(self.phi_bin)
 
         r_4d = np.tile(self.radius_bin[np.newaxis, np.newaxis, :, np.newaxis], (len(self.theta_bin), len(self.phi_bin), 1, num_ants))
-        x_4d = r_4d * np.sin(self.theta_bin)[:, np.newaxis, np.newaxis, np.newaxis] * np.cos(self.phi_bin)[np.newaxis, :, np.newaxis, np.newaxis]
-        y_4d = r_4d * np.sin(self.theta_bin)[:, np.newaxis, np.newaxis, np.newaxis] * np.sin(self.phi_bin)[np.newaxis, :, np.newaxis, np.newaxis]
-        z_4d = r_4d * np.cos(self.theta_bin)[:, np.newaxis, np.newaxis, np.newaxis]
+        x_4d = r_4d * np.sin(theta_radian)[:, np.newaxis, np.newaxis, np.newaxis] * np.cos(phi_radian)[np.newaxis, :, np.newaxis, np.newaxis]
+        y_4d = r_4d * np.sin(theta_radian)[:, np.newaxis, np.newaxis, np.newaxis] * np.sin(phi_radian)[np.newaxis, :, np.newaxis, np.newaxis]
+        z_4d = r_4d * np.cos(theta_radian)[:, np.newaxis, np.newaxis, np.newaxis]
+        del theta_radian, phi_radian
 
         self.trg_r = np.sqrt((x_4d - self.ant_pos[np.newaxis, np.newaxis, np.newaxis, 0, :])**2 + (y_4d - self.ant_pos[np.newaxis, np.newaxis, np.newaxis, 1, :])**2)
         self.trg_z = np.copy(self.ant_pos[2])
@@ -68,7 +75,15 @@ class ara_raytrace_loader:
         self.src_z = z_4d + np.nanmean(self.ant_pos[2])
         del r_4d, x_4d, y_4d, z_4d
 
-    def get_ray_solution(self, trg_r, src_z, trg_z = -200):
+        if debug and self.verbose:
+            print('src_r:',self.src_r)
+            print('trg_z:',self.trg_z)
+            print('trg_r:',self.trg_r.shape)
+            print('trg_r[:,0,0,0]:',self.trg_r[:,0,0,0])
+            print('src_z:',self.src_z.shape)
+            print('src_z[:,0,0,0]:',self.src_z[:,0,0,0])
+
+    def get_ray_solution(self, trg_r, src_z, trg_z = -200, debug = False):
 
         #setting vector
         self.ara_sim.src.SetXYZ(trg_r, 0, src_z);
@@ -87,16 +102,18 @@ class ara_raytrace_loader:
         sol_num = 0
         for sol in self.ara_sim.paths:
             arr_time[sol_num] = sol.pathTime*1e9
+            if debug and self.verbose:
+                print(f'Path time: {sol.pathTime*1e9} ns, Path length: {sol.pathLen} m, Attenuation: {sol.attenuation} m, Miss: {sol.miss} m')
             sol_num += 1
-            #{'tof':path.pathTime*1e9,'dist': path.pathLen, 'atten': path.attenuation,'miss': path.miss}            
-
+            
         return arr_time
 
     def get_arrival_time_table(self):
 
         self.num_ray_sol = 2
         arr_time_table = np.full((len(self.theta_bin), len(self.phi_bin), len(self.radius_bin), num_ants, self.num_ray_sol), np.nan, dtype = float)
-        print('arrival time table size:', arr_time_table.shape)
+        if self.verbose:
+            print('arrival time table size:', arr_time_table.shape)
 
         for t in tqdm(range(len(self.theta_bin)), ascii = False):
             for p in range(len(self.phi_bin)):

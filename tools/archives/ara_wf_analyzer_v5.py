@@ -1,4 +1,3 @@
-import sys
 import numpy as np
 from scipy.interpolate import Akima1DInterpolator
 #from scipy.signal import hilbert
@@ -9,25 +8,18 @@ from tqdm import tqdm
 from tools.ara_constant import ara_const
 
 ara_const = ara_const()
-num_ants = ara_const.USEFUL_CHAN_PER_STATION
-num_eles = ara_const.CHANNELS_PER_ATRI
+num_Ants = ara_const.USEFUL_CHAN_PER_STATION
 num_Buffers = ara_const.SAMPLES_PER_DDA
 num_Bits = ara_const.BUFFER_BIT_RANGE
 
 class wf_analyzer:
 
-    def __init__(self, dt = 0.5, use_time_pad = False, use_freq_pad = False, use_band_pass = False,
-                    add_double_pad = False, use_rfft = False, use_ele_ch = False):
+    def __init__(self, dt = 0.5, use_time_pad = False, use_band_pass = False):
 
         self.dt = dt
-        self.num_chs = num_ants
-        if use_ele_ch:
-            self.num_chs = num_eles        
-
+       
         if use_time_pad:
-            self.get_time_pad(add_double_pad = add_double_pad)
-        if use_freq_pad:
-            self.get_freq_pad(use_rfft = use_rfft)
+            self.get_time_pad(add_double_pad = True) 
         if use_band_pass:
             self.get_band_pass_filter()
 
@@ -45,7 +37,7 @@ class wf_analyzer:
 
         return bp_wf
 
-    def get_time_pad(self, add_double_pad = False):
+    def get_time_pad(self, add_double_pad = False, fill_pad_v = 0):
 
         # from a3 length
         pad_i = -179.5
@@ -58,24 +50,10 @@ class wf_analyzer:
             pad_w = np.copy(int((pad_f - pad_i) / self.dt) + 1)
             del half_pad_t
 
-        self.pad_zero_t = np.linspace(pad_i, pad_f, pad_w, dtype = float)
-        self.pad_len = len(self.pad_zero_t)
-        self.pad_t = np.full((self.pad_len, self.num_chs), np.nan, dtype = float)
-        self.pad_v = np.copy(self.pad_t)
-        self.pad_num = np.full((self.num_chs), 0, dtype = int)
+        self.pad_t = np.linspace(pad_i, pad_f, pad_w, dtype = float)
+        self.pad_len = len(self.pad_t)
+        self.pad_v = np.full((self.pad_len, num_Ants), fill_pad_v, dtype = float)
         print(f'time pad length: {self.pad_len * self.dt} ns')
-
-    def get_freq_pad(self, use_rfft = False):
-
-        if use_rfft:
-            self.pad_zero_freq = np.fft.rfftfreq(self.pad_len, self.dt)
-        else:
-            self.pad_zero_freq = np.fft.fftfreq(self.pad_len, self.dt)
-        self.pad_fft_len = len(self.pad_zero_freq)
-        self.pad_freq = np.full((self.pad_fft_len, self.num_chs), np.nan, dtype = float)
-        self.pad_fft = np.full(self.pad_freq.shape, np.nan, dtype = complex)
-        self.pad_phase = np.copy(self.pad_freq)
-        self.df = 1 / (self.pad_len *  self.dt) 
 
     def get_int_time(self, raw_ti, raw_tf):
 
@@ -89,61 +67,30 @@ class wf_analyzer:
 
         return int_t
 
-    def get_int_wf(self, raw_t, raw_v, ant, use_zero_pad = False, use_band_pass = False):
+    def get_int_wf(self, raw_t, raw_v, ant, use_time_pad = False, use_band_pass = False):
 
         # akima interpolation!
         akima = Akima1DInterpolator(raw_t, raw_v)
-        int_v = akima(self.pad_zero_t)
-        int_idx = ~np.isnan(int_v)
-        int_num = np.count_nonzero(int_idx)
 
-        int_v = int_v[int_idx]
+        if use_time_pad:
+            int_v = akima(self.pad_t)
+            int_t = ~np.isnan(int_v) # actually index
+            int_v = int_v[int_t]
+        else:
+            int_t = self.get_int_time(raw_t[0], raw_t[-1])
+            int_v = akima(int_t)
+        del akima
+            
         if use_band_pass:
             int_v = self.get_band_passed_wf(int_v)
 
-        if use_zero_pad:
+        if use_time_pad:
             self.pad_v[:, ant] = 0
-            self.pad_v[int_idx, ant] = int_v
+            self.pad_v[int_t, ant] = int_v
+            return
         else:
-            self.pad_t[:, ant] = np.nan
-            self.pad_v[:, ant] = np.nan
-            int_t = self.get_int_time(raw_t[0], raw_t[-1])
-            self.pad_t[:int_num, ant] = int_t        
-            self.pad_v[:int_num, ant] = int_v
-            del int_t
+            return int_t, int_v
 
-        self.pad_num[ant] = 0
-        self.pad_num[ant] = int_num
-        del akima, int_idx, int_v, int_num      
-
-    def get_fft_wf(self, use_zero_pad = False, use_rfft = False, use_abs = False, use_dmbHz = False, use_phase = False):
-
-        if use_zero_pad:
-            if use_rfft:
-                self.pad_fft = np.fft.rfft(self.pad_v, axis = 0)
-            else:
-                self.pad_fft = np.fft.fft(self.pad_v, axis = 0)
-        else:
-            self.pad_freq[:] = np.nan
-            self.pad_fft[:] = np.nan
-            for ant in range(self.num_chs):
-                if use_rfft:
-                    freq_temp = np.fft.rfftfreq(self.pad_num[ant], self.dt)
-                    self.pad_freq[:len(freq_temp), ant] = freq_temp
-                    self.pad_fft[:len(freq_temp), ant] = np.fft.rfft(self.pad_v[:self.pad_num[ant], ant])
-                else:
-                    self.pad_freq[:self.pad_num[ant], ant] = np.fft.fftfreq(self.pad_num[ant], self.dt)       
-                    self.pad_fft[:self.pad_num[ant], ant] = np.fft.fft(self.pad_v[:self.pad_num[ant], ant])
-        if use_phase:
-            self.pad_phase = np.angle(self.pad_fft)
-        self.pad_fft /= self.pad_num[np.newaxis, :]
-            
-        if use_abs:
-            self.pad_fft = np.abs(self.pad_fft)
-
-        if use_dmbHz:
-            self.pad_fft = 10 * np.log10(self.pad_fft**2 / (50 * self.dt)) + 30
-           
     def get_peak(self, x, y):
 
         max_idx = np.nanargmax(y)
@@ -155,7 +102,7 @@ class wf_analyzer:
 
 class hist_loader:
 
-    def __init__(self, x_len = num_Buffers, y_len = num_Bits, chs = num_ants, y_sym_range = False):
+    def __init__(self, x_len = num_Buffers, y_len = num_Bits, chs = num_Ants, y_sym_range = False):
 
         self.x_len = x_len
         self.x_range = np.arange(self.x_len)
