@@ -28,7 +28,7 @@ class run_info_loader:
             if verbose:
                 print(f'{file_type}{blind_type}_path:{result_path}')
         else:
-            print('There is no desired results!')
+            print('There is no desired {result_path}')
             if return_none == True:
                 return None
             else:
@@ -44,7 +44,7 @@ class run_info_loader:
             if verbose:
                 print(f'ped_path:{ped_path}')
         else:
-            print('There is no desired pedestal!')
+            print(f'There is no desired {ped_path}')
             if return_none == True:
                 return None
             else:

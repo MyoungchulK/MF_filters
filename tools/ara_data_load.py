@@ -12,6 +12,7 @@ from tools.ara_constant import ara_const
 
 #link AraRoot
 ROOT.gSystem.Load(os.environ.get('ARA_UTIL_INSTALL_DIR')+"/lib/libAraEvent.so")
+ROOT.gSystem.Load('/cvmfs/ara.opensciencegrid.org/trunk/centos7/misc_build/lib/libRootFftwWrapper.so')
 
 ara_const = ara_const()
 num_useful_chs = ara_const.USEFUL_CHAN_PER_STATION
@@ -477,6 +478,28 @@ class ara_Hk_uproot_loader:
                 tda_temp_hist[:,d] = np.histogram(tda_temp[:,d], bins = temp_bins)[0].astype(int)
 
             return atri_volt_hist, atri_curr_hist, dda_volt_hist, dda_curr_hist, dda_temp_hist, tda_volt_hist, tda_curr_hist, tda_temp_hist
+
+class sin_subtract_loader:
+
+    def __init__(self, max_fail_atts = 3, min_power_reduc = 0.05, min_ferq = 0.2, max_freq = 0.3, dt = 0.5):
+
+        self.dt = dt
+
+        self.sin_sub = ROOT.FFTtools.SineSubtract(max_fail_atts, min_power_reduc, False) # no store
+        self.sin_sub.setVerbose(False)
+        self.sin_sub.setFreqLimits(0.2, 0.3)
+        #self.sin_sub.unsetFreqLimits()
+        
+    def get_sin_subtract_wf(self, int_v, int_num):
+
+        cw_v = np.full((int_num), 0, dtype = np.double)
+        self.sin_sub.subtractCW(int_num, int_v, self.dt, cw_v)
+        cw_v = cw_v.astype(float)
+
+        self.num_sols = self.sin_sub.getNSines()
+        self.num_freqs = np.frombuffer(self.sin_sub.getFreqs(), dtype = float, count = self.num_sols)
+
+        return cw_v
 
 class analog_buffer_info_loader:
 

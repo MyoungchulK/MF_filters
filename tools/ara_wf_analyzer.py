@@ -17,19 +17,21 @@ num_Bits = ara_const.BUFFER_BIT_RANGE
 class wf_analyzer:
 
     def __init__(self, dt = 0.5, use_time_pad = False, use_freq_pad = False, use_band_pass = False,
-                    add_double_pad = False, use_rfft = False, use_ele_ch = False):
+                    add_double_pad = False, use_rfft = False, use_ele_ch = False, use_cw = False):
 
         self.dt = dt
         self.num_chs = num_ants
         if use_ele_ch:
             self.num_chs = num_eles        
-
         if use_time_pad:
             self.get_time_pad(add_double_pad = add_double_pad)
         if use_freq_pad:
             self.get_freq_pad(use_rfft = use_rfft)
         if use_band_pass:
             self.get_band_pass_filter()
+        if use_cw:
+            from tools.ara_data_load import sin_subtract_loader
+            self.sin_sub = sin_subtract_loader(3, 0.05, 0.2, 0.3, self.dt)
 
     def get_band_pass_filter(self, low_freq_cut = 0.13, high_freq_cut = 0.85, order = 10, pass_type = 'band'):
 
@@ -72,9 +74,6 @@ class wf_analyzer:
         else:
             self.pad_zero_freq = np.fft.fftfreq(self.pad_len, self.dt)
         self.pad_fft_len = len(self.pad_zero_freq)
-        self.pad_freq = np.full((self.pad_fft_len, self.num_chs), np.nan, dtype = float)
-        self.pad_fft = np.full(self.pad_freq.shape, np.nan, dtype = complex)
-        self.pad_phase = np.copy(self.pad_freq)
         self.df = 1 / (self.pad_len *  self.dt) 
 
     def get_int_time(self, raw_ti, raw_tf):
@@ -89,15 +88,18 @@ class wf_analyzer:
 
         return int_t
 
-    def get_int_wf(self, raw_t, raw_v, ant, use_zero_pad = False, use_band_pass = False):
+    def get_int_wf(self, raw_t, raw_v, ant, use_zero_pad = False, use_band_pass = False, use_cw = False):
 
         # akima interpolation!
         akima = Akima1DInterpolator(raw_t, raw_v)
         int_v = akima(self.pad_zero_t)
         int_idx = ~np.isnan(int_v)
         int_num = np.count_nonzero(int_idx)
-
         int_v = int_v[int_idx]
+
+        if use_cw:
+            int_v = self.sin_sub.get_sin_subtract_wf(int_v, int_num)
+
         if use_band_pass:
             int_v = self.get_band_passed_wf(int_v)
 
@@ -124,23 +126,27 @@ class wf_analyzer:
             else:
                 self.pad_fft = np.fft.fft(self.pad_v, axis = 0)
         else:
-            self.pad_freq[:] = np.nan
-            self.pad_fft[:] = np.nan
-            for ant in range(self.num_chs):
-                if use_rfft:
+            self.pad_freq = np.full((self.pad_fft_len, self.num_chs), np.nan, dtype = float)
+            self.pad_fft = np.full(self.pad_freq.shape, np.nan, dtype = complex)
+            if use_rfft:
+                rfft_len = self.pad_num//2 + 1
+                for ant in range(self.num_chs):
                     freq_temp = np.fft.rfftfreq(self.pad_num[ant], self.dt)
-                    self.pad_freq[:len(freq_temp), ant] = freq_temp
-                    self.pad_fft[:len(freq_temp), ant] = np.fft.rfft(self.pad_v[:self.pad_num[ant], ant])
-                else:
-                    self.pad_freq[:self.pad_num[ant], ant] = np.fft.fftfreq(self.pad_num[ant], self.dt)       
+                    self.pad_freq[:rfft_len[ant], ant] = freq_temp = np.fft.rfftfreq(self.pad_num[ant], self.dt)
+                    self.pad_fft[:rfft_len[ant], ant] = np.fft.rfft(self.pad_v[:self.pad_num[ant], ant])
+                del rfft_len
+            else:
+                for ant in range(self.num_chs):
+                    self.pad_freq[:self.pad_num[ant], ant] = np.fft.fftfreq(self.pad_num[ant], self.dt)
                     self.pad_fft[:self.pad_num[ant], ant] = np.fft.fft(self.pad_v[:self.pad_num[ant], ant])
+        
         if use_phase:
             self.pad_phase = np.angle(self.pad_fft)
-        self.pad_fft /= self.pad_num[np.newaxis, :]
-            
+        self.pad_fft /= np.sqrt(self.pad_num)[np.newaxis, :]
+        
         if use_abs:
             self.pad_fft = np.abs(self.pad_fft)
-
+        
         if use_dmbHz:
             self.pad_fft = 10 * np.log10(self.pad_fft**2 / (50 * self.dt)) + 30
            
