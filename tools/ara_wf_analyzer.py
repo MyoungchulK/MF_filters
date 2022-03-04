@@ -159,7 +159,45 @@ class wf_analyzer:
 
         return max_t, max_v
 
-class hist_loader:
+class hist_loader():
+
+    def __init__(self, bins_x, bins_y = None):
+
+        self.bins_x = bins_x
+        self.bin_x_center = (self.bins_x[1:] + self.bins_x[:-1]) / 2
+        if bins_y is not None:
+            self.bins_y = bins_y
+            self.bin_y_center = (self.bins_y[1:] + self.bins_y[:-1]) / 2
+
+    def get_1d_hist(self, dat_ori, fill_val = np.nan, cut = None):
+
+        dat = np.copy(dat_ori)
+        if cut is not None:
+            dat[:, cut] = fill_val
+
+        dat_1d_hist = np.full((dat.shape[0], len(self.bin_x_center)), 0, dtype = int)
+        for ant in range(dat.shape[0]):
+            dat_1d_hist[ant] = np.histogram(dat[ant], bins = self.bins_x)[0].astype(int)
+        del dat       
+ 
+        return dat_1d_hist
+
+    def get_2d_hist(self, dat_x_ori, dat_y_ori, fill_val = np.nan, cut = None):
+
+        dat_x = np.copy(dat_x_ori) 
+        dat_y = np.copy(dat_y_ori) 
+        if cut is not None:
+            dat_x[:, cut] = fill_val 
+            dat_y[:, cut] = fill_val 
+
+        dat_2d_hist = np.full((dat_x.shape[0], len(self.bin_x_center), len(self.bin_y_center)), 0, dtype = int)
+        for ant in range(dat_x.shape[0]):
+            dat_2d_hist[ant] = np.histogram2d(dat_x, dat_y, bins = (self.bins_x, self.bins_y))[0].astype(int)
+        del dat_x, dat_y
+
+        return dat_2d_hist
+
+class sample_map_loader:
 
     def __init__(self, x_len = num_Buffers, y_len = num_Bits, chs = num_ants, y_sym_range = False):
 

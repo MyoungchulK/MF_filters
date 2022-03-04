@@ -17,30 +17,25 @@ knwon_issue = known_issue_loader(Station)
 bad_runs = knwon_issue.get_knwon_bad_run()
 
 # sort
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/fdomain/*'
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/std/*'
 print(d_path)
 d_list, d_run_tot, d_run_range = file_sorter(d_path)
 del d_run_range
-
-# wf analyzer
-from tools.ara_wf_analyzer import wf_analyzer
-wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_rfft = True)
 
 # config array
 config_arr = []
 config_arr_all = []
 run_arr = []
 run_arr_all = []
-freq_range = wf_int.pad_zero_freq
-freq_bins = np.linspace(0, 1, wf_int.pad_fft_len + 1)
-amp_range = np.arange(-3, 7, 0.1)
-amp_bins = np.linspace(-3, 7, 100 + 1)
-freq_amp = np.full((wf_int.pad_fft_len, len(amp_range), 16), 0, dtype = int)
-freq_amp_rf = np.copy(freq_amp)
-freq_amp_rf_w_cut = np.copy(freq_amp)
-freq_amp_max = []
-freq_amp_rf_max = []
-freq_amp_rf_w_cut_max = []
+cliff = []
+cliff_rf = []
+cliff_rf_w_cut = []
+cliff_adc = []
+cliff_adc_rf = []
+cliff_adc_rf_w_cut = []
+std = []
+std_rf = []
+std_rf_w_cut = []
 dda_volt = []
 dda_curr = []
 dda_temp = []
@@ -51,19 +46,9 @@ atri_volt = []
 atri_curr = []
 tot_cut = []
 
-def max_freq(fa_0):
-
-    fa_1 = np.copy(fa_0)
-    fa_1[fa_1 != 0] = 1
-    fa_1 = fa_1.astype(float)
-    fa_1 *= amp_range[np.newaxis, :, np.newaxis]
-    fa_1 = np.nanmax(fa_1, axis = 1)
-
-    return fa_1
-
 for r in tqdm(range(len(d_run_tot))):
 
-  #if r <10:
+ #if r <10:
 
     hf = h5py.File(d_list[r], 'r')
 
@@ -71,17 +56,12 @@ for r in tqdm(range(len(d_run_tot))):
     config_arr_all.append(config)
     run_arr_all.append(d_run_tot[r])
 
-    freq_amp_run = hf['freq_amp'][:]
-    freq_amp_rf_run = hf['freq_amp_rf'][:]
-
-    freq_amp[:] += freq_amp_run
-    freq_amp_rf[:] += freq_amp_rf_run
-
-    freq_amp_m_evt = max_freq(freq_amp_run)
-    freq_amp_rf_m_evt = max_freq(freq_amp_rf_run)
-    freq_amp_max.append(freq_amp_m_evt)
-    freq_amp_rf_max.append(freq_amp_rf_m_evt)
-
+    cliff.append(hf['cliff_hist'][:])
+    cliff_rf.append(hf['cliff_rf_hist'][:])
+    cliff_adc.append(hf['cliff_adc_hist'][:])
+    cliff_adc_rf.append(hf['cliff_adc_rf_hist'][:])
+    std.append(hf['std_hist'][:])
+    std_rf.append(hf['std_rf_hist'][:])
 
     if d_run_tot[r] in bad_runs:
         print('bad run:', d_list[r], d_run_tot[r])
@@ -90,11 +70,9 @@ for r in tqdm(range(len(d_run_tot))):
     config_arr.append(config)
     run_arr.append(d_run_tot[r])
 
-    freq_amp_rf_w_cut_run = hf['freq_amp_rf_w_cut'][:]
-    freq_amp_rf_w_cut[:] += freq_amp_rf_w_cut_run
-
-    freq_amp_rf_w_cut_m_evt = max_freq(freq_amp_rf_w_cut_run)
-    freq_amp_rf_w_cut_max.append(freq_amp_rf_w_cut_m_evt)
+    cliff_rf_w_cut.append(hf['cliff_rf_hist_w_cut'][:])
+    cliff_adc_rf_w_cut.append(hf['cliff_adc_rf_hist_w_cut'][:])
+    std_rf_w_cut.append(hf['std_rf_w_cut_hist'][:])
 
     dda_volt.append(hf['dda_volt_hist'][:])
     dda_curr.append(hf['dda_curr_hist'][:])
@@ -116,7 +94,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Fdomain_A{Station}.h5'
+file_name = f'Std_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('config_arr', data=np.asarray(config_arr), compression="gzip", compression_opts=9)
 hf.create_dataset('config_arr_all', data=np.asarray(config_arr_all), compression="gzip", compression_opts=9)
@@ -131,16 +109,15 @@ hf.create_dataset('tda_curr', data=np.asarray(tda_curr), compression="gzip", com
 hf.create_dataset('tda_temp', data=np.asarray(tda_temp), compression="gzip", compression_opts=9)
 hf.create_dataset('atri_volt', data=np.asarray(atri_volt), compression="gzip", compression_opts=9)
 hf.create_dataset('atri_curr', data=np.asarray(atri_curr), compression="gzip", compression_opts=9)
-hf.create_dataset('freq_range', data=freq_range, compression="gzip", compression_opts=9)
-hf.create_dataset('freq_bins', data=freq_bins, compression="gzip", compression_opts=9)
-hf.create_dataset('amp_range', data=amp_range, compression="gzip", compression_opts=9)
-hf.create_dataset('amp_bins', data=amp_bins, compression="gzip", compression_opts=9)
-hf.create_dataset('freq_amp', data=freq_amp, compression="gzip", compression_opts=9)
-hf.create_dataset('freq_amp_rf', data=freq_amp_rf, compression="gzip", compression_opts=9)
-hf.create_dataset('freq_amp_rf_w_cut', data=freq_amp_rf_w_cut, compression="gzip", compression_opts=9)
-hf.create_dataset('freq_amp_max', data=np.asarray(freq_amp_max), compression="gzip", compression_opts=9)
-hf.create_dataset('freq_amp_rf_max', data=np.asarray(freq_amp_rf_max), compression="gzip", compression_opts=9)
-hf.create_dataset('freq_amp_rf_w_cut_max', data=np.asarray(freq_amp_rf_w_cut_max), compression="gzip", compression_opts=9)
+hf.create_dataset('cliff', data=np.asarray(cliff), compression="gzip", compression_opts=9)
+hf.create_dataset('cliff_rf', data=np.asarray(cliff_rf), compression="gzip", compression_opts=9)
+hf.create_dataset('cliff_rf_w_cut', data=np.asarray(cliff_rf_w_cut), compression="gzip", compression_opts=9)
+hf.create_dataset('cliff_adc', data=np.asarray(cliff_adc), compression="gzip", compression_opts=9)
+hf.create_dataset('cliff_adc_rf', data=np.asarray(cliff_adc_rf), compression="gzip", compression_opts=9)
+hf.create_dataset('cliff_adc_rf_w_cut', data=np.asarray(cliff_adc_rf_w_cut), compression="gzip", compression_opts=9)
+hf.create_dataset('std', data=np.asarray(std), compression="gzip", compression_opts=9)
+hf.create_dataset('std_rf', data=np.asarray(std_rf), compression="gzip", compression_opts=9)
+hf.create_dataset('std_rf_w_cut', data=np.asarray(std_rf_w_cut), compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name)
 # quick size check

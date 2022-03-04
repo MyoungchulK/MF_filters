@@ -31,6 +31,7 @@ class pre_qual_cut_loader:
         self.num_evts = ara_uproot.num_evts
         self.trig_type = ara_uproot.get_trig_type()
         self.unix_time = ara_uproot.unix_time
+        self.pps_number = ara_uproot.pps_number
         self.irs_block_number = ara_uproot.irs_block_number
         self.channel_mask = ara_uproot.channel_mask
         self.blk_len = ara_uproot.read_win//num_ddas
@@ -273,28 +274,38 @@ class pre_qual_cut_loader:
 
         return no_cal_evts
 
-    def get_no_calpulser_rate_events(self, cal_rate_cut = 0):
+    def get_no_calpulser_rate_events(self, cal_rate_cut = 0.6, apply_bad_evt_num = None):
 
         if self.st == 3 and self.run < 1429:
             no_cal_rate_evts = np.full((self.num_evts), 0, dtype = int)
             return no_cal_rate_evts
 
+        if apply_bad_evt_num is not None and np.all(apply_bad_evt_num != 0):
+            no_cal_rate_evts = np.full((self.num_evts), 0, dtype = int)
+            return no_cal_rate_evts
+
         evt_rate_dat = self.run_info.get_result_path(file_type = 'evt_rate', verbose = self.verbose, force_blind = True)
         evt_rate_hf = h5py.File(evt_rate_dat, 'r')
-        evt_rate_bins = evt_rate_hf['evt_rate_bins'][:-1]
-        cal_evt_rate = evt_rate_hf['cal_evt_rate'][:] 
+        evt_rate_bins = (evt_rate_hf['time_bins_pps'][:-1] + 0.5).astype(int) # bins to bincenter
+        cal_evt_rate = evt_rate_hf['cal_evt_rate_pps'][:] 
         del evt_rate_dat, evt_rate_hf
 
         min_to_sec_arr = np.arange(60, dtype = int)
         cal_cut_idx = cal_evt_rate < cal_rate_cut
-        
-        bad_unix_sec = evt_rate_bins[cal_cut_idx]
-        bad_unix_sec = np.repeat(bad_unix_sec[:, np.newaxis], len(min_to_sec_arr), axis = 1)
-        bad_unix_sec += min_to_sec_arr[np.newaxis, :]
-        bad_unix_sec = bad_unix_sec.flatten()
-        
-        no_cal_rate_evts = np.in1d(self.unix_time, bad_unix_sec).astype(int)
-        del min_to_sec_arr, cal_cut_idx, bad_unix_sec, cal_evt_rate    
+ 
+        bad_pps_sec = evt_rate_bins[cal_cut_idx]
+        bad_pps_sec = np.repeat(bad_pps_sec[:, np.newaxis], len(min_to_sec_arr), axis = 1)
+        bad_pps_sec += min_to_sec_arr[np.newaxis, :]
+        bad_pps_sec = bad_pps_sec.flatten()
+      
+        pps_num = np.copy(self.pps_number)
+        time_reset_point = np.where(np.diff(pps_num) < 0)[0]
+        if len(time_reset_point) > 0:
+            pps_limit = 65536
+            pps_num[time_reset_point[0]+1:] += pps_limit
+ 
+        no_cal_rate_evts = np.in1d(pps_num, bad_pps_sec).astype(int)
+        del min_to_sec_arr, cal_cut_idx, bad_pps_sec, cal_evt_rate, pps_num 
     
         if self.verbose:
             quick_qual_check(no_cal_rate_evts != 0, self.evt_num, f'no calpulser rate events')
@@ -338,7 +349,7 @@ class pre_qual_cut_loader:
         tot_pre_qual_cut[:, 11] = self.get_first_few_events()
         tot_pre_qual_cut[:, 12] = self.get_bias_voltage_events()
         tot_pre_qual_cut[:, 13] = self.get_no_calpulser_events(apply_bias_volt = tot_pre_qual_cut[:,12])
-        tot_pre_qual_cut[:, 14] = self.get_no_calpulser_rate_events()
+        tot_pre_qual_cut[:, 14] = self.get_no_calpulser_rate_events(apply_bad_evt_num = tot_pre_qual_cut[:, 9])
         if use_for_ped_qual == False:
             tot_pre_qual_cut[:, 15:] = self.get_pedestal_block_events(apply_daq_err = np.nansum(tot_pre_qual_cut[:, :5], axis = 1))
 
@@ -468,7 +479,7 @@ class qual_cut_loader:
 
         d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{st}/'
         d_path += f'{d_key}/'
-        d_path += f'qual_cut_A{st}_R{run}.h5'
+        d_path += f'{d_key}_A{st}_R{run}.h5'
         qual_file = h5py.File(d_path, 'r')
         if self.verbose:
             print(f'quality cut path:', d_path)

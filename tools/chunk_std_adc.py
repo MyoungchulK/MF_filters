@@ -1,7 +1,7 @@
 import numpy as np
 from tqdm import tqdm
 
-def std_collector(Data, Ped, analyze_blind_dat = False):
+def std_adc_collector(Data, Ped, analyze_blind_dat = False):
 
     print('Collecting wf starts!')
 
@@ -54,7 +54,7 @@ def std_collector(Data, Ped, analyze_blind_dat = False):
 
         # get entry and wf
         ara_root.get_entry(evt)
-        ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
+        ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib14to20_Bug)
         for ant in range(num_eles):
             raw_v = ara_root.get_ele_ch_wf(ant)[1]
             std[ant, evt] = np.nanstd(raw_v)
@@ -68,13 +68,13 @@ def std_collector(Data, Ped, analyze_blind_dat = False):
     ara_hist = hist_loader(std_bins)
     std_bin_center = ara_hist.bin_x_center
 
-    std_hist = get_1d_hist(std)
-    std_rf_hist = get_1d_hist(std, cut = trig_type != 0)
-    std_cal_hist = get_1d_hist(std, cut = trig_type != 1)
-    std_soft_hist = get_1d_hist(std, cut = trig_type != 2)
-    std_rf_w_cut_hist  = get_1d_hist(std, cut = rf_idx)
-    std_cal_w_cut_hist  = get_1d_hist(std, cut = cal_idx)
-    std_soft_w_cut_hist  = get_1d_hist(std, cut = soft_idx)
+    std_hist = ara_hist.get_1d_hist(std)
+    std_rf_hist = ara_hist.get_1d_hist(std, cut = trig_type != 0)
+    std_cal_hist = ara_hist.get_1d_hist(std, cut = trig_type != 1)
+    std_soft_hist = ara_hist.get_1d_hist(std, cut = trig_type != 2)
+    std_rf_w_cut_hist  = ara_hist.get_1d_hist(std, cut = ~rf_idx)
+    std_cal_w_cut_hist  = ara_hist.get_1d_hist(std, cut = ~cal_idx)
+    std_soft_w_cut_hist  = ara_hist.get_1d_hist(std, cut = ~soft_idx)
     del ara_hist, rf_idx, cal_idx, soft_idx
 
     print('WF collecting is done!')

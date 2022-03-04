@@ -250,8 +250,8 @@ class ara_uproot_loader:
         self.read_win = np.asarray(self.evtTree['event/numReadoutBlocks'],dtype=int)
         self.irs_block_number = np.asarray(self.evtTree['event/blockVec/blockVec.irsBlockNumber']) & 0x1ff
         self.channel_mask = np.asarray(self.evtTree['event/blockVec/blockVec.channelMask'])
-
-        #self.pps_number = np.asarray(self.evtTree['event/ppsNumber'],dtype=int)
+        self.pps_number = np.asarray(self.evtTree['event/ppsNumber'],dtype=int)
+        
         #self.trigger_blk = np.asarray(self.evtTree['event/triggerBlock[4]'],dtype=int)
         #self.unix_time_us = np.asarray(self.evtTree['event/unixTimeUs'],dtype=int)
 

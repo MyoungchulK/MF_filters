@@ -24,7 +24,7 @@ def cobalt_run_loader(Station = None, Key = None, Act_Evt = None, analyze_blind_
             #BASH_line = f'source ../../AraSoft/for_local_araroot.sh'
             #call(BASH_line.split(' '))
 
-            CMD_line = f'python3 -W ignore script_executor.py {Key} {Station} {int(w)} {int(analyze_blind_dat)}'
+            CMD_line = f'python3 -W ignore script_executor_temp.py {Station} {int(w)} {int(analyze_blind_dat)}'
             print(CMD_line)
             call(CMD_line.split(' '))
 

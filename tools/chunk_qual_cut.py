@@ -16,6 +16,8 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
     """num_evts = ara_uproot.num_evts"""
     evt_num = ara_uproot.evt_num
     trig_type = ara_uproot.get_trig_type()
+    pps_number = ara_uproot.pps_number
+    unix_time = ara_uproot.unix_time
     """ara_root = ara_root_loader(Data, Ped, ara_uproot.station_id, ara_uproot.year)"""
 
     # quality cut config
@@ -41,6 +43,8 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
 
     return {'evt_num':evt_num,
             'trig_type':trig_type,
+            'unix_time':unix_time,
+            'pps_number':pps_number,
             'total_qual_cut':total_qual_cut}
 
 

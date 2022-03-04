@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # load in variables
-key=evt_rate
+key=qual_cut
 station=$1
 run=$2
 blind=1
@@ -13,4 +13,5 @@ source /home/mkim/analysis/AraSoft/for_local_araroot.sh
 cd /home/mkim/analysis/MF_filters/scripts/
 
 python3 /home/mkim/analysis/MF_filters/scripts/script_executor.py ${key} ${station} ${run} ${blind}
+#python3 /home/mkim/analysis/MF_filters/scripts/script_executor_temp.py ${key} ${station} ${run} ${blind}
 

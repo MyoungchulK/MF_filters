@@ -29,7 +29,7 @@ class known_issue_loader:
             if run > 12865:
                 st_idx = 0
                 bad_ant[st_idx::4] = 1 # all D1 antennas, dead bit issue
-                #bad_ant[3::4] = 1 # all D4 antennas, duplication issue
+                bad_ant[3::4] = 1 # all D4 antennas, duplication issue
 
         if good_ant_true == True:
             bad_ant = ~bad_ant
