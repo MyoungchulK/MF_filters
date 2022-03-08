@@ -481,13 +481,13 @@ class ara_Hk_uproot_loader:
 
 class sin_subtract_loader:
 
-    def __init__(self, max_fail_atts = 3, min_power_reduc = 0.05, min_ferq = 0.2, max_freq = 0.3, dt = 0.5):
+    def __init__(self, max_fail_atts = 3, min_power_reduc = 0.05, min_freq = 0.2, max_freq = 0.3, dt = 0.5):
 
         self.dt = dt
 
         self.sin_sub = ROOT.FFTtools.SineSubtract(max_fail_atts, min_power_reduc, False) # no store
         self.sin_sub.setVerbose(False)
-        self.sin_sub.setFreqLimits(0.2, 0.3)
+        self.sin_sub.setFreqLimits(min_freq, max_freq)
         #self.sin_sub.unsetFreqLimits()
         
     def get_sin_subtract_wf(self, int_v, int_num):

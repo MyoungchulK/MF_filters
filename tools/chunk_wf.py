@@ -54,11 +54,14 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         sel_evt_idx = np.in1d(evt_num, sel_evts)
         sel_entries = entry_num[sel_evt_idx]
         sel_evts = evt_num[sel_evt_idx]
+        sel_trig = trig_type[sel_evt_idx]
     else:
         sel_entries = entry_num[:20]
         sel_evts = evt_num[sel_entries]
+        sel_trig = trig_type[sel_entries]
     print(f'Selected events are {sel_evts}')
     print(f'Selected entries are {sel_entries}')
+    print(f'Selected triggers are {sel_trig}')
     sel_evt_len = len(sel_entries)
 
     # wf analyzer
@@ -155,6 +158,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         # get entry and wf
         ara_root.get_entry(sel_entries[evt])
         ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
+        #ara_root.get_useful_evt(ara_root.cal_type.kJustPedWithOut1stBlockAndBadSamples)
  
         # loop over the antennas
         for ant in range(num_ants):        
@@ -194,6 +198,8 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             cw_num_freqs[:len(num_freqs), ant, evt] = num_freqs
         cw_wf_all[:, 0, :, evt] = wf_int.pad_t
         cw_wf_all[:, 1, :, evt] = wf_int.pad_v
+        print(cw_num_sols.T)
+        print(cw_num_freqs.T)
  
         wf_int.get_fft_wf(use_rfft = True, use_abs = True, use_phase = True)
         cw_fft[:, :, evt] = wf_int.pad_fft
@@ -367,6 +373,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'pre_qual_cut':pre_qual_cut,
             'sel_entries':sel_entries,
             'sel_evts':sel_evts,
+            'sel_trig':sel_trig,
             'wf_all':wf_all,
             'int_wf_all':int_wf_all,
             'cw_wf_all':cw_wf_all,

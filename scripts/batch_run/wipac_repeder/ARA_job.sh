@@ -4,8 +4,7 @@
 data=$1
 station=$2
 run=$3
-ped=ped_values_A${station}_R${run}.dat
-out=/data/user/mkim/OMF_filter/ARA0${station}/ped/${ped}
+out=/data/user/mkim/OMF_filter/ARA0${station}/ped/ped_values_A${station}_R${run}.dat
 qual=/data/user/mkim/OMF_filter/ARA0${station}/ped/ped_qualities_A${station}_R${run}.dat
 
 # run the reconstruction script

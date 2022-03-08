@@ -190,16 +190,19 @@ class pre_qual_cut_loader:
 
         return bad_unix_evts
         
-    def get_first_minute_events(self, first_evt_limit = 7):
+    def get_first_few_events(self, first_evt_limit = 7):
 
-        unix_cut = self.unix_time[0] + 60
-        first_min_evts = (self.unix_time < unix_cut).astype(int)
-        del unix_cut
+        first_few_evts = np.full((self.num_evts), 0, dtype = int)
+
+        if self.st == 2:
+            first_few_evts[(self.evt_num < first_evt_limit) & (self.unix_time >= 1448485911)] = 1
+        if self.st == 3:
+            first_few_evts[self.evt_num < first_evt_limit] = 1
 
         if self.verbose:
-            quick_qual_check(first_min_evts != 0, self.evt_num, f'first minute events')
+            quick_qual_check(first_few_evts != 0, self.evt_num, f'first few events')
 
-        return first_min_evts
+        return first_few_evts
 
     def get_bias_voltage_events(self, volt_cut = [3, 3.5]):
 
@@ -343,7 +346,7 @@ class pre_qual_cut_loader:
         tot_pre_qual_cut[:, 5:9] = self.get_readout_window_errors()
         tot_pre_qual_cut[:, 9] = self.get_bad_event_number()
         tot_pre_qual_cut[:, 10] = self.get_bad_unix_time_events(add_unchecked_unix_time = True)
-        tot_pre_qual_cut[:, 11] = self.get_first_minute_events()
+        tot_pre_qual_cut[:, 11] = self.get_first_few_events()
         tot_pre_qual_cut[:, 12] = self.get_bias_voltage_events()
         tot_pre_qual_cut[:, 13] = self.get_no_calpulser_events(apply_bias_volt = tot_pre_qual_cut[:,12])
         tot_pre_qual_cut[:, 14] = self.get_no_calpulser_rate_events(apply_bad_evt_num = tot_pre_qual_cut[:, 9])

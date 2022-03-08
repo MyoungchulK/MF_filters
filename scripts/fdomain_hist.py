@@ -22,44 +22,41 @@ print(d_path)
 d_list, d_run_tot, d_run_range = file_sorter(d_path)
 del d_run_range
 
-# wf analyzer
-from tools.ara_wf_analyzer import wf_analyzer
-wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_rfft = True)
-
 # config array
 config_arr = []
 config_arr_all = []
 run_arr = []
 run_arr_all = []
-freq_range = wf_int.pad_zero_freq
-freq_bins = np.linspace(0, 1, wf_int.pad_fft_len + 1)
-amp_range = np.arange(-3, 7, 0.1)
-amp_bins = np.linspace(-3, 7, 100 + 1)
-freq_amp = np.full((wf_int.pad_fft_len, len(amp_range), 16), 0, dtype = int)
-freq_amp_rf = np.copy(freq_amp)
-freq_amp_rf_w_cut = np.copy(freq_amp)
-freq_amp_max = []
-freq_amp_rf_max = []
-freq_amp_rf_w_cut_max = []
-dda_volt = []
-dda_curr = []
-dda_temp = []
-tda_volt = []
-tda_curr = []
-tda_temp = []
-atri_volt = []
-atri_curr = []
 tot_cut = []
 
-def max_freq(fa_0):
+from tools.ara_wf_analyzer import wf_analyzer
+from tools.ara_wf_analyzer import hist_loader
+wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_rfft = True)
+freq_range = wf_int.pad_zero_freq
+freq_bins = np.linspace(0, 1, wf_int.pad_fft_len//6 + 1)
+ara_hist = hist_loader(freq_bins)
+freq_bin_center = ara_hist.bin_x_center
+del ara_hist
+amp_range = np.arange(-5, 5, 0.05)
+amp_bins = np.linspace(-5, 5, 200 + 1)
+ara_hist = hist_loader(amp_bins)
+amp_bin_center = ara_hist.bin_x_center
+del ara_hist
 
-    fa_1 = np.copy(fa_0)
-    fa_1[fa_1 != 0] = 1
-    fa_1 = fa_1.astype(float)
-    fa_1 *= amp_range[np.newaxis, :, np.newaxis]
-    fa_1 = np.nanmax(fa_1, axis = 1)
+freq_amp = np.full((len(freq_bins) - 1, len(amp_range), 16), 0, dtype = int)
+freq_amp_rf = np.copy(freq_amp)
+freq_amp_rf_w_cut = np.copy(freq_amp)
+freq_amp_rf_w_fcut = np.copy(freq_amp)
 
-    return fa_1
+freq_max_hist = []
+freq_max_rf_hist = []
+freq_max_rf_w_cut_hist = []
+freq_max_rf_w_fcut_hist = []
+
+peak_max_hist = []
+peak_max_rf_hist = []
+peak_max_rf_w_cut_hist = []
+peak_max_rf_w_fcut_hist = []
 
 for r in tqdm(range(len(d_run_tot))):
 
@@ -71,17 +68,12 @@ for r in tqdm(range(len(d_run_tot))):
     config_arr_all.append(config)
     run_arr_all.append(d_run_tot[r])
 
-    freq_amp_run = hf['freq_amp'][:]
-    freq_amp_rf_run = hf['freq_amp_rf'][:]
-
-    freq_amp[:] += freq_amp_run
-    freq_amp_rf[:] += freq_amp_rf_run
-
-    freq_amp_m_evt = max_freq(freq_amp_run)
-    freq_amp_rf_m_evt = max_freq(freq_amp_rf_run)
-    freq_amp_max.append(freq_amp_m_evt)
-    freq_amp_rf_max.append(freq_amp_rf_m_evt)
-
+    freq_amp += hf['freq_amp'][:]
+    freq_amp_rf += hf['freq_amp_rf'][:]
+    freq_max_hist.append(hf['freq_max_hist'][:])
+    freq_max_rf_hist.append(hf['freq_max_rf_hist'][:])
+    peak_max_hist.append(hf['peak_max_hist'][:])
+    peak_max_rf_hist.append(hf['peak_max_rf_hist'][:])
 
     if d_run_tot[r] in bad_runs:
         print('bad run:', d_list[r], d_run_tot[r])
@@ -89,25 +81,16 @@ for r in tqdm(range(len(d_run_tot))):
     
     config_arr.append(config)
     run_arr.append(d_run_tot[r])
-
-    freq_amp_rf_w_cut_run = hf['freq_amp_rf_w_cut'][:]
-    freq_amp_rf_w_cut[:] += freq_amp_rf_w_cut_run
-
-    freq_amp_rf_w_cut_m_evt = max_freq(freq_amp_rf_w_cut_run)
-    freq_amp_rf_w_cut_max.append(freq_amp_rf_w_cut_m_evt)
-
-    dda_volt.append(hf['dda_volt_hist'][:])
-    dda_curr.append(hf['dda_curr_hist'][:])
-    dda_temp.append(hf['dda_temp_hist'][:])
-    tda_volt.append(hf['tda_volt_hist'][:])
-    tda_curr.append(hf['tda_curr_hist'][:])
-    tda_temp.append(hf['tda_temp_hist'][:])
-    atri_volt.append(hf['atri_volt_hist'][:])
-    atri_curr.append(hf['atri_curr_hist'][:])
-
     qual_cut = hf['total_qual_cut'][:]
     qual_cut_count = np.count_nonzero(qual_cut, axis = 0)
     tot_cut.append(qual_cut_count)
+
+    freq_amp_rf_w_cut += hf['freq_amp_rf_w_cut'][:]
+    freq_amp_rf_w_fcut += hf['freq_amp_rf_w_fcut'][:]    
+    freq_max_rf_w_cut_hist.append(hf['freq_max_rf_w_cut_hist'][:])
+    freq_max_rf_w_fcut_hist.append(hf['freq_max_rf_w_fcut_hist'][:])
+    peak_max_rf_w_cut_hist.append(hf['peak_max_rf_w_cut_hist'][:])
+    peak_max_rf_w_fcut_hist.append(hf['peak_max_rf_w_fcut_hist'][:])
 
     del hf
 
@@ -123,24 +106,24 @@ hf.create_dataset('config_arr_all', data=np.asarray(config_arr_all), compression
 hf.create_dataset('run_arr', data=np.asarray(run_arr), compression="gzip", compression_opts=9)
 hf.create_dataset('run_arr_all', data=np.asarray(run_arr_all), compression="gzip", compression_opts=9)
 hf.create_dataset('tot_cut', data=np.asarray(tot_cut), compression="gzip", compression_opts=9)
-hf.create_dataset('dda_volt', data=np.asarray(dda_volt), compression="gzip", compression_opts=9)
-hf.create_dataset('dda_curr', data=np.asarray(dda_curr), compression="gzip", compression_opts=9)
-hf.create_dataset('dda_temp', data=np.asarray(dda_temp), compression="gzip", compression_opts=9)
-hf.create_dataset('tda_volt', data=np.asarray(tda_volt), compression="gzip", compression_opts=9)
-hf.create_dataset('tda_curr', data=np.asarray(tda_curr), compression="gzip", compression_opts=9)
-hf.create_dataset('tda_temp', data=np.asarray(tda_temp), compression="gzip", compression_opts=9)
-hf.create_dataset('atri_volt', data=np.asarray(atri_volt), compression="gzip", compression_opts=9)
-hf.create_dataset('atri_curr', data=np.asarray(atri_curr), compression="gzip", compression_opts=9)
 hf.create_dataset('freq_range', data=freq_range, compression="gzip", compression_opts=9)
 hf.create_dataset('freq_bins', data=freq_bins, compression="gzip", compression_opts=9)
+hf.create_dataset('freq_bin_center', data=freq_bin_center, compression="gzip", compression_opts=9)
 hf.create_dataset('amp_range', data=amp_range, compression="gzip", compression_opts=9)
 hf.create_dataset('amp_bins', data=amp_bins, compression="gzip", compression_opts=9)
+hf.create_dataset('amp_bin_center', data=amp_bin_center, compression="gzip", compression_opts=9)
 hf.create_dataset('freq_amp', data=freq_amp, compression="gzip", compression_opts=9)
 hf.create_dataset('freq_amp_rf', data=freq_amp_rf, compression="gzip", compression_opts=9)
 hf.create_dataset('freq_amp_rf_w_cut', data=freq_amp_rf_w_cut, compression="gzip", compression_opts=9)
-hf.create_dataset('freq_amp_max', data=np.asarray(freq_amp_max), compression="gzip", compression_opts=9)
-hf.create_dataset('freq_amp_rf_max', data=np.asarray(freq_amp_rf_max), compression="gzip", compression_opts=9)
-hf.create_dataset('freq_amp_rf_w_cut_max', data=np.asarray(freq_amp_rf_w_cut_max), compression="gzip", compression_opts=9)
+hf.create_dataset('freq_amp_rf_w_fcut', data=freq_amp_rf_w_fcut, compression="gzip", compression_opts=9)
+hf.create_dataset('freq_max_hist', data=np.asarray(freq_max_hist), compression="gzip", compression_opts=9)
+hf.create_dataset('freq_max_rf_hist', data=np.asarray(freq_max_rf_hist), compression="gzip", compression_opts=9)
+hf.create_dataset('freq_max_rf_w_cut_hist', data=np.asarray(freq_max_rf_w_cut_hist), compression="gzip", compression_opts=9)
+hf.create_dataset('freq_max_rf_w_fcut_hist', data=np.asarray(freq_max_rf_w_fcut_hist), compression="gzip", compression_opts=9)
+hf.create_dataset('peak_max_hist', data=np.asarray(peak_max_hist), compression="gzip", compression_opts=9)
+hf.create_dataset('peak_max_rf_hist', data=np.asarray(peak_max_rf_hist), compression="gzip", compression_opts=9)
+hf.create_dataset('peak_max_rf_w_cut_hist', data=np.asarray(peak_max_rf_w_cut_hist), compression="gzip", compression_opts=9)
+hf.create_dataset('peak_max_rf_w_fcut_hist', data=np.asarray(peak_max_rf_w_fcut_hist), compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name)
 # quick size check

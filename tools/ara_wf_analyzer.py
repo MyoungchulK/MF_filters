@@ -17,7 +17,7 @@ num_Bits = ara_const.BUFFER_BIT_RANGE
 class wf_analyzer:
 
     def __init__(self, dt = 0.5, use_time_pad = False, use_freq_pad = False, use_band_pass = False,
-                    add_double_pad = False, use_rfft = False, use_ele_ch = False, use_cw = False):
+                    add_double_pad = False, use_rfft = False, use_ele_ch = False, use_cw = False, cw_config = (3, 0.1, 0.13, 0.85)):
 
         self.dt = dt
         self.num_chs = num_ants
@@ -31,7 +31,8 @@ class wf_analyzer:
             self.get_band_pass_filter()
         if use_cw:
             from tools.ara_data_load import sin_subtract_loader
-            self.sin_sub = sin_subtract_loader(3, 0.05, 0.2, 0.3, self.dt)
+            print('cw config:', cw_config)
+            self.sin_sub = sin_subtract_loader(cw_config[0], cw_config[1], cw_config[2], cw_config[3], self.dt)
 
     def get_band_pass_filter(self, low_freq_cut = 0.13, high_freq_cut = 0.85, order = 10, pass_type = 'band'):
 
