@@ -498,7 +498,8 @@ class sin_subtract_loader:
 
         self.num_sols = self.sin_sub.getNSines()
         self.num_freqs = np.frombuffer(self.sin_sub.getFreqs(), dtype = float, count = self.num_sols)
-
+        self.num_amps = np.frombuffer(self.sin_sub.getAmps(0), dtype = float, count = self.num_sols)
+    
         return cw_v
 
 class analog_buffer_info_loader:

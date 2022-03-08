@@ -30,7 +30,7 @@ class wf_analyzer:
         if use_band_pass:
             self.get_band_pass_filter()
         if use_cw:
-            from tools.ara_data_load import sin_subtract_loader
+            from tools.ara_data_load_temp import sin_subtract_loader
             print('cw config:', cw_config)
             self.sin_sub = sin_subtract_loader(cw_config[0], cw_config[1], cw_config[2], cw_config[3], self.dt)
 
@@ -81,10 +81,11 @@ class wf_analyzer:
 
         int_ti = self.dt * np.ceil((1/self.dt) * raw_ti)
         int_tf = self.dt * np.floor((1/self.dt) * raw_tf)
-
+    
         # set time range by dt
         #int_t = np.arange(int_ti, int_tf+self.dt/2, self.dt)
         int_t = np.linspace(int_ti, int_tf, int((int_tf - int_ti) / self.dt) + 1, dtype = float)
+        print(int_t)
         del int_ti, int_tf
 
         return int_t
