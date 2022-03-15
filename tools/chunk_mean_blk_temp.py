@@ -1,7 +1,7 @@
 import numpy as np
 from tqdm import tqdm
 
-def mean_blk_collector(Data, Ped, analyze_blind_dat = False):
+def mean_blk_temp_collector(Data, Ped, analyze_blind_dat = False):
 
     print('Collecting mean block starts!')
 
@@ -88,8 +88,8 @@ def mean_blk_collector(Data, Ped, analyze_blind_dat = False):
         del blk_len
     del ara_root, num_evts, daq_qual_sum, num_ants, ara_uproot, buffer_info, wf_int
 
-    mean_range = np.arange(-220, 220, 4)
-    mean_bins = np.linspace(-220, 220, 110 + 1)
+    mean_range = np.arange(-30, 30, 1)
+    mean_bins = np.linspace(-30, 30, 60 + 1)
     ara_hist = hist_loader(mean_bins)
     mean_bin_center = ara_hist.bin_x_center
     mean_blk_hist = ara_hist.get_flat_1d_hist(mean_blk)

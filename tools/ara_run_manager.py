@@ -222,10 +222,10 @@ class run_info_loader:
 
 class batch_info_loader:
 
-    def __init__(self, st):
+    def __init__(self, st, year = (2013, 2020)):
 
         self.st = st
-        self.years = np.arange(2013,2020, dtype = int)
+        self.years = np.arange(year[0], year[1], dtype = int)
         if self.st == 3:
             self.years = self.years[self.years != 2017]
 
@@ -404,47 +404,99 @@ def file_sorter(d_path):
 
     return d_list, run_tot, run_range
 
-def context_finder(config_file, key, end_key, empty):
+class config_info_loader:
 
-    val_i = config_file.find(key)
-    if val_i != -1:
-        val_i += len(key)
-        val_f = config_file.find(end_key,val_i)
-        if key == 'enableL1Trigger#I20=' or key == 'triggerDelays#I16=':
-            val = np.asarray(config_file[val_i:val_f].split(",")).astype(np.int)
+    def __init__(self, verbose = False):
+
+        self.verbose = verbose
+
+    def get_context(self, config_file, key, end_key, empty = np.nan):
+
+        val_i = config_file.find(key)
+        if val_i != -1:
+            val_i += len(key)
+            val_f = config_file.find(end_key,val_i)
+            if key == 'enableL1Trigger#I20=' or key == 'triggerDelays#I16=':
+                val = np.asarray(config_file[val_i:val_f].split(",")).astype(int)
+            else:
+                val = int(config_file[val_i:val_f])
+            del val_f
         else:
-            val = int(config_file[val_i:val_f])
-        del val_f
-    else:
-        val = empty
-    del val_i
+            val = empty
+        del val_i
 
-    return val
+        return val
 
-def run_config_file_reader(run_start_path):
+    def get_run_start_n_stop_info(self, run_start_path):
 
-    with open(run_start_path,'r') as run_start_file:
-        run_start = run_start_file.read()
+        with open(run_start_path,'r') as run_start_file:
+            run_start = run_start_file.read()
 
-        run_key = 'Run:'
-        empty_run_key = np.nan
+            run_key = 'Run:'
+            time_key = 'Time:'
+            run_end_key = 'Message'
 
-        time_key = 'Time:'
-        empty_time_key = np.nan
-
-        run_end_key = 'Message'
-
-        run_start_num = context_finder(run_start, run_key, time_key, empty_run_key)
-        unix_start = context_finder(run_start, time_key, run_end_key, empty_time_key)
-        if not np.isfinite(unix_start):
-            date_start = np.nan
-        else:
-            date_start = datetime.fromtimestamp(unix_start)
-            date_start = date_start.strftime('%Y%m%d%H%M%S')
-            date_start = int(date_start)
-        run_start_info = np.array([run_start_num,unix_start,date_start])
+            #run_start_num = self.get_context(run_start, run_key, time_key)
+            unix_start = self.get_context(run_start, time_key, run_end_key)
+            if not np.isfinite(unix_start):
+                date_start = np.nan
+            else:
+                date_start = datetime.fromtimestamp(unix_start)
+                date_start = date_start.strftime('%Y%m%d%H%M%S')
+                date_start = int(date_start)
     
-    return run_start_info
+        return unix_start, date_start
+
+    def get_run_start_n_stop(self, run_path_dir):
+
+        run_start_path = glob(f'{run_path_dir}runStart*')
+        run_stop_path = glob(f'{run_path_dir}runStop*')
+
+        unix_time = np.full((2), np.nan, dtype = float)
+        date_time = np.copy(unix_time)
+
+        if len(run_start_path) != 1:
+            if self.verbose:
+                print('There is no run start!')
+                print('Files in the location:', os.listdir(run_path_dir)) 
+        else:
+            unix_time[0], date_time[0] = self.get_run_start_n_stop_info(run_start_path[0])
+
+        if len(run_stop_path) != 1:
+            if self.verbose:
+                print('There is no run stop!')
+                print('Files in the location:', os.listdir(run_path_dir))
+        else:
+            unix_time[1], date_time[1] = self.get_run_start_n_stop_info(run_stop_path[0])
+
+        return unix_time, date_time
+
+    def get_ped_start_n_stop(self, run_path_dir):
+
+        run_start_path = glob(f'{run_path_dir}runStart*')
+        run_stop_path = glob(f'{run_path_dir}runStop*')
+
+        if self.verbose:
+            print('number of start file for ped:',len(run_start_path)) 
+            print('number of stop file for ped:',len(run_stop_path)) 
+
+        start_run_num = np.full((len(run_start_path)), 0, dtype = int)
+        start_unix_time = np.full(start_run_num.shape, np.nan, dtype = float)
+        start_date_time = np.copy(start_unix_time)
+        for s in range(len(run_start_path)):
+            start_str = run_start_path[s]
+            start_run_num[s] = int(start_str[-10:-4])
+            start_unix_time[s], start_date_time[s] = self.get_run_start_n_stop_info(run_start_path[s])
+
+        stop_run_num = np.full((len(run_stop_path)), 0, dtype = int)
+        stop_unix_time = np.full(stop_run_num.shape, np.nan, dtype = float)
+        stop_date_time = np.copy(stop_unix_time)
+        for s in range(len(run_stop_path)):
+            stop_str = run_stop_path[s]
+            stop_run_num[s] = int(stop_str[-10:-4])
+            stop_unix_time[s], stop_date_time[s] = self.get_run_start_n_stop_info(run_stop_path[s])
+
+        return start_run_num, start_unix_time, start_date_time, stop_run_num, stop_unix_time, stop_date_time
 
 def config_collector(Data, Station, Run, Year):
 

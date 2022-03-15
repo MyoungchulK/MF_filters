@@ -50,8 +50,8 @@ class wf_analyzer:
 
     def get_time_pad(self, add_double_pad = False):
 
-        # from a3 length
-        pad_i = -179.5
+        # from a2/3 length
+        pad_i = -186.5
         pad_f = 953
         pad_w = int((pad_f - pad_i) / self.dt) + 1
         if add_double_pad:
@@ -62,6 +62,7 @@ class wf_analyzer:
             del half_pad_t
 
         self.pad_zero_t = np.linspace(pad_i, pad_f, pad_w, dtype = float)
+        #self.pad_zero_t = np.arange(pad_i, pad_f+self.dt/2, self.dt, dtype = float)
         self.pad_len = len(self.pad_zero_t)
         self.pad_t = np.full((self.pad_len, self.num_chs), np.nan, dtype = float)
         self.pad_v = np.copy(self.pad_t)
@@ -209,6 +210,37 @@ class hist_loader():
 
         return dat_2d_hist
 
+    def get_sub_off_2d_hist(self, dat_x_ori, dat_y_ori, fill_val = np.nan, cut = None):
+
+        dat_x = np.copy(dat_x_ori)
+        dat_y = np.copy(dat_y_ori)
+        if cut is not None:
+            dat_x[cut] = fill_val
+            dat_y[:, cut] = fill_val
+
+        dat_2d_hist = np.full((dat_y.shape[0], len(self.bin_x_center), len(self.bin_y_center)), 0, dtype = int)
+        for ant in range(dat_y.shape[0]):
+            dat_2d_hist[ant] = np.histogram2d(dat_x, dat_y[ant], bins = (self.bins_x, self.bins_y))[0].astype(int)
+        del dat_x, dat_y
+
+        return dat_2d_hist
+
+    def get_mean_blk_2d_hist(self, dat_x_ori, dat_y_ori, fill_val = np.nan, cut = None):
+
+        dat_x = np.copy(dat_x_ori)
+        dat_y = np.copy(dat_y_ori)
+        if cut is not None:
+            dat_x[:, cut] = fill_val
+            dat_y[:, :, cut] = fill_val
+        dat_x = dat_x.flatten()
+
+        dat_2d_hist = np.full((dat_y.shape[1], len(self.bin_x_center), len(self.bin_y_center)), 0, dtype = int)
+        for ant in range(dat_y.shape[1]):
+            dat_2d_hist[ant] = np.histogram2d(dat_x, dat_y[:, ant].flatten(), bins = (self.bins_x, self.bins_y))[0].astype(int)
+        del dat_x, dat_y
+
+        return dat_2d_hist
+
 class sample_map_loader:
 
     def __init__(self, x_len = num_Buffers, y_len = num_Bits, chs = num_ants, y_sym_range = False):
@@ -221,7 +253,7 @@ class sample_map_loader:
        
     def get_y_range(self, y_len, y_bins = 1, y_sym_range = False):
 
-        if y_sym_rang:
+        if y_sym_range:
             y_offset = y_len//2
             y_range = np.arange(-1*y_offset, y_offset, y_bins).astype(int)
         else:
@@ -259,7 +291,7 @@ class sample_map_loader:
     def get_median_est(self, nan_to_zero = False):
 
         medi_est = np.full((self.x_len, self.chs), np.nan, dtype = float)
-        for x in range(self.x_len):
+        for x in tqdm(range(self.x_len)):
             for ant in range(self.chs):
                 medi_est[x, ant] = self.get_median_from_hist(x, ant)
         if nan_to_zero:

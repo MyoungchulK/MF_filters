@@ -248,7 +248,7 @@ class pre_qual_cut_loader:
     def get_no_calpulser_events(self, ratio_cut = 0.02, apply_bias_volt = None):
      
         no_cal_evts = np.full((self.num_evts), 0, dtype = int)
-        if self.st == 3 and self.run < 1429:
+        if self.st == 3 and (self.run > 1124 and self.run < 1429):
             return no_cal_evts
 
         if apply_bias_volt is not None:
@@ -273,7 +273,7 @@ class pre_qual_cut_loader:
 
     def get_no_calpulser_rate_events(self, cal_rate_cut = 0.6, apply_bad_evt_num = None):
 
-        if self.st == 3 and self.run < 1429:
+        if self.st == 3 and (self.run > 1124 and self.run < 1429):
             no_cal_rate_evts = np.full((self.num_evts), 0, dtype = int)
             return no_cal_rate_evts
 
@@ -357,66 +357,54 @@ class pre_qual_cut_loader:
 
 class post_qual_cut_loader:
 
-    def __init__(self, ara_uproot, ara_root, dt = 0.5):
+    def __init__(self, ara_uproot, ara_root, dt = 0.5, verbose = False):
 
-        from tools.ara_wf_analyzer import wf_analyzer
-        self.wf_int = wf_analyzer(dt = dt)
-        self.dt = self.wf_int.dt
-        self.ara_uproot = ara_uproot
-        self.run = self.ara_uproot.run
-        self.evt_num = self.ara_uproot.evt_num
-        self.num_evts = self.ara_uproot.num_evts
+        #from tools.ara_wf_analyzer import wf_analyzer
+        #wf_int = wf_analyzer(dt = dt)
+        #self.dt = wf_int.dt
+        self.st = ara_uproot.station_id
+        self.run = ara_uproot.run
+        self.evt_num = ara_uproot.evt_num
+        self.num_evts = ara_uproot.num_evts
         self.ara_root = ara_root
-        
+        self.verbose = verbose
+ 
         from tools.ara_known_issue import known_issue_loader
-        ara_known_issue = known_issue_loader(self.ara_uproot.station_id)
-        self.bad_ant = ara_known_issue.get_bad_antenna(self.ara_uproot.run)
-        del ara_known_issue
+        ara_known_issue = known_issue_loader(self.st)
+        self.bad_ant = ara_known_issue.get_bad_antenna(self.run)
+        del ara_known_issue, ara_uproot#, wf_int
 
         # spare
         # cw (testbad, phase, anita)
-        # cliff       
- 
-        """self.freq_glitch_evts = np.copy(self.ped_blk_evts)"""
+        # spikey 
+     
+        self.unlock_cal_evts = np.full((self.num_evts), 0, dtype = int)
 
-    def get_freq_glitch_events(self, raw_t, raw_v, ant, low_freq_limit = 0.13):
+    def get_unlocked_calpulser_events(self, raw_v, cal_amp_limit = 2200):
 
-        int_v = self.wf_int.get_int_wf(raw_t, raw_v, 0)[1]
+        raw_v_max = np.nanmax(raw_v)
+        unlock_cal_flag = int(raw_v_max > cal_amp_limit)
+        del raw_v_max
 
-        fft_peak_idx = np.nanargmax(np.abs(np.fft.rfft(int_v)))
-        peak_freq = fft_peak_idx / (len(int_v) * self.dt)
-        del int_v, fft_peak_idx
+        return unlock_cal_flag
 
-        if self.run > 12865 and ant%4 == 3:
-            low_freq_limit = 0.05
-        freq_glitch = int(peak_freq < low_freq_limit)
-        del peak_freq
+    def run_post_qual_cut(self, evt):
 
-        return freq_glitch
+        if self.st == 3 and (self.run > 1124 and self.run < 1429):
 
-    def get_post_qual_cut(self, evt):
-
-        blk_len_arr = self.ara_uproot.get_block_idx(evt, trim_1st_blk = True)[1]
-        if blk_len_arr == 0:
-            return
-        del blk_len_arr
-
-        self.ara_root.get_entry(evt)
-        """
-        self.ara_root.get_useful_evt(self.ara_root.cal_type.kLatestCalib)
-        for ant in range(num_ants):
-            raw_t, raw_v = self.ara_root.get_rf_ch_wf(ant)   
- 
-            self.freq_glitch_evts[ant, evt] = self.get_freq_glitch_events(raw_t, raw_v, ant)
-            del raw_t, raw_v
+            self.ara_root.get_entry(evt)
+            self.ara_root.get_useful_evt(self.ara_root.cal_type.kOnlyADCWithOut1stBlockAndBadSamples)
+            raw_v = self.ara_root.get_rf_ch_wf(2)[1]   
+            self.unlock_cal_evts[evt] = self.get_unlocked_calpulser_events(raw_v)    
+            del raw_v
             self.ara_root.del_TGraph()
-        self.ara_root.del_usefulEvt()
-        """
+            self.ara_root.del_usefulEvt()
+    
     def get_channel_cerrelation_flag(self, dat, ant_limit = 2, st_limit = 1, apply_bad_ant = False):
 
         dat_copy = np.copy(dat)
 
-        if apply_bad_ant == True:
+        if apply_bad_ant:
             dat_copy[self.bad_ant != 0] = 0
 
         flagged_events = np.full((self.num_evts), 0, dtype = int)
@@ -430,16 +418,16 @@ class post_qual_cut_loader:
 
     def get_post_qual_cut_value(self):
 
-        return self.freq_glitch_evts
+        return self.unlock_cal_evts
 
-    def run_post_qual_cut(self):
+    def get_post_qual_cut(self):
 
-        tot_post_qual_cut = np.full((self.num_evts, 2), 0, dtype = int)
+        tot_post_qual_cut = np.full((self.num_evts, 1), 0, dtype = int)
+        tot_post_qual_cut[:, 0] = self.unlock_cal_evts
 
-        """tot_post_qual_cut[:, 1] = self.get_channel_cerrelation_flag(self.freq_glitch_evts, apply_bad_ant = True)"""
-
-        """quick_qual_check(tot_post_qual_cut[:, 1] != 0, self.evt_num, 'frequency glitch!')"""
-        #quick_qual_check(np.nansum(tot_post_qual_cut, axis = 1) != 0, self.evt_num, 'total post qual cut!')
+        if self.verbose:
+            quick_qual_check(tot_post_qual_cut[:, 0] != 0, self.evt_num, 'unlocked calpulser events!')
+            quick_qual_check(np.nansum(tot_post_qual_cut, axis = 1) != 0, self.evt_num, 'total post qual cut!')
         
         return tot_post_qual_cut
 

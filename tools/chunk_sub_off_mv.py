@@ -1,7 +1,7 @@
 import numpy as np
 from tqdm import tqdm
 
-def sub_off_collector(Data, Ped, analyze_blind_dat = False):
+def sub_off_mv_collector(Data, Ped, analyze_blind_dat = False):
 
     print('Collecting sub off starts!')
 
@@ -54,7 +54,7 @@ def sub_off_collector(Data, Ped, analyze_blind_dat = False):
 
         # get entry and wf
         ara_root.get_entry(evt)
-        ara_root.get_useful_evt(ara_root.cal_type.kJustPedWithOut1stBlockAndBadSamples)
+        ara_root.get_useful_evt(ara_root.cal_type.kLatestCalibWithOutZeroMean)
         
         # loop over the antennas
         for ant in range(num_ants):
@@ -65,10 +65,10 @@ def sub_off_collector(Data, Ped, analyze_blind_dat = False):
         ara_root.del_usefulEvt() 
     del ara_root, num_evts, daq_qual_sum, num_ants
 
-    bit_range = np.arange(-200, 200)
-    bit_bins = np.linspace(-200, 200, 200*2 + 1)
-    ara_hist = hist_loader(bit_bins)
-    bit_bin_center = ara_hist.bin_x_center    
+    mv_range = np.arange(-200, 200)
+    mv_bins = np.linspace(-200, 200, 200*2 + 1)
+    ara_hist = hist_loader(mv_bins)
+    mv_bin_center = ara_hist.bin_x_center    
     sub_hist = ara_hist.get_1d_hist(sub_off)
     sub_rf_hist = ara_hist.get_1d_hist(sub_off, cut = trig_type != 0)
     sub_rf_wo_1min_cut_hist = ara_hist.get_1d_hist(sub_off, cut = ~wo_1min_idx)
@@ -78,7 +78,7 @@ def sub_off_collector(Data, Ped, analyze_blind_dat = False):
     unix_min = (unix_time - unix_time[0]).astype(float) / 60
     min_range = np.arange(0, 360)
     min_bins = np.linspace(0, 360, 360 + 1)
-    ara_hist = hist_loader(min_bins, bit_bins)
+    ara_hist = hist_loader(min_bins, mv_bins)
     min_bin_center = ara_hist.bin_x_center
     sub_2d_hist = ara_hist.get_sub_off_2d_hist(unix_min, sub_off)
     sub_rf_2d_hist = ara_hist.get_sub_off_2d_hist(unix_min, sub_off, cut = trig_type != 0)
@@ -89,7 +89,7 @@ def sub_off_collector(Data, Ped, analyze_blind_dat = False):
     unix_sec = (unix_time - unix_time[0]).astype(float)
     sec_range = np.arange(0, 200)
     sec_bins = np.linspace(0, 200, 200 + 1)
-    ara_hist = hist_loader(sec_bins, bit_bins)
+    ara_hist = hist_loader(sec_bins, mv_bins)
     sec_bin_center = ara_hist.bin_x_center 
     sub_sec_2d_hist = ara_hist.get_sub_off_2d_hist(unix_sec, sub_off)
     sub_rf_sec_2d_hist = ara_hist.get_sub_off_2d_hist(unix_sec, sub_off, cut = trig_type != 0)
@@ -105,9 +105,9 @@ def sub_off_collector(Data, Ped, analyze_blind_dat = False):
             'unix_time':unix_time,
             'total_qual_cut':total_qual_cut,
             'sub_off':sub_off,
-            'bit_range':bit_range,
-            'bit_bins':bit_bins,
-            'bit_bin_center':bit_bin_center,
+            'mv_range':mv_range,
+            'mv_bins':mv_bins,
+            'mv_bin_center':mv_bin_center,
             'sub_hist':sub_hist,
             'sub_rf_hist':sub_rf_hist,
             'sub_rf_wo_1min_cut_hist':sub_rf_wo_1min_cut_hist,

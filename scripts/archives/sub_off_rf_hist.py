@@ -25,7 +25,6 @@ del d_run_range
 # config array
 config_arr = []
 run_arr = []
-sub_rf = []
 sub_rf_w_cut = []
 sub_rf_w_cut_wo_1min = []
 
@@ -33,17 +32,15 @@ bit_range = np.arange(-200,200)
 bit_bins = np.linspace(-200,200, 200*2 + 1)
 bit_bin_center = (bit_bins[1:] + bit_bins[:-1]) / 2
 
-sub_rf_1d = np.full((16, len(bit_range)), 0, dtype = int)
-sub_rf_w_cut_1d = np.copy(sub_rf_1d)
-sub_rf_w_cut_1d_wo_1min = np.copy(sub_rf_1d)
+sub_rf_w_cut_1d = np.full((16, len(bit_range)), 0, dtype = int)
+sub_rf_w_cut_1d_wo_1min = np.copy(sub_rf_w_cut_1d)
 
-min_range = np.arange(0, 360,  dtype = int)
-min_bins = np.linspace(0, 360, 360 + 1, dtype = int)
-sub_rf_w_cut_2d = np.full((16, len(min_range), len(bit_range)), 0, dtype = int)
+sec_range = np.arange(0, 360 * 60, 60,  dtype = int)
+sec_bins = np.linspace(0, 360 * 60, 360 + 1, dtype = int)
+sub_rf_w_cut_2d = np.full((16, len(bit_range), len(sec_range)), 0, dtype = int)
+sub_rf_w_cut_2d_wo_1min = np.copy(sub_rf_w_cut_2d)
 
-sec_range = np.arange(0, 200)
-sec_bins = np.linspace(0, 200, 200 + 1)
-sub_rf_w_cut_sec_2d = np.full((16, len(sec_range), len(bit_range)), 0, dtype = int)
+sub_rf_w_cut_std = []
 
 for r in tqdm(range(len(d_run_tot))):
     
@@ -58,37 +55,45 @@ for r in tqdm(range(len(d_run_tot))):
     config_arr.append(config)
     run_arr.append(d_run_tot[r])
 
-    sub_rf_hist = hf['sub_rf_hist'][:]
-    sub_rf_wo_1min_cut_hist = hf['sub_rf_wo_1min_cut_hist'][:]
-    sub_rf_w_cut_hist = hf['sub_rf_w_cut_hist'][:]
-    sub_rf_wo_1min_cut_2d_hist = hf['sub_rf_wo_1min_cut_2d_hist'][:]
-    sub_rf_wo_1min_cut_sec_2d_hist = hf['sub_rf_wo_1min_cut_sec_2d_hist'][:]
+    unix_time = hf['unix_time'][:]
+    unix_time -= unix_time[0]
+    trig_type = hf['trig_type'][:]
+    sub_off = hf['sub_off'][:]
     
-    if Station == 3 and d_run_tot[r] > 12865:
-        mask_ant = np.array([0,4,8,12], dtype = int)
-        sub_rf_hist[mask_ant] = 0
-        sub_rf_wo_1min_cut_hist[mask_ant] = 0
-        sub_rf_w_cut_hist[mask_ant] = 0
-        sub_rf_wo_1min_cut_2d_hist[mask_ant] = 0
-        sub_rf_wo_1min_cut_sec_2d_hist[mask_ant] = 0
+    qual_cut = hf['total_qual_cut'][:]
+    w_cut = np.nansum(qual_cut, axis = 1)
+    rf_unix = unix_time[(trig_type == 0) & (w_cut == 0)]
+    rf_sub = sub_off[:,(trig_type == 0) & (w_cut == 0)]
+   
+    unix_cut = rf_unix > 60
+    rf_unix_wo_1min = rf_unix[unix_cut]
+    rf_sub_wo_1min = rf_sub[:, unix_cut]
+    rf_w_cut_std = np.nanstd(rf_sub_wo_1min, axis = 1)
 
-    if Station == 3 and (d_run_tot[r] > 1901 and d_run_tot[r] < 10001) :
-        mask_ant = np.array([3,7,11,15], dtype = int)
-        sub_rf_hist[mask_ant] = 0
-        sub_rf_wo_1min_cut_hist[mask_ant] = 0
-        sub_rf_w_cut_hist[mask_ant] = 0
-        sub_rf_wo_1min_cut_2d_hist[mask_ant] = 0
-        sub_rf_wo_1min_cut_sec_2d_hist[mask_ant] = 0
+    sub_rf_w_cut_std_run = np.full((16), np.nan, dtype = float)
+    sub_rf_w_cut_hist = np.full((16, len(bit_range)), 0, dtype = int)
+    sub_rf_w_cut_hist_wo_1min = np.copy(sub_rf_w_cut_hist)
+    for ant in range(16):
 
-    sub_rf_1d += sub_rf_hist
-    sub_rf_w_cut_1d += sub_rf_wo_1min_cut_hist
-    sub_rf_w_cut_1d_wo_1min += sub_rf_w_cut_hist
-    sub_rf.append(sub_rf_hist)
-    sub_rf_w_cut.append(sub_rf_wo_1min_cut_hist)
-    sub_rf_w_cut_wo_1min.append(sub_rf_w_cut_hist)
-    sub_rf_w_cut_2d += sub_rf_wo_1min_cut_2d_hist
-    sub_rf_w_cut_sec_2d += sub_rf_wo_1min_cut_sec_2d_hist
-    del hf
+        if Station == 3 and ant%4 == 0 and d_run_tot[r] > 12865:
+            continue
+        if Station == 3 and ant%4 == 3 and (d_run_tot[r] > 1901 and d_run_tot[r] < 10001) :
+            continue
+
+        sub_rf_w_cut_std_run[ant] = rf_w_cut_std[ant]
+        sub_rf_w_cut_hist[ant] = np.histogram(rf_sub[ant], bins = bit_bins)[0].astype(int)
+        sub_rf_w_cut_hist_wo_1min[ant] = np.histogram(rf_sub_wo_1min[ant], bins = bit_bins)[0].astype(int)
+        sub_rf_w_cut_2d[ant] += np.histogram2d(rf_sub[ant], rf_unix, bins = (bit_bins, sec_bins))[0].astype(int)
+        sub_rf_w_cut_2d_wo_1min[ant] += np.histogram2d(rf_sub_wo_1min[ant], rf_unix_wo_1min, bins = (bit_bins, sec_bins))[0].astype(int)
+    
+    sub_rf_w_cut_std.append(sub_rf_w_cut_std_run)
+    sub_rf_w_cut_1d += sub_rf_w_cut_hist
+    sub_rf_w_cut.append(sub_rf_w_cut_hist)
+    sub_rf_w_cut_1d_wo_1min += sub_rf_w_cut_hist_wo_1min
+    sub_rf_w_cut_wo_1min.append(sub_rf_w_cut_hist_wo_1min)
+
+    del rf_unix, rf_sub, unix_cut, rf_sub_wo_1min, rf_unix_wo_1min
+    del hf, qual_cut, unix_time, trig_type, sub_off, w_cut
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
 if not os.path.exists(path):
@@ -101,19 +106,16 @@ hf.create_dataset('config_arr', data=np.asarray(config_arr), compression="gzip",
 hf.create_dataset('run_arr', data=np.asarray(run_arr), compression="gzip", compression_opts=9)
 hf.create_dataset('sec_range', data=sec_range, compression="gzip", compression_opts=9)
 hf.create_dataset('sec_bins', data=sec_bins, compression="gzip", compression_opts=9)
-hf.create_dataset('min_range', data=min_range, compression="gzip", compression_opts=9)
-hf.create_dataset('min_bins', data=min_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('bit_range', data=bit_range, compression="gzip", compression_opts=9)
 hf.create_dataset('bit_bins', data=bit_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('bit_bin_center', data=bit_bin_center, compression="gzip", compression_opts=9)
-hf.create_dataset('sub_rf_1d', data=sub_rf_1d, compression="gzip", compression_opts=9)
 hf.create_dataset('sub_rf_w_cut_1d', data=sub_rf_w_cut_1d, compression="gzip", compression_opts=9)
 hf.create_dataset('sub_rf_w_cut_1d_wo_1min', data=sub_rf_w_cut_1d_wo_1min, compression="gzip", compression_opts=9)
-hf.create_dataset('sub_rf', data=np.asarray(sub_rf), compression="gzip", compression_opts=9)
 hf.create_dataset('sub_rf_w_cut', data=np.asarray(sub_rf_w_cut), compression="gzip", compression_opts=9)
 hf.create_dataset('sub_rf_w_cut_wo_1min', data=np.asarray(sub_rf_w_cut_wo_1min), compression="gzip", compression_opts=9)
+hf.create_dataset('sub_rf_w_cut_std', data=np.asarray(sub_rf_w_cut_std), compression="gzip", compression_opts=9)
 hf.create_dataset('sub_rf_w_cut_2d', data=sub_rf_w_cut_2d, compression="gzip", compression_opts=9)
-hf.create_dataset('sub_rf_w_cut_sec_2d', data=sub_rf_w_cut_sec_2d, compression="gzip", compression_opts=9)
+hf.create_dataset('sub_rf_w_cut_2d_wo_1min', data=sub_rf_w_cut_2d_wo_1min, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name)
 # quick size check

@@ -251,24 +251,24 @@ class ara_uproot_loader:
         self.irs_block_number = np.asarray(self.evtTree['event/blockVec/blockVec.irsBlockNumber']) & 0x1ff
         self.channel_mask = np.asarray(self.evtTree['event/blockVec/blockVec.channelMask'])
         self.pps_number = np.asarray(self.evtTree['event/ppsNumber'],dtype=int)
-        
+        self.time_stamp = np.asarray(self.evtTree['event/timeStamp'],dtype=int)        
+
         #self.trigger_blk = np.asarray(self.evtTree['event/triggerBlock[4]'],dtype=int)
         #self.unix_time_us = np.asarray(self.evtTree['event/unixTimeUs'],dtype=int)
 
     def get_trig_type(self):
 
-        time_stamp = np.asarray(self.evtTree['event/timeStamp'],dtype=int)
         trigger_info = np.asarray(self.evtTree['event/triggerInfo[4]'],dtype=int)
 
         pulserTime = np.array([254,245,245,400,400], dtype = int)
 
-        trig_type = np.full(len(time_stamp), 0, dtype = int)
+        trig_type = np.full(len(self.time_stamp), 0, dtype = int)
         if self.station_id == 100:
             print('ARA Staton 1 ID!!!!!!!!!!!')
             self.station_id = 1
-        trig_type[np.abs(time_stamp - pulserTime[self.station_id - 1]) < 1e4] = 1
+        trig_type[np.abs(self.time_stamp - pulserTime[self.station_id - 1]) < 1e4] = 1
         trig_type[trigger_info[:,2] == 1] = 2
-        del pulserTime, time_stamp, trigger_info
+        del pulserTime, trigger_info
 
         return trig_type
 
