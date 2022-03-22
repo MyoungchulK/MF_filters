@@ -38,7 +38,8 @@ class run_info_loader:
 
     def get_ped_path(self, file_type = 'values', verbose = False, return_none = False):
 
-        ped_path = f'/data/user/mkim/OMF_filter/ARA0{self.st}/ped/ped_{file_type}_A{self.st}_R{self.run}.dat'
+        ped_path = f'/data/user/mkim/OMF_filter/ARA0{self.st}/ped_full/ped_full_{file_type}_A{self.st}_R{self.run}.dat'
+        #ped_path = f'/data/user/mkim/OMF_filter/ARA0{self.st}/ped/ped_{file_type}_A{self.st}_R{self.run}.dat'
 
         if os.path.exists(ped_path):
             if verbose:

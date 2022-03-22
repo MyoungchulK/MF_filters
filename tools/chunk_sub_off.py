@@ -74,7 +74,7 @@ def sub_off_collector(Data, Ped, analyze_blind_dat = False):
     sub_rf_wo_1min_cut_hist = ara_hist.get_1d_hist(sub_off, cut = ~wo_1min_idx)
     sub_rf_w_cut_hist = ara_hist.get_1d_hist(sub_off, cut = ~clean_evt_idx)
     del ara_hist
-
+    
     unix_min = (unix_time - unix_time[0]).astype(float) / 60
     min_range = np.arange(0, 360)
     min_bins = np.linspace(0, 360, 360 + 1)

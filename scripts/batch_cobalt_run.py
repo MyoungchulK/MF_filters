@@ -16,6 +16,9 @@ def cobalt_run_loader(Station = None, Key = None, Act_Evt = None, analyze_blind_
     batch_info = batch_info_loader(Station)
     lists = batch_info.get_dat_list(analyze_blind_dat = analyze_blind_dat)[0]
 
+    print(lists[652])
+    print(lists[667])
+
     count = 0
     for w in tqdm(lists):
 

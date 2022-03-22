@@ -6,17 +6,16 @@ def ped_collector(Data, Ped, analyze_blind_dat = False):
 
     print('Ped starts!')
 
+    from tools.ara_data_load import ara_root_loader
     from tools.ara_data_load import ara_uproot_loader
     from tools.ara_quality_cut import pre_qual_cut_loader
+    from tools.ara_quality_cut import post_qual_cut_loader
     from tools.ara_utility import size_checker
     from tools.ara_constant import ara_const
     
     # geom. info.
     ara_const = ara_const()
-    num_eles = ara_const.CHANNELS_PER_ATRI
     num_blks = ara_const.BLOCKS_PER_DDA
-    num_chs = ara_const.RFCHAN_PER_DDA
-    num_ddas = ara_const.DDA_PER_ATRI
     del ara_const
 
     # data config
@@ -24,135 +23,122 @@ def ped_collector(Data, Ped, analyze_blind_dat = False):
     ara_uproot.get_sub_info()
     num_evts = ara_uproot.num_evts
     evt_num = ara_uproot.evt_num
-    entry_num = ara_uproot.entry_num
     trig_type = ara_uproot.get_trig_type()
+    unix_time = ara_uproot.unix_time
     st = ara_uproot.station_id
     run = ara_uproot.run
-   
-    # quality cut
+    ara_root = ara_root_loader(Data, Ped, st, ara_uproot.year)
+
+    # quality cut config
     pre_qual = pre_qual_cut_loader(ara_uproot, analyze_blind_dat = analyze_blind_dat, verbose = True)
     pre_qual_cut = pre_qual.run_pre_qual_cut(use_for_ped_qual = True)
-    pre_qual_cut_temp1 = np.full(pre_qual_cut.shape, -1, dtype = int)
-    pre_qual_cut_temp2 = np.full(pre_qual_cut.shape, -1, dtype = int)
-    pre_qual_cut_temp3 = np.full(pre_qual_cut.shape, -1, dtype = int)
-    pre_qual_cut_temp4 = np.full(pre_qual_cut.shape, -1, dtype = int)
-    pre_qual_cut_sum = np.nansum(pre_qual_cut, axis = 1)
+    daq_qual_sum = np.nansum(pre_qual_cut[:, :6], axis = 1)
+    post_qual = post_qual_cut_loader(ara_uproot, ara_root, verbose = True)
     del pre_qual
 
+    # loop over the events
+    if st == 3 and (run > 1124 and run < 1429):
+        for evt in tqdm(range(num_evts)):
+          #if evt<100:
+
+            if daq_qual_sum[evt] != 0:
+                continue
+
+            # post quality cut
+            post_qual.run_post_qual_cut(evt)
+    del ara_root
+
+    # post quality cut
+    post_qual_cut = post_qual.get_post_qual_cut()
+    del post_qual
+
+    # total quality cut
+    total_qual_cut = np.append(pre_qual_cut, post_qual_cut, axis = 1)
+    del pre_qual_cut, post_qual_cut
+
+    # clean event type
+    num_qual_type = 4
+    clean_evts = np.full((num_evts, num_qual_type), 0, dtype = int)
+    clean_evts_qual_type = np.full((total_qual_cut.shape[1], num_qual_type), 0, dtype = int)
+
+    qual_type = np.array([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,17], dtype = int) # turn on all cuts
+    clean_evts_qual_type[qual_type, 0] = 1
+    clean_evts[:, 0] = np.logical_and(np.nansum(total_qual_cut, axis = 1) == 0, trig_type != 1).astype(int)
+    qual_type = np.array([0,1,2,3,4,5,6,7,8,9,11,12,13,14,17], dtype = int) # not use bad event and no calpulser ratio cut
+    clean_evts_qual_type[qual_type, 1] = 1
+    clean_evts[:, 1] = np.logical_and(np.nansum(total_qual_cut[:, qual_type], axis = 1) == 0, trig_type != 1).astype(int)
+    qual_type = np.array([0,1,2,3,4,5,6,7,8,11,12,14,17], dtype = int) # hardware only
+    clean_evts_qual_type[qual_type, 2] = 1
+    clean_evts[:, 2] = np.logical_and(np.nansum(total_qual_cut[:, qual_type], axis = 1) == 0, trig_type != 1).astype(int)
+    qual_type = np.array([0,1,2,3,4,5], dtype = int)  # only rf/software
+    clean_evts_qual_type[qual_type, 3] = 1
+    clean_evts[:, 3] = np.logical_and(np.nansum(total_qual_cut[:, qual_type], axis = 1) == 0, trig_type != 1).astype(int)
+    del qual_type
+ 
     # clean evts for repeder
-    clean_num_evts = np.full((5), -1, dtype = int)
-    ped_qualities = np.logical_and(pre_qual_cut_sum == 0, trig_type != 1)
-    clean_evt = np.count_nonzero(ped_qualities)
-    clean_num_evts[0] = np.copy(clean_evt)
-    print(f'total uesful events for ped: {clean_evt}')
-    if clean_evt == 0:
-        print('There is no passed events! Use daq error, first few, and bias voltage for filter')
-        pre_qual_cut_temp1 = np.copy(pre_qual_cut)
-        pre_qual_cut_temp1[:, 5:9] = 0
-        pre_qual_cut_temp1[:, 9] = 0
-        pre_qual_cut_temp1[:, 10] = 0
-        pre_qual_cut_temp1[:, 13:] = 0
-        pre_qual_cut_sum_temp1 = np.nansum(pre_qual_cut_temp1, axis = 1)
-        ped_qualities = np.logical_and(pre_qual_cut_sum_temp1 == 0, trig_type != 1)
-        clean_evt = np.count_nonzero(ped_qualities)    
-        clean_num_evts[1] = np.copy(clean_evt)
-        print(f'total uesful events for ped: {clean_evt}')
-    if clean_evt == 0:
-        print('There is still no passed events! Use daq error, and first few for filter')
-        pre_qual_cut_temp2 = np.copy(pre_qual_cut)
-        pre_qual_cut_temp2[:, 5:9] = 0
-        pre_qual_cut_temp2[:, 9] = 0
-        pre_qual_cut_temp2[:, 10] = 0
-        pre_qual_cut_temp2[:, 12] = 0
-        pre_qual_cut_temp2[:, 13:] = 0
-        pre_qual_cut_sum_temp2 = np.nansum(pre_qual_cut_temp2, axis = 1)
-        ped_qualities = np.logical_and(pre_qual_cut_sum_temp2 == 0, trig_type != 1)
-        clean_evt = np.count_nonzero(ped_qualities)
-        clean_num_evts[2] = np.copy(clean_evt)
-        print(f'total uesful events for ped: {clean_evt}')
-    if clean_evt == 0:
-        print('There is still x 2 no passed events! Use only daq error for filter')
-        pre_qual_cut_temp3 = np.copy(pre_qual_cut)
-        pre_qual_cut_temp3[:, 5:9] = 0
-        pre_qual_cut_temp3[:, 9] = 0
-        pre_qual_cut_temp3[:, 10] = 0
-        pre_qual_cut_temp3[:, 11] = 0
-        pre_qual_cut_temp3[:, 12] = 0
-        pre_qual_cut_temp3[:, 13:] = 0
-        pre_qual_cut_sum_temp3 = np.nansum(pre_qual_cut_temp3, axis = 1)
-        ped_qualities = np.logical_and(pre_qual_cut_sum_temp3 == 0, trig_type != 1)
-        clean_evt = np.count_nonzero(ped_qualities)
-        clean_num_evts[3] = np.copy(clean_evt)
-        print(f'total uesful events for ped: {clean_evt}')
-    if clean_evt == 0:
-        print('There is still x 3 no passed events! Use them all...')
-        pre_qual_cut_temp4 = np.copy(pre_qual_cut)
-        pre_qual_cut_temp4[:] = 0
-        pre_qual_cut_sum_temp4 = np.nansum(pre_qual_cut_temp4, axis = 1)
-        ped_qualities = np.logical_and(pre_qual_cut_sum_temp4 == 0, trig_type != 1)
-        clean_evt = np.count_nonzero(ped_qualities)
-        clean_num_evts[4] = np.copy(clean_evt)
-        print(f'total uesful events for ped: {clean_evt}')
-    del pre_qual_cut_sum
+    clean_num_evts = np.nansum(clean_evts, axis = 0)
+    print(f'total uesful events for ped: {clean_num_evts}')
 
     # ped counter
-    ped_counts = np.full((num_blks, num_eles), 0, dtype = int)
-   
-    irs_block_number = ara_uproot.irs_block_number
-    channel_mask = ara_uproot.channel_mask 
-    dda_number = ((channel_mask & 0x300) >> 8) * num_chs
-    bi_ch_mask = 1 << np.arange(num_chs, dtype = int)
-    x_bins = np.linspace(0, num_blks, num_blks + 1, dtype = int)
-    y_bins = np.linspace(0, num_eles, num_eles + 1, dtype = int)
-    del ara_uproot
-    ped_evts = entry_num[ped_qualities]
-    trim_1st_blk = num_ddas
+    block_usage = np.full((num_blks, num_qual_type), 0, dtype = int)
+    for evt in tqdm(range(num_evts)):
 
-    for evt in tqdm(ped_evts):
-        blk_idx = np.asarray(irs_block_number[int(evt)][trim_1st_blk:], dtype = int)
-        ch_mask = np.asarray(channel_mask[int(evt)][trim_1st_blk:], dtype = int)
-        dda_idx = np.asarray(dda_number[int(evt)][trim_1st_blk:], dtype = int)
-        
-        blk_idx_expand = np.repeat(blk_idx[:, np.newaxis], num_chs, axis = 1).flatten()
-        ele_ch = np.repeat(ch_mask[:, np.newaxis], num_chs, axis = 1) 
-        ele_ch = ele_ch & bi_ch_mask[np.newaxis, :]
-        bad_ch_idx = (ele_ch == bi_ch_mask[np.newaxis, :]).flatten()
-        ele_ch = np.log2(ele_ch).astype(int) + dda_idx[:, np.newaxis]
-        ele_ch = ele_ch.flatten()
+        if daq_qual_sum[evt] != 0:
+            continue
 
-        x_hist = blk_idx_expand[bad_ch_idx]
-        y_hist = ele_ch[bad_ch_idx]
-        ped_counts += np.histogram2d(x_hist, y_hist, bins = (x_bins, y_bins))[0].astype(int)
-        del blk_idx, ch_mask, dda_idx, blk_idx_expand, ele_ch, bad_ch_idx, x_hist, y_hist
-    del irs_block_number, channel_mask, dda_number, bi_ch_mask, x_bins, y_bins, entry_num, ped_evts, num_ddas, trim_1st_blk
+        blk_idx_arr = ara_uproot.get_block_idx(evt, trim_1st_blk = True)[0]
+        if clean_evts[evt, 0] == 1:
+            block_usage[blk_idx_arr, 0] += 1
+        if clean_evts[evt, 1] == 1:
+            block_usage[blk_idx_arr, 1] += 1
+        if clean_evts[evt, 2] == 1:
+            block_usage[blk_idx_arr, 2] += 1
+        if clean_evts[evt, 3] == 1:
+            block_usage[blk_idx_arr, 3] += 1
+        del blk_idx_arr
+    del num_blks, num_evts, ara_uproot, daq_qual_sum
 
-    Output = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{st}/ped/'
+    # select final type
+    low_block_usage = np.any(block_usage < 2, axis = 0).astype(int)
+    print(f'low_block_usage flag: {low_block_usage}')
+    final_type = 0
+    ped_counts = np.copy(block_usage[:, 3])
+    ped_qualities = np.copy(clean_evts[:, 3])
+    for t in range(num_qual_type):
+        if low_block_usage[t] == 0:
+            ped_counts = np.copy(block_usage[:, t])
+            ped_qualities = np.copy(clean_evts[:, t])
+            break
+        final_type += 1
+    del num_qual_type
+    print(f'type {final_type} was chosen for ped!')
+    final_type = np.asarray([final_type]) 
+
+    blind_type = ''
+    if analyze_blind_dat:
+        blind_type = '_full'
+    Output = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{st}/ped{blind_type}/'
     if not os.path.exists(Output):
         os.makedirs(Output)
 
-    txt_file_name = f'{Output}ped_qualities_A{st}_R{run}.dat'
+    txt_file_name = f'{Output}ped{blind_type}_qualities_A{st}_R{run}.dat'
     np.savetxt(txt_file_name, ped_qualities.astype(int), fmt='%i')
     print(f'output is {txt_file_name}')
     size_checker(txt_file_name)
-
-    txt_file_name = f'{Output}ped_counts_A{st}_R{run}.dat'
-    np.savetxt(txt_file_name, ped_counts, fmt='%i')
-    print(f'output is {txt_file_name}')
-    size_checker(txt_file_name)
+    del st, run
 
     print('Ped is done!')
 
     return {'evt_num':evt_num,
-            'clean_num_evts':clean_num_evts,
             'trig_type':trig_type,
-            'pre_qual_cut':pre_qual_cut,
-            'pre_qual_cut_temp1':pre_qual_cut_temp1,
-            'pre_qual_cut_temp2':pre_qual_cut_temp2,
-            'pre_qual_cut_temp3':pre_qual_cut_temp3,
-            'pre_qual_cut_temp4':pre_qual_cut_temp4,
+            'unix_time':unix_time,
+            'total_qual_cut':total_qual_cut,
+            'clean_evts':clean_evts,
+            'clean_evts_qual_type':clean_evts_qual_type,
+            'clean_num_evts':clean_num_evts,
+            'block_usage':block_usage,
+            'low_block_usage':low_block_usage,
+            'ped_counts':ped_counts,
             'ped_qualities':ped_qualities,
-            'ped_counts':ped_counts}
-
-
-
+            'final_type':final_type}
 

@@ -314,15 +314,15 @@ class pre_qual_cut_loader:
         ped_count_dat = self.run_info.get_result_path(file_type = 'ped', verbose = self.verbose, force_blind = True)
         ped_count_hf = h5py.File(ped_count_dat, 'r')
         ped_counts = ped_count_hf['ped_counts'][:] 
-        zero_ped_counts = ped_counts < 1
-        ped_blk_counts = ped_counts == 1
+        zero_ped_counts = np.nanmin(ped_counts, axis = 1) < 1
+        ped_blk_counts = np.nanmin(ped_counts, axis = 1) == 1
         del ped_counts, ped_count_dat, ped_count_hf
 
         ped_blk_evts = np.full((self.num_evts, 2), 0, dtype = int)
         for evt in range(self.num_evts):
             if apply_daq_err is not None and apply_daq_err[evt] != 0:
                 continue
-            irs_block_evt = np.asarray(self.irs_block_number[evt][num_ddas::num_ddas], dtype = int)
+            irs_block_evt = np.unique(self.irs_block_number[evt][num_ddas:]).astype(int) 
             ped_blk_evts[evt, 0] = np.nansum(zero_ped_counts[irs_block_evt])
             
             if self.trig_type[evt] == 1:
