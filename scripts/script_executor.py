@@ -13,7 +13,13 @@ def script_loader(Key = None, Station = None, Run = None, Act_Evt = None, analyz
 
     # get run info
     run_info = run_info_loader(Station, Run, analyze_blind_dat = analyze_blind_dat)
-    Data, Ped = run_info.get_data_ped_path(verbose = True, return_dat_only = False)
+    
+    if Key == 'sensor':
+        Data, Ped = run_info.get_data_ped_path(file_type = 'sensorHk', return_none = True, verbose = True, return_dat_only = True)
+    elif Key == 'l1':
+        Data, Ped = run_info.get_data_ped_path(file_type = 'eventHk', return_none = True, verbose = True, return_dat_only = True)
+    else:
+        Data, Ped = run_info.get_data_ped_path(verbose = True, return_dat_only = False)
     Station, Run, Config, Year, Month, Date = run_info.get_data_info()
     del run_info   
  
