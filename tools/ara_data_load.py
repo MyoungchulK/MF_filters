@@ -297,7 +297,42 @@ class ara_uproot_loader:
 
         return blk_idx_arr, blk_idx_len
 
-class ara_Hk_uproot_loader:
+    def get_event_rate(self, time = None, trig_type = None, use_pps = False):
+
+        if use_pps:
+            if time is None:
+                time = np.copy(self.pps_number)
+            time_reset_point = np.where(np.diff(time) < 0)[0]
+            if len(time_reset_point) > 0:
+                pps_limit = 65536
+                time[time_reset_point[0]+1:] += pps_limit
+                del pps_limit    
+            time_unique = np.sort(np.unique(time))
+            del time_reset_point
+        else:
+            if time is None:
+                time = np.copy(self.unix_time)
+            time_unique = np.sort(np.unique(time))
+
+        sec_to_min = 60
+        time_bins = np.arange(np.nanmin(time_unique), np.nanmax(time_unique)+1, sec_to_min, dtype = int)
+        time_bins = time_bins.astype(float)
+        time_bins -= 0.5
+        time_bins = np.append(time_bins, time_unique[-1] + 0.5)
+        num_secs = np.diff(time_bins).astype(int)
+        if trig_type is None:
+            trig_type = self.get_trig_type()
+        del sec_to_min, time_unique
+
+        evt_rate = np.histogram(time, bins = time_bins)[0] / num_secs
+        rf_evt_rate = np.histogram(time[trig_type == 0], bins = time_bins)[0] / num_secs
+        cal_evt_rate = np.histogram(time[trig_type == 1], bins = time_bins)[0] / num_secs
+        soft_evt_rate = np.histogram(time[trig_type == 2], bins = time_bins)[0] / num_secs
+        del time, trig_type 
+
+        return time_bins, num_secs, evt_rate, rf_evt_rate, cal_evt_rate, soft_evt_rate
+
+class ara_sensorHk_uproot_loader:
 
     def __init__(self, data):
 
@@ -417,7 +452,7 @@ class ara_Hk_uproot_loader:
         if self.empty_file_error:
             atri_volt = np.full((1), np.nan, dtype = float)
             atri_curr = np.copy(atri_volt) 
-            dda_volt = np.full((1,4), np.nan, dtype = float)
+            dda_volt = np.full((1, num_ddas), np.nan, dtype = float)
             dda_curr = np.copy(dda_volt)
             dda_temp = np.copy(dda_volt)
             tda_volt = np.copy(dda_volt)
@@ -478,6 +513,66 @@ class ara_Hk_uproot_loader:
                 tda_temp_hist[:,d] = np.histogram(tda_temp[:,d], bins = temp_bins)[0].astype(int)
 
             return atri_volt_hist, atri_curr_hist, dda_volt_hist, dda_curr_hist, dda_temp_hist, tda_volt_hist, tda_curr_hist, tda_temp_hist
+
+class ara_eventHk_uproot_loader:
+
+    def __init__(self, data):
+
+        self.empty_file_error = False
+        if data is None:
+            self.unix_time = np.full((1), np.nan, dtype = float)
+            self.empty_file_error = True
+            print('There is no eventHk file!')
+            return
+
+        try:
+            file = uproot.open(data)
+        except ValueError:
+            self.unix_time = np.full((1), np.nan, dtype = float)
+            self.empty_file_error = True
+            print('eventHk is empty!')
+            return
+
+        self.hasKeyInFileError = False
+        try:
+            self.evtTree = file['eventHkTree']
+            st_arr = np.asarray(self.evtTree['eventHk/RawAraGenericHeader/stationId'],dtype=int)
+            self.station_id = st_arr[0]
+            self.num_events = len(st_arr)
+            self.events_entry_num = np.arange(len(st_arr))
+            run_str = re.findall(r'\d+', data[-11:-5])[0]
+            self.run = int(run_str)
+            del st_arr, run_str
+        except uproot.exceptions.KeyInFileError:
+            self.unix_time = np.full((1), np.nan, dtype = float)
+            self.empty_file_error = True
+            self.hasKeyInFileError = True
+            print('File is currupted!')
+
+    def get_sub_info(self):
+
+        self.unix_time = np.asarray(self.evtTree['eventHk/unixTime'],dtype=int)
+        self.unix_time_us = np.asarray(self.evtTree['eventHk/unixTimeUs'],dtype=int)
+        self.l1_scaler = np.asarray(self.evtTree['eventHk/l1Scaler[32]'],dtype=int)
+        self.l1_threshold = np.asarray(self.evtTree['eventHk/thresholdDac[32]'],dtype=int)
+
+        yyyymmdd_str = datetime.fromtimestamp(self.unix_time[0])
+        yyyymmdd = yyyymmdd_str.strftime('%Y%m%d%H%M%S')
+        self.year = int(yyyymmdd[:4])
+        del yyyymmdd_str, yyyymmdd
+
+    def get_l1_info(self):
+
+        if self.empty_file_error:
+            l1_thres = np.full((1, num_eles), np.nan, dtype = float)
+            l1_rate = np.copy(l1_thres)
+        else:
+            pre_scale = 32
+            self.get_sub_info()
+            l1_rate = self.l1_scaler * pre_scale
+            l1_thres = self.l1_threshold
+
+        return l1_rate, l1_thres
 
 class sin_subtract_loader:
 

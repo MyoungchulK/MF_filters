@@ -28,6 +28,8 @@ def script_loader(Key = None, Station = None, Run = None, Act_Evt = None, analyz
     method = getattr(module, f'{Key}_collector')
     if Key == 'wf':
         results = method(Data, Ped, analyze_blind_dat = analyze_blind_dat, sel_evts = Act_Evt)
+    elif Key == 'l1':
+        results = method(Data, Ped, Station, Year, analyze_blind_dat = analyze_blind_dat)
     else:
         results = method(Data, Ped, analyze_blind_dat = analyze_blind_dat)
     del module, method
