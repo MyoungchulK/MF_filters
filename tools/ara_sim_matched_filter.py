@@ -1,0 +1,157 @@
+import os
+import numpy as np
+from scipy.signal import correlation_lags
+from scipy.signal import butter, filtfilt
+from scipy.signal import hilbert
+from scipy.stats import rayleigh
+from tqdm import tqdm
+import h5py
+
+# custom lib
+from tools.ara_constant import ara_const
+
+ara_const = ara_const()
+num_ants = ara_const.USEFUL_CHAN_PER_STATION
+
+class ara_sim_matched_filter:
+
+    def __init__(self, wf_len, dt, st, add_band_pass_filter = False):
+
+        self.add_band_pass_filter = add_band_pass_filter
+        self.st = st
+        self.dt = dt
+        self.wf_len = wf_len
+        self.df = 1 / (self.dt * self.wf_len)
+        
+        # pad info. put the half wf length in both edges
+        self.half_wf_len = self.wf_len // 2
+        self.pad_len = self.wf_len * 2 # need a pad for correlation process
+        self.pad_df = 1 / (self.dt * self.pad_len)        
+
+        # get x-axis info
+        self.time_pad = np.arange(self.pad_len) * self.dt - self.pad_len // 2 * self.dt
+        self.freq_pad = np.fft.fftfreq(self.pad_len, self.dt)
+        self.lag_pad = correlation_lags(self.pad_len, self.pad_len, 'same') * self.dt
+        self.lag_len = len(self.lag_pad)
+
+        if add_band_pass_filter:
+            self.get_band_pass_filter()
+
+    def get_band_pass_filter(self, low_freq_cut = 0.1, high_freq_cut = 0.85, order = 10, pass_type = 'band'):
+
+        self.nu, self.de = butter(order, [low_freq_cut, high_freq_cut], btype = pass_type)
+        self.de_pad = 3*len(self.nu) # incase wf length is too small
+
+    def get_prebuilt_dat(self, key = 'psd'):
+
+        hf_path = f'/data/user/mkim/OMF_filter/ARA0{self.st}/{key}_sim/{key}_sim_A{self.st}.h5'
+        hf = h5py.File(hf_path, 'r')
+        print(f'loaded {key}: {hf_path}')
+
+        if self.add_band_pass_filter:
+            key = f'bp_{key}'
+        dat = hf[key][:]
+        del hf_path, hf
+
+        return dat
+
+    def get_template_n_psd(self, use_wf_weight = False): # preparing templates and noise model(psd)
+
+        # load data
+        psd = self.get_prebuilt_dat(key = 'psd')
+        temp = self.get_prebuilt_dat(key = 'temp') # 1.wf bin, 2.16 chs, 3.theta angle, 4.on/off-cone, 5.EM/HAD 6.Elst
+        self.temp_dim = temp.shape # information about number/type of templates
+
+        if self.add_band_pass_filter: # probably dont need for sim wfs...
+            temp = filtfilt(self.nu, self.de, temp, axis = 0)
+        
+        # add pad in both side
+        temp = np.pad(temp, [(self.half_wf_len, ), (0, ), (0, ), (0, ), (0, ), (0, )], 'constant', constant_values = 0)
+        temp_one =  np.full(temp.shape, 1, dtype = float)
+        
+        # normalized fft. since length of wfs from sim are identical, let just use setting value
+        temp_fft = np.fft.fft(temp, axis = 0) / np.sqrt(self.wf_len * self.pad_df)
+
+        # templates with psd
+        self.weighted_temp = temp_fft / psd[:, :, np.newaxis, np.newaxis, np.newaxis, np.newaxis]
+
+        self.use_wf_weight = use_wf_weight
+        if self.use_wf_weight:
+            # normalization factor with wf (osu) weight method
+            self.nor_fac = 2 * fftconvolve(temp**2, temp_one, 'same', axes = 0)
+            self.nor_fac /= np.nansum(psd[:, :, np.newaxis, np.newaxis, np.newaxis, np.newaxis])
+            self.nor_fac *= self.pad_df  
+            self.nor_fac = np.sqrt(self.nor_fac)     
+        else:
+            self.nor_fac = np.abs(temp)**2 / psd[:, :, np.newaxis, np.newaxis, np.newaxis, np.newaxis]
+            self.nor_fac = np.sqrt(np.nansum(self.nor_fac, axis = 0) * self.pad_df)
+        del temp, psd, temp_fft, temp_one
+
+    def get_mf_wfs(self, wf_v):
+
+        if self.add_band_pass_filter: # probably dont need for sim wfs...
+            wf_v = filtfilt(self.nu, self.de, wf_v, axis = 0)
+            
+        # add pad in both side
+        wf_v = np.pad(wf_v, [(self.half_wf_len, ), (0, )], 'constant', constant_values = 0)
+        
+        # normalized fft
+        wf_v = np.fft.fft(wf_v, axis = 0) / np.sqrt(self.wf_len * self.pad_df)        
+
+        # matched filtering
+        mf = self.weighted_temp.conjugate() * wf_v[:, :, np.newaxis, np.newaxis, np.newaxis, np.newaxis]    # correlation w/ template and deconlove by psd
+        mf = np.real(2 * np.fft.ifft(mf, axis = 0)/ self.dt)                                                # going back to time-domain
+        if self.use_wf_weight:                                                                              # normalize template and psd
+            mf /= self.nor_fac                                                                           
+        else:
+            mf /= self.nor_fac[np.newaxis, :, :, :, :, :]
+        mf = np.abs(hilbert(mf, axis = 0))                                                                  # hilbert... why not
+        del wf_v
+    
+        return mf
+
+    def get_psd(self, dat, binning = 1000): # computationally expensive process...
+
+        wf_v = np.copy(dat)
+        if self.add_band_pass_filter: # probably dont need for sim wfs...
+            wf_v = filtfilt(self.nu, self.de, wf_v, axis = 0)
+
+        # add pad in both side
+        wf_v = np.pad(wf_v, [(self.half_wf_len, ), (0, ), (0, )], 'constant', constant_values = 0)
+
+        # normalized fft. since length of wfs from sim are identical, let just use setting value
+        wf_v = np.abs(np.fft.fft(wf_v, axis = 0)) / np.sqrt(self.wf_len)
+
+        # rayl fit
+        bin_edges = np.asarray([np.nanmin(wf_v, axis = 2), np.nanmax(wf_v, axis = 2)])
+        rayl_mu = np.full((self.pad_len, num_ants), np.nan, dtype = float)
+        
+        for f in tqdm(range(self.pad_len)):
+            for ant in range(num_ants):
+
+                # get guess. set bin space in each frequency for more fine binning
+                amp_bins = np.linspace(bin_edges[0, f, ant], bin_edges[0, f, ant], binning + 1)
+                amp_bins_center = (amp_bins[1:] + amp_bins[:-1]) / 2
+                amp_hist = np.histogram(wf_v[f, ant], bins = amp_bins)[0]
+                mu_init_idx = np.nanargmax(amp_hist)
+                if np.isnan(mu_init_idx):
+                    continue
+                mu_init = amp_bins_center[mu_init_idx]
+                del amp_bins, amp_bins_center, amp_hist, mu_init_idx               
+ 
+                # perform unbinned fitting
+                try:
+                    loc, scale = rayleigh.fit(wf_v[f, ant], loc = bin_edges[0, f, ant], scale = mu_init)
+                    rayl_mu[f, ant] = loc + scale
+                    del loc, scale
+                except RuntimeError:
+                    print(f'Runtime Issue in {f} GHz!')
+                    pass
+                del mu_init
+        del wf_v, bin_edges
+
+        # psd mV**2/Hz
+        psd = rayl_mu**2 / self.pad_df
+
+        return psd, rayl_mu
+
