@@ -106,6 +106,7 @@ class ara_sim_matched_filter:
         else:
             mf /= self.nor_fac[np.newaxis, :, :, :, :, :]
         mf = np.abs(hilbert(mf, axis = 0))                                                                  # hilbert... why not
+        mf = np.roll(mf, self.lag_len//2, axis = 0)
         del wf_v
     
         return mf
