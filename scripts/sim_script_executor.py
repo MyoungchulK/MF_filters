@@ -21,7 +21,12 @@ def script_loader(Key = None, Station = None, Year = None, Data = None):
     print(f'Output path check:{Output}')
     if not os.path.exists(Output):
         os.makedirs(Output)
-    h5_file_name = f'{Output}{Key}_sim_A{Station}'
+
+    slash_idx = Data.rfind('/')
+    dot_idx = Data.rfind('.')
+    data_name = Data[slash_idx+1:dot_idx]
+    del slash_idx, dot_idx
+    h5_file_name = f'{Output}{Key}_sim_A{Station}_{data_name}'
     h5_file_name += f'.h5'
     hf = h5py.File(h5_file_name, 'w')
     

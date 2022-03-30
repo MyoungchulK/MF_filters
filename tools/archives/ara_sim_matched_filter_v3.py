@@ -56,7 +56,7 @@ class ara_sim_matched_filter:
 
         return dat
 
-    def get_noise_weighted_template(self): # preparing templates and noise model(psd)
+    def get_template_n_psd(self): # preparing templates and noise model(psd)
 
         # load data
         psd = self.get_prebuilt_dat(key = 'psd')
@@ -71,14 +71,13 @@ class ara_sim_matched_filter:
         temp = np.fft.fft(temp, axis = 0) / np.sqrt(self.wf_len * self.pad_df)
         temp = self.get_band_pass_filter(temp)
 
+        # templates with psd
+        self.weighted_temp = temp / psd[:, :, np.newaxis, np.newaxis, np.newaxis, np.newaxis]
+
         # normalization factor
-        nor_fac = 2 * np.abs(temp)**2 / psd[:, :, np.newaxis, np.newaxis, np.newaxis, np.newaxis]
-        nor_fac = np.sqrt(np.nansum(nor_fac, axis = 0) * self.pad_df)
-        
-        # normalized template with noise weight
-        self.noise_weighted_temp = temp / psd[:, :, np.newaxis, np.newaxis, np.newaxis, np.newaxis]
-        self.noise_weighted_temp /= nor_fac[np.newaxis, :, :, :, :, :]
-        del temp, psd, nor_fac
+        self.nor_fac = 2 * np.abs(temp)**2 / psd[:, :, np.newaxis, np.newaxis, np.newaxis, np.newaxis]
+        self.nor_fac = np.sqrt(np.nansum(self.nor_fac, axis = 0) * self.pad_df)
+        del temp, psd
 
     def get_mf_wfs(self, wf_v):
 
@@ -90,11 +89,12 @@ class ara_sim_matched_filter:
         wf_v = self.get_band_pass_filter(wf_v)
  
         # matched filtering
-        mf = self.noise_weighted_temp.conjugate() * wf_v[:, :, np.newaxis, np.newaxis, np.newaxis, np.newaxis]  # correlation w/ template and deconlove by psd
-        mf = np.real(2 * np.fft.ifft(mf, axis = 0) / self.dt)                                                   # going back to time-domain
-        mf = np.roll(mf, self.lag_len//2, axis = 0)                                                             # typical manual ifft issue
-        mf[np.isnan(mf) | np.isinf(mf)] = 0                                                                     # remove inf values
-        mf = np.abs(hilbert(mf, axis = 0))                                                                      # hilbert... why not
+        mf = self.weighted_temp.conjugate() * wf_v[:, :, np.newaxis, np.newaxis, np.newaxis, np.newaxis]    # correlation w/ template and deconlove by psd
+        mf = np.real(2 * np.fft.ifft(mf, axis = 0) / self.dt)                                               # going back to time-domain
+        mf = np.roll(mf, self.lag_len//2, axis = 0)                                                         # typical manual ifft issue
+        mf /= self.nor_fac[np.newaxis, :, :, :, :, :]                                                       # normalize template and psd
+        mf[np.isnan(mf) | np.isinf(mf)] = 0                                                                 # remove inf values
+        mf = np.abs(hilbert(mf, axis = 0))                                                                  # hilbert... why not
         del wf_v
     
         return mf
