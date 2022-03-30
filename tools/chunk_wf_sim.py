@@ -1,12 +1,11 @@
 import numpy as np
 from tqdm import tqdm
 
-def psd_sim_collector(Data, Station, Year):
+def wf_sim_collector(Data, Station, Year):
 
-    print('Collecting noise psd starts!')
+    print('Collecting WF starts!')
 
     from tools.ara_sim_load import ara_root_loader
-    from tools.ara_sim_matched_filter import ara_sim_matched_filter
     from tools.ara_constant import ara_const
 
     # const. info.
@@ -16,10 +15,14 @@ def psd_sim_collector(Data, Station, Year):
 
     # data config
     ara_root = ara_root_loader(Data, Station, Year)
-    ara_root.get_sub_info(Data)
+    ara_root.get_sub_info(Data, get_angle_info = True)
     num_evts = ara_root.num_evts
     dt = ara_root.time_step
     wf_len = ara_root.waveform_length
+    wf_time = ara_root.wf_time
+    rec_ang = ara_root.rec_ang
+    view_ang = ara_root.view_ang
+    arrival_time = ara_root.arrival_time
 
     # wf arr
     wf_v = np.full((wf_len, num_ants, num_evts), 0, dtype = float)
@@ -32,10 +35,13 @@ def psd_sim_collector(Data, Station, Year):
 
     print('WF collecting is done!')
 
-    return {'dt':dt,
-            'wf_len':wf_len,
+    return {'dt':np.array([dt]),
+            'wf_len':np.array([wf_len], dtype = float),
             'wf_time':wf_time,
-            'wf_v':wf_v}
+            'wf_v':wf_v,
+            'rec_ang':rec_ang,
+            'view_ang':view_ang,
+            'arrival_time':arrival_time}
     
 
 

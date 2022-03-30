@@ -86,9 +86,14 @@ class ara_root_loader:
             for evt in tqdm(range(self.num_evts)):
                 AraTree2.GetEntry(evt)
                 for ant in range(num_ants):
-                    self.rec_ang[:, ant, evt] = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st_index[ant]].antennas[sim_ant_index[ant]].rec_ang[:]))
-                    self.view_ang[:, ant, evt] = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st_index[ant]].antennas[sim_ant_index[ant]].view_ang[:]))
-                    self.arrival_time[:, ant, evt] = np.asarray(AraTree2.report.stations[0].strings[sim_st_index[ant]].antennas[sim_ant_index[ant]].arrival_time[:]) * 1e9
+                    rec = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st_index[ant]].antennas[sim_ant_index[ant]].rec_ang[:]))
+                    view = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st_index[ant]].antennas[sim_ant_index[ant]].view_ang[:]))
+                    arrival = np.asarray(AraTree2.report.stations[0].strings[sim_st_index[ant]].antennas[sim_ant_index[ant]].arrival_time[:]) * 1e9        
+    
+                    self.rec_ang[:len(rec), ant, evt] = rec
+                    self.view_ang[:len(view), ant, evt] = view
+                    self.arrival_time[:len(arrival), ant, evt] = arrival
+                    del rec, view, arrival
             del AraTree2
 
     def get_entry(self, evt):
