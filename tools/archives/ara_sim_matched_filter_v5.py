@@ -33,7 +33,7 @@ class ara_sim_matched_filter:
         self.lag_pad = correlation_lags(self.pad_len, self.pad_len, 'same') * self.dt
         self.lag_len = len(self.lag_pad)
 
-    def get_band_pass_filter(self, amp, val = 1e-100): # for temp, lets use brutal method.... for now....
+    def get_band_pass_filter(self, amp, val = 1e-50): # for temp, lets use brutal method.... for now....
 
         #notch filter
         amp[(self.freq_pad >= 0.43) & (self.freq_pad <= 0.48)] = val
@@ -48,8 +48,6 @@ class ara_sim_matched_filter:
     def get_prebuilt_dat(self, key = 'psd'):
 
         hf_path = f'/data/user/mkim/OMF_filter/ARA0{self.st}/{key}_sim/{key}_sim_A{self.st}.h5'
-        if key == 'temp':
-            hf_path = f'/data/user/mkim/OMF_filter/ARA0{self.st}/{key}_sim/{key}_sim_A{self.st}_AraOut.setup_A2_temp.txt.run10.h5'
         hf = h5py.File(hf_path, 'r')
         print(f'loaded {key}: {hf_path}')
 
@@ -62,22 +60,24 @@ class ara_sim_matched_filter:
 
         # load data
         psd = self.get_prebuilt_dat(key = 'psd')
-        temp = self.get_prebuilt_dat(key = 'temp') # 1.wf bin, 2.16 chs, 3.theta angle, 4.on/off-cone, 5.Elst
+        psd = self.get_band_pass_filter(psd, val = 1e-100)
+        temp = self.get_prebuilt_dat(key = 'temp') # 1.wf bin, 2.16 chs, 3.theta angle, 4.on/off-cone, 5.EM/HAD, 6.Elst
 
         # add pad in both side
-        temp = np.pad(temp, [(self.half_wf_len, ), (0, ), (0, ), (0, ), (0, )], 'constant', constant_values = 0)
+        temp = np.pad(temp, [(self.half_wf_len, ), (0, ), (0, ), (0, ), (0, ), (0, )], 'constant', constant_values = 0)
         self.temp_dim = temp.shape # information about number/type of templates       
  
         # normalized fft. since length of wfs from sim are identical, let just use setting value
         temp = np.fft.fft(temp, axis = 0) / np.sqrt(self.wf_len * self.pad_df)
+        temp = self.get_band_pass_filter(temp)
 
         # normalization factor
-        nor_fac = 2 * np.abs(temp)**2 / psd[:, :, np.newaxis, np.newaxis, np.newaxis]
+        nor_fac = 2 * np.abs(temp)**2 / psd[:, :, np.newaxis, np.newaxis, np.newaxis, np.newaxis]
         nor_fac = np.sqrt(np.nansum(nor_fac, axis = 0) * self.pad_df)
         
         # normalized template with noise weight
-        self.noise_weighted_temp = temp / psd[:, :, np.newaxis, np.newaxis, np.newaxis]
-        self.noise_weighted_temp /= nor_fac[np.newaxis, :, :, :, :]
+        self.noise_weighted_temp = temp / psd[:, :, np.newaxis, np.newaxis, np.newaxis, np.newaxis]
+        self.noise_weighted_temp /= nor_fac[np.newaxis, :, :, :, :, :]
         del temp, psd, nor_fac
 
     def get_mf_wfs(self, wf_v):
@@ -87,14 +87,14 @@ class ara_sim_matched_filter:
         
         # normalized fft
         wf_v = np.fft.fft(wf_v, axis = 0) / np.sqrt(self.wf_len * self.pad_df)        
+        wf_v = self.get_band_pass_filter(wf_v)
  
         # matched filtering
-        mf = self.noise_weighted_temp.conjugate() * wf_v[:, :, np.newaxis, np.newaxis, np.newaxis]  # correlation w/ template and deconlove by psd
-        mf = self.get_band_pass_filter(mf)                                                          # kill the all edge correlation
-        mf = np.real(2 * np.fft.ifft(mf, axis = 0) / self.dt)                                       # going back to time-domain
-        mf = np.roll(mf, self.lag_len//2, axis = 0)                                                 # typical manual ifft issue
-        mf[np.isnan(mf) | np.isinf(mf)] = 0                                                         # remove inf values
-        mf = np.abs(hilbert(mf, axis = 0))                                                          # hilbert... why not
+        mf = self.noise_weighted_temp.conjugate() * wf_v[:, :, np.newaxis, np.newaxis, np.newaxis, np.newaxis]  # correlation w/ template and deconlove by psd
+        mf = np.real(2 * np.fft.ifft(mf, axis = 0) / self.dt)                                                   # going back to time-domain
+        mf = np.roll(mf, self.lag_len//2, axis = 0)                                                             # typical manual ifft issue
+        mf[np.isnan(mf) | np.isinf(mf)] = 0                                                                     # remove inf values
+        mf = np.abs(hilbert(mf, axis = 0))                                                                      # hilbert... why not
         del wf_v
     
         return mf

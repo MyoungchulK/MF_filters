@@ -33,7 +33,7 @@ class ara_sim_matched_filter:
         self.lag_pad = correlation_lags(self.pad_len, self.pad_len, 'same') * self.dt
         self.lag_len = len(self.lag_pad)
 
-    def get_band_pass_filter(self, amp, val = 1e-100): # for temp, lets use brutal method.... for now....
+    def get_band_pass_filter(self, amp, val = 1e-50): # for temp, lets use brutal method.... for now....
 
         #notch filter
         amp[(self.freq_pad >= 0.43) & (self.freq_pad <= 0.48)] = val
@@ -62,6 +62,7 @@ class ara_sim_matched_filter:
 
         # load data
         psd = self.get_prebuilt_dat(key = 'psd')
+        psd = self.get_band_pass_filter(psd, val = 1e-100)
         temp = self.get_prebuilt_dat(key = 'temp') # 1.wf bin, 2.16 chs, 3.theta angle, 4.on/off-cone, 5.Elst
 
         # add pad in both side
@@ -70,6 +71,7 @@ class ara_sim_matched_filter:
  
         # normalized fft. since length of wfs from sim are identical, let just use setting value
         temp = np.fft.fft(temp, axis = 0) / np.sqrt(self.wf_len * self.pad_df)
+        temp = self.get_band_pass_filter(temp)
 
         # normalization factor
         nor_fac = 2 * np.abs(temp)**2 / psd[:, :, np.newaxis, np.newaxis, np.newaxis]
@@ -87,14 +89,14 @@ class ara_sim_matched_filter:
         
         # normalized fft
         wf_v = np.fft.fft(wf_v, axis = 0) / np.sqrt(self.wf_len * self.pad_df)        
+        wf_v = self.get_band_pass_filter(wf_v)
  
         # matched filtering
         mf = self.noise_weighted_temp.conjugate() * wf_v[:, :, np.newaxis, np.newaxis, np.newaxis]  # correlation w/ template and deconlove by psd
-        mf = self.get_band_pass_filter(mf)                                                          # kill the all edge correlation
-        mf = np.real(2 * np.fft.ifft(mf, axis = 0) / self.dt)                                       # going back to time-domain
-        mf = np.roll(mf, self.lag_len//2, axis = 0)                                                 # typical manual ifft issue
-        mf[np.isnan(mf) | np.isinf(mf)] = 0                                                         # remove inf values
-        mf = np.abs(hilbert(mf, axis = 0))                                                          # hilbert... why not
+        mf = np.real(2 * np.fft.ifft(mf, axis = 0) / self.dt)                                                   # going back to time-domain
+        mf = np.roll(mf, self.lag_len//2, axis = 0)                                                             # typical manual ifft issue
+        mf[np.isnan(mf) | np.isinf(mf)] = 0                                                                     # remove inf values
+        mf = np.abs(hilbert(mf, axis = 0))                                                                      # hilbert... why not
         del wf_v
     
         return mf
@@ -102,6 +104,9 @@ class ara_sim_matched_filter:
     def get_psd(self, dat, binning = 1000): # computationally expensive process...
 
         wf_v = np.copy(dat)
+
+        nu, de = butter(10, [0.15, 0.85], 'band', fs = 1/self.dt)
+        wf_v = filtfilt(nu, de, wf_v, axis = 0)
 
         # add pad in both side
         wf_v = np.pad(wf_v, [(self.half_wf_len, ), (0, ), (0, )], 'constant', constant_values = 0)

@@ -1,0 +1,3000 @@
+JOB job_ARA_S2_R400395 ARA_job.sub 
+VARS job_ARA_S2_R400395 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400395.root" run="400395"
+
+JOB job_ARA_S2_R400949 ARA_job.sub 
+VARS job_ARA_S2_R400949 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400949.root" run="400949"
+
+JOB job_ARA_S2_R400754 ARA_job.sub 
+VARS job_ARA_S2_R400754 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400754.root" run="400754"
+
+JOB job_ARA_S2_R400164 ARA_job.sub 
+VARS job_ARA_S2_R400164 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400164.root" run="400164"
+
+JOB job_ARA_S2_R400197 ARA_job.sub 
+VARS job_ARA_S2_R400197 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400197.root" run="400197"
+
+JOB job_ARA_S2_R400976 ARA_job.sub 
+VARS job_ARA_S2_R400976 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400976.root" run="400976"
+
+JOB job_ARA_S2_R400862 ARA_job.sub 
+VARS job_ARA_S2_R400862 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400862.root" run="400862"
+
+JOB job_ARA_S2_R400397 ARA_job.sub 
+VARS job_ARA_S2_R400397 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400397.root" run="400397"
+
+JOB job_ARA_S2_R400506 ARA_job.sub 
+VARS job_ARA_S2_R400506 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400506.root" run="400506"
+
+JOB job_ARA_S2_R400012 ARA_job.sub 
+VARS job_ARA_S2_R400012 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400012.root" run="400012"
+
+JOB job_ARA_S2_R400215 ARA_job.sub 
+VARS job_ARA_S2_R400215 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400215.root" run="400215"
+
+JOB job_ARA_S2_R400281 ARA_job.sub 
+VARS job_ARA_S2_R400281 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400281.root" run="400281"
+
+JOB job_ARA_S2_R400009 ARA_job.sub 
+VARS job_ARA_S2_R400009 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400009.root" run="400009"
+
+JOB job_ARA_S2_R400846 ARA_job.sub 
+VARS job_ARA_S2_R400846 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400846.root" run="400846"
+
+JOB job_ARA_S2_R400449 ARA_job.sub 
+VARS job_ARA_S2_R400449 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400449.root" run="400449"
+
+JOB job_ARA_S2_R400981 ARA_job.sub 
+VARS job_ARA_S2_R400981 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400981.root" run="400981"
+
+JOB job_ARA_S2_R400878 ARA_job.sub 
+VARS job_ARA_S2_R400878 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400878.root" run="400878"
+
+JOB job_ARA_S2_R400816 ARA_job.sub 
+VARS job_ARA_S2_R400816 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400816.root" run="400816"
+
+JOB job_ARA_S2_R400045 ARA_job.sub 
+VARS job_ARA_S2_R400045 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400045.root" run="400045"
+
+JOB job_ARA_S2_R400374 ARA_job.sub 
+VARS job_ARA_S2_R400374 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400374.root" run="400374"
+
+JOB job_ARA_S2_R400213 ARA_job.sub 
+VARS job_ARA_S2_R400213 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400213.root" run="400213"
+
+JOB job_ARA_S2_R400579 ARA_job.sub 
+VARS job_ARA_S2_R400579 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400579.root" run="400579"
+
+JOB job_ARA_S2_R400964 ARA_job.sub 
+VARS job_ARA_S2_R400964 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400964.root" run="400964"
+
+JOB job_ARA_S2_R400630 ARA_job.sub 
+VARS job_ARA_S2_R400630 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400630.root" run="400630"
+
+JOB job_ARA_S2_R400385 ARA_job.sub 
+VARS job_ARA_S2_R400385 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400385.root" run="400385"
+
+JOB job_ARA_S2_R400631 ARA_job.sub 
+VARS job_ARA_S2_R400631 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400631.root" run="400631"
+
+JOB job_ARA_S2_R400898 ARA_job.sub 
+VARS job_ARA_S2_R400898 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400898.root" run="400898"
+
+JOB job_ARA_S2_R400243 ARA_job.sub 
+VARS job_ARA_S2_R400243 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400243.root" run="400243"
+
+JOB job_ARA_S2_R400394 ARA_job.sub 
+VARS job_ARA_S2_R400394 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400394.root" run="400394"
+
+JOB job_ARA_S2_R400954 ARA_job.sub 
+VARS job_ARA_S2_R400954 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400954.root" run="400954"
+
+JOB job_ARA_S2_R400293 ARA_job.sub 
+VARS job_ARA_S2_R400293 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400293.root" run="400293"
+
+JOB job_ARA_S2_R400641 ARA_job.sub 
+VARS job_ARA_S2_R400641 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400641.root" run="400641"
+
+JOB job_ARA_S2_R400408 ARA_job.sub 
+VARS job_ARA_S2_R400408 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400408.root" run="400408"
+
+JOB job_ARA_S2_R400726 ARA_job.sub 
+VARS job_ARA_S2_R400726 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400726.root" run="400726"
+
+JOB job_ARA_S2_R400756 ARA_job.sub 
+VARS job_ARA_S2_R400756 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400756.root" run="400756"
+
+JOB job_ARA_S2_R400627 ARA_job.sub 
+VARS job_ARA_S2_R400627 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400627.root" run="400627"
+
+JOB job_ARA_S2_R400417 ARA_job.sub 
+VARS job_ARA_S2_R400417 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400417.root" run="400417"
+
+JOB job_ARA_S2_R400734 ARA_job.sub 
+VARS job_ARA_S2_R400734 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400734.root" run="400734"
+
+JOB job_ARA_S2_R400721 ARA_job.sub 
+VARS job_ARA_S2_R400721 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400721.root" run="400721"
+
+JOB job_ARA_S2_R400986 ARA_job.sub 
+VARS job_ARA_S2_R400986 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400986.root" run="400986"
+
+JOB job_ARA_S2_R400428 ARA_job.sub 
+VARS job_ARA_S2_R400428 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400428.root" run="400428"
+
+JOB job_ARA_S2_R400899 ARA_job.sub 
+VARS job_ARA_S2_R400899 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400899.root" run="400899"
+
+JOB job_ARA_S2_R400447 ARA_job.sub 
+VARS job_ARA_S2_R400447 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400447.root" run="400447"
+
+JOB job_ARA_S2_R400212 ARA_job.sub 
+VARS job_ARA_S2_R400212 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400212.root" run="400212"
+
+JOB job_ARA_S2_R400287 ARA_job.sub 
+VARS job_ARA_S2_R400287 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400287.root" run="400287"
+
+JOB job_ARA_S2_R400174 ARA_job.sub 
+VARS job_ARA_S2_R400174 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400174.root" run="400174"
+
+JOB job_ARA_S2_R400275 ARA_job.sub 
+VARS job_ARA_S2_R400275 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400275.root" run="400275"
+
+JOB job_ARA_S2_R400323 ARA_job.sub 
+VARS job_ARA_S2_R400323 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400323.root" run="400323"
+
+JOB job_ARA_S2_R400180 ARA_job.sub 
+VARS job_ARA_S2_R400180 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400180.root" run="400180"
+
+JOB job_ARA_S2_R400103 ARA_job.sub 
+VARS job_ARA_S2_R400103 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400103.root" run="400103"
+
+JOB job_ARA_S2_R400017 ARA_job.sub 
+VARS job_ARA_S2_R400017 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400017.root" run="400017"
+
+JOB job_ARA_S2_R400825 ARA_job.sub 
+VARS job_ARA_S2_R400825 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400825.root" run="400825"
+
+JOB job_ARA_S2_R400056 ARA_job.sub 
+VARS job_ARA_S2_R400056 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400056.root" run="400056"
+
+JOB job_ARA_S2_R400004 ARA_job.sub 
+VARS job_ARA_S2_R400004 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400004.root" run="400004"
+
+JOB job_ARA_S2_R400877 ARA_job.sub 
+VARS job_ARA_S2_R400877 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400877.root" run="400877"
+
+JOB job_ARA_S2_R400623 ARA_job.sub 
+VARS job_ARA_S2_R400623 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400623.root" run="400623"
+
+JOB job_ARA_S2_R400801 ARA_job.sub 
+VARS job_ARA_S2_R400801 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400801.root" run="400801"
+
+JOB job_ARA_S2_R400419 ARA_job.sub 
+VARS job_ARA_S2_R400419 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400419.root" run="400419"
+
+JOB job_ARA_S2_R400459 ARA_job.sub 
+VARS job_ARA_S2_R400459 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400459.root" run="400459"
+
+JOB job_ARA_S2_R400774 ARA_job.sub 
+VARS job_ARA_S2_R400774 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400774.root" run="400774"
+
+JOB job_ARA_S2_R400932 ARA_job.sub 
+VARS job_ARA_S2_R400932 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400932.root" run="400932"
+
+JOB job_ARA_S2_R400883 ARA_job.sub 
+VARS job_ARA_S2_R400883 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400883.root" run="400883"
+
+JOB job_ARA_S2_R400169 ARA_job.sub 
+VARS job_ARA_S2_R400169 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400169.root" run="400169"
+
+JOB job_ARA_S2_R400214 ARA_job.sub 
+VARS job_ARA_S2_R400214 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400214.root" run="400214"
+
+JOB job_ARA_S2_R400129 ARA_job.sub 
+VARS job_ARA_S2_R400129 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400129.root" run="400129"
+
+JOB job_ARA_S2_R400849 ARA_job.sub 
+VARS job_ARA_S2_R400849 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400849.root" run="400849"
+
+JOB job_ARA_S2_R400144 ARA_job.sub 
+VARS job_ARA_S2_R400144 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400144.root" run="400144"
+
+JOB job_ARA_S2_R400557 ARA_job.sub 
+VARS job_ARA_S2_R400557 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400557.root" run="400557"
+
+JOB job_ARA_S2_R400121 ARA_job.sub 
+VARS job_ARA_S2_R400121 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400121.root" run="400121"
+
+JOB job_ARA_S2_R400468 ARA_job.sub 
+VARS job_ARA_S2_R400468 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400468.root" run="400468"
+
+JOB job_ARA_S2_R400037 ARA_job.sub 
+VARS job_ARA_S2_R400037 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400037.root" run="400037"
+
+JOB job_ARA_S2_R400961 ARA_job.sub 
+VARS job_ARA_S2_R400961 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400961.root" run="400961"
+
+JOB job_ARA_S2_R400043 ARA_job.sub 
+VARS job_ARA_S2_R400043 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400043.root" run="400043"
+
+JOB job_ARA_S2_R400445 ARA_job.sub 
+VARS job_ARA_S2_R400445 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400445.root" run="400445"
+
+JOB job_ARA_S2_R400235 ARA_job.sub 
+VARS job_ARA_S2_R400235 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400235.root" run="400235"
+
+JOB job_ARA_S2_R400278 ARA_job.sub 
+VARS job_ARA_S2_R400278 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400278.root" run="400278"
+
+JOB job_ARA_S2_R400813 ARA_job.sub 
+VARS job_ARA_S2_R400813 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400813.root" run="400813"
+
+JOB job_ARA_S2_R400189 ARA_job.sub 
+VARS job_ARA_S2_R400189 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400189.root" run="400189"
+
+JOB job_ARA_S2_R400289 ARA_job.sub 
+VARS job_ARA_S2_R400289 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400289.root" run="400289"
+
+JOB job_ARA_S2_R400661 ARA_job.sub 
+VARS job_ARA_S2_R400661 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400661.root" run="400661"
+
+JOB job_ARA_S2_R400633 ARA_job.sub 
+VARS job_ARA_S2_R400633 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400633.root" run="400633"
+
+JOB job_ARA_S2_R400392 ARA_job.sub 
+VARS job_ARA_S2_R400392 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400392.root" run="400392"
+
+JOB job_ARA_S2_R400895 ARA_job.sub 
+VARS job_ARA_S2_R400895 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400895.root" run="400895"
+
+JOB job_ARA_S2_R400269 ARA_job.sub 
+VARS job_ARA_S2_R400269 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400269.root" run="400269"
+
+JOB job_ARA_S2_R400586 ARA_job.sub 
+VARS job_ARA_S2_R400586 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400586.root" run="400586"
+
+JOB job_ARA_S2_R400731 ARA_job.sub 
+VARS job_ARA_S2_R400731 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400731.root" run="400731"
+
+JOB job_ARA_S2_R400669 ARA_job.sub 
+VARS job_ARA_S2_R400669 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400669.root" run="400669"
+
+JOB job_ARA_S2_R400483 ARA_job.sub 
+VARS job_ARA_S2_R400483 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400483.root" run="400483"
+
+JOB job_ARA_S2_R400276 ARA_job.sub 
+VARS job_ARA_S2_R400276 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400276.root" run="400276"
+
+JOB job_ARA_S2_R400953 ARA_job.sub 
+VARS job_ARA_S2_R400953 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400953.root" run="400953"
+
+JOB job_ARA_S2_R400610 ARA_job.sub 
+VARS job_ARA_S2_R400610 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400610.root" run="400610"
+
+JOB job_ARA_S2_R400681 ARA_job.sub 
+VARS job_ARA_S2_R400681 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400681.root" run="400681"
+
+JOB job_ARA_S2_R400790 ARA_job.sub 
+VARS job_ARA_S2_R400790 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400790.root" run="400790"
+
+JOB job_ARA_S2_R400551 ARA_job.sub 
+VARS job_ARA_S2_R400551 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400551.root" run="400551"
+
+JOB job_ARA_S2_R400768 ARA_job.sub 
+VARS job_ARA_S2_R400768 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400768.root" run="400768"
+
+JOB job_ARA_S2_R400370 ARA_job.sub 
+VARS job_ARA_S2_R400370 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400370.root" run="400370"
+
+JOB job_ARA_S2_R400137 ARA_job.sub 
+VARS job_ARA_S2_R400137 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400137.root" run="400137"
+
+JOB job_ARA_S2_R400935 ARA_job.sub 
+VARS job_ARA_S2_R400935 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400935.root" run="400935"
+
+JOB job_ARA_S2_R400130 ARA_job.sub 
+VARS job_ARA_S2_R400130 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400130.root" run="400130"
+
+JOB job_ARA_S2_R400418 ARA_job.sub 
+VARS job_ARA_S2_R400418 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400418.root" run="400418"
+
+JOB job_ARA_S2_R400209 ARA_job.sub 
+VARS job_ARA_S2_R400209 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400209.root" run="400209"
+
+JOB job_ARA_S2_R400458 ARA_job.sub 
+VARS job_ARA_S2_R400458 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400458.root" run="400458"
+
+JOB job_ARA_S2_R400785 ARA_job.sub 
+VARS job_ARA_S2_R400785 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400785.root" run="400785"
+
+JOB job_ARA_S2_R400591 ARA_job.sub 
+VARS job_ARA_S2_R400591 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400591.root" run="400591"
+
+JOB job_ARA_S2_R400350 ARA_job.sub 
+VARS job_ARA_S2_R400350 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400350.root" run="400350"
+
+JOB job_ARA_S2_R400853 ARA_job.sub 
+VARS job_ARA_S2_R400853 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400853.root" run="400853"
+
+JOB job_ARA_S2_R400884 ARA_job.sub 
+VARS job_ARA_S2_R400884 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400884.root" run="400884"
+
+JOB job_ARA_S2_R400320 ARA_job.sub 
+VARS job_ARA_S2_R400320 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400320.root" run="400320"
+
+JOB job_ARA_S2_R400704 ARA_job.sub 
+VARS job_ARA_S2_R400704 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400704.root" run="400704"
+
+JOB job_ARA_S2_R400291 ARA_job.sub 
+VARS job_ARA_S2_R400291 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400291.root" run="400291"
+
+JOB job_ARA_S2_R400654 ARA_job.sub 
+VARS job_ARA_S2_R400654 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400654.root" run="400654"
+
+JOB job_ARA_S2_R400809 ARA_job.sub 
+VARS job_ARA_S2_R400809 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400809.root" run="400809"
+
+JOB job_ARA_S2_R400187 ARA_job.sub 
+VARS job_ARA_S2_R400187 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400187.root" run="400187"
+
+JOB job_ARA_S2_R400230 ARA_job.sub 
+VARS job_ARA_S2_R400230 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400230.root" run="400230"
+
+JOB job_ARA_S2_R400829 ARA_job.sub 
+VARS job_ARA_S2_R400829 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400829.root" run="400829"
+
+JOB job_ARA_S2_R400177 ARA_job.sub 
+VARS job_ARA_S2_R400177 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400177.root" run="400177"
+
+JOB job_ARA_S2_R400936 ARA_job.sub 
+VARS job_ARA_S2_R400936 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400936.root" run="400936"
+
+JOB job_ARA_S2_R400204 ARA_job.sub 
+VARS job_ARA_S2_R400204 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400204.root" run="400204"
+
+JOB job_ARA_S2_R400090 ARA_job.sub 
+VARS job_ARA_S2_R400090 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400090.root" run="400090"
+
+JOB job_ARA_S2_R400207 ARA_job.sub 
+VARS job_ARA_S2_R400207 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400207.root" run="400207"
+
+JOB job_ARA_S2_R400436 ARA_job.sub 
+VARS job_ARA_S2_R400436 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400436.root" run="400436"
+
+JOB job_ARA_S2_R400357 ARA_job.sub 
+VARS job_ARA_S2_R400357 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400357.root" run="400357"
+
+JOB job_ARA_S2_R400347 ARA_job.sub 
+VARS job_ARA_S2_R400347 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400347.root" run="400347"
+
+JOB job_ARA_S2_R400956 ARA_job.sub 
+VARS job_ARA_S2_R400956 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400956.root" run="400956"
+
+JOB job_ARA_S2_R400745 ARA_job.sub 
+VARS job_ARA_S2_R400745 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400745.root" run="400745"
+
+JOB job_ARA_S2_R400590 ARA_job.sub 
+VARS job_ARA_S2_R400590 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400590.root" run="400590"
+
+JOB job_ARA_S2_R400205 ARA_job.sub 
+VARS job_ARA_S2_R400205 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400205.root" run="400205"
+
+JOB job_ARA_S2_R400334 ARA_job.sub 
+VARS job_ARA_S2_R400334 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400334.root" run="400334"
+
+JOB job_ARA_S2_R400891 ARA_job.sub 
+VARS job_ARA_S2_R400891 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400891.root" run="400891"
+
+JOB job_ARA_S2_R400295 ARA_job.sub 
+VARS job_ARA_S2_R400295 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400295.root" run="400295"
+
+JOB job_ARA_S2_R400537 ARA_job.sub 
+VARS job_ARA_S2_R400537 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400537.root" run="400537"
+
+JOB job_ARA_S2_R400402 ARA_job.sub 
+VARS job_ARA_S2_R400402 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400402.root" run="400402"
+
+JOB job_ARA_S2_R400125 ARA_job.sub 
+VARS job_ARA_S2_R400125 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400125.root" run="400125"
+
+JOB job_ARA_S2_R400163 ARA_job.sub 
+VARS job_ARA_S2_R400163 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400163.root" run="400163"
+
+JOB job_ARA_S2_R400802 ARA_job.sub 
+VARS job_ARA_S2_R400802 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400802.root" run="400802"
+
+JOB job_ARA_S2_R400477 ARA_job.sub 
+VARS job_ARA_S2_R400477 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400477.root" run="400477"
+
+JOB job_ARA_S2_R400051 ARA_job.sub 
+VARS job_ARA_S2_R400051 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400051.root" run="400051"
+
+JOB job_ARA_S2_R400864 ARA_job.sub 
+VARS job_ARA_S2_R400864 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400864.root" run="400864"
+
+JOB job_ARA_S2_R400881 ARA_job.sub 
+VARS job_ARA_S2_R400881 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400881.root" run="400881"
+
+JOB job_ARA_S2_R400208 ARA_job.sub 
+VARS job_ARA_S2_R400208 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400208.root" run="400208"
+
+JOB job_ARA_S2_R400980 ARA_job.sub 
+VARS job_ARA_S2_R400980 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400980.root" run="400980"
+
+JOB job_ARA_S2_R400882 ARA_job.sub 
+VARS job_ARA_S2_R400882 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400882.root" run="400882"
+
+JOB job_ARA_S2_R400242 ARA_job.sub 
+VARS job_ARA_S2_R400242 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400242.root" run="400242"
+
+JOB job_ARA_S2_R400084 ARA_job.sub 
+VARS job_ARA_S2_R400084 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400084.root" run="400084"
+
+JOB job_ARA_S2_R400944 ARA_job.sub 
+VARS job_ARA_S2_R400944 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400944.root" run="400944"
+
+JOB job_ARA_S2_R400285 ARA_job.sub 
+VARS job_ARA_S2_R400285 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400285.root" run="400285"
+
+JOB job_ARA_S2_R400493 ARA_job.sub 
+VARS job_ARA_S2_R400493 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400493.root" run="400493"
+
+JOB job_ARA_S2_R400526 ARA_job.sub 
+VARS job_ARA_S2_R400526 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400526.root" run="400526"
+
+JOB job_ARA_S2_R400409 ARA_job.sub 
+VARS job_ARA_S2_R400409 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400409.root" run="400409"
+
+JOB job_ARA_S2_R400657 ARA_job.sub 
+VARS job_ARA_S2_R400657 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400657.root" run="400657"
+
+JOB job_ARA_S2_R400940 ARA_job.sub 
+VARS job_ARA_S2_R400940 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400940.root" run="400940"
+
+JOB job_ARA_S2_R400361 ARA_job.sub 
+VARS job_ARA_S2_R400361 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400361.root" run="400361"
+
+JOB job_ARA_S2_R400584 ARA_job.sub 
+VARS job_ARA_S2_R400584 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400584.root" run="400584"
+
+JOB job_ARA_S2_R400154 ARA_job.sub 
+VARS job_ARA_S2_R400154 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400154.root" run="400154"
+
+JOB job_ARA_S2_R400603 ARA_job.sub 
+VARS job_ARA_S2_R400603 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400603.root" run="400603"
+
+JOB job_ARA_S2_R400663 ARA_job.sub 
+VARS job_ARA_S2_R400663 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400663.root" run="400663"
+
+JOB job_ARA_S2_R400952 ARA_job.sub 
+VARS job_ARA_S2_R400952 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400952.root" run="400952"
+
+JOB job_ARA_S2_R400755 ARA_job.sub 
+VARS job_ARA_S2_R400755 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400755.root" run="400755"
+
+JOB job_ARA_S2_R400109 ARA_job.sub 
+VARS job_ARA_S2_R400109 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400109.root" run="400109"
+
+JOB job_ARA_S2_R400810 ARA_job.sub 
+VARS job_ARA_S2_R400810 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400810.root" run="400810"
+
+JOB job_ARA_S2_R400808 ARA_job.sub 
+VARS job_ARA_S2_R400808 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400808.root" run="400808"
+
+JOB job_ARA_S2_R400234 ARA_job.sub 
+VARS job_ARA_S2_R400234 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400234.root" run="400234"
+
+JOB job_ARA_S2_R400667 ARA_job.sub 
+VARS job_ARA_S2_R400667 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400667.root" run="400667"
+
+JOB job_ARA_S2_R400111 ARA_job.sub 
+VARS job_ARA_S2_R400111 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400111.root" run="400111"
+
+JOB job_ARA_S2_R400652 ARA_job.sub 
+VARS job_ARA_S2_R400652 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400652.root" run="400652"
+
+JOB job_ARA_S2_R400933 ARA_job.sub 
+VARS job_ARA_S2_R400933 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400933.root" run="400933"
+
+JOB job_ARA_S2_R400247 ARA_job.sub 
+VARS job_ARA_S2_R400247 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400247.root" run="400247"
+
+JOB job_ARA_S2_R400664 ARA_job.sub 
+VARS job_ARA_S2_R400664 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400664.root" run="400664"
+
+JOB job_ARA_S2_R400710 ARA_job.sub 
+VARS job_ARA_S2_R400710 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400710.root" run="400710"
+
+JOB job_ARA_S2_R400310 ARA_job.sub 
+VARS job_ARA_S2_R400310 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400310.root" run="400310"
+
+JOB job_ARA_S2_R400257 ARA_job.sub 
+VARS job_ARA_S2_R400257 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400257.root" run="400257"
+
+JOB job_ARA_S2_R400259 ARA_job.sub 
+VARS job_ARA_S2_R400259 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400259.root" run="400259"
+
+JOB job_ARA_S2_R400875 ARA_job.sub 
+VARS job_ARA_S2_R400875 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400875.root" run="400875"
+
+JOB job_ARA_S2_R400947 ARA_job.sub 
+VARS job_ARA_S2_R400947 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400947.root" run="400947"
+
+JOB job_ARA_S2_R400172 ARA_job.sub 
+VARS job_ARA_S2_R400172 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400172.root" run="400172"
+
+JOB job_ARA_S2_R400950 ARA_job.sub 
+VARS job_ARA_S2_R400950 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400950.root" run="400950"
+
+JOB job_ARA_S2_R400053 ARA_job.sub 
+VARS job_ARA_S2_R400053 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400053.root" run="400053"
+
+JOB job_ARA_S2_R400355 ARA_job.sub 
+VARS job_ARA_S2_R400355 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400355.root" run="400355"
+
+JOB job_ARA_S2_R400210 ARA_job.sub 
+VARS job_ARA_S2_R400210 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400210.root" run="400210"
+
+JOB job_ARA_S2_R400516 ARA_job.sub 
+VARS job_ARA_S2_R400516 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400516.root" run="400516"
+
+JOB job_ARA_S2_R400173 ARA_job.sub 
+VARS job_ARA_S2_R400173 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400173.root" run="400173"
+
+JOB job_ARA_S2_R400552 ARA_job.sub 
+VARS job_ARA_S2_R400552 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400552.root" run="400552"
+
+JOB job_ARA_S2_R400196 ARA_job.sub 
+VARS job_ARA_S2_R400196 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400196.root" run="400196"
+
+JOB job_ARA_S2_R400282 ARA_job.sub 
+VARS job_ARA_S2_R400282 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400282.root" run="400282"
+
+JOB job_ARA_S2_R400372 ARA_job.sub 
+VARS job_ARA_S2_R400372 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400372.root" run="400372"
+
+JOB job_ARA_S2_R400966 ARA_job.sub 
+VARS job_ARA_S2_R400966 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400966.root" run="400966"
+
+JOB job_ARA_S2_R400960 ARA_job.sub 
+VARS job_ARA_S2_R400960 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400960.root" run="400960"
+
+JOB job_ARA_S2_R400969 ARA_job.sub 
+VARS job_ARA_S2_R400969 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400969.root" run="400969"
+
+JOB job_ARA_S2_R400411 ARA_job.sub 
+VARS job_ARA_S2_R400411 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400411.root" run="400411"
+
+JOB job_ARA_S2_R400535 ARA_job.sub 
+VARS job_ARA_S2_R400535 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400535.root" run="400535"
+
+JOB job_ARA_S2_R400364 ARA_job.sub 
+VARS job_ARA_S2_R400364 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400364.root" run="400364"
+
+JOB job_ARA_S2_R400319 ARA_job.sub 
+VARS job_ARA_S2_R400319 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400319.root" run="400319"
+
+JOB job_ARA_S2_R400609 ARA_job.sub 
+VARS job_ARA_S2_R400609 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400609.root" run="400609"
+
+JOB job_ARA_S2_R400759 ARA_job.sub 
+VARS job_ARA_S2_R400759 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400759.root" run="400759"
+
+JOB job_ARA_S2_R400812 ARA_job.sub 
+VARS job_ARA_S2_R400812 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400812.root" run="400812"
+
+JOB job_ARA_S2_R400075 ARA_job.sub 
+VARS job_ARA_S2_R400075 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400075.root" run="400075"
+
+JOB job_ARA_S2_R400244 ARA_job.sub 
+VARS job_ARA_S2_R400244 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400244.root" run="400244"
+
+JOB job_ARA_S2_R400264 ARA_job.sub 
+VARS job_ARA_S2_R400264 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400264.root" run="400264"
+
+JOB job_ARA_S2_R400750 ARA_job.sub 
+VARS job_ARA_S2_R400750 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400750.root" run="400750"
+
+JOB job_ARA_S2_R400513 ARA_job.sub 
+VARS job_ARA_S2_R400513 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400513.root" run="400513"
+
+JOB job_ARA_S2_R400560 ARA_job.sub 
+VARS job_ARA_S2_R400560 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400560.root" run="400560"
+
+JOB job_ARA_S2_R400670 ARA_job.sub 
+VARS job_ARA_S2_R400670 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400670.root" run="400670"
+
+JOB job_ARA_S2_R400127 ARA_job.sub 
+VARS job_ARA_S2_R400127 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400127.root" run="400127"
+
+JOB job_ARA_S2_R400566 ARA_job.sub 
+VARS job_ARA_S2_R400566 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400566.root" run="400566"
+
+JOB job_ARA_S2_R400728 ARA_job.sub 
+VARS job_ARA_S2_R400728 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400728.root" run="400728"
+
+JOB job_ARA_S2_R400732 ARA_job.sub 
+VARS job_ARA_S2_R400732 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400732.root" run="400732"
+
+JOB job_ARA_S2_R400303 ARA_job.sub 
+VARS job_ARA_S2_R400303 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400303.root" run="400303"
+
+JOB job_ARA_S2_R400650 ARA_job.sub 
+VARS job_ARA_S2_R400650 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400650.root" run="400650"
+
+JOB job_ARA_S2_R400869 ARA_job.sub 
+VARS job_ARA_S2_R400869 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400869.root" run="400869"
+
+JOB job_ARA_S2_R400988 ARA_job.sub 
+VARS job_ARA_S2_R400988 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400988.root" run="400988"
+
+JOB job_ARA_S2_R400688 ARA_job.sub 
+VARS job_ARA_S2_R400688 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400688.root" run="400688"
+
+JOB job_ARA_S2_R400571 ARA_job.sub 
+VARS job_ARA_S2_R400571 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400571.root" run="400571"
+
+JOB job_ARA_S2_R400064 ARA_job.sub 
+VARS job_ARA_S2_R400064 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400064.root" run="400064"
+
+JOB job_ARA_S2_R400856 ARA_job.sub 
+VARS job_ARA_S2_R400856 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400856.root" run="400856"
+
+JOB job_ARA_S2_R400313 ARA_job.sub 
+VARS job_ARA_S2_R400313 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400313.root" run="400313"
+
+JOB job_ARA_S2_R400503 ARA_job.sub 
+VARS job_ARA_S2_R400503 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400503.root" run="400503"
+
+JOB job_ARA_S2_R400700 ARA_job.sub 
+VARS job_ARA_S2_R400700 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400700.root" run="400700"
+
+JOB job_ARA_S2_R400371 ARA_job.sub 
+VARS job_ARA_S2_R400371 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400371.root" run="400371"
+
+JOB job_ARA_S2_R400993 ARA_job.sub 
+VARS job_ARA_S2_R400993 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400993.root" run="400993"
+
+JOB job_ARA_S2_R400865 ARA_job.sub 
+VARS job_ARA_S2_R400865 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400865.root" run="400865"
+
+JOB job_ARA_S2_R400671 ARA_job.sub 
+VARS job_ARA_S2_R400671 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400671.root" run="400671"
+
+JOB job_ARA_S2_R400016 ARA_job.sub 
+VARS job_ARA_S2_R400016 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400016.root" run="400016"
+
+JOB job_ARA_S2_R400977 ARA_job.sub 
+VARS job_ARA_S2_R400977 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400977.root" run="400977"
+
+JOB job_ARA_S2_R400511 ARA_job.sub 
+VARS job_ARA_S2_R400511 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400511.root" run="400511"
+
+JOB job_ARA_S2_R400777 ARA_job.sub 
+VARS job_ARA_S2_R400777 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400777.root" run="400777"
+
+JOB job_ARA_S2_R400863 ARA_job.sub 
+VARS job_ARA_S2_R400863 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400863.root" run="400863"
+
+JOB job_ARA_S2_R400438 ARA_job.sub 
+VARS job_ARA_S2_R400438 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400438.root" run="400438"
+
+JOB job_ARA_S2_R400309 ARA_job.sub 
+VARS job_ARA_S2_R400309 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400309.root" run="400309"
+
+JOB job_ARA_S2_R400815 ARA_job.sub 
+VARS job_ARA_S2_R400815 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400815.root" run="400815"
+
+JOB job_ARA_S2_R400625 ARA_job.sub 
+VARS job_ARA_S2_R400625 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400625.root" run="400625"
+
+JOB job_ARA_S2_R400889 ARA_job.sub 
+VARS job_ARA_S2_R400889 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400889.root" run="400889"
+
+JOB job_ARA_S2_R400437 ARA_job.sub 
+VARS job_ARA_S2_R400437 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400437.root" run="400437"
+
+JOB job_ARA_S2_R400515 ARA_job.sub 
+VARS job_ARA_S2_R400515 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400515.root" run="400515"
+
+JOB job_ARA_S2_R400639 ARA_job.sub 
+VARS job_ARA_S2_R400639 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400639.root" run="400639"
+
+JOB job_ARA_S2_R400711 ARA_job.sub 
+VARS job_ARA_S2_R400711 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400711.root" run="400711"
+
+JOB job_ARA_S2_R400926 ARA_job.sub 
+VARS job_ARA_S2_R400926 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400926.root" run="400926"
+
+JOB job_ARA_S2_R400559 ARA_job.sub 
+VARS job_ARA_S2_R400559 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400559.root" run="400559"
+
+JOB job_ARA_S2_R400788 ARA_job.sub 
+VARS job_ARA_S2_R400788 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400788.root" run="400788"
+
+JOB job_ARA_S2_R400679 ARA_job.sub 
+VARS job_ARA_S2_R400679 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400679.root" run="400679"
+
+JOB job_ARA_S2_R400692 ARA_job.sub 
+VARS job_ARA_S2_R400692 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400692.root" run="400692"
+
+JOB job_ARA_S2_R400250 ARA_job.sub 
+VARS job_ARA_S2_R400250 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400250.root" run="400250"
+
+JOB job_ARA_S2_R400800 ARA_job.sub 
+VARS job_ARA_S2_R400800 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400800.root" run="400800"
+
+JOB job_ARA_S2_R400803 ARA_job.sub 
+VARS job_ARA_S2_R400803 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400803.root" run="400803"
+
+JOB job_ARA_S2_R400403 ARA_job.sub 
+VARS job_ARA_S2_R400403 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400403.root" run="400403"
+
+JOB job_ARA_S2_R400330 ARA_job.sub 
+VARS job_ARA_S2_R400330 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400330.root" run="400330"
+
+JOB job_ARA_S2_R400475 ARA_job.sub 
+VARS job_ARA_S2_R400475 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400475.root" run="400475"
+
+JOB job_ARA_S2_R400036 ARA_job.sub 
+VARS job_ARA_S2_R400036 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400036.root" run="400036"
+
+JOB job_ARA_S2_R400028 ARA_job.sub 
+VARS job_ARA_S2_R400028 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400028.root" run="400028"
+
+JOB job_ARA_S2_R400288 ARA_job.sub 
+VARS job_ARA_S2_R400288 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400288.root" run="400288"
+
+JOB job_ARA_S2_R400505 ARA_job.sub 
+VARS job_ARA_S2_R400505 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400505.root" run="400505"
+
+JOB job_ARA_S2_R400181 ARA_job.sub 
+VARS job_ARA_S2_R400181 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400181.root" run="400181"
+
+JOB job_ARA_S2_R400920 ARA_job.sub 
+VARS job_ARA_S2_R400920 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400920.root" run="400920"
+
+JOB job_ARA_S2_R400720 ARA_job.sub 
+VARS job_ARA_S2_R400720 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400720.root" run="400720"
+
+JOB job_ARA_S2_R400015 ARA_job.sub 
+VARS job_ARA_S2_R400015 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400015.root" run="400015"
+
+JOB job_ARA_S2_R400718 ARA_job.sub 
+VARS job_ARA_S2_R400718 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400718.root" run="400718"
+
+JOB job_ARA_S2_R400146 ARA_job.sub 
+VARS job_ARA_S2_R400146 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400146.root" run="400146"
+
+JOB job_ARA_S2_R400222 ARA_job.sub 
+VARS job_ARA_S2_R400222 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400222.root" run="400222"
+
+JOB job_ARA_S2_R400747 ARA_job.sub 
+VARS job_ARA_S2_R400747 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400747.root" run="400747"
+
+JOB job_ARA_S2_R400415 ARA_job.sub 
+VARS job_ARA_S2_R400415 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400415.root" run="400415"
+
+JOB job_ARA_S2_R400886 ARA_job.sub 
+VARS job_ARA_S2_R400886 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400886.root" run="400886"
+
+JOB job_ARA_S2_R400501 ARA_job.sub 
+VARS job_ARA_S2_R400501 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400501.root" run="400501"
+
+JOB job_ARA_S2_R400683 ARA_job.sub 
+VARS job_ARA_S2_R400683 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400683.root" run="400683"
+
+JOB job_ARA_S2_R400576 ARA_job.sub 
+VARS job_ARA_S2_R400576 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400576.root" run="400576"
+
+JOB job_ARA_S2_R400553 ARA_job.sub 
+VARS job_ARA_S2_R400553 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400553.root" run="400553"
+
+JOB job_ARA_S2_R400457 ARA_job.sub 
+VARS job_ARA_S2_R400457 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400457.root" run="400457"
+
+JOB job_ARA_S2_R400008 ARA_job.sub 
+VARS job_ARA_S2_R400008 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400008.root" run="400008"
+
+JOB job_ARA_S2_R400885 ARA_job.sub 
+VARS job_ARA_S2_R400885 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400885.root" run="400885"
+
+JOB job_ARA_S2_R400843 ARA_job.sub 
+VARS job_ARA_S2_R400843 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400843.root" run="400843"
+
+JOB job_ARA_S2_R400690 ARA_job.sub 
+VARS job_ARA_S2_R400690 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400690.root" run="400690"
+
+JOB job_ARA_S2_R400029 ARA_job.sub 
+VARS job_ARA_S2_R400029 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400029.root" run="400029"
+
+JOB job_ARA_S2_R400911 ARA_job.sub 
+VARS job_ARA_S2_R400911 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400911.root" run="400911"
+
+JOB job_ARA_S2_R400304 ARA_job.sub 
+VARS job_ARA_S2_R400304 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400304.root" run="400304"
+
+JOB job_ARA_S2_R400363 ARA_job.sub 
+VARS job_ARA_S2_R400363 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400363.root" run="400363"
+
+JOB job_ARA_S2_R400719 ARA_job.sub 
+VARS job_ARA_S2_R400719 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400719.root" run="400719"
+
+JOB job_ARA_S2_R400300 ARA_job.sub 
+VARS job_ARA_S2_R400300 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400300.root" run="400300"
+
+JOB job_ARA_S2_R400381 ARA_job.sub 
+VARS job_ARA_S2_R400381 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400381.root" run="400381"
+
+JOB job_ARA_S2_R400917 ARA_job.sub 
+VARS job_ARA_S2_R400917 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400917.root" run="400917"
+
+JOB job_ARA_S2_R400011 ARA_job.sub 
+VARS job_ARA_S2_R400011 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400011.root" run="400011"
+
+JOB job_ARA_S2_R400255 ARA_job.sub 
+VARS job_ARA_S2_R400255 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400255.root" run="400255"
+
+JOB job_ARA_S2_R400066 ARA_job.sub 
+VARS job_ARA_S2_R400066 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400066.root" run="400066"
+
+JOB job_ARA_S2_R400724 ARA_job.sub 
+VARS job_ARA_S2_R400724 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400724.root" run="400724"
+
+JOB job_ARA_S2_R400896 ARA_job.sub 
+VARS job_ARA_S2_R400896 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400896.root" run="400896"
+
+JOB job_ARA_S2_R400778 ARA_job.sub 
+VARS job_ARA_S2_R400778 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400778.root" run="400778"
+
+JOB job_ARA_S2_R400002 ARA_job.sub 
+VARS job_ARA_S2_R400002 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400002.root" run="400002"
+
+JOB job_ARA_S2_R400277 ARA_job.sub 
+VARS job_ARA_S2_R400277 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400277.root" run="400277"
+
+JOB job_ARA_S2_R400497 ARA_job.sub 
+VARS job_ARA_S2_R400497 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400497.root" run="400497"
+
+JOB job_ARA_S2_R400547 ARA_job.sub 
+VARS job_ARA_S2_R400547 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400547.root" run="400547"
+
+JOB job_ARA_S2_R400153 ARA_job.sub 
+VARS job_ARA_S2_R400153 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400153.root" run="400153"
+
+JOB job_ARA_S2_R400274 ARA_job.sub 
+VARS job_ARA_S2_R400274 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400274.root" run="400274"
+
+JOB job_ARA_S2_R400613 ARA_job.sub 
+VARS job_ARA_S2_R400613 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400613.root" run="400613"
+
+JOB job_ARA_S2_R400629 ARA_job.sub 
+VARS job_ARA_S2_R400629 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400629.root" run="400629"
+
+JOB job_ARA_S2_R400176 ARA_job.sub 
+VARS job_ARA_S2_R400176 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400176.root" run="400176"
+
+JOB job_ARA_S2_R400520 ARA_job.sub 
+VARS job_ARA_S2_R400520 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400520.root" run="400520"
+
+JOB job_ARA_S2_R400108 ARA_job.sub 
+VARS job_ARA_S2_R400108 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400108.root" run="400108"
+
+JOB job_ARA_S2_R400502 ARA_job.sub 
+VARS job_ARA_S2_R400502 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400502.root" run="400502"
+
+JOB job_ARA_S2_R400888 ARA_job.sub 
+VARS job_ARA_S2_R400888 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400888.root" run="400888"
+
+JOB job_ARA_S2_R400592 ARA_job.sub 
+VARS job_ARA_S2_R400592 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400592.root" run="400592"
+
+JOB job_ARA_S2_R400283 ARA_job.sub 
+VARS job_ARA_S2_R400283 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400283.root" run="400283"
+
+JOB job_ARA_S2_R400161 ARA_job.sub 
+VARS job_ARA_S2_R400161 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400161.root" run="400161"
+
+JOB job_ARA_S2_R400602 ARA_job.sub 
+VARS job_ARA_S2_R400602 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400602.root" run="400602"
+
+JOB job_ARA_S2_R400195 ARA_job.sub 
+VARS job_ARA_S2_R400195 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400195.root" run="400195"
+
+JOB job_ARA_S2_R400191 ARA_job.sub 
+VARS job_ARA_S2_R400191 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400191.root" run="400191"
+
+JOB job_ARA_S2_R400978 ARA_job.sub 
+VARS job_ARA_S2_R400978 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400978.root" run="400978"
+
+JOB job_ARA_S2_R400698 ARA_job.sub 
+VARS job_ARA_S2_R400698 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400698.root" run="400698"
+
+JOB job_ARA_S2_R400448 ARA_job.sub 
+VARS job_ARA_S2_R400448 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400448.root" run="400448"
+
+JOB job_ARA_S2_R400556 ARA_job.sub 
+VARS job_ARA_S2_R400556 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400556.root" run="400556"
+
+JOB job_ARA_S2_R400924 ARA_job.sub 
+VARS job_ARA_S2_R400924 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400924.root" run="400924"
+
+JOB job_ARA_S2_R400252 ARA_job.sub 
+VARS job_ARA_S2_R400252 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400252.root" run="400252"
+
+JOB job_ARA_S2_R400393 ARA_job.sub 
+VARS job_ARA_S2_R400393 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400393.root" run="400393"
+
+JOB job_ARA_S2_R400854 ARA_job.sub 
+VARS job_ARA_S2_R400854 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400854.root" run="400854"
+
+JOB job_ARA_S2_R400359 ARA_job.sub 
+VARS job_ARA_S2_R400359 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400359.root" run="400359"
+
+JOB job_ARA_S2_R400366 ARA_job.sub 
+VARS job_ARA_S2_R400366 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400366.root" run="400366"
+
+JOB job_ARA_S2_R400117 ARA_job.sub 
+VARS job_ARA_S2_R400117 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400117.root" run="400117"
+
+JOB job_ARA_S2_R400858 ARA_job.sub 
+VARS job_ARA_S2_R400858 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400858.root" run="400858"
+
+JOB job_ARA_S2_R400349 ARA_job.sub 
+VARS job_ARA_S2_R400349 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400349.root" run="400349"
+
+JOB job_ARA_S2_R400806 ARA_job.sub 
+VARS job_ARA_S2_R400806 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400806.root" run="400806"
+
+JOB job_ARA_S2_R400998 ARA_job.sub 
+VARS job_ARA_S2_R400998 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400998.root" run="400998"
+
+JOB job_ARA_S2_R400136 ARA_job.sub 
+VARS job_ARA_S2_R400136 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400136.root" run="400136"
+
+JOB job_ARA_S2_R400472 ARA_job.sub 
+VARS job_ARA_S2_R400472 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400472.root" run="400472"
+
+JOB job_ARA_S2_R400837 ARA_job.sub 
+VARS job_ARA_S2_R400837 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400837.root" run="400837"
+
+JOB job_ARA_S2_R400769 ARA_job.sub 
+VARS job_ARA_S2_R400769 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400769.root" run="400769"
+
+JOB job_ARA_S2_R400263 ARA_job.sub 
+VARS job_ARA_S2_R400263 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400263.root" run="400263"
+
+JOB job_ARA_S2_R400527 ARA_job.sub 
+VARS job_ARA_S2_R400527 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400527.root" run="400527"
+
+JOB job_ARA_S2_R400786 ARA_job.sub 
+VARS job_ARA_S2_R400786 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400786.root" run="400786"
+
+JOB job_ARA_S2_R400362 ARA_job.sub 
+VARS job_ARA_S2_R400362 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400362.root" run="400362"
+
+JOB job_ARA_S2_R400245 ARA_job.sub 
+VARS job_ARA_S2_R400245 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400245.root" run="400245"
+
+JOB job_ARA_S2_R400763 ARA_job.sub 
+VARS job_ARA_S2_R400763 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400763.root" run="400763"
+
+JOB job_ARA_S2_R400351 ARA_job.sub 
+VARS job_ARA_S2_R400351 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400351.root" run="400351"
+
+JOB job_ARA_S2_R400238 ARA_job.sub 
+VARS job_ARA_S2_R400238 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400238.root" run="400238"
+
+JOB job_ARA_S2_R400635 ARA_job.sub 
+VARS job_ARA_S2_R400635 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400635.root" run="400635"
+
+JOB job_ARA_S2_R400521 ARA_job.sub 
+VARS job_ARA_S2_R400521 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400521.root" run="400521"
+
+JOB job_ARA_S2_R400020 ARA_job.sub 
+VARS job_ARA_S2_R400020 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400020.root" run="400020"
+
+JOB job_ARA_S2_R400190 ARA_job.sub 
+VARS job_ARA_S2_R400190 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400190.root" run="400190"
+
+JOB job_ARA_S2_R400171 ARA_job.sub 
+VARS job_ARA_S2_R400171 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400171.root" run="400171"
+
+JOB job_ARA_S2_R400751 ARA_job.sub 
+VARS job_ARA_S2_R400751 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400751.root" run="400751"
+
+JOB job_ARA_S2_R400354 ARA_job.sub 
+VARS job_ARA_S2_R400354 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400354.root" run="400354"
+
+JOB job_ARA_S2_R400439 ARA_job.sub 
+VARS job_ARA_S2_R400439 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400439.root" run="400439"
+
+JOB job_ARA_S2_R400715 ARA_job.sub 
+VARS job_ARA_S2_R400715 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400715.root" run="400715"
+
+JOB job_ARA_S2_R400628 ARA_job.sub 
+VARS job_ARA_S2_R400628 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400628.root" run="400628"
+
+JOB job_ARA_S2_R400083 ARA_job.sub 
+VARS job_ARA_S2_R400083 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400083.root" run="400083"
+
+JOB job_ARA_S2_R400094 ARA_job.sub 
+VARS job_ARA_S2_R400094 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400094.root" run="400094"
+
+JOB job_ARA_S2_R400416 ARA_job.sub 
+VARS job_ARA_S2_R400416 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400416.root" run="400416"
+
+JOB job_ARA_S2_R400776 ARA_job.sub 
+VARS job_ARA_S2_R400776 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400776.root" run="400776"
+
+JOB job_ARA_S2_R400387 ARA_job.sub 
+VARS job_ARA_S2_R400387 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400387.root" run="400387"
+
+JOB job_ARA_S2_R400399 ARA_job.sub 
+VARS job_ARA_S2_R400399 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400399.root" run="400399"
+
+JOB job_ARA_S2_R400599 ARA_job.sub 
+VARS job_ARA_S2_R400599 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400599.root" run="400599"
+
+JOB job_ARA_S2_R400461 ARA_job.sub 
+VARS job_ARA_S2_R400461 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400461.root" run="400461"
+
+JOB job_ARA_S2_R400943 ARA_job.sub 
+VARS job_ARA_S2_R400943 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400943.root" run="400943"
+
+JOB job_ARA_S2_R400879 ARA_job.sub 
+VARS job_ARA_S2_R400879 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400879.root" run="400879"
+
+JOB job_ARA_S2_R400929 ARA_job.sub 
+VARS job_ARA_S2_R400929 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400929.root" run="400929"
+
+JOB job_ARA_S2_R400297 ARA_job.sub 
+VARS job_ARA_S2_R400297 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400297.root" run="400297"
+
+JOB job_ARA_S2_R400905 ARA_job.sub 
+VARS job_ARA_S2_R400905 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400905.root" run="400905"
+
+JOB job_ARA_S2_R400203 ARA_job.sub 
+VARS job_ARA_S2_R400203 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400203.root" run="400203"
+
+JOB job_ARA_S2_R400989 ARA_job.sub 
+VARS job_ARA_S2_R400989 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400989.root" run="400989"
+
+JOB job_ARA_S2_R400040 ARA_job.sub 
+VARS job_ARA_S2_R400040 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400040.root" run="400040"
+
+JOB job_ARA_S2_R400062 ARA_job.sub 
+VARS job_ARA_S2_R400062 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400062.root" run="400062"
+
+JOB job_ARA_S2_R400707 ARA_job.sub 
+VARS job_ARA_S2_R400707 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400707.root" run="400707"
+
+JOB job_ARA_S2_R400081 ARA_job.sub 
+VARS job_ARA_S2_R400081 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400081.root" run="400081"
+
+JOB job_ARA_S2_R400682 ARA_job.sub 
+VARS job_ARA_S2_R400682 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400682.root" run="400682"
+
+JOB job_ARA_S2_R400148 ARA_job.sub 
+VARS job_ARA_S2_R400148 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400148.root" run="400148"
+
+JOB job_ARA_S2_R400985 ARA_job.sub 
+VARS job_ARA_S2_R400985 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400985.root" run="400985"
+
+JOB job_ARA_S2_R400987 ARA_job.sub 
+VARS job_ARA_S2_R400987 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400987.root" run="400987"
+
+JOB job_ARA_S2_R400951 ARA_job.sub 
+VARS job_ARA_S2_R400951 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400951.root" run="400951"
+
+JOB job_ARA_S2_R400010 ARA_job.sub 
+VARS job_ARA_S2_R400010 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400010.root" run="400010"
+
+JOB job_ARA_S2_R400578 ARA_job.sub 
+VARS job_ARA_S2_R400578 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400578.root" run="400578"
+
+JOB job_ARA_S2_R400545 ARA_job.sub 
+VARS job_ARA_S2_R400545 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400545.root" run="400545"
+
+JOB job_ARA_S2_R400046 ARA_job.sub 
+VARS job_ARA_S2_R400046 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400046.root" run="400046"
+
+JOB job_ARA_S2_R400435 ARA_job.sub 
+VARS job_ARA_S2_R400435 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400435.root" run="400435"
+
+JOB job_ARA_S2_R400678 ARA_job.sub 
+VARS job_ARA_S2_R400678 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400678.root" run="400678"
+
+JOB job_ARA_S2_R400662 ARA_job.sub 
+VARS job_ARA_S2_R400662 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400662.root" run="400662"
+
+JOB job_ARA_S2_R400741 ARA_job.sub 
+VARS job_ARA_S2_R400741 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400741.root" run="400741"
+
+JOB job_ARA_S2_R400873 ARA_job.sub 
+VARS job_ARA_S2_R400873 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400873.root" run="400873"
+
+JOB job_ARA_S2_R400942 ARA_job.sub 
+VARS job_ARA_S2_R400942 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400942.root" run="400942"
+
+JOB job_ARA_S2_R400123 ARA_job.sub 
+VARS job_ARA_S2_R400123 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400123.root" run="400123"
+
+JOB job_ARA_S2_R400900 ARA_job.sub 
+VARS job_ARA_S2_R400900 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400900.root" run="400900"
+
+JOB job_ARA_S2_R400496 ARA_job.sub 
+VARS job_ARA_S2_R400496 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400496.root" run="400496"
+
+JOB job_ARA_S2_R400135 ARA_job.sub 
+VARS job_ARA_S2_R400135 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400135.root" run="400135"
+
+JOB job_ARA_S2_R400452 ARA_job.sub 
+VARS job_ARA_S2_R400452 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400452.root" run="400452"
+
+JOB job_ARA_S2_R400767 ARA_job.sub 
+VARS job_ARA_S2_R400767 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400767.root" run="400767"
+
+JOB job_ARA_S2_R400616 ARA_job.sub 
+VARS job_ARA_S2_R400616 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400616.root" run="400616"
+
+JOB job_ARA_S2_R400714 ARA_job.sub 
+VARS job_ARA_S2_R400714 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400714.root" run="400714"
+
+JOB job_ARA_S2_R400226 ARA_job.sub 
+VARS job_ARA_S2_R400226 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400226.root" run="400226"
+
+JOB job_ARA_S2_R400348 ARA_job.sub 
+VARS job_ARA_S2_R400348 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400348.root" run="400348"
+
+JOB job_ARA_S2_R400500 ARA_job.sub 
+VARS job_ARA_S2_R400500 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400500.root" run="400500"
+
+JOB job_ARA_S2_R400398 ARA_job.sub 
+VARS job_ARA_S2_R400398 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400398.root" run="400398"
+
+JOB job_ARA_S2_R400424 ARA_job.sub 
+VARS job_ARA_S2_R400424 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400424.root" run="400424"
+
+JOB job_ARA_S2_R400772 ARA_job.sub 
+VARS job_ARA_S2_R400772 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400772.root" run="400772"
+
+JOB job_ARA_S2_R400918 ARA_job.sub 
+VARS job_ARA_S2_R400918 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400918.root" run="400918"
+
+JOB job_ARA_S2_R400251 ARA_job.sub 
+VARS job_ARA_S2_R400251 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400251.root" run="400251"
+
+JOB job_ARA_S2_R400055 ARA_job.sub 
+VARS job_ARA_S2_R400055 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400055.root" run="400055"
+
+JOB job_ARA_S2_R400973 ARA_job.sub 
+VARS job_ARA_S2_R400973 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400973.root" run="400973"
+
+JOB job_ARA_S2_R400543 ARA_job.sub 
+VARS job_ARA_S2_R400543 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400543.root" run="400543"
+
+JOB job_ARA_S2_R400514 ARA_job.sub 
+VARS job_ARA_S2_R400514 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400514.root" run="400514"
+
+JOB job_ARA_S2_R400796 ARA_job.sub 
+VARS job_ARA_S2_R400796 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400796.root" run="400796"
+
+JOB job_ARA_S2_R400941 ARA_job.sub 
+VARS job_ARA_S2_R400941 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400941.root" run="400941"
+
+JOB job_ARA_S2_R400529 ARA_job.sub 
+VARS job_ARA_S2_R400529 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400529.root" run="400529"
+
+JOB job_ARA_S2_R400850 ARA_job.sub 
+VARS job_ARA_S2_R400850 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400850.root" run="400850"
+
+JOB job_ARA_S2_R400335 ARA_job.sub 
+VARS job_ARA_S2_R400335 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400335.root" run="400335"
+
+JOB job_ARA_S2_R400890 ARA_job.sub 
+VARS job_ARA_S2_R400890 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400890.root" run="400890"
+
+JOB job_ARA_S2_R400058 ARA_job.sub 
+VARS job_ARA_S2_R400058 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400058.root" run="400058"
+
+JOB job_ARA_S2_R400510 ARA_job.sub 
+VARS job_ARA_S2_R400510 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400510.root" run="400510"
+
+JOB job_ARA_S2_R400709 ARA_job.sub 
+VARS job_ARA_S2_R400709 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400709.root" run="400709"
+
+JOB job_ARA_S2_R400582 ARA_job.sub 
+VARS job_ARA_S2_R400582 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400582.root" run="400582"
+
+JOB job_ARA_S2_R400159 ARA_job.sub 
+VARS job_ARA_S2_R400159 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400159.root" run="400159"
+
+JOB job_ARA_S2_R400232 ARA_job.sub 
+VARS job_ARA_S2_R400232 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400232.root" run="400232"
+
+JOB job_ARA_S2_R400583 ARA_job.sub 
+VARS job_ARA_S2_R400583 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400583.root" run="400583"
+
+JOB job_ARA_S2_R400646 ARA_job.sub 
+VARS job_ARA_S2_R400646 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400646.root" run="400646"
+
+JOB job_ARA_S2_R400165 ARA_job.sub 
+VARS job_ARA_S2_R400165 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400165.root" run="400165"
+
+JOB job_ARA_S2_R400904 ARA_job.sub 
+VARS job_ARA_S2_R400904 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400904.root" run="400904"
+
+JOB job_ARA_S2_R400963 ARA_job.sub 
+VARS job_ARA_S2_R400963 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400963.root" run="400963"
+
+JOB job_ARA_S2_R400327 ARA_job.sub 
+VARS job_ARA_S2_R400327 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400327.root" run="400327"
+
+JOB job_ARA_S2_R400030 ARA_job.sub 
+VARS job_ARA_S2_R400030 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400030.root" run="400030"
+
+JOB job_ARA_S2_R400600 ARA_job.sub 
+VARS job_ARA_S2_R400600 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400600.root" run="400600"
+
+JOB job_ARA_S2_R400258 ARA_job.sub 
+VARS job_ARA_S2_R400258 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400258.root" run="400258"
+
+JOB job_ARA_S2_R400441 ARA_job.sub 
+VARS job_ARA_S2_R400441 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400441.root" run="400441"
+
+JOB job_ARA_S2_R400938 ARA_job.sub 
+VARS job_ARA_S2_R400938 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400938.root" run="400938"
+
+JOB job_ARA_S2_R400548 ARA_job.sub 
+VARS job_ARA_S2_R400548 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400548.root" run="400548"
+
+JOB job_ARA_S2_R400494 ARA_job.sub 
+VARS job_ARA_S2_R400494 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400494.root" run="400494"
+
+JOB job_ARA_S2_R400485 ARA_job.sub 
+VARS job_ARA_S2_R400485 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400485.root" run="400485"
+
+JOB job_ARA_S2_R400945 ARA_job.sub 
+VARS job_ARA_S2_R400945 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400945.root" run="400945"
+
+JOB job_ARA_S2_R400916 ARA_job.sub 
+VARS job_ARA_S2_R400916 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400916.root" run="400916"
+
+JOB job_ARA_S2_R400343 ARA_job.sub 
+VARS job_ARA_S2_R400343 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400343.root" run="400343"
+
+JOB job_ARA_S2_R400318 ARA_job.sub 
+VARS job_ARA_S2_R400318 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400318.root" run="400318"
+
+JOB job_ARA_S2_R400076 ARA_job.sub 
+VARS job_ARA_S2_R400076 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400076.root" run="400076"
+
+JOB job_ARA_S2_R400649 ARA_job.sub 
+VARS job_ARA_S2_R400649 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400649.root" run="400649"
+
+JOB job_ARA_S2_R400820 ARA_job.sub 
+VARS job_ARA_S2_R400820 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400820.root" run="400820"
+
+JOB job_ARA_S2_R400549 ARA_job.sub 
+VARS job_ARA_S2_R400549 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400549.root" run="400549"
+
+JOB job_ARA_S2_R400151 ARA_job.sub 
+VARS job_ARA_S2_R400151 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400151.root" run="400151"
+
+JOB job_ARA_S2_R400653 ARA_job.sub 
+VARS job_ARA_S2_R400653 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400653.root" run="400653"
+
+JOB job_ARA_S2_R400390 ARA_job.sub 
+VARS job_ARA_S2_R400390 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400390.root" run="400390"
+
+JOB job_ARA_S2_R400975 ARA_job.sub 
+VARS job_ARA_S2_R400975 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400975.root" run="400975"
+
+JOB job_ARA_S2_R400315 ARA_job.sub 
+VARS job_ARA_S2_R400315 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400315.root" run="400315"
+
+JOB job_ARA_S2_R400341 ARA_job.sub 
+VARS job_ARA_S2_R400341 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400341.root" run="400341"
+
+JOB job_ARA_S2_R400814 ARA_job.sub 
+VARS job_ARA_S2_R400814 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400814.root" run="400814"
+
+JOB job_ARA_S2_R400198 ARA_job.sub 
+VARS job_ARA_S2_R400198 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400198.root" run="400198"
+
+JOB job_ARA_S2_R400240 ARA_job.sub 
+VARS job_ARA_S2_R400240 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400240.root" run="400240"
+
+JOB job_ARA_S2_R400783 ARA_job.sub 
+VARS job_ARA_S2_R400783 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400783.root" run="400783"
+
+JOB job_ARA_S2_R400042 ARA_job.sub 
+VARS job_ARA_S2_R400042 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400042.root" run="400042"
+
+JOB job_ARA_S2_R400317 ARA_job.sub 
+VARS job_ARA_S2_R400317 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400317.root" run="400317"
+
+JOB job_ARA_S2_R400804 ARA_job.sub 
+VARS job_ARA_S2_R400804 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400804.root" run="400804"
+
+JOB job_ARA_S2_R400228 ARA_job.sub 
+VARS job_ARA_S2_R400228 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400228.root" run="400228"
+
+JOB job_ARA_S2_R400308 ARA_job.sub 
+VARS job_ARA_S2_R400308 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400308.root" run="400308"
+
+JOB job_ARA_S2_R400048 ARA_job.sub 
+VARS job_ARA_S2_R400048 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400048.root" run="400048"
+
+JOB job_ARA_S2_R400003 ARA_job.sub 
+VARS job_ARA_S2_R400003 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400003.root" run="400003"
+
+JOB job_ARA_S2_R400199 ARA_job.sub 
+VARS job_ARA_S2_R400199 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400199.root" run="400199"
+
+JOB job_ARA_S2_R400473 ARA_job.sub 
+VARS job_ARA_S2_R400473 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400473.root" run="400473"
+
+JOB job_ARA_S2_R400471 ARA_job.sub 
+VARS job_ARA_S2_R400471 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400471.root" run="400471"
+
+JOB job_ARA_S2_R400322 ARA_job.sub 
+VARS job_ARA_S2_R400322 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400322.root" run="400322"
+
+JOB job_ARA_S2_R400464 ARA_job.sub 
+VARS job_ARA_S2_R400464 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400464.root" run="400464"
+
+JOB job_ARA_S2_R400410 ARA_job.sub 
+VARS job_ARA_S2_R400410 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400410.root" run="400410"
+
+JOB job_ARA_S2_R400512 ARA_job.sub 
+VARS job_ARA_S2_R400512 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400512.root" run="400512"
+
+JOB job_ARA_S2_R400367 ARA_job.sub 
+VARS job_ARA_S2_R400367 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400367.root" run="400367"
+
+JOB job_ARA_S2_R400830 ARA_job.sub 
+VARS job_ARA_S2_R400830 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400830.root" run="400830"
+
+JOB job_ARA_S2_R400598 ARA_job.sub 
+VARS job_ARA_S2_R400598 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400598.root" run="400598"
+
+JOB job_ARA_S2_R400414 ARA_job.sub 
+VARS job_ARA_S2_R400414 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400414.root" run="400414"
+
+JOB job_ARA_S2_R400425 ARA_job.sub 
+VARS job_ARA_S2_R400425 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400425.root" run="400425"
+
+JOB job_ARA_S2_R400093 ARA_job.sub 
+VARS job_ARA_S2_R400093 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400093.root" run="400093"
+
+JOB job_ARA_S2_R400971 ARA_job.sub 
+VARS job_ARA_S2_R400971 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400971.root" run="400971"
+
+JOB job_ARA_S2_R400908 ARA_job.sub 
+VARS job_ARA_S2_R400908 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400908.root" run="400908"
+
+JOB job_ARA_S2_R400901 ARA_job.sub 
+VARS job_ARA_S2_R400901 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400901.root" run="400901"
+
+JOB job_ARA_S2_R400569 ARA_job.sub 
+VARS job_ARA_S2_R400569 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400569.root" run="400569"
+
+JOB job_ARA_S2_R400057 ARA_job.sub 
+VARS job_ARA_S2_R400057 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400057.root" run="400057"
+
+JOB job_ARA_S2_R400254 ARA_job.sub 
+VARS job_ARA_S2_R400254 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400254.root" run="400254"
+
+JOB job_ARA_S2_R400872 ARA_job.sub 
+VARS job_ARA_S2_R400872 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400872.root" run="400872"
+
+JOB job_ARA_S2_R400114 ARA_job.sub 
+VARS job_ARA_S2_R400114 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400114.root" run="400114"
+
+JOB job_ARA_S2_R400876 ARA_job.sub 
+VARS job_ARA_S2_R400876 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400876.root" run="400876"
+
+JOB job_ARA_S2_R400328 ARA_job.sub 
+VARS job_ARA_S2_R400328 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400328.root" run="400328"
+
+JOB job_ARA_S2_R400703 ARA_job.sub 
+VARS job_ARA_S2_R400703 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400703.root" run="400703"
+
+JOB job_ARA_S2_R400138 ARA_job.sub 
+VARS job_ARA_S2_R400138 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400138.root" run="400138"
+
+JOB job_ARA_S2_R400594 ARA_job.sub 
+VARS job_ARA_S2_R400594 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400594.root" run="400594"
+
+JOB job_ARA_S2_R400581 ARA_job.sub 
+VARS job_ARA_S2_R400581 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400581.root" run="400581"
+
+JOB job_ARA_S2_R400685 ARA_job.sub 
+VARS job_ARA_S2_R400685 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400685.root" run="400685"
+
+JOB job_ARA_S2_R400041 ARA_job.sub 
+VARS job_ARA_S2_R400041 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400041.root" run="400041"
+
+JOB job_ARA_S2_R400844 ARA_job.sub 
+VARS job_ARA_S2_R400844 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400844.root" run="400844"
+
+JOB job_ARA_S2_R400440 ARA_job.sub 
+VARS job_ARA_S2_R400440 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400440.root" run="400440"
+
+JOB job_ARA_S2_R400407 ARA_job.sub 
+VARS job_ARA_S2_R400407 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400407.root" run="400407"
+
+JOB job_ARA_S2_R400373 ARA_job.sub 
+VARS job_ARA_S2_R400373 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400373.root" run="400373"
+
+JOB job_ARA_S2_R400302 ARA_job.sub 
+VARS job_ARA_S2_R400302 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400302.root" run="400302"
+
+JOB job_ARA_S2_R400249 ARA_job.sub 
+VARS job_ARA_S2_R400249 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400249.root" run="400249"
+
+JOB job_ARA_S2_R400284 ARA_job.sub 
+VARS job_ARA_S2_R400284 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400284.root" run="400284"
+
+JOB job_ARA_S2_R400107 ARA_job.sub 
+VARS job_ARA_S2_R400107 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400107.root" run="400107"
+
+JOB job_ARA_S2_R400140 ARA_job.sub 
+VARS job_ARA_S2_R400140 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400140.root" run="400140"
+
+JOB job_ARA_S2_R400049 ARA_job.sub 
+VARS job_ARA_S2_R400049 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400049.root" run="400049"
+
+JOB job_ARA_S2_R400115 ARA_job.sub 
+VARS job_ARA_S2_R400115 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400115.root" run="400115"
+
+JOB job_ARA_S2_R400544 ARA_job.sub 
+VARS job_ARA_S2_R400544 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400544.root" run="400544"
+
+JOB job_ARA_S2_R400855 ARA_job.sub 
+VARS job_ARA_S2_R400855 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400855.root" run="400855"
+
+JOB job_ARA_S2_R400735 ARA_job.sub 
+VARS job_ARA_S2_R400735 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400735.root" run="400735"
+
+JOB job_ARA_S2_R400795 ARA_job.sub 
+VARS job_ARA_S2_R400795 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400795.root" run="400795"
+
+JOB job_ARA_S2_R400113 ARA_job.sub 
+VARS job_ARA_S2_R400113 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400113.root" run="400113"
+
+JOB job_ARA_S2_R400422 ARA_job.sub 
+VARS job_ARA_S2_R400422 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400422.root" run="400422"
+
+JOB job_ARA_S2_R400467 ARA_job.sub 
+VARS job_ARA_S2_R400467 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400467.root" run="400467"
+
+JOB job_ARA_S2_R400054 ARA_job.sub 
+VARS job_ARA_S2_R400054 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400054.root" run="400054"
+
+JOB job_ARA_S2_R400660 ARA_job.sub 
+VARS job_ARA_S2_R400660 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400660.root" run="400660"
+
+JOB job_ARA_S2_R400948 ARA_job.sub 
+VARS job_ARA_S2_R400948 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400948.root" run="400948"
+
+JOB job_ARA_S2_R400748 ARA_job.sub 
+VARS job_ARA_S2_R400748 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400748.root" run="400748"
+
+JOB job_ARA_S2_R400601 ARA_job.sub 
+VARS job_ARA_S2_R400601 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400601.root" run="400601"
+
+JOB job_ARA_S2_R400194 ARA_job.sub 
+VARS job_ARA_S2_R400194 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400194.root" run="400194"
+
+JOB job_ARA_S2_R400522 ARA_job.sub 
+VARS job_ARA_S2_R400522 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400522.root" run="400522"
+
+JOB job_ARA_S2_R400219 ARA_job.sub 
+VARS job_ARA_S2_R400219 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400219.root" run="400219"
+
+JOB job_ARA_S2_R400826 ARA_job.sub 
+VARS job_ARA_S2_R400826 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400826.root" run="400826"
+
+JOB job_ARA_S2_R400097 ARA_job.sub 
+VARS job_ARA_S2_R400097 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400097.root" run="400097"
+
+JOB job_ARA_S2_R400540 ARA_job.sub 
+VARS job_ARA_S2_R400540 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400540.root" run="400540"
+
+JOB job_ARA_S2_R400401 ARA_job.sub 
+VARS job_ARA_S2_R400401 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400401.root" run="400401"
+
+JOB job_ARA_S2_R400086 ARA_job.sub 
+VARS job_ARA_S2_R400086 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400086.root" run="400086"
+
+JOB job_ARA_S2_R400570 ARA_job.sub 
+VARS job_ARA_S2_R400570 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400570.root" run="400570"
+
+JOB job_ARA_S2_R400400 ARA_job.sub 
+VARS job_ARA_S2_R400400 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400400.root" run="400400"
+
+JOB job_ARA_S2_R400412 ARA_job.sub 
+VARS job_ARA_S2_R400412 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400412.root" run="400412"
+
+JOB job_ARA_S2_R400384 ARA_job.sub 
+VARS job_ARA_S2_R400384 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400384.root" run="400384"
+
+JOB job_ARA_S2_R400375 ARA_job.sub 
+VARS job_ARA_S2_R400375 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400375.root" run="400375"
+
+JOB job_ARA_S2_R400708 ARA_job.sub 
+VARS job_ARA_S2_R400708 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400708.root" run="400708"
+
+JOB job_ARA_S2_R400433 ARA_job.sub 
+VARS job_ARA_S2_R400433 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400433.root" run="400433"
+
+JOB job_ARA_S2_R400870 ARA_job.sub 
+VARS job_ARA_S2_R400870 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400870.root" run="400870"
+
+JOB job_ARA_S2_R400217 ARA_job.sub 
+VARS job_ARA_S2_R400217 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400217.root" run="400217"
+
+JOB job_ARA_S2_R400992 ARA_job.sub 
+VARS job_ARA_S2_R400992 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400992.root" run="400992"
+
+JOB job_ARA_S2_R400487 ARA_job.sub 
+VARS job_ARA_S2_R400487 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400487.root" run="400487"
+
+JOB job_ARA_S2_R400784 ARA_job.sub 
+VARS job_ARA_S2_R400784 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400784.root" run="400784"
+
+JOB job_ARA_S2_R400268 ARA_job.sub 
+VARS job_ARA_S2_R400268 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400268.root" run="400268"
+
+JOB job_ARA_S2_R400147 ARA_job.sub 
+VARS job_ARA_S2_R400147 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400147.root" run="400147"
+
+JOB job_ARA_S2_R400478 ARA_job.sub 
+VARS job_ARA_S2_R400478 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400478.root" run="400478"
+
+JOB job_ARA_S2_R400921 ARA_job.sub 
+VARS job_ARA_S2_R400921 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400921.root" run="400921"
+
+JOB job_ARA_S2_R400687 ARA_job.sub 
+VARS job_ARA_S2_R400687 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400687.root" run="400687"
+
+JOB job_ARA_S2_R400110 ARA_job.sub 
+VARS job_ARA_S2_R400110 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400110.root" run="400110"
+
+JOB job_ARA_S2_R400060 ARA_job.sub 
+VARS job_ARA_S2_R400060 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400060.root" run="400060"
+
+JOB job_ARA_S2_R400866 ARA_job.sub 
+VARS job_ARA_S2_R400866 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400866.root" run="400866"
+
+JOB job_ARA_S2_R400069 ARA_job.sub 
+VARS job_ARA_S2_R400069 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400069.root" run="400069"
+
+JOB job_ARA_S2_R400637 ARA_job.sub 
+VARS job_ARA_S2_R400637 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400637.root" run="400637"
+
+JOB job_ARA_S2_R400764 ARA_job.sub 
+VARS job_ARA_S2_R400764 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400764.root" run="400764"
+
+JOB job_ARA_S2_R400541 ARA_job.sub 
+VARS job_ARA_S2_R400541 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400541.root" run="400541"
+
+JOB job_ARA_S2_R400561 ARA_job.sub 
+VARS job_ARA_S2_R400561 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400561.root" run="400561"
+
+JOB job_ARA_S2_R400860 ARA_job.sub 
+VARS job_ARA_S2_R400860 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400860.root" run="400860"
+
+JOB job_ARA_S2_R400999 ARA_job.sub 
+VARS job_ARA_S2_R400999 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400999.root" run="400999"
+
+JOB job_ARA_S2_R400298 ARA_job.sub 
+VARS job_ARA_S2_R400298 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400298.root" run="400298"
+
+JOB job_ARA_S2_R400021 ARA_job.sub 
+VARS job_ARA_S2_R400021 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400021.root" run="400021"
+
+JOB job_ARA_S2_R400022 ARA_job.sub 
+VARS job_ARA_S2_R400022 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400022.root" run="400022"
+
+JOB job_ARA_S2_R400645 ARA_job.sub 
+VARS job_ARA_S2_R400645 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400645.root" run="400645"
+
+JOB job_ARA_S2_R400396 ARA_job.sub 
+VARS job_ARA_S2_R400396 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400396.root" run="400396"
+
+JOB job_ARA_S2_R400842 ARA_job.sub 
+VARS job_ARA_S2_R400842 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400842.root" run="400842"
+
+JOB job_ARA_S2_R400073 ARA_job.sub 
+VARS job_ARA_S2_R400073 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400073.root" run="400073"
+
+JOB job_ARA_S2_R400201 ARA_job.sub 
+VARS job_ARA_S2_R400201 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400201.root" run="400201"
+
+JOB job_ARA_S2_R400597 ARA_job.sub 
+VARS job_ARA_S2_R400597 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400597.root" run="400597"
+
+JOB job_ARA_S2_R400132 ARA_job.sub 
+VARS job_ARA_S2_R400132 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400132.root" run="400132"
+
+JOB job_ARA_S2_R400023 ARA_job.sub 
+VARS job_ARA_S2_R400023 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400023.root" run="400023"
+
+JOB job_ARA_S2_R400470 ARA_job.sub 
+VARS job_ARA_S2_R400470 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400470.root" run="400470"
+
+JOB job_ARA_S2_R400158 ARA_job.sub 
+VARS job_ARA_S2_R400158 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400158.root" run="400158"
+
+JOB job_ARA_S2_R400722 ARA_job.sub 
+VARS job_ARA_S2_R400722 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400722.root" run="400722"
+
+JOB job_ARA_S2_R400997 ARA_job.sub 
+VARS job_ARA_S2_R400997 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400997.root" run="400997"
+
+JOB job_ARA_S2_R400587 ARA_job.sub 
+VARS job_ARA_S2_R400587 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400587.root" run="400587"
+
+JOB job_ARA_S2_R400907 ARA_job.sub 
+VARS job_ARA_S2_R400907 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400907.root" run="400907"
+
+JOB job_ARA_S2_R400738 ARA_job.sub 
+VARS job_ARA_S2_R400738 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400738.root" run="400738"
+
+JOB job_ARA_S2_R400789 ARA_job.sub 
+VARS job_ARA_S2_R400789 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400789.root" run="400789"
+
+JOB job_ARA_S2_R400655 ARA_job.sub 
+VARS job_ARA_S2_R400655 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400655.root" run="400655"
+
+JOB job_ARA_S2_R400018 ARA_job.sub 
+VARS job_ARA_S2_R400018 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400018.root" run="400018"
+
+JOB job_ARA_S2_R400216 ARA_job.sub 
+VARS job_ARA_S2_R400216 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400216.root" run="400216"
+
+JOB job_ARA_S2_R400643 ARA_job.sub 
+VARS job_ARA_S2_R400643 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400643.root" run="400643"
+
+JOB job_ARA_S2_R400779 ARA_job.sub 
+VARS job_ARA_S2_R400779 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400779.root" run="400779"
+
+JOB job_ARA_S2_R400326 ARA_job.sub 
+VARS job_ARA_S2_R400326 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400326.root" run="400326"
+
+JOB job_ARA_S2_R400139 ARA_job.sub 
+VARS job_ARA_S2_R400139 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400139.root" run="400139"
+
+JOB job_ARA_S2_R400725 ARA_job.sub 
+VARS job_ARA_S2_R400725 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400725.root" run="400725"
+
+JOB job_ARA_S2_R400730 ARA_job.sub 
+VARS job_ARA_S2_R400730 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400730.root" run="400730"
+
+JOB job_ARA_S2_R400651 ARA_job.sub 
+VARS job_ARA_S2_R400651 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400651.root" run="400651"
+
+JOB job_ARA_S2_R400266 ARA_job.sub 
+VARS job_ARA_S2_R400266 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400266.root" run="400266"
+
+JOB job_ARA_S2_R400868 ARA_job.sub 
+VARS job_ARA_S2_R400868 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400868.root" run="400868"
+
+JOB job_ARA_S2_R400706 ARA_job.sub 
+VARS job_ARA_S2_R400706 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400706.root" run="400706"
+
+JOB job_ARA_S2_R400077 ARA_job.sub 
+VARS job_ARA_S2_R400077 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400077.root" run="400077"
+
+JOB job_ARA_S2_R400782 ARA_job.sub 
+VARS job_ARA_S2_R400782 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400782.root" run="400782"
+
+JOB job_ARA_S2_R400462 ARA_job.sub 
+VARS job_ARA_S2_R400462 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400462.root" run="400462"
+
+JOB job_ARA_S2_R400585 ARA_job.sub 
+VARS job_ARA_S2_R400585 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400585.root" run="400585"
+
+JOB job_ARA_S2_R400102 ARA_job.sub 
+VARS job_ARA_S2_R400102 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400102.root" run="400102"
+
+JOB job_ARA_S2_R400183 ARA_job.sub 
+VARS job_ARA_S2_R400183 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400183.root" run="400183"
+
+JOB job_ARA_S2_R400482 ARA_job.sub 
+VARS job_ARA_S2_R400482 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400482.root" run="400482"
+
+JOB job_ARA_S2_R400550 ARA_job.sub 
+VARS job_ARA_S2_R400550 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400550.root" run="400550"
+
+JOB job_ARA_S2_R400749 ARA_job.sub 
+VARS job_ARA_S2_R400749 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400749.root" run="400749"
+
+JOB job_ARA_S2_R400833 ARA_job.sub 
+VARS job_ARA_S2_R400833 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400833.root" run="400833"
+
+JOB job_ARA_S2_R400072 ARA_job.sub 
+VARS job_ARA_S2_R400072 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400072.root" run="400072"
+
+JOB job_ARA_S2_R400823 ARA_job.sub 
+VARS job_ARA_S2_R400823 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400823.root" run="400823"
+
+JOB job_ARA_S2_R400160 ARA_job.sub 
+VARS job_ARA_S2_R400160 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400160.root" run="400160"
+
+JOB job_ARA_S2_R400798 ARA_job.sub 
+VARS job_ARA_S2_R400798 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400798.root" run="400798"
+
+JOB job_ARA_S2_R400958 ARA_job.sub 
+VARS job_ARA_S2_R400958 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400958.root" run="400958"
+
+JOB job_ARA_S2_R400608 ARA_job.sub 
+VARS job_ARA_S2_R400608 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400608.root" run="400608"
+
+JOB job_ARA_S2_R400838 ARA_job.sub 
+VARS job_ARA_S2_R400838 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400838.root" run="400838"
+
+JOB job_ARA_S2_R400686 ARA_job.sub 
+VARS job_ARA_S2_R400686 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400686.root" run="400686"
+
+JOB job_ARA_S2_R400006 ARA_job.sub 
+VARS job_ARA_S2_R400006 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400006.root" run="400006"
+
+JOB job_ARA_S2_R400101 ARA_job.sub 
+VARS job_ARA_S2_R400101 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400101.root" run="400101"
+
+JOB job_ARA_S2_R400622 ARA_job.sub 
+VARS job_ARA_S2_R400622 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400622.root" run="400622"
+
+JOB job_ARA_S2_R400910 ARA_job.sub 
+VARS job_ARA_S2_R400910 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400910.root" run="400910"
+
+JOB job_ARA_S2_R400227 ARA_job.sub 
+VARS job_ARA_S2_R400227 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400227.root" run="400227"
+
+JOB job_ARA_S2_R400695 ARA_job.sub 
+VARS job_ARA_S2_R400695 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400695.root" run="400695"
+
+JOB job_ARA_S2_R400454 ARA_job.sub 
+VARS job_ARA_S2_R400454 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400454.root" run="400454"
+
+JOB job_ARA_S2_R400914 ARA_job.sub 
+VARS job_ARA_S2_R400914 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400914.root" run="400914"
+
+JOB job_ARA_S2_R400331 ARA_job.sub 
+VARS job_ARA_S2_R400331 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400331.root" run="400331"
+
+JOB job_ARA_S2_R400674 ARA_job.sub 
+VARS job_ARA_S2_R400674 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400674.root" run="400674"
+
+JOB job_ARA_S2_R400052 ARA_job.sub 
+VARS job_ARA_S2_R400052 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400052.root" run="400052"
+
+JOB job_ARA_S2_R400927 ARA_job.sub 
+VARS job_ARA_S2_R400927 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400927.root" run="400927"
+
+JOB job_ARA_S2_R400781 ARA_job.sub 
+VARS job_ARA_S2_R400781 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400781.root" run="400781"
+
+JOB job_ARA_S2_R400638 ARA_job.sub 
+VARS job_ARA_S2_R400638 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400638.root" run="400638"
+
+JOB job_ARA_S2_R400648 ARA_job.sub 
+VARS job_ARA_S2_R400648 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400648.root" run="400648"
+
+JOB job_ARA_S2_R400614 ARA_job.sub 
+VARS job_ARA_S2_R400614 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400614.root" run="400614"
+
+JOB job_ARA_S2_R400430 ARA_job.sub 
+VARS job_ARA_S2_R400430 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400430.root" run="400430"
+
+JOB job_ARA_S2_R400427 ARA_job.sub 
+VARS job_ARA_S2_R400427 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400427.root" run="400427"
+
+JOB job_ARA_S2_R400168 ARA_job.sub 
+VARS job_ARA_S2_R400168 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400168.root" run="400168"
+
+JOB job_ARA_S2_R400934 ARA_job.sub 
+VARS job_ARA_S2_R400934 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400934.root" run="400934"
+
+JOB job_ARA_S2_R400080 ARA_job.sub 
+VARS job_ARA_S2_R400080 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400080.root" run="400080"
+
+JOB job_ARA_S2_R400061 ARA_job.sub 
+VARS job_ARA_S2_R400061 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400061.root" run="400061"
+
+JOB job_ARA_S2_R400564 ARA_job.sub 
+VARS job_ARA_S2_R400564 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400564.root" run="400564"
+
+JOB job_ARA_S2_R400306 ARA_job.sub 
+VARS job_ARA_S2_R400306 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400306.root" run="400306"
+
+JOB job_ARA_S2_R400143 ARA_job.sub 
+VARS job_ARA_S2_R400143 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400143.root" run="400143"
+
+JOB job_ARA_S2_R400733 ARA_job.sub 
+VARS job_ARA_S2_R400733 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400733.root" run="400733"
+
+JOB job_ARA_S2_R400421 ARA_job.sub 
+VARS job_ARA_S2_R400421 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400421.root" run="400421"
+
+JOB job_ARA_S2_R400909 ARA_job.sub 
+VARS job_ARA_S2_R400909 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400909.root" run="400909"
+
+JOB job_ARA_S2_R400729 ARA_job.sub 
+VARS job_ARA_S2_R400729 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400729.root" run="400729"
+
+JOB job_ARA_S2_R400104 ARA_job.sub 
+VARS job_ARA_S2_R400104 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400104.root" run="400104"
+
+JOB job_ARA_S2_R400034 ARA_job.sub 
+VARS job_ARA_S2_R400034 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400034.root" run="400034"
+
+JOB job_ARA_S2_R400340 ARA_job.sub 
+VARS job_ARA_S2_R400340 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400340.root" run="400340"
+
+JOB job_ARA_S2_R400133 ARA_job.sub 
+VARS job_ARA_S2_R400133 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400133.root" run="400133"
+
+JOB job_ARA_S2_R400509 ARA_job.sub 
+VARS job_ARA_S2_R400509 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400509.root" run="400509"
+
+JOB job_ARA_S2_R400528 ARA_job.sub 
+VARS job_ARA_S2_R400528 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400528.root" run="400528"
+
+JOB job_ARA_S2_R400079 ARA_job.sub 
+VARS job_ARA_S2_R400079 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400079.root" run="400079"
+
+JOB job_ARA_S2_R400050 ARA_job.sub 
+VARS job_ARA_S2_R400050 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400050.root" run="400050"
+
+JOB job_ARA_S2_R400237 ARA_job.sub 
+VARS job_ARA_S2_R400237 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400237.root" run="400237"
+
+JOB job_ARA_S2_R400536 ARA_job.sub 
+VARS job_ARA_S2_R400536 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400536.root" run="400536"
+
+JOB job_ARA_S2_R400968 ARA_job.sub 
+VARS job_ARA_S2_R400968 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400968.root" run="400968"
+
+JOB job_ARA_S2_R400819 ARA_job.sub 
+VARS job_ARA_S2_R400819 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400819.root" run="400819"
+
+JOB job_ARA_S2_R400369 ARA_job.sub 
+VARS job_ARA_S2_R400369 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400369.root" run="400369"
+
+JOB job_ARA_S2_R400632 ARA_job.sub 
+VARS job_ARA_S2_R400632 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400632.root" run="400632"
+
+JOB job_ARA_S2_R400156 ARA_job.sub 
+VARS job_ARA_S2_R400156 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400156.root" run="400156"
+
+JOB job_ARA_S2_R400656 ARA_job.sub 
+VARS job_ARA_S2_R400656 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400656.root" run="400656"
+
+JOB job_ARA_S2_R400979 ARA_job.sub 
+VARS job_ARA_S2_R400979 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400979.root" run="400979"
+
+JOB job_ARA_S2_R400253 ARA_job.sub 
+VARS job_ARA_S2_R400253 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400253.root" run="400253"
+
+JOB job_ARA_S2_R400095 ARA_job.sub 
+VARS job_ARA_S2_R400095 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400095.root" run="400095"
+
+JOB job_ARA_S2_R400912 ARA_job.sub 
+VARS job_ARA_S2_R400912 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400912.root" run="400912"
+
+JOB job_ARA_S2_R400346 ARA_job.sub 
+VARS job_ARA_S2_R400346 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400346.root" run="400346"
+
+JOB job_ARA_S2_R400463 ARA_job.sub 
+VARS job_ARA_S2_R400463 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400463.root" run="400463"
+
+JOB job_ARA_S2_R400970 ARA_job.sub 
+VARS job_ARA_S2_R400970 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400970.root" run="400970"
+
+JOB job_ARA_S2_R400377 ARA_job.sub 
+VARS job_ARA_S2_R400377 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400377.root" run="400377"
+
+JOB job_ARA_S2_R400476 ARA_job.sub 
+VARS job_ARA_S2_R400476 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400476.root" run="400476"
+
+JOB job_ARA_S2_R400684 ARA_job.sub 
+VARS job_ARA_S2_R400684 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400684.root" run="400684"
+
+JOB job_ARA_S2_R400647 ARA_job.sub 
+VARS job_ARA_S2_R400647 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400647.root" run="400647"
+
+JOB job_ARA_S2_R400379 ARA_job.sub 
+VARS job_ARA_S2_R400379 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400379.root" run="400379"
+
+JOB job_ARA_S2_R400530 ARA_job.sub 
+VARS job_ARA_S2_R400530 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400530.root" run="400530"
+
+JOB job_ARA_S2_R400122 ARA_job.sub 
+VARS job_ARA_S2_R400122 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400122.root" run="400122"
+
+JOB job_ARA_S2_R400305 ARA_job.sub 
+VARS job_ARA_S2_R400305 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400305.root" run="400305"
+
+JOB job_ARA_S2_R400031 ARA_job.sub 
+VARS job_ARA_S2_R400031 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400031.root" run="400031"
+
+JOB job_ARA_S2_R400758 ARA_job.sub 
+VARS job_ARA_S2_R400758 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400758.root" run="400758"
+
+JOB job_ARA_S2_R400534 ARA_job.sub 
+VARS job_ARA_S2_R400534 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400534.root" run="400534"
+
+JOB job_ARA_S2_R400296 ARA_job.sub 
+VARS job_ARA_S2_R400296 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400296.root" run="400296"
+
+JOB job_ARA_S2_R400538 ARA_job.sub 
+VARS job_ARA_S2_R400538 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400538.root" run="400538"
+
+JOB job_ARA_S2_R400558 ARA_job.sub 
+VARS job_ARA_S2_R400558 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400558.root" run="400558"
+
+JOB job_ARA_S2_R400299 ARA_job.sub 
+VARS job_ARA_S2_R400299 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400299.root" run="400299"
+
+JOB job_ARA_S2_R400150 ARA_job.sub 
+VARS job_ARA_S2_R400150 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400150.root" run="400150"
+
+JOB job_ARA_S2_R400413 ARA_job.sub 
+VARS job_ARA_S2_R400413 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400413.root" run="400413"
+
+JOB job_ARA_S2_R400672 ARA_job.sub 
+VARS job_ARA_S2_R400672 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400672.root" run="400672"
+
+JOB job_ARA_S2_R400271 ARA_job.sub 
+VARS job_ARA_S2_R400271 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400271.root" run="400271"
+
+JOB job_ARA_S2_R400272 ARA_job.sub 
+VARS job_ARA_S2_R400272 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400272.root" run="400272"
+
+JOB job_ARA_S2_R400555 ARA_job.sub 
+VARS job_ARA_S2_R400555 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400555.root" run="400555"
+
+JOB job_ARA_S2_R400824 ARA_job.sub 
+VARS job_ARA_S2_R400824 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400824.root" run="400824"
+
+JOB job_ARA_S2_R400615 ARA_job.sub 
+VARS job_ARA_S2_R400615 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400615.root" run="400615"
+
+JOB job_ARA_S2_R400013 ARA_job.sub 
+VARS job_ARA_S2_R400013 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400013.root" run="400013"
+
+JOB job_ARA_S2_R400444 ARA_job.sub 
+VARS job_ARA_S2_R400444 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400444.root" run="400444"
+
+JOB job_ARA_S2_R400185 ARA_job.sub 
+VARS job_ARA_S2_R400185 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400185.root" run="400185"
+
+JOB job_ARA_S2_R400118 ARA_job.sub 
+VARS job_ARA_S2_R400118 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400118.root" run="400118"
+
+JOB job_ARA_S2_R400339 ARA_job.sub 
+VARS job_ARA_S2_R400339 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400339.root" run="400339"
+
+JOB job_ARA_S2_R400922 ARA_job.sub 
+VARS job_ARA_S2_R400922 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400922.root" run="400922"
+
+JOB job_ARA_S2_R400659 ARA_job.sub 
+VARS job_ARA_S2_R400659 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400659.root" run="400659"
+
+JOB job_ARA_S2_R400279 ARA_job.sub 
+VARS job_ARA_S2_R400279 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400279.root" run="400279"
+
+JOB job_ARA_S2_R400595 ARA_job.sub 
+VARS job_ARA_S2_R400595 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400595.root" run="400595"
+
+JOB job_ARA_S2_R400358 ARA_job.sub 
+VARS job_ARA_S2_R400358 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400358.root" run="400358"
+
+JOB job_ARA_S2_R400024 ARA_job.sub 
+VARS job_ARA_S2_R400024 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400024.root" run="400024"
+
+JOB job_ARA_S2_R400267 ARA_job.sub 
+VARS job_ARA_S2_R400267 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400267.root" run="400267"
+
+JOB job_ARA_S2_R400360 ARA_job.sub 
+VARS job_ARA_S2_R400360 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400360.root" run="400360"
+
+JOB job_ARA_S2_R400229 ARA_job.sub 
+VARS job_ARA_S2_R400229 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400229.root" run="400229"
+
+JOB job_ARA_S2_R400465 ARA_job.sub 
+VARS job_ARA_S2_R400465 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400465.root" run="400465"
+
+JOB job_ARA_S2_R400736 ARA_job.sub 
+VARS job_ARA_S2_R400736 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400736.root" run="400736"
+
+JOB job_ARA_S2_R400099 ARA_job.sub 
+VARS job_ARA_S2_R400099 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400099.root" run="400099"
+
+JOB job_ARA_S2_R400000 ARA_job.sub 
+VARS job_ARA_S2_R400000 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400000.root" run="400000"
+
+JOB job_ARA_S2_R400577 ARA_job.sub 
+VARS job_ARA_S2_R400577 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400577.root" run="400577"
+
+JOB job_ARA_S2_R400078 ARA_job.sub 
+VARS job_ARA_S2_R400078 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400078.root" run="400078"
+
+JOB job_ARA_S2_R400694 ARA_job.sub 
+VARS job_ARA_S2_R400694 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400694.root" run="400694"
+
+JOB job_ARA_S2_R400831 ARA_job.sub 
+VARS job_ARA_S2_R400831 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400831.root" run="400831"
+
+JOB job_ARA_S2_R400082 ARA_job.sub 
+VARS job_ARA_S2_R400082 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400082.root" run="400082"
+
+JOB job_ARA_S2_R400807 ARA_job.sub 
+VARS job_ARA_S2_R400807 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400807.root" run="400807"
+
+JOB job_ARA_S2_R400405 ARA_job.sub 
+VARS job_ARA_S2_R400405 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400405.root" run="400405"
+
+JOB job_ARA_S2_R400378 ARA_job.sub 
+VARS job_ARA_S2_R400378 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400378.root" run="400378"
+
+JOB job_ARA_S2_R400575 ARA_job.sub 
+VARS job_ARA_S2_R400575 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400575.root" run="400575"
+
+JOB job_ARA_S2_R400162 ARA_job.sub 
+VARS job_ARA_S2_R400162 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400162.root" run="400162"
+
+JOB job_ARA_S2_R400743 ARA_job.sub 
+VARS job_ARA_S2_R400743 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400743.root" run="400743"
+
+JOB job_ARA_S2_R400817 ARA_job.sub 
+VARS job_ARA_S2_R400817 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400817.root" run="400817"
+
+JOB job_ARA_S2_R400967 ARA_job.sub 
+VARS job_ARA_S2_R400967 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400967.root" run="400967"
+
+JOB job_ARA_S2_R400834 ARA_job.sub 
+VARS job_ARA_S2_R400834 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400834.root" run="400834"
+
+JOB job_ARA_S2_R400620 ARA_job.sub 
+VARS job_ARA_S2_R400620 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400620.root" run="400620"
+
+JOB job_ARA_S2_R400915 ARA_job.sub 
+VARS job_ARA_S2_R400915 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400915.root" run="400915"
+
+JOB job_ARA_S2_R400508 ARA_job.sub 
+VARS job_ARA_S2_R400508 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400508.root" run="400508"
+
+JOB job_ARA_S2_R400202 ARA_job.sub 
+VARS job_ARA_S2_R400202 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400202.root" run="400202"
+
+JOB job_ARA_S2_R400546 ARA_job.sub 
+VARS job_ARA_S2_R400546 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400546.root" run="400546"
+
+JOB job_ARA_S2_R400432 ARA_job.sub 
+VARS job_ARA_S2_R400432 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400432.root" run="400432"
+
+JOB job_ARA_S2_R400836 ARA_job.sub 
+VARS job_ARA_S2_R400836 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400836.root" run="400836"
+
+JOB job_ARA_S2_R400236 ARA_job.sub 
+VARS job_ARA_S2_R400236 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400236.root" run="400236"
+
+JOB job_ARA_S2_R400959 ARA_job.sub 
+VARS job_ARA_S2_R400959 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400959.root" run="400959"
+
+JOB job_ARA_S2_R400248 ARA_job.sub 
+VARS job_ARA_S2_R400248 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400248.root" run="400248"
+
+JOB job_ARA_S2_R400344 ARA_job.sub 
+VARS job_ARA_S2_R400344 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400344.root" run="400344"
+
+JOB job_ARA_S2_R400386 ARA_job.sub 
+VARS job_ARA_S2_R400386 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400386.root" run="400386"
+
+JOB job_ARA_S2_R400893 ARA_job.sub 
+VARS job_ARA_S2_R400893 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400893.root" run="400893"
+
+JOB job_ARA_S2_R400145 ARA_job.sub 
+VARS job_ARA_S2_R400145 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400145.root" run="400145"
+
+JOB job_ARA_S2_R400450 ARA_job.sub 
+VARS job_ARA_S2_R400450 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400450.root" run="400450"
+
+JOB job_ARA_S2_R400324 ARA_job.sub 
+VARS job_ARA_S2_R400324 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400324.root" run="400324"
+
+JOB job_ARA_S2_R400702 ARA_job.sub 
+VARS job_ARA_S2_R400702 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400702.root" run="400702"
+
+JOB job_ARA_S2_R400568 ARA_job.sub 
+VARS job_ARA_S2_R400568 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400568.root" run="400568"
+
+JOB job_ARA_S2_R400533 ARA_job.sub 
+VARS job_ARA_S2_R400533 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400533.root" run="400533"
+
+JOB job_ARA_S2_R400039 ARA_job.sub 
+VARS job_ARA_S2_R400039 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400039.root" run="400039"
+
+JOB job_ARA_S2_R400188 ARA_job.sub 
+VARS job_ARA_S2_R400188 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400188.root" run="400188"
+
+JOB job_ARA_S2_R400495 ARA_job.sub 
+VARS job_ARA_S2_R400495 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400495.root" run="400495"
+
+JOB job_ARA_S2_R400580 ARA_job.sub 
+VARS job_ARA_S2_R400580 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400580.root" run="400580"
+
+JOB job_ARA_S2_R400760 ARA_job.sub 
+VARS job_ARA_S2_R400760 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400760.root" run="400760"
+
+JOB job_ARA_S2_R400149 ARA_job.sub 
+VARS job_ARA_S2_R400149 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400149.root" run="400149"
+
+JOB job_ARA_S2_R400624 ARA_job.sub 
+VARS job_ARA_S2_R400624 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400624.root" run="400624"
+
+JOB job_ARA_S2_R400096 ARA_job.sub 
+VARS job_ARA_S2_R400096 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400096.root" run="400096"
+
+JOB job_ARA_S2_R400192 ARA_job.sub 
+VARS job_ARA_S2_R400192 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400192.root" run="400192"
+
+JOB job_ARA_S2_R400984 ARA_job.sub 
+VARS job_ARA_S2_R400984 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400984.root" run="400984"
+
+JOB job_ARA_S2_R400032 ARA_job.sub 
+VARS job_ARA_S2_R400032 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400032.root" run="400032"
+
+JOB job_ARA_S2_R400089 ARA_job.sub 
+VARS job_ARA_S2_R400089 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400089.root" run="400089"
+
+JOB job_ARA_S2_R400593 ARA_job.sub 
+VARS job_ARA_S2_R400593 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400593.root" run="400593"
+
+JOB job_ARA_S2_R400239 ARA_job.sub 
+VARS job_ARA_S2_R400239 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400239.root" run="400239"
+
+JOB job_ARA_S2_R400761 ARA_job.sub 
+VARS job_ARA_S2_R400761 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400761.root" run="400761"
+
+JOB job_ARA_S2_R400572 ARA_job.sub 
+VARS job_ARA_S2_R400572 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400572.root" run="400572"
+
+JOB job_ARA_S2_R400821 ARA_job.sub 
+VARS job_ARA_S2_R400821 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400821.root" run="400821"
+
+JOB job_ARA_S2_R400693 ARA_job.sub 
+VARS job_ARA_S2_R400693 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400693.root" run="400693"
+
+JOB job_ARA_S2_R400119 ARA_job.sub 
+VARS job_ARA_S2_R400119 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400119.root" run="400119"
+
+JOB job_ARA_S2_R400524 ARA_job.sub 
+VARS job_ARA_S2_R400524 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400524.root" run="400524"
+
+JOB job_ARA_S2_R400088 ARA_job.sub 
+VARS job_ARA_S2_R400088 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400088.root" run="400088"
+
+JOB job_ARA_S2_R400923 ARA_job.sub 
+VARS job_ARA_S2_R400923 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400923.root" run="400923"
+
+JOB job_ARA_S2_R400894 ARA_job.sub 
+VARS job_ARA_S2_R400894 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400894.root" run="400894"
+
+JOB job_ARA_S2_R400531 ARA_job.sub 
+VARS job_ARA_S2_R400531 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400531.root" run="400531"
+
+JOB job_ARA_S2_R400116 ARA_job.sub 
+VARS job_ARA_S2_R400116 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400116.root" run="400116"
+
+JOB job_ARA_S2_R400851 ARA_job.sub 
+VARS job_ARA_S2_R400851 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400851.root" run="400851"
+
+JOB job_ARA_S2_R400589 ARA_job.sub 
+VARS job_ARA_S2_R400589 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400589.root" run="400589"
+
+JOB job_ARA_S2_R400442 ARA_job.sub 
+VARS job_ARA_S2_R400442 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400442.root" run="400442"
+
+JOB job_ARA_S2_R400791 ARA_job.sub 
+VARS job_ARA_S2_R400791 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400791.root" run="400791"
+
+JOB job_ARA_S2_R400723 ARA_job.sub 
+VARS job_ARA_S2_R400723 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400723.root" run="400723"
+
+JOB job_ARA_S2_R400811 ARA_job.sub 
+VARS job_ARA_S2_R400811 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400811.root" run="400811"
+
+JOB job_ARA_S2_R400666 ARA_job.sub 
+VARS job_ARA_S2_R400666 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400666.root" run="400666"
+
+JOB job_ARA_S2_R400644 ARA_job.sub 
+VARS job_ARA_S2_R400644 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400644.root" run="400644"
+
+JOB job_ARA_S2_R400919 ARA_job.sub 
+VARS job_ARA_S2_R400919 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400919.root" run="400919"
+
+JOB job_ARA_S2_R400712 ARA_job.sub 
+VARS job_ARA_S2_R400712 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400712.root" run="400712"
+
+JOB job_ARA_S2_R400847 ARA_job.sub 
+VARS job_ARA_S2_R400847 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400847.root" run="400847"
+
+JOB job_ARA_S2_R400996 ARA_job.sub 
+VARS job_ARA_S2_R400996 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400996.root" run="400996"
+
+JOB job_ARA_S2_R400142 ARA_job.sub 
+VARS job_ARA_S2_R400142 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400142.root" run="400142"
+
+JOB job_ARA_S2_R400488 ARA_job.sub 
+VARS job_ARA_S2_R400488 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400488.root" run="400488"
+
+JOB job_ARA_S2_R400469 ARA_job.sub 
+VARS job_ARA_S2_R400469 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400469.root" run="400469"
+
+JOB job_ARA_S2_R400902 ARA_job.sub 
+VARS job_ARA_S2_R400902 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400902.root" run="400902"
+
+JOB job_ARA_S2_R400105 ARA_job.sub 
+VARS job_ARA_S2_R400105 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400105.root" run="400105"
+
+JOB job_ARA_S2_R400626 ARA_job.sub 
+VARS job_ARA_S2_R400626 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400626.root" run="400626"
+
+JOB job_ARA_S2_R400067 ARA_job.sub 
+VARS job_ARA_S2_R400067 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400067.root" run="400067"
+
+JOB job_ARA_S2_R400260 ARA_job.sub 
+VARS job_ARA_S2_R400260 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400260.root" run="400260"
+
+JOB job_ARA_S2_R400689 ARA_job.sub 
+VARS job_ARA_S2_R400689 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400689.root" run="400689"
+
+JOB job_ARA_S2_R400131 ARA_job.sub 
+VARS job_ARA_S2_R400131 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400131.root" run="400131"
+
+JOB job_ARA_S2_R400852 ARA_job.sub 
+VARS job_ARA_S2_R400852 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400852.root" run="400852"
+
+JOB job_ARA_S2_R400307 ARA_job.sub 
+VARS job_ARA_S2_R400307 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400307.root" run="400307"
+
+JOB job_ARA_S2_R400019 ARA_job.sub 
+VARS job_ARA_S2_R400019 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400019.root" run="400019"
+
+JOB job_ARA_S2_R400389 ARA_job.sub 
+VARS job_ARA_S2_R400389 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400389.root" run="400389"
+
+JOB job_ARA_S2_R400033 ARA_job.sub 
+VARS job_ARA_S2_R400033 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400033.root" run="400033"
+
+JOB job_ARA_S2_R400746 ARA_job.sub 
+VARS job_ARA_S2_R400746 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400746.root" run="400746"
+
+JOB job_ARA_S2_R400356 ARA_job.sub 
+VARS job_ARA_S2_R400356 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400356.root" run="400356"
+
+JOB job_ARA_S2_R400640 ARA_job.sub 
+VARS job_ARA_S2_R400640 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400640.root" run="400640"
+
+JOB job_ARA_S2_R400793 ARA_job.sub 
+VARS job_ARA_S2_R400793 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400793.root" run="400793"
+
+JOB job_ARA_S2_R400780 ARA_job.sub 
+VARS job_ARA_S2_R400780 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400780.root" run="400780"
+
+JOB job_ARA_S2_R400241 ARA_job.sub 
+VARS job_ARA_S2_R400241 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400241.root" run="400241"
+
+JOB job_ARA_S2_R400321 ARA_job.sub 
+VARS job_ARA_S2_R400321 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400321.root" run="400321"
+
+JOB job_ARA_S2_R400771 ARA_job.sub 
+VARS job_ARA_S2_R400771 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400771.root" run="400771"
+
+JOB job_ARA_S2_R400797 ARA_job.sub 
+VARS job_ARA_S2_R400797 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400797.root" run="400797"
+
+JOB job_ARA_S2_R400423 ARA_job.sub 
+VARS job_ARA_S2_R400423 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400423.root" run="400423"
+
+JOB job_ARA_S2_R400939 ARA_job.sub 
+VARS job_ARA_S2_R400939 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400939.root" run="400939"
+
+JOB job_ARA_S2_R400352 ARA_job.sub 
+VARS job_ARA_S2_R400352 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400352.root" run="400352"
+
+JOB job_ARA_S2_R400063 ARA_job.sub 
+VARS job_ARA_S2_R400063 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400063.root" run="400063"
+
+JOB job_ARA_S2_R400995 ARA_job.sub 
+VARS job_ARA_S2_R400995 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400995.root" run="400995"
+
+JOB job_ARA_S2_R400453 ARA_job.sub 
+VARS job_ARA_S2_R400453 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400453.root" run="400453"
+
+JOB job_ARA_S2_R400676 ARA_job.sub 
+VARS job_ARA_S2_R400676 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400676.root" run="400676"
+
+JOB job_ARA_S2_R400218 ARA_job.sub 
+VARS job_ARA_S2_R400218 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400218.root" run="400218"
+
+JOB job_ARA_S2_R400542 ARA_job.sub 
+VARS job_ARA_S2_R400542 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400542.root" run="400542"
+
+JOB job_ARA_S2_R400753 ARA_job.sub 
+VARS job_ARA_S2_R400753 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400753.root" run="400753"
+
+JOB job_ARA_S2_R400333 ARA_job.sub 
+VARS job_ARA_S2_R400333 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400333.root" run="400333"
+
+JOB job_ARA_S2_R400498 ARA_job.sub 
+VARS job_ARA_S2_R400498 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400498.root" run="400498"
+
+JOB job_ARA_S2_R400805 ARA_job.sub 
+VARS job_ARA_S2_R400805 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400805.root" run="400805"
+
+JOB job_ARA_S2_R400634 ARA_job.sub 
+VARS job_ARA_S2_R400634 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400634.root" run="400634"
+
+JOB job_ARA_S2_R400329 ARA_job.sub 
+VARS job_ARA_S2_R400329 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400329.root" run="400329"
+
+JOB job_ARA_S2_R400617 ARA_job.sub 
+VARS job_ARA_S2_R400617 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400617.root" run="400617"
+
+JOB job_ARA_S2_R400085 ARA_job.sub 
+VARS job_ARA_S2_R400085 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400085.root" run="400085"
+
+JOB job_ARA_S2_R400112 ARA_job.sub 
+VARS job_ARA_S2_R400112 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400112.root" run="400112"
+
+JOB job_ARA_S2_R400611 ARA_job.sub 
+VARS job_ARA_S2_R400611 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400611.root" run="400611"
+
+JOB job_ARA_S2_R400607 ARA_job.sub 
+VARS job_ARA_S2_R400607 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400607.root" run="400607"
+
+JOB job_ARA_S2_R400382 ARA_job.sub 
+VARS job_ARA_S2_R400382 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400382.root" run="400382"
+
+JOB job_ARA_S2_R400223 ARA_job.sub 
+VARS job_ARA_S2_R400223 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400223.root" run="400223"
+
+JOB job_ARA_S2_R400665 ARA_job.sub 
+VARS job_ARA_S2_R400665 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400665.root" run="400665"
+
+JOB job_ARA_S2_R400762 ARA_job.sub 
+VARS job_ARA_S2_R400762 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400762.root" run="400762"
+
+JOB job_ARA_S2_R400974 ARA_job.sub 
+VARS job_ARA_S2_R400974 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400974.root" run="400974"
+
+JOB job_ARA_S2_R400897 ARA_job.sub 
+VARS job_ARA_S2_R400897 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400897.root" run="400897"
+
+JOB job_ARA_S2_R400481 ARA_job.sub 
+VARS job_ARA_S2_R400481 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400481.root" run="400481"
+
+JOB job_ARA_S2_R400314 ARA_job.sub 
+VARS job_ARA_S2_R400314 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400314.root" run="400314"
+
+JOB job_ARA_S2_R400835 ARA_job.sub 
+VARS job_ARA_S2_R400835 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400835.root" run="400835"
+
+JOB job_ARA_S2_R400316 ARA_job.sub 
+VARS job_ARA_S2_R400316 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400316.root" run="400316"
+
+JOB job_ARA_S2_R400925 ARA_job.sub 
+VARS job_ARA_S2_R400925 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400925.root" run="400925"
+
+JOB job_ARA_S2_R400047 ARA_job.sub 
+VARS job_ARA_S2_R400047 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400047.root" run="400047"
+
+JOB job_ARA_S2_R400098 ARA_job.sub 
+VARS job_ARA_S2_R400098 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400098.root" run="400098"
+
+JOB job_ARA_S2_R400380 ARA_job.sub 
+VARS job_ARA_S2_R400380 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400380.root" run="400380"
+
+JOB job_ARA_S2_R400839 ARA_job.sub 
+VARS job_ARA_S2_R400839 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400839.root" run="400839"
+
+JOB job_ARA_S2_R400182 ARA_job.sub 
+VARS job_ARA_S2_R400182 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400182.root" run="400182"
+
+JOB job_ARA_S2_R400903 ARA_job.sub 
+VARS job_ARA_S2_R400903 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400903.root" run="400903"
+
+JOB job_ARA_S2_R400962 ARA_job.sub 
+VARS job_ARA_S2_R400962 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400962.root" run="400962"
+
+JOB job_ARA_S2_R400716 ARA_job.sub 
+VARS job_ARA_S2_R400716 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400716.root" run="400716"
+
+JOB job_ARA_S2_R400991 ARA_job.sub 
+VARS job_ARA_S2_R400991 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400991.root" run="400991"
+
+JOB job_ARA_S2_R400353 ARA_job.sub 
+VARS job_ARA_S2_R400353 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400353.root" run="400353"
+
+JOB job_ARA_S2_R400126 ARA_job.sub 
+VARS job_ARA_S2_R400126 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400126.root" run="400126"
+
+JOB job_ARA_S2_R400489 ARA_job.sub 
+VARS job_ARA_S2_R400489 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400489.root" run="400489"
+
+JOB job_ARA_S2_R400301 ARA_job.sub 
+VARS job_ARA_S2_R400301 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400301.root" run="400301"
+
+JOB job_ARA_S2_R400523 ARA_job.sub 
+VARS job_ARA_S2_R400523 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400523.root" run="400523"
+
+JOB job_ARA_S2_R400957 ARA_job.sub 
+VARS job_ARA_S2_R400957 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400957.root" run="400957"
+
+JOB job_ARA_S2_R400246 ARA_job.sub 
+VARS job_ARA_S2_R400246 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400246.root" run="400246"
+
+JOB job_ARA_S2_R400792 ARA_job.sub 
+VARS job_ARA_S2_R400792 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400792.root" run="400792"
+
+JOB job_ARA_S2_R400261 ARA_job.sub 
+VARS job_ARA_S2_R400261 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400261.root" run="400261"
+
+JOB job_ARA_S2_R400025 ARA_job.sub 
+VARS job_ARA_S2_R400025 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400025.root" run="400025"
+
+JOB job_ARA_S2_R400677 ARA_job.sub 
+VARS job_ARA_S2_R400677 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400677.root" run="400677"
+
+JOB job_ARA_S2_R400092 ARA_job.sub 
+VARS job_ARA_S2_R400092 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400092.root" run="400092"
+
+JOB job_ARA_S2_R400931 ARA_job.sub 
+VARS job_ARA_S2_R400931 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400931.root" run="400931"
+
+JOB job_ARA_S2_R400420 ARA_job.sub 
+VARS job_ARA_S2_R400420 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400420.root" run="400420"
+
+JOB job_ARA_S2_R400606 ARA_job.sub 
+VARS job_ARA_S2_R400606 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400606.root" run="400606"
+
+JOB job_ARA_S2_R400152 ARA_job.sub 
+VARS job_ARA_S2_R400152 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400152.root" run="400152"
+
+JOB job_ARA_S2_R400519 ARA_job.sub 
+VARS job_ARA_S2_R400519 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400519.root" run="400519"
+
+JOB job_ARA_S2_R400787 ARA_job.sub 
+VARS job_ARA_S2_R400787 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400787.root" run="400787"
+
+JOB job_ARA_S2_R400270 ARA_job.sub 
+VARS job_ARA_S2_R400270 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400270.root" run="400270"
+
+JOB job_ARA_S2_R400038 ARA_job.sub 
+VARS job_ARA_S2_R400038 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400038.root" run="400038"
+
+JOB job_ARA_S2_R400035 ARA_job.sub 
+VARS job_ARA_S2_R400035 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400035.root" run="400035"
+
+JOB job_ARA_S2_R400059 ARA_job.sub 
+VARS job_ARA_S2_R400059 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400059.root" run="400059"
+
+JOB job_ARA_S2_R400434 ARA_job.sub 
+VARS job_ARA_S2_R400434 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400434.root" run="400434"
+
+JOB job_ARA_S2_R400827 ARA_job.sub 
+VARS job_ARA_S2_R400827 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400827.root" run="400827"
+
+JOB job_ARA_S2_R400026 ARA_job.sub 
+VARS job_ARA_S2_R400026 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400026.root" run="400026"
+
+JOB job_ARA_S2_R400312 ARA_job.sub 
+VARS job_ARA_S2_R400312 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400312.root" run="400312"
+
+JOB job_ARA_S2_R400027 ARA_job.sub 
+VARS job_ARA_S2_R400027 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400027.root" run="400027"
+
+JOB job_ARA_S2_R400880 ARA_job.sub 
+VARS job_ARA_S2_R400880 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400880.root" run="400880"
+
+JOB job_ARA_S2_R400717 ARA_job.sub 
+VARS job_ARA_S2_R400717 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400717.root" run="400717"
+
+JOB job_ARA_S2_R400742 ARA_job.sub 
+VARS job_ARA_S2_R400742 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400742.root" run="400742"
+
+JOB job_ARA_S2_R400840 ARA_job.sub 
+VARS job_ARA_S2_R400840 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400840.root" run="400840"
+
+JOB job_ARA_S2_R400994 ARA_job.sub 
+VARS job_ARA_S2_R400994 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400994.root" run="400994"
+
+JOB job_ARA_S2_R400504 ARA_job.sub 
+VARS job_ARA_S2_R400504 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400504.root" run="400504"
+
+JOB job_ARA_S2_R400157 ARA_job.sub 
+VARS job_ARA_S2_R400157 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400157.root" run="400157"
+
+JOB job_ARA_S2_R400365 ARA_job.sub 
+VARS job_ARA_S2_R400365 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400365.root" run="400365"
+
+JOB job_ARA_S2_R400167 ARA_job.sub 
+VARS job_ARA_S2_R400167 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400167.root" run="400167"
+
+JOB job_ARA_S2_R400455 ARA_job.sub 
+VARS job_ARA_S2_R400455 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400455.root" run="400455"
+
+JOB job_ARA_S2_R400604 ARA_job.sub 
+VARS job_ARA_S2_R400604 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400604.root" run="400604"
+
+JOB job_ARA_S2_R400658 ARA_job.sub 
+VARS job_ARA_S2_R400658 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400658.root" run="400658"
+
+JOB job_ARA_S2_R400739 ARA_job.sub 
+VARS job_ARA_S2_R400739 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400739.root" run="400739"
+
+JOB job_ARA_S2_R400426 ARA_job.sub 
+VARS job_ARA_S2_R400426 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400426.root" run="400426"
+
+JOB job_ARA_S2_R400184 ARA_job.sub 
+VARS job_ARA_S2_R400184 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400184.root" run="400184"
+
+JOB job_ARA_S2_R400141 ARA_job.sub 
+VARS job_ARA_S2_R400141 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400141.root" run="400141"
+
+JOB job_ARA_S2_R400206 ARA_job.sub 
+VARS job_ARA_S2_R400206 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400206.root" run="400206"
+
+JOB job_ARA_S2_R400713 ARA_job.sub 
+VARS job_ARA_S2_R400713 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400713.root" run="400713"
+
+JOB job_ARA_S2_R400892 ARA_job.sub 
+VARS job_ARA_S2_R400892 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400892.root" run="400892"
+
+JOB job_ARA_S2_R400391 ARA_job.sub 
+VARS job_ARA_S2_R400391 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400391.root" run="400391"
+
+JOB job_ARA_S2_R400596 ARA_job.sub 
+VARS job_ARA_S2_R400596 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400596.root" run="400596"
+
+JOB job_ARA_S2_R400574 ARA_job.sub 
+VARS job_ARA_S2_R400574 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400574.root" run="400574"
+
+JOB job_ARA_S2_R400336 ARA_job.sub 
+VARS job_ARA_S2_R400336 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400336.root" run="400336"
+
+JOB job_ARA_S2_R400675 ARA_job.sub 
+VARS job_ARA_S2_R400675 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400675.root" run="400675"
+
+JOB job_ARA_S2_R400128 ARA_job.sub 
+VARS job_ARA_S2_R400128 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400128.root" run="400128"
+
+JOB job_ARA_S2_R400071 ARA_job.sub 
+VARS job_ARA_S2_R400071 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400071.root" run="400071"
+
+JOB job_ARA_S2_R400474 ARA_job.sub 
+VARS job_ARA_S2_R400474 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400474.root" run="400474"
+
+JOB job_ARA_S2_R400338 ARA_job.sub 
+VARS job_ARA_S2_R400338 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400338.root" run="400338"
+
+JOB job_ARA_S2_R400155 ARA_job.sub 
+VARS job_ARA_S2_R400155 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400155.root" run="400155"
+
+JOB job_ARA_S2_R400087 ARA_job.sub 
+VARS job_ARA_S2_R400087 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400087.root" run="400087"
+
+JOB job_ARA_S2_R400696 ARA_job.sub 
+VARS job_ARA_S2_R400696 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400696.root" run="400696"
+
+JOB job_ARA_S2_R400539 ARA_job.sub 
+VARS job_ARA_S2_R400539 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400539.root" run="400539"
+
+JOB job_ARA_S2_R400388 ARA_job.sub 
+VARS job_ARA_S2_R400388 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400388.root" run="400388"
+
+JOB job_ARA_S2_R400166 ARA_job.sub 
+VARS job_ARA_S2_R400166 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400166.root" run="400166"
+
+JOB job_ARA_S2_R400857 ARA_job.sub 
+VARS job_ARA_S2_R400857 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400857.root" run="400857"
+
+JOB job_ARA_S2_R400065 ARA_job.sub 
+VARS job_ARA_S2_R400065 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400065.root" run="400065"
+
+JOB job_ARA_S2_R400737 ARA_job.sub 
+VARS job_ARA_S2_R400737 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400737.root" run="400737"
+
+JOB job_ARA_S2_R400265 ARA_job.sub 
+VARS job_ARA_S2_R400265 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400265.root" run="400265"
+
+JOB job_ARA_S2_R400406 ARA_job.sub 
+VARS job_ARA_S2_R400406 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400406.root" run="400406"
+
+JOB job_ARA_S2_R400007 ARA_job.sub 
+VARS job_ARA_S2_R400007 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400007.root" run="400007"
+
+JOB job_ARA_S2_R400990 ARA_job.sub 
+VARS job_ARA_S2_R400990 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400990.root" run="400990"
+
+JOB job_ARA_S2_R400642 ARA_job.sub 
+VARS job_ARA_S2_R400642 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400642.root" run="400642"
+
+JOB job_ARA_S2_R400818 ARA_job.sub 
+VARS job_ARA_S2_R400818 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400818.root" run="400818"
+
+JOB job_ARA_S2_R400443 ARA_job.sub 
+VARS job_ARA_S2_R400443 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400443.root" run="400443"
+
+JOB job_ARA_S2_R400972 ARA_job.sub 
+VARS job_ARA_S2_R400972 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400972.root" run="400972"
+
+JOB job_ARA_S2_R400233 ARA_job.sub 
+VARS job_ARA_S2_R400233 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400233.root" run="400233"
+
+JOB job_ARA_S2_R400429 ARA_job.sub 
+VARS job_ARA_S2_R400429 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400429.root" run="400429"
+
+JOB job_ARA_S2_R400200 ARA_job.sub 
+VARS job_ARA_S2_R400200 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400200.root" run="400200"
+
+JOB job_ARA_S2_R400014 ARA_job.sub 
+VARS job_ARA_S2_R400014 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400014.root" run="400014"
+
+JOB job_ARA_S2_R400770 ARA_job.sub 
+VARS job_ARA_S2_R400770 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400770.root" run="400770"
+
+JOB job_ARA_S2_R400224 ARA_job.sub 
+VARS job_ARA_S2_R400224 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400224.root" run="400224"
+
+JOB job_ARA_S2_R400937 ARA_job.sub 
+VARS job_ARA_S2_R400937 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400937.root" run="400937"
+
+JOB job_ARA_S2_R400460 ARA_job.sub 
+VARS job_ARA_S2_R400460 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400460.root" run="400460"
+
+JOB job_ARA_S2_R400124 ARA_job.sub 
+VARS job_ARA_S2_R400124 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400124.root" run="400124"
+
+JOB job_ARA_S2_R400507 ARA_job.sub 
+VARS job_ARA_S2_R400507 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400507.root" run="400507"
+
+JOB job_ARA_S2_R400001 ARA_job.sub 
+VARS job_ARA_S2_R400001 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400001.root" run="400001"
+
+JOB job_ARA_S2_R400404 ARA_job.sub 
+VARS job_ARA_S2_R400404 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400404.root" run="400404"
+
+JOB job_ARA_S2_R400668 ARA_job.sub 
+VARS job_ARA_S2_R400668 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400668.root" run="400668"
+
+JOB job_ARA_S2_R400794 ARA_job.sub 
+VARS job_ARA_S2_R400794 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400794.root" run="400794"
+
+JOB job_ARA_S2_R400955 ARA_job.sub 
+VARS job_ARA_S2_R400955 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400955.root" run="400955"
+
+JOB job_ARA_S2_R400887 ARA_job.sub 
+VARS job_ARA_S2_R400887 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400887.root" run="400887"
+
+JOB job_ARA_S2_R400673 ARA_job.sub 
+VARS job_ARA_S2_R400673 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400673.root" run="400673"
+
+JOB job_ARA_S2_R400256 ARA_job.sub 
+VARS job_ARA_S2_R400256 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400256.root" run="400256"
+
+JOB job_ARA_S2_R400699 ARA_job.sub 
+VARS job_ARA_S2_R400699 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400699.root" run="400699"
+
+JOB job_ARA_S2_R400775 ARA_job.sub 
+VARS job_ARA_S2_R400775 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400775.root" run="400775"
+
+JOB job_ARA_S2_R400376 ARA_job.sub 
+VARS job_ARA_S2_R400376 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400376.root" run="400376"
+
+JOB job_ARA_S2_R400231 ARA_job.sub 
+VARS job_ARA_S2_R400231 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400231.root" run="400231"
+
+JOB job_ARA_S2_R400612 ARA_job.sub 
+VARS job_ARA_S2_R400612 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400612.root" run="400612"
+
+JOB job_ARA_S2_R400106 ARA_job.sub 
+VARS job_ARA_S2_R400106 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400106.root" run="400106"
+
+JOB job_ARA_S2_R400563 ARA_job.sub 
+VARS job_ARA_S2_R400563 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400563.root" run="400563"
+
+JOB job_ARA_S2_R400368 ARA_job.sub 
+VARS job_ARA_S2_R400368 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400368.root" run="400368"
+
+JOB job_ARA_S2_R400727 ARA_job.sub 
+VARS job_ARA_S2_R400727 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400727.root" run="400727"
+
+JOB job_ARA_S2_R400325 ARA_job.sub 
+VARS job_ARA_S2_R400325 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400325.root" run="400325"
+
+JOB job_ARA_S2_R400841 ARA_job.sub 
+VARS job_ARA_S2_R400841 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400841.root" run="400841"
+
+JOB job_ARA_S2_R400220 ARA_job.sub 
+VARS job_ARA_S2_R400220 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400220.root" run="400220"
+
+JOB job_ARA_S2_R400446 ARA_job.sub 
+VARS job_ARA_S2_R400446 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400446.root" run="400446"
+
+JOB job_ARA_S2_R400913 ARA_job.sub 
+VARS job_ARA_S2_R400913 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400913.root" run="400913"
+
+JOB job_ARA_S2_R400928 ARA_job.sub 
+VARS job_ARA_S2_R400928 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400928.root" run="400928"
+
+JOB job_ARA_S2_R400532 ARA_job.sub 
+VARS job_ARA_S2_R400532 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400532.root" run="400532"
+
+JOB job_ARA_S2_R400383 ARA_job.sub 
+VARS job_ARA_S2_R400383 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400383.root" run="400383"
+
+JOB job_ARA_S2_R400562 ARA_job.sub 
+VARS job_ARA_S2_R400562 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400562.root" run="400562"
+
+JOB job_ARA_S2_R400930 ARA_job.sub 
+VARS job_ARA_S2_R400930 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400930.root" run="400930"
+
+JOB job_ARA_S2_R400100 ARA_job.sub 
+VARS job_ARA_S2_R400100 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400100.root" run="400100"
+
+JOB job_ARA_S2_R400273 ARA_job.sub 
+VARS job_ARA_S2_R400273 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400273.root" run="400273"
+
+JOB job_ARA_S2_R400491 ARA_job.sub 
+VARS job_ARA_S2_R400491 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400491.root" run="400491"
+
+JOB job_ARA_S2_R400766 ARA_job.sub 
+VARS job_ARA_S2_R400766 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400766.root" run="400766"
+
+JOB job_ARA_S2_R400744 ARA_job.sub 
+VARS job_ARA_S2_R400744 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400744.root" run="400744"
+
+JOB job_ARA_S2_R400225 ARA_job.sub 
+VARS job_ARA_S2_R400225 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400225.root" run="400225"
+
+JOB job_ARA_S2_R400588 ARA_job.sub 
+VARS job_ARA_S2_R400588 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400588.root" run="400588"
+
+JOB job_ARA_S2_R400619 ARA_job.sub 
+VARS job_ARA_S2_R400619 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400619.root" run="400619"
+
+JOB job_ARA_S2_R400965 ARA_job.sub 
+VARS job_ARA_S2_R400965 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400965.root" run="400965"
+
+JOB job_ARA_S2_R400518 ARA_job.sub 
+VARS job_ARA_S2_R400518 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400518.root" run="400518"
+
+JOB job_ARA_S2_R400822 ARA_job.sub 
+VARS job_ARA_S2_R400822 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400822.root" run="400822"
+
+JOB job_ARA_S2_R400874 ARA_job.sub 
+VARS job_ARA_S2_R400874 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400874.root" run="400874"
+
+JOB job_ARA_S2_R400044 ARA_job.sub 
+VARS job_ARA_S2_R400044 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400044.root" run="400044"
+
+JOB job_ARA_S2_R400186 ARA_job.sub 
+VARS job_ARA_S2_R400186 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400186.root" run="400186"
+
+JOB job_ARA_S2_R400799 ARA_job.sub 
+VARS job_ARA_S2_R400799 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400799.root" run="400799"
+
+JOB job_ARA_S2_R400567 ARA_job.sub 
+VARS job_ARA_S2_R400567 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400567.root" run="400567"
+
+JOB job_ARA_S2_R400120 ARA_job.sub 
+VARS job_ARA_S2_R400120 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400120.root" run="400120"
+
+JOB job_ARA_S2_R400492 ARA_job.sub 
+VARS job_ARA_S2_R400492 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400492.root" run="400492"
+
+JOB job_ARA_S2_R400605 ARA_job.sub 
+VARS job_ARA_S2_R400605 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400605.root" run="400605"
+
+JOB job_ARA_S2_R400691 ARA_job.sub 
+VARS job_ARA_S2_R400691 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400691.root" run="400691"
+
+JOB job_ARA_S2_R400636 ARA_job.sub 
+VARS job_ARA_S2_R400636 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400636.root" run="400636"
+
+JOB job_ARA_S2_R400490 ARA_job.sub 
+VARS job_ARA_S2_R400490 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400490.root" run="400490"
+
+JOB job_ARA_S2_R400262 ARA_job.sub 
+VARS job_ARA_S2_R400262 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400262.root" run="400262"
+
+JOB job_ARA_S2_R400680 ARA_job.sub 
+VARS job_ARA_S2_R400680 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400680.root" run="400680"
+
+JOB job_ARA_S2_R400773 ARA_job.sub 
+VARS job_ARA_S2_R400773 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400773.root" run="400773"
+
+JOB job_ARA_S2_R400499 ARA_job.sub 
+VARS job_ARA_S2_R400499 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400499.root" run="400499"
+
+JOB job_ARA_S2_R400861 ARA_job.sub 
+VARS job_ARA_S2_R400861 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400861.root" run="400861"
+
+JOB job_ARA_S2_R400906 ARA_job.sub 
+VARS job_ARA_S2_R400906 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400906.root" run="400906"
+
+JOB job_ARA_S2_R400525 ARA_job.sub 
+VARS job_ARA_S2_R400525 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400525.root" run="400525"
+
+JOB job_ARA_S2_R400337 ARA_job.sub 
+VARS job_ARA_S2_R400337 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400337.root" run="400337"
+
+JOB job_ARA_S2_R400517 ARA_job.sub 
+VARS job_ARA_S2_R400517 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400517.root" run="400517"
+
+JOB job_ARA_S2_R400193 ARA_job.sub 
+VARS job_ARA_S2_R400193 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400193.root" run="400193"
+
+JOB job_ARA_S2_R400179 ARA_job.sub 
+VARS job_ARA_S2_R400179 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400179.root" run="400179"
+
+JOB job_ARA_S2_R400175 ARA_job.sub 
+VARS job_ARA_S2_R400175 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400175.root" run="400175"
+
+JOB job_ARA_S2_R400867 ARA_job.sub 
+VARS job_ARA_S2_R400867 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400867.root" run="400867"
+
+JOB job_ARA_S2_R400211 ARA_job.sub 
+VARS job_ARA_S2_R400211 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400211.root" run="400211"
+
+JOB job_ARA_S2_R400068 ARA_job.sub 
+VARS job_ARA_S2_R400068 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400068.root" run="400068"
+
+JOB job_ARA_S2_R400451 ARA_job.sub 
+VARS job_ARA_S2_R400451 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400451.root" run="400451"
+
+JOB job_ARA_S2_R400740 ARA_job.sub 
+VARS job_ARA_S2_R400740 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400740.root" run="400740"
+
+JOB job_ARA_S2_R400697 ARA_job.sub 
+VARS job_ARA_S2_R400697 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400697.root" run="400697"
+
+JOB job_ARA_S2_R400845 ARA_job.sub 
+VARS job_ARA_S2_R400845 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400845.root" run="400845"
+
+JOB job_ARA_S2_R400565 ARA_job.sub 
+VARS job_ARA_S2_R400565 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400565.root" run="400565"
+
+JOB job_ARA_S2_R400342 ARA_job.sub 
+VARS job_ARA_S2_R400342 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400342.root" run="400342"
+
+JOB job_ARA_S2_R400554 ARA_job.sub 
+VARS job_ARA_S2_R400554 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400554.root" run="400554"
+
+JOB job_ARA_S2_R400832 ARA_job.sub 
+VARS job_ARA_S2_R400832 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400832.root" run="400832"
+
+JOB job_ARA_S2_R400292 ARA_job.sub 
+VARS job_ARA_S2_R400292 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400292.root" run="400292"
+
+JOB job_ARA_S2_R400848 ARA_job.sub 
+VARS job_ARA_S2_R400848 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400848.root" run="400848"
+
+JOB job_ARA_S2_R400294 ARA_job.sub 
+VARS job_ARA_S2_R400294 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400294.root" run="400294"
+
+JOB job_ARA_S2_R400005 ARA_job.sub 
+VARS job_ARA_S2_R400005 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400005.root" run="400005"
+
+JOB job_ARA_S2_R400178 ARA_job.sub 
+VARS job_ARA_S2_R400178 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400178.root" run="400178"
+
+JOB job_ARA_S2_R400221 ARA_job.sub 
+VARS job_ARA_S2_R400221 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400221.root" run="400221"
+
+JOB job_ARA_S2_R400479 ARA_job.sub 
+VARS job_ARA_S2_R400479 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400479.root" run="400479"
+
+JOB job_ARA_S2_R400618 ARA_job.sub 
+VARS job_ARA_S2_R400618 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400618.root" run="400618"
+
+JOB job_ARA_S2_R400456 ARA_job.sub 
+VARS job_ARA_S2_R400456 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400456.root" run="400456"
+
+JOB job_ARA_S2_R400871 ARA_job.sub 
+VARS job_ARA_S2_R400871 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400871.root" run="400871"
+
+JOB job_ARA_S2_R400345 ARA_job.sub 
+VARS job_ARA_S2_R400345 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400345.root" run="400345"
+
+JOB job_ARA_S2_R400280 ARA_job.sub 
+VARS job_ARA_S2_R400280 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400280.root" run="400280"
+
+JOB job_ARA_S2_R400466 ARA_job.sub 
+VARS job_ARA_S2_R400466 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400466.root" run="400466"
+
+JOB job_ARA_S2_R400134 ARA_job.sub 
+VARS job_ARA_S2_R400134 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400134.root" run="400134"
+
+JOB job_ARA_S2_R400757 ARA_job.sub 
+VARS job_ARA_S2_R400757 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400757.root" run="400757"
+
+JOB job_ARA_S2_R400431 ARA_job.sub 
+VARS job_ARA_S2_R400431 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400431.root" run="400431"
+
+JOB job_ARA_S2_R400091 ARA_job.sub 
+VARS job_ARA_S2_R400091 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400091.root" run="400091"
+
+JOB job_ARA_S2_R400859 ARA_job.sub 
+VARS job_ARA_S2_R400859 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400859.root" run="400859"
+
+JOB job_ARA_S2_R400573 ARA_job.sub 
+VARS job_ARA_S2_R400573 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400573.root" run="400573"
+
+JOB job_ARA_S2_R400752 ARA_job.sub 
+VARS job_ARA_S2_R400752 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400752.root" run="400752"
+
+JOB job_ARA_S2_R400621 ARA_job.sub 
+VARS job_ARA_S2_R400621 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400621.root" run="400621"
+
+JOB job_ARA_S2_R400484 ARA_job.sub 
+VARS job_ARA_S2_R400484 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400484.root" run="400484"
+
+JOB job_ARA_S2_R400765 ARA_job.sub 
+VARS job_ARA_S2_R400765 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400765.root" run="400765"
+
+JOB job_ARA_S2_R400332 ARA_job.sub 
+VARS job_ARA_S2_R400332 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400332.root" run="400332"
+
+JOB job_ARA_S2_R400070 ARA_job.sub 
+VARS job_ARA_S2_R400070 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400070.root" run="400070"
+
+JOB job_ARA_S2_R400701 ARA_job.sub 
+VARS job_ARA_S2_R400701 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400701.root" run="400701"
+
+JOB job_ARA_S2_R400705 ARA_job.sub 
+VARS job_ARA_S2_R400705 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400705.root" run="400705"
+
+JOB job_ARA_S2_R400983 ARA_job.sub 
+VARS job_ARA_S2_R400983 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400983.root" run="400983"
+
+JOB job_ARA_S2_R400286 ARA_job.sub 
+VARS job_ARA_S2_R400286 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400286.root" run="400286"
+
+JOB job_ARA_S2_R400946 ARA_job.sub 
+VARS job_ARA_S2_R400946 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400946.root" run="400946"
+
+JOB job_ARA_S2_R400828 ARA_job.sub 
+VARS job_ARA_S2_R400828 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400828.root" run="400828"
+
+JOB job_ARA_S2_R400074 ARA_job.sub 
+VARS job_ARA_S2_R400074 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400074.root" run="400074"
+
+JOB job_ARA_S2_R400480 ARA_job.sub 
+VARS job_ARA_S2_R400480 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400480.root" run="400480"
+
+JOB job_ARA_S2_R400290 ARA_job.sub 
+VARS job_ARA_S2_R400290 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400290.root" run="400290"
+
+JOB job_ARA_S2_R400982 ARA_job.sub 
+VARS job_ARA_S2_R400982 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400982.root" run="400982"
+
+JOB job_ARA_S2_R400170 ARA_job.sub 
+VARS job_ARA_S2_R400170 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400170.root" run="400170"
+
+JOB job_ARA_S2_R400311 ARA_job.sub 
+VARS job_ARA_S2_R400311 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400311.root" run="400311"
+
+JOB job_ARA_S2_R400486 ARA_job.sub 
+VARS job_ARA_S2_R400486 data="/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run400486.root" run="400486"
+

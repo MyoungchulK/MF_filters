@@ -38,13 +38,15 @@ nu_curr = ['CC', 'NC']
 shower = ['EM', 'HAD']
 
 #inelsity
-elst = np.array([0.1, 0.9])
+#elst = np.array([np.arange(0.1, 1 + 0.0001, 0.1), np.array([0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.0])])
+elst = np.array([np.array([0.1, 0.4, 0.7]), np.array([0.9, 0.6, 0.3])])
+elst = np.round(elst,1)
 print(elst)
 
 # energy
 Energy_setting=400
 #Energy_origin=np.arange(16, 22, 1, dtype = int)
-Energy_origin = np.array([18], dtype = int)
+Energy_origin = np.array([19], dtype = int)
 print(Energy_origin)
 Energy=Energy_origin * 10 + Energy_setting
 Energy=Energy.astype(int)
@@ -52,7 +54,7 @@ print(Energy)
 
 # antenna response
 #Gain_angle=np.arange(0,-91,-1, dtype = int)
-Gain_angle=np.arange(0,-61,-10, dtype = int)
+Gain_angle=np.arange(0,-76,-15, dtype = int)
 print(Gain_angle)
 
 # distance
@@ -62,7 +64,7 @@ print(Distance)
 # veiw angle
 Cherenkov_angle=56.03
 #Offcone_angle=np.arange(0,11,1, dtype = int)
-Offcone_angle=np.arange(0,4.1,0.5)
+Offcone_angle=np.arange(0,5,1, dtype = int)
 print(Offcone_angle)
 
 
@@ -157,9 +159,9 @@ for i in tqdm(range(16)):
                 #print('Offcone Neutrino Dir is',Offcone_theta_ang,Offcone_theta_rad)
 
                 Nu_dir_theta = np.copy(Offcone_theta_rad)
-                Nu_dir_phi = np.pi
+                Nu_dir_phi = 3.14159265359
                 Nu_dir_theta_ang = np.copy(Offcone_theta_ang)
-                Nu_dir_phi_ang = np.degrees(np.pi)
+                Nu_dir_phi_ang = np.degrees(3.14159265359)
 
             if i > 7:
                 # vertex to path point
@@ -201,15 +203,17 @@ for i in tqdm(range(16)):
                 else:
                     curr = 0
 
-                lines = f'{counts} {s+1} {0} {Energy[0]} {curr} {R} {elevation_rad} {phi_rad} {Nu_dir_theta} {Nu_dir_phi} {elst[s]}'+'\n'
-                output.write(lines) 
+                for e in range(len(elst[0])):
+
+                    lines = f'{counts} {s+1} {0} {Energy[0]} {curr} {R} {elevation_rad} {phi_rad} {Nu_dir_theta} {Nu_dir_phi} {elst[s,e]}'+'\n'
+                    output.write(lines) 
          
-                # Reference
-                #lines = f'Event_id Flavor CC_NC Elst Ant_Res Off_cone Useful_Ch'+'\n'           
-                lines = f'{counts} {nu_fla[s]} {nu_curr[s]} {elst[s]} {Gain_angle[b]} {Offcone_angle[c]} {i}'+'\n'
-                param.write(lines)            
+                    # Reference
+                    #lines = f'Event_id Flavor CC_NC Elst Ant_Res Off_cone Useful_Ch'+'\n'           
+                    lines = f'{counts} {nu_fla[s]} {nu_curr[s]} {elst[s,e]} {Gain_angle[b]} {Offcone_angle[c]} {i}'+'\n'
+                    param.write(lines)            
                     
-                counts += 1
+                    counts += 1
 
 
 output.close()

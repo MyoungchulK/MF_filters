@@ -34,19 +34,13 @@ def psd_sim_collector(Data, Station, Year):
     ara_mf = ara_sim_matched_filter(wf_len, dt, Station)  
     freq = ara_mf.freq_pad
     psd, rayl_mu = ara_mf.get_psd(wf_v)
-    del ara_mf
-
-    ara_mf = ara_sim_matched_filter(wf_len, dt, Station, add_band_pass_filter = True)
-    bp_psd, bp_rayl_mu = ara_mf.get_psd(wf_v)
     del wf_v, ara_mf
 
     print('Noise psd collecting is done!')
 
     return {'freq':freq,
             'rayl_mu':rayl_mu,
-            'psd':psd,
-            'bp_rayl_mu':bp_rayl_mu,
-            'bp_psd':bp_psd}
+            'psd':psd}
     
 
 
