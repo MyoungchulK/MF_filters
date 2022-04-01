@@ -1,10 +1,9 @@
 import os
 import numpy as np
 from scipy.signal import correlation_lags
-#from scipy.signal import butter, filtfilt
+from scipy.signal import butter, filtfilt
 from scipy.signal import hilbert
 from scipy.stats import rayleigh
-from scipy.interpolate import Akima1DInterpolator
 from tqdm import tqdm
 import h5py
 
@@ -16,39 +15,23 @@ num_ants = ara_const.USEFUL_CHAN_PER_STATION
 
 class ara_sim_matched_filter:
 
-    def __init__(self, st, wf_len = 1280, dt = 0.3125, int_dt = 0.1, apply_int = False, apply_pad = False):
+    def __init__(self, wf_len, dt, st):
 
         self.st = st
         self.dt = dt
         self.wf_len = wf_len
         self.df = 1 / (self.dt * self.wf_len)
-        self.wf_time = np.arange(self.wf_len) * self.dt - self.wf_len // 2 * self.dt
-        self.wf_freq = np.fft.fftfreq(self.wf_len, self.dt)        
-        self.lag = correlation_lags(self.wf_len, self.wf_len, 'same') * self.dt
-        self.lag_len = len(self.lag)
+        
+        # pad info. put the half wf length in both edges
+        self.half_wf_len = self.wf_len // 2
+        self.pad_len = self.wf_len * 2 # need a pad for correlation process
+        self.pad_df = 1 / (self.dt * self.pad_len)        
 
-        self.apply_int = apply_int
-        if self.apply_int:
-            self.dt = int_dt
-            int_ti = self.dt * np.ceil((1/self.dt) * self.wf_time[0])
-            int_tf = self.dt * np.floor((1/self.dt) * self.wf_time[-1])
-            self.int_wf_time = np.linspace(int_ti, int_tf, int((int_tf - int_ti) / self.dt) + 1, dtype = float)
-            self.wf_len = len(self.int_wf_time)
-            self.df = 1 / (self.dt * self.wf_len)
-            self.wf_freq = np.fft.fftfreq(self.wf_len, self.dt)
-            self.lag = correlation_lags(self.wf_len, self.wf_len, 'same') * self.dt 
-            self.lag_len = len(self.lag)
-            del int_ti, int_tf
- 
-        self.apply_pad = apply_pad
-        if self.apply_pad: # pad info. put the half wf length in both edges
-            self.half_wf_len = self.wf_len // 2
-            self.pad_len = self.wf_len * 2 # need a pad for correlation process
-            self.pad_df = 1 / (self.dt * self.pad_len)
-            self.time_pad = np.arange(self.pad_len) * self.dt - self.pad_len // 2 * self.dt
-            self.freq_pad = np.fft.fftfreq(self.pad_len, self.dt)
-            self.lag_pad = correlation_lags(self.pad_len, self.pad_len, 'same') * self.dt
-            self.lag_len = len(self.lag_pad)
+        # get x-axis info
+        self.time_pad = np.arange(self.pad_len) * self.dt - self.pad_len // 2 * self.dt
+        self.freq_pad = np.fft.fftfreq(self.pad_len, self.dt)
+        self.lag_pad = correlation_lags(self.pad_len, self.pad_len, 'same') * self.dt
+        self.lag_len = len(self.lag_pad)
 
     def get_band_pass_filter(self, amp, val = 1e-100): # for temp, lets use brutal method.... for now....
 
@@ -58,7 +41,7 @@ class ara_sim_matched_filter:
     
         # front/back band
         amp[(self.freq_pad >= -0.15) & (self.freq_pad <= 0.15)] = val
-        amp[(self.freq_pad >= 0.75) | (self.freq_pad <= -0.75)] = val
+        amp[(self.freq_pad >= 0.85) | (self.freq_pad <= -0.85)] = val
  
         return amp
 
@@ -116,29 +99,21 @@ class ara_sim_matched_filter:
     
         return mf
 
-    #def get_psd(self, dat, binning = 1000): # computationally expensive process...
-    def get_psd(self, wf_v, binning = 1000): # computationally expensive process...
+    def get_psd(self, dat, binning = 1000): # computationally expensive process...
 
-        #wf_v = np.copy(dat)
-        if self.apply_int: # akima interpolation!
-            akima = Akima1DInterpolator(self.wf_time, wf_v, axis = 0)
-            wf_v = akima(self.int_wf_time)
+        wf_v = np.copy(dat)
 
-        psd_freq = self.wf_len
-        psd_df = self.df
-        if self.apply_pad: # add pad in both side
-            wf_v = np.pad(wf_v, [(self.half_wf_len, ), (0, ), (0, )], 'constant', constant_values = 0)
-            psd_freq = self.pad_len
-            psd_df = self.pad_df
+        # add pad in both side
+        wf_v = np.pad(wf_v, [(self.half_wf_len, ), (0, ), (0, )], 'constant', constant_values = 0)
 
         # normalized fft. since length of wfs from sim are identical, let just use setting value
         wf_v = np.abs(np.fft.fft(wf_v, axis = 0)) / np.sqrt(self.wf_len)
 
         # rayl fit
         bin_edges = np.asarray([np.nanmin(wf_v, axis = 2), np.nanmax(wf_v, axis = 2)])
-        rayl_mu = np.full((psd_freq, num_ants), np.nan, dtype = float)
+        rayl_mu = np.full((self.pad_len, num_ants), np.nan, dtype = float)
         
-        for f in tqdm(range(psd_freq)):
+        for f in tqdm(range(self.pad_len)):
             for ant in range(num_ants):
 
                 # get guess. set bin space in each frequency for more fine binning
@@ -162,8 +137,8 @@ class ara_sim_matched_filter:
                 del mu_init
         del wf_v, bin_edges
 
-        # psd mV**2/GHz
-        psd = rayl_mu**2 / psd_df
+        # psd mV**2/Hz
+        psd = rayl_mu**2 / self.pad_df
 
         return psd, rayl_mu
 

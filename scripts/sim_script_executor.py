@@ -28,9 +28,25 @@ def script_loader(Key = None, Station = None, Year = None, Data = None):
     dot_idx = Data.rfind('.')
     data_name = Data[slash_idx+1:dot_idx]
     del slash_idx, dot_idx
-    h5_file_name = f'{Output}{data_name}'
-    
+    h5_file_name = f'{Output}{Key}_sim_A{Station}_{data_name}'
+    h5_file_name_out = h5_file_name + '.h5'
+    hf = h5py.File(h5_file_name_out, 'w')
 
+    #saving result
+    hf.create_dataset('config', data=np.array([Station]), compression="gzip", compression_opts=9)
+    for r in results:
+        if r == 'mf_wf':
+            continue
+        print(r, results[r].shape)
+        hf.create_dataset(r, data=results[r], compression="gzip", compression_opts=9)
+    del results, Key, Station, Output
+    hf.close()
+    print(f'output is {h5_file_name_out}')
+
+    # quick size check
+    size_checker(h5_file_name_out)
+ 
+    """
     #link AraRoot
     import ROOT
     ROOT.gSystem.Load(os.environ.get('ARA_UTIL_INSTALL_DIR')+"/lib/libAra.so")
@@ -85,24 +101,7 @@ def script_loader(Key = None, Station = None, Year = None, Data = None):
                         gr.GetYaxis().SetTitle( 'correlation coefficient' )
                         gr.Write()
     myfile.Close()
-
-    h5_file_name += f'.h5'
-    hf = h5py.File(h5_file_name, 'w')
-    print(h5_file_name)
-    
-    #saving result
-    hf.create_dataset('config', data=np.array([Station]), compression="gzip", compression_opts=9)
-    for r in results:
-        if r == 'mf_wf':
-            continue
-        print(r, results[r].shape)
-        hf.create_dataset(r, data=results[r], compression="gzip", compression_opts=9)
-    del results, Key, Station, Output
-    hf.close()
-    print(f'output is {h5_file_name}')
-
-    # quick size check
-    size_checker(h5_file_name)  
+    """
     
 if __name__ == "__main__":
 
