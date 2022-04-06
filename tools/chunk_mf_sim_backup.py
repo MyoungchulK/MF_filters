@@ -46,7 +46,7 @@ def mf_sim_collector(Data, Station, Year):
     del hit_dim, mf_dim
 
     cut_val = 0.3
-    mf_hit_cut = np.full((num_evts, 2, num_ants, 6000), np.nan, dtype = float)
+    mf_hit_cut = np.full((num_evts, 2, num_ants, 4000), np.nan, dtype = float)
 
     # loop over the events
     for evt in tqdm(range(num_evts)):

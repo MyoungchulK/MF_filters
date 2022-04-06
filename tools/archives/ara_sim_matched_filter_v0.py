@@ -57,24 +57,16 @@ class ara_sim_matched_filter:
         amp[(self.freq_pad <= -0.43) & (self.freq_pad >= -0.48)] = val
     
         # front/back band
-        #amp[(self.freq_pad >= -0.15) & (self.freq_pad <= 0.15)] = val
-        amp[(self.freq_pad >= -0.2) & (self.freq_pad <= 0.2)] = val
+        amp[(self.freq_pad >= -0.15) & (self.freq_pad <= 0.15)] = val
         amp[(self.freq_pad >= 0.75) | (self.freq_pad <= -0.75)] = val
  
         return amp
 
     def get_prebuilt_dat(self, key = 'psd'):
 
+        hf_path = f'/data/user/mkim/OMF_filter/ARA0{self.st}/{key}_sim/{key}_sim_A{self.st}.h5'
         if key == 'temp':
             hf_path = f'/data/user/mkim/OMF_filter/ARA0{self.st}/{key}_sim/{key}_sim_A{self.st}_AraOut.setup_A2_temp.txt.run10.h5'
-        if key == 'psd':
-            hf_path = f'/data/user/mkim/OMF_filter/ARA0{self.st}/{key}_sim/{key}_sim_A{self.st}_AraOut.setup_A2_noise_evt10000.txt.run0.h5'
-            if self.apply_int == True and self.apply_pad == False:
-                key = 'int_psd'
-            if self.apply_int == False and self.apply_pad == True:
-                key = 'pad_psd'
-            if self.apply_int == True and self.apply_pad == True:
-                key = 'int_pad_psd'                
         hf = h5py.File(hf_path, 'r')
         print(f'loaded {key}: {hf_path}')
 
@@ -89,27 +81,17 @@ class ara_sim_matched_filter:
         psd = self.get_prebuilt_dat(key = 'psd')
         temp = self.get_prebuilt_dat(key = 'temp') # 1.wf bin, 2.16 chs, 3.theta angle, 4.on/off-cone, 5.Elst
 
-        # interpolation
-        if self.apply_int:
-            akima = Akima1DInterpolator(self.wf_time, temp, axis = 0)
-            temp = akima(self.int_wf_time)
-            del akima
-
         # add pad in both side
-        temp_df = self.df
-        if self.apply_pad:
-            temp = np.pad(temp, [(self.half_wf_len, ), (0, ), (0, ), (0, ), (0, )], 'constant', constant_values = 0)
-            self.temp_dim = temp.shape # information about number/type of templates       
-            temp_df = self.pad_df 
-
+        temp = np.pad(temp, [(self.half_wf_len, ), (0, ), (0, ), (0, ), (0, )], 'constant', constant_values = 0)
+        self.temp_dim = temp.shape # information about number/type of templates       
+ 
         # normalized fft. since length of wfs from sim are identical, let just use setting value
-        temp = np.fft.fft(temp, axis = 0) / np.sqrt(self.wf_len * temp_df)
+        temp = np.fft.fft(temp, axis = 0) / np.sqrt(self.wf_len * self.pad_df)
 
         # normalization factor
         nor_fac = 2 * np.abs(temp)**2 / psd[:, :, np.newaxis, np.newaxis, np.newaxis]
-        nor_fac = np.sqrt(np.nansum(nor_fac, axis = 0) * temp_df)
-        del temp_df        
-
+        nor_fac = np.sqrt(np.nansum(nor_fac, axis = 0) * self.pad_df)
+        
         # normalized template with noise weight
         self.noise_weighted_temp = temp / psd[:, :, np.newaxis, np.newaxis, np.newaxis]
         self.noise_weighted_temp /= nor_fac[np.newaxis, :, :, :, :]
@@ -117,22 +99,12 @@ class ara_sim_matched_filter:
 
     def get_mf_wfs(self, wf_v):
 
-        # interpolation
-        if self.apply_int:
-            akima = Akima1DInterpolator(self.wf_time, wf_v, axis = 0)
-            wf_v = akima(self.int_wf_time)
-            del akima
-
         # add pad in both side
-        wf_df = self.df
-        if self.apply_pad:
-            wf_v = np.pad(wf_v, [(self.half_wf_len, ), (0, )], 'constant', constant_values = 0)
-            wf_df = self.pad_df        
-
+        wf_v = np.pad(wf_v, [(self.half_wf_len, ), (0, )], 'constant', constant_values = 0)
+        
         # normalized fft
-        wf_v = np.fft.fft(wf_v, axis = 0) / np.sqrt(self.wf_len * wf_df)        
-        del wf_df 
-
+        wf_v = np.fft.fft(wf_v, axis = 0) / np.sqrt(self.wf_len * self.pad_df)        
+ 
         # matched filtering
         mf = self.noise_weighted_temp.conjugate() * wf_v[:, :, np.newaxis, np.newaxis, np.newaxis]  # correlation w/ template and deconlove by psd
         mf = self.get_band_pass_filter(mf)                                                          # kill the all edge correlation

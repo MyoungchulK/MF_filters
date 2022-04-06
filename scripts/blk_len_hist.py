@@ -17,121 +17,132 @@ knwon_issue = known_issue_loader(Station)
 bad_runs = knwon_issue.get_knwon_bad_run()
 
 # sort
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/blk_len/*'
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/blk_len_full/*'
 print(d_path)
 d_list, d_run_tot, d_run_range = file_sorter(d_path)
 del d_run_range
 
 # config array
 config_arr = []
-config_arr_w_cut = []
+config_arr_cut = []
 run_arr = []
-run_arr_w_cut = []
+run_arr_cut = []
 
-rf_blk_hist = []
-cal_blk_hist = []
-soft_blk_hist = []
-rf_blk_hist_w_cut = []
-cal_blk_hist_w_cut = []
-soft_blk_hist_w_cut = []
+blk_range = np.arange(50, dtype = int)
+blk_bins = np.linspace(0, 50, 50 + 1, dtype = int)
+blk_bin_center = (blk_bins[1:] + blk_bins[:-1]) / 2
+min_range = np.arange(0, 360)
+min_bins = np.linspace(0, 360, 360 + 1)
+min_bin_center = (min_bins[1:] + min_bins[:-1]) / 2
 
-rf_wf_hist = []
-cal_wf_hist = []
-soft_wf_hist = []
-rf_wf_hist_w_cut = []
-cal_wf_hist_w_cut = []
-soft_wf_hist_w_cut = []
+blk_len_hist = []
+rf_len_hist = []
+cal_len_hist = []
+soft_len_hist = []
+blk_len_cut_hist = []
+rf_len_cut_hist = []
+cal_len_cut_hist = []
+soft_len_cut_hist = []
 
-int_rf_wf_hist = []
-int_cal_wf_hist = []
-int_soft_wf_hist = []
-int_rf_wf_hist_w_cut = []
-int_cal_wf_hist_w_cut = []
-int_soft_wf_hist_w_cut = []
+blk_len_hist2d = np.full((len(min_bin_center), len(blk_bin_center)), 0, dtype = int)
+rf_len_hist2d = np.copy(blk_len_hist2d)
+cal_len_hist2d = np.copy(blk_len_hist2d)
+soft_len_hist2d = np.copy(blk_len_hist2d)
+blk_len_cut_hist2d = np.copy(blk_len_hist2d)
+rf_len_cut_hist2d = np.copy(blk_len_hist2d)
+cal_len_cut_hist2d = np.copy(blk_len_hist2d)
+soft_len_cut_hist2d = np.copy(blk_len_hist2d)
 
-blk_range = np.arange(0, 50, dtype = int)
-blk_bins = np.linspace(0, 50, 50+1)
-blk_max = 0
+blk_len_hist2d_max = []
+rf_len_hist2d_max = []
+cal_len_hist2d_max = []
+soft_len_hist2d_max = []
+blk_len_cut_hist2d_max = []
+rf_len_cut_hist2d_max = []
+cal_len_cut_hist2d_max = []
+soft_len_cut_hist2d_max = []
 
-wf_range = np.arange(-200,1000,0.5)
-wf_bins = np.linspace(-200,1000,2400+1)
-wf_all = np.full((4), np.nan, dtype = float)
+def get_2d_max(blk_2d):
+
+    blk_max = np.copy(blk_2d)
+    blk_max[blk_max != 0] = 1
+    blk_max *= blk_range[np.newaxis, :]
+    blk_max = np.nanmax(blk_max, axis = 1)
+
+    return blk_max
 
 for r in tqdm(range(len(d_run_tot))):
 
  #if r <10:
 
     hf = h5py.File(d_list[r], 'r')
-
-    blk_max_run = np.nanmax(hf['blk_len'][:])
-    if blk_max < blk_max_run:   
-        blk_max = np.copy(blk_max_run) 
-    wf_len = hf['wf_len'][:]
-    int_wf_len = hf['int_wf_len'][:]
-    wf_min = np.nanmin(wf_len[0])
-    wf_max = np.nanmax(wf_len[1])
-    int_wf_min = np.nanmin(int_wf_len[0])
-    int_wf_max = np.nanmax(int_wf_len[1])
-
-    if np.isnan(wf_all[0]):
-        wf_all[0] = np.copy(wf_min)
-    if np.isnan(wf_all[1]):
-        wf_all[1] = np.copy(wf_max)
-    if np.isnan(wf_all[2]):
-        wf_all[2] = np.copy(int_wf_min)
-    if np.isnan(wf_all[3]):
-        wf_all[3] = np.copy(int_wf_max)
-
-    if wf_all[0] > wf_min:
-        wf_all[0] = np.copy(wf_min)
-    if wf_all[1] < wf_max:
-        wf_all[1] = np.copy(wf_max)
-    if wf_all[2] > int_wf_min:
-        wf_all[2] = np.copy(int_wf_min)
-    if wf_all[3] < int_wf_max:
-        wf_all[3] = np.copy(int_wf_max)
-    del wf_len, int_wf_len, blk_max_run, wf_min, wf_max, int_wf_min, int_wf_max
-    """
     config = hf['config'][2]
     config_arr.append(config)
     run_arr.append(d_run_tot[r])
 
-    rf_blk_hist.append(hf['rf_blk_hist'][:50])
-    cal_blk_hist.append(hf['cal_blk_hist'][:50])
-    soft_blk_hist.append(hf['soft_blk_hist'][:50])
+    blk = hf['blk_len_hist'][:]
+    rf = hf['rf_len_hist'][:]
+    cal = hf['cal_len_hist'][:]
+    soft = hf['soft_len_hist'][:]
+    blk_len_hist.append(blk)
+    rf_len_hist.append(rf)
+    cal_len_hist.append(cal)
+    soft_len_hist.append(soft)
 
-    rf_wf_hist.append(hf['rf_wf_hist'][:,:,600:-1000])
-    cal_wf_hist.append(hf['cal_wf_hist'][:,:,600:-1000])
-    soft_wf_hist.append(hf['soft_wf_hist'][:,:,600:-1000])
+    blk_2d = hf['blk_len_hist2d'][:]
+    rf_2d = hf['rf_len_hist2d'][:]
+    cal_2d = hf['cal_len_hist2d'][:]
+    soft_2d = hf['soft_len_hist2d'][:]
+    blk_len_hist2d += blk_2d
+    rf_len_hist2d += rf_2d
+    cal_len_hist2d += cal_2d
+    soft_len_hist2d += soft_2d
 
-    int_rf_wf_hist.append(hf['int_rf_wf_hist'][:,:,600:-1000])
-    int_cal_wf_hist.append(hf['int_cal_wf_hist'][:,:,600:-1000])
-    int_soft_wf_hist.append(hf['int_soft_wf_hist'][:,:,600:-1000])
+    blk_max = get_2d_max(blk_2d)
+    rf_max = get_2d_max(rf_2d)
+    cal_max = get_2d_max(cal_2d)
+    soft_max = get_2d_max(soft_2d)
+    blk_len_hist2d_max.append(blk_max)
+    rf_len_hist2d_max.append(rf_max)
+    cal_len_hist2d_max.append(cal_max)
+    soft_len_hist2d_max.append(soft_max)
 
     if d_run_tot[r] in bad_runs:
         #print('bad run:', d_list[r], d_run_tot[r])
         continue
-   
-    config_arr_w_cut.append(config)
-    run_arr_w_cut.append(d_run_tot[r])
+    
+    config_arr_cut.append(config)
+    run_arr_cut.append(d_run_tot[r])
+    
+    blk_cut = hf['blk_len_cut_hist'][:]
+    rf_cut = hf['rf_len_cut_hist'][:]
+    cal_cut = hf['cal_len_cut_hist'][:]
+    soft_cut= hf['soft_len_cut_hist'][:]
+    blk_len_cut_hist.append(blk_cut)
+    rf_len_cut_hist.append(rf_cut)
+    cal_len_cut_hist.append(cal_cut)
+    soft_len_cut_hist.append(soft_cut)
+    
+    blk_2d_cut = hf['blk_len_cut_hist2d'][:]
+    rf_2d_cut = hf['rf_len_cut_hist2d'][:]
+    cal_2d_cut = hf['cal_len_cut_hist2d'][:]
+    soft_2d_cut = hf['soft_len_cut_hist2d'][:]
+    blk_len_cut_hist2d += blk_2d_cut
+    rf_len_cut_hist2d += rf_2d_cut
+    cal_len_cut_hist2d += cal_2d_cut
+    soft_len_cut_hist2d += soft_2d_cut
 
-    rf_blk_hist_w_cut.append(hf['rf_blk_hist_w_cut'][:50])
-    cal_blk_hist_w_cut.append(hf['cal_blk_hist_w_cut'][:50])
-    soft_blk_hist_w_cut.append(hf['soft_blk_hist_w_cut'][:50])
+    blk_max_cut = get_2d_max(blk_2d_cut)
+    rf_max_cut = get_2d_max(rf_2d_cut)
+    cal_max_cut = get_2d_max(cal_2d_cut)
+    soft_max_cut = get_2d_max(soft_2d_cut)
+    blk_len_cut_hist2d_max.append(blk_max_cut)
+    rf_len_cut_hist2d_max.append(rf_max_cut)
+    cal_len_cut_hist2d_max.append(cal_max_cut)
+    soft_len_cut_hist2d_max.append(soft_max_cut)
 
-    rf_wf_hist_w_cut.append(hf['rf_wf_hist_w_cut'][:,:,600:-1000])
-    cal_wf_hist_w_cut.append(hf['cal_wf_hist_w_cut'][:,:,600:-1000])
-    soft_wf_hist_w_cut.append(hf['soft_wf_hist_w_cut'][:,:,600:-1000])
-
-    int_rf_wf_hist_w_cut.append(hf['int_rf_wf_hist_w_cut'][:,:,600:-1000])
-    int_cal_wf_hist_w_cut.append(hf['int_cal_wf_hist_w_cut'][:,:,600:-1000])
-    int_soft_wf_hist_w_cut.append(hf['int_soft_wf_hist_w_cut'][:,:,600:-1000])
-    """ 
     del hf
 
-print(blk_max)
-print(wf_all)
-"""
 path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
@@ -140,36 +151,44 @@ os.chdir(path)
 file_name = f'Blk_len_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('config_arr', data=np.asarray(config_arr), compression="gzip", compression_opts=9)
-hf.create_dataset('config_arr_w_cut', data=np.asarray(config_arr_w_cut), compression="gzip", compression_opts=9)
+hf.create_dataset('config_arr_cut', data=np.asarray(config_arr_cut), compression="gzip", compression_opts=9)
 hf.create_dataset('run_arr', data=np.asarray(run_arr), compression="gzip", compression_opts=9)
-hf.create_dataset('run_arr_w_cut', data=np.asarray(run_arr_w_cut), compression="gzip", compression_opts=9)
-hf.create_dataset('blk_bins', data=blk_bins, compression="gzip", compression_opts=9)
+hf.create_dataset('run_arr_cut', data=np.asarray(run_arr_cut), compression="gzip", compression_opts=9)
 hf.create_dataset('blk_range', data=blk_range, compression="gzip", compression_opts=9)
-hf.create_dataset('rf_blk_hist', data=np.asarray(rf_blk_hist), compression="gzip", compression_opts=9)
-hf.create_dataset('cal_blk_hist', data=np.asarray(cal_blk_hist), compression="gzip", compression_opts=9)
-hf.create_dataset('soft_blk_hist', data=np.asarray(soft_blk_hist), compression="gzip", compression_opts=9)
-hf.create_dataset('rf_blk_hist_w_cut', data=np.asarray(rf_blk_hist_w_cut), compression="gzip", compression_opts=9)
-hf.create_dataset('cal_blk_hist_w_cut', data=np.asarray(cal_blk_hist_w_cut), compression="gzip", compression_opts=9)
-hf.create_dataset('soft_blk_hist_w_cut', data=np.asarray(soft_blk_hist_w_cut), compression="gzip", compression_opts=9)
-hf.create_dataset('wf_bins', data=wf_bins, compression="gzip", compression_opts=9)
-hf.create_dataset('wf_range', data=wf_range, compression="gzip", compression_opts=9)
-hf.create_dataset('rf_wf_hist', data=np.asarray(rf_wf_hist), compression="gzip", compression_opts=9)
-hf.create_dataset('cal_wf_hist', data=np.asarray(cal_wf_hist), compression="gzip", compression_opts=9)
-hf.create_dataset('soft_wf_hist', data=np.asarray(soft_wf_hist), compression="gzip", compression_opts=9)
-hf.create_dataset('rf_wf_hist_w_cut', data=np.asarray(rf_wf_hist_w_cut), compression="gzip", compression_opts=9)
-hf.create_dataset('cal_wf_hist_w_cut', data=np.asarray(cal_wf_hist_w_cut), compression="gzip", compression_opts=9)
-hf.create_dataset('soft_wf_hist_w_cut', data=np.asarray(soft_wf_hist_w_cut), compression="gzip", compression_opts=9)
-hf.create_dataset('int_rf_wf_hist', data=np.asarray(int_rf_wf_hist), compression="gzip", compression_opts=9)
-hf.create_dataset('int_cal_wf_hist', data=np.asarray(int_cal_wf_hist), compression="gzip", compression_opts=9)
-hf.create_dataset('int_soft_wf_hist', data=np.asarray(int_soft_wf_hist), compression="gzip", compression_opts=9)
-hf.create_dataset('int_rf_wf_hist_w_cut', data=np.asarray(int_rf_wf_hist_w_cut), compression="gzip", compression_opts=9)
-hf.create_dataset('int_cal_wf_hist_w_cut', data=np.asarray(int_cal_wf_hist_w_cut), compression="gzip", compression_opts=9)
-hf.create_dataset('int_soft_wf_hist_w_cut', data=np.asarray(int_soft_wf_hist_w_cut), compression="gzip", compression_opts=9)
+hf.create_dataset('blk_bins', data=blk_bins, compression="gzip", compression_opts=9)
+hf.create_dataset('blk_bin_center', data=blk_bin_center, compression="gzip", compression_opts=9)
+hf.create_dataset('min_range', data=min_range, compression="gzip", compression_opts=9)
+hf.create_dataset('min_bins', data=min_bins, compression="gzip", compression_opts=9)
+hf.create_dataset('min_bin_center', data=min_bin_center, compression="gzip", compression_opts=9)
+hf.create_dataset('blk_len_hist2d', data=blk_len_hist2d, compression="gzip", compression_opts=9)
+hf.create_dataset('rf_len_hist2d', data=rf_len_hist2d, compression="gzip", compression_opts=9)
+hf.create_dataset('cal_len_hist2d', data=cal_len_hist2d, compression="gzip", compression_opts=9)
+hf.create_dataset('soft_len_hist2d', data=soft_len_hist2d, compression="gzip", compression_opts=9)
+hf.create_dataset('blk_len_cut_hist2d', data=blk_len_cut_hist2d, compression="gzip", compression_opts=9)
+hf.create_dataset('rf_len_cut_hist2d', data=rf_len_cut_hist2d, compression="gzip", compression_opts=9)
+hf.create_dataset('cal_len_cut_hist2d', data=cal_len_cut_hist2d, compression="gzip", compression_opts=9)
+hf.create_dataset('soft_len_cut_hist2d', data=soft_len_cut_hist2d, compression="gzip", compression_opts=9)
+hf.create_dataset('blk_len_hist', data=np.asarray(blk_len_hist), compression="gzip", compression_opts=9)
+hf.create_dataset('rf_len_hist', data=np.asarray(rf_len_hist), compression="gzip", compression_opts=9)
+hf.create_dataset('cal_len_hist', data=np.asarray(cal_len_hist), compression="gzip", compression_opts=9)
+hf.create_dataset('soft_len_hist', data=np.asarray(soft_len_hist), compression="gzip", compression_opts=9)
+hf.create_dataset('blk_len_cut_hist', data=np.asarray(blk_len_cut_hist), compression="gzip", compression_opts=9)
+hf.create_dataset('rf_len_cut_hist', data=np.asarray(rf_len_cut_hist), compression="gzip", compression_opts=9)
+hf.create_dataset('cal_len_cut_hist', data=np.asarray(cal_len_cut_hist), compression="gzip", compression_opts=9)
+hf.create_dataset('soft_len_cut_hist', data=np.asarray(soft_len_cut_hist), compression="gzip", compression_opts=9)
+hf.create_dataset('blk_len_hist2d_max', data=np.asarray(blk_len_hist2d_max), compression="gzip", compression_opts=9)
+hf.create_dataset('rf_len_hist2d_max', data=np.asarray(rf_len_hist2d_max), compression="gzip", compression_opts=9)
+hf.create_dataset('cal_len_hist2d_max', data=np.asarray(cal_len_hist2d_max), compression="gzip", compression_opts=9)
+hf.create_dataset('soft_len_hist2d_max', data=np.asarray(soft_len_hist2d_max), compression="gzip", compression_opts=9)
+hf.create_dataset('blk_len_cut_hist2d_max', data=np.asarray(blk_len_cut_hist2d_max), compression="gzip", compression_opts=9)
+hf.create_dataset('rf_len_cut_hist2d_max', data=np.asarray(rf_len_cut_hist2d_max), compression="gzip", compression_opts=9)
+hf.create_dataset('cal_len_cut_hist2d_max', data=np.asarray(cal_len_cut_hist2d_max), compression="gzip", compression_opts=9)
+hf.create_dataset('soft_len_cut_hist2d_max', data=np.asarray(soft_len_cut_hist2d_max), compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name)
 # quick size check
 size_checker(path+file_name)
-"""
+
 
 
 

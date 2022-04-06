@@ -46,7 +46,7 @@ def mf_sim_collector(Data, Station, Year):
     del hit_dim, mf_dim
 
     cut_val = 0.3
-    mf_hit_cut = np.full((num_evts, 2, num_ants, 6000), np.nan, dtype = float)
+    mf_hit_cut = np.full((num_evts, 2, num_ants, 4000), np.nan, dtype = float)
 
     # loop over the events
     for evt in tqdm(range(num_evts)):
@@ -59,7 +59,6 @@ def mf_sim_collector(Data, Station, Year):
 
         for ant in range(16):
             coef_hit = np.array([])
-            coef_t = np.array([])
             coef_idx = np.array([], dtype = int)
             for res in range(7):
                 for off in range(9):
@@ -68,27 +67,22 @@ def mf_sim_collector(Data, Station, Year):
                         if len(peaks) < 1:
                             continue
                         hit_c = mf_v[:,ant,res,off,el][peaks]
-                        hit_t = lag_pad[peaks]
                         coef_hit = np.append(coef_hit, hit_c)
-                        coef_t= np.append(coef_t, hit_t)
                         coef_idx = np.append(coef_idx, peaks)
-            #print(coef_hit)                        
-            #print(coef_t)                        
-            #print(len(coef_hit), len(coef_t))
             if len(coef_idx) < 1:
                 continue
-            coef_pad_t = np.full((lag_len), -1, dtype = float)
             coef_pad_c = np.full((lag_len), -1, dtype = float)
             for l in range(len(coef_idx)):
-                coef_pad_t[coef_idx[l]] = coef_t[l]
                 if coef_hit[l] > coef_pad_c[coef_idx[l]]:
                     coef_pad_c[coef_idx[l]] = coef_hit[l]
-            #print(coef_pad_t[coef_pad_c > 0])
-            #print(coef_pad_c[coef_pad_c > 0])
-            #print(len(coef_pad_t[coef_pad_c > 0]), len(coef_pad_c[coef_pad_c > 0])) 
-            cut_len = len(coef_pad_t[coef_pad_c > 0])
-            mf_hit_cut[evt,0,ant,:cut_len] = coef_pad_t[coef_pad_c > 0]
-            mf_hit_cut[evt,1,ant,:cut_len] = coef_pad_c[coef_pad_c > 0]
+            coef_pad_c[coef_pad_c < 0] = np.nan
+            peaks2 = find_peaks(coef_pad_c, prominence=0.01, width=1, height=cut_val)[0]
+            cut_len = len(peaks2)
+            mf_hit_cut[evt,0,ant,:cut_len] = lag_pad[peaks2]
+            mf_hit_cut[evt,1,ant,:cut_len] = coef_pad_c[peaks2]
+            print(lag_pad[peaks2])
+            print(coef_pad_c[peaks2])
+            
 
         # save hit time and correlated values in array. 
         # it will only pick up maximum correlated value from each correlatedc wf
