@@ -53,13 +53,13 @@ class ara_sim_matched_filter:
     def get_band_pass_filter(self, amp, val = 1e-100): # for temp, lets use brutal method.... for now....
 
         #notch filter
-        amp[(self.freq_pad >= 0.43) & (self.freq_pad <= 0.48)] = val
-        amp[(self.freq_pad <= -0.43) & (self.freq_pad >= -0.48)] = val
+        amp[(self.freq_pad >= 0.43) & (self.freq_pad <= 0.48)] *= val
+        amp[(self.freq_pad <= -0.43) & (self.freq_pad >= -0.48)] *= val
     
         # front/back band
-        #amp[(self.freq_pad >= -0.15) & (self.freq_pad <= 0.15)] = val
-        amp[(self.freq_pad >= -0.2) & (self.freq_pad <= 0.2)] = val
-        amp[(self.freq_pad >= 0.75) | (self.freq_pad <= -0.75)] = val
+        amp[(self.freq_pad >= -0.15) & (self.freq_pad <= 0.15)] *= val
+        #amp[(self.freq_pad >= -0.2) & (self.freq_pad <= 0.2)] *= val
+        amp[(self.freq_pad >= 0.75) | (self.freq_pad <= -0.75)] *= val
  
         return amp
 
