@@ -470,12 +470,13 @@ class qual_cut_loader:
         if self.verbose:
             print(f'quality cut path:', d_path)
 
-        evt_num = qual_file['evt_num'][:]
+        self.evt_num = qual_file['evt_num'][:]
+        self.unix_time = qual_file['unix_time'][:]
         total_qual_cut = qual_file['total_qual_cut'][:]
 
         if self.verbose:
-            quick_qual_check(np.nansum(total_qual_cut, axis = 1) != 0, evt_num, 'total qual cut!')
-        del d_key, d_path, qual_file, evt_num
+            quick_qual_check(np.nansum(total_qual_cut, axis = 1) != 0, self.evt_num, 'total qual cut!')
+        del d_key, d_path, qual_file
 
         return total_qual_cut
 

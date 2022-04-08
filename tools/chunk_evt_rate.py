@@ -6,7 +6,7 @@ def evt_rate_collector(Data, Ped, analyze_blind_dat = False):
     print('Collecting event rate starts!')
 
     from tools.ara_data_load import ara_uproot_loader
-    from tools.ara_quality_cut import pre_qual_cut_loader
+    from tools.ara_quality_cut import qual_cut_loader
 
     # data config
     ara_uproot = ara_uproot_loader(Data)
@@ -16,31 +16,37 @@ def evt_rate_collector(Data, Ped, analyze_blind_dat = False):
     unix_time = ara_uproot.unix_time
     pps_number = ara_uproot.pps_number
 
-    pre_ara_qual = pre_qual_cut_loader(ara_uproot, analyze_blind_dat = analyze_blind_dat, verbose = True)
-    bad_event_number = pre_ara_qual.get_bad_event_number()
-    del pre_ara_qual
+    # qulity cut
+    ara_qual = qual_cut_loader(analyze_blind_dat = analyze_blind_dat, verbose = True)
+    total_qual_cut = ara_qual.load_qual_cut_result(ara_uproot.station_id, ara_uproot.run)
+    qual_cut_sum = np.nansum(total_qual_cut, axis = 1)
+    del ara_qual    
 
-    if np.count_nonzero(bad_event_number == 0) == 0:
-        time_bins_unix = np.full((1), np.nan, dtype = float)
-        num_secs_unix = np.copy(time_bins_unix)
-        evt_rate_unix = np.copy(time_bins_unix)
-        rf_evt_rate_unix = np.copy(time_bins_unix)
-        cal_evt_rate_unix = np.copy(time_bins_unix)
-        soft_evt_rate_unix = np.copy(time_bins_unix)
-        time_bins_pps = np.copy(time_bins_unix)
-        num_secs_pps = np.copy(time_bins_unix)
-        evt_rate_pps = np.copy(time_bins_unix)
-        rf_evt_rate_pps = np.copy(time_bins_unix)
-        cal_evt_rate_pps = np.copy(time_bins_unix)
-        soft_evt_rate_pps = np.copy(time_bins_unix)
-    else:
-        unix_time_new = unix_time[bad_event_number == 0] 
-        pps_number_new = pps_number[bad_event_number == 0]
-        trig_type_new = trig_type[bad_event_number == 0]
+    # event rate
+    unix_min_bins, unix_min_counts, evt_rate_unix, rf_rate_unix, cal_rate_unix, soft_rate_unix = ara_uproot.get_event_rate(use_pps = False)
+    pps_min_bins, pps_min_counts, evt_rate_pps, rf_rate_pps, cal_rate_pps, soft_rate_pps = ara_uproot.get_event_rate(use_pps =True)
+    del ara_uproot
 
-        time_bins_unix, num_secs_unix, evt_rate_unix, rf_evt_rate_unix, cal_evt_rate_unix, soft_evt_rate_unix = ara_uproot.get_event_rate(unix_time_new, trig_type_new, use_pps = False)
-        time_bins_pps, num_secs_pps, evt_rate_pps, rf_evt_rate_pps, cal_evt_rate_pps, soft_evt_rate_pps = ara_uproot.get_event_rate(pps_number_new, trig_type_new, use_pps = True)
-    del ara_uproot, unix_time_new, pps_number_new, trig_type_new
+    unix_clean_min = np.histogram(unix_time, bins = unix_min_bins, weights = qual_cut_sum)[0].astype(int)
+    evt_rate_unix_cut = np.copy(evt_rate_unix)
+    evt_rate_unix_cut[unix_clean_min != 0] = np.nan
+    rf_rate_unix_cut = np.copy(rf_rate_unix)
+    rf_rate_unix_cut[unix_clean_min != 0] = np.nan
+    cal_rate_unix_cut = np.copy(cal_rate_unix)
+    cal_rate_unix_cut[unix_clean_min != 0] = np.nan
+    soft_rate_unix_cut = np.copy(soft_rate_unix)
+    soft_rate_unix_cut[unix_clean_min != 0] = np.nan
+    
+    pps_clean_min = np.histogram(pps_number, bins = pps_min_bins, weights = qual_cut_sum)[0].astype(int)
+    evt_rate_pps_cut = np.copy(evt_rate_pps)
+    evt_rate_pps_cut[pps_clean_min != 0] = np.nan   
+    rf_rate_pps_cut = np.copy(rf_rate_pps)
+    rf_rate_pps_cut[pps_clean_min != 0] = np.nan
+    cal_rate_pps_cut = np.copy(cal_rate_pps)
+    cal_rate_pps_cut[pps_clean_min != 0] = np.nan
+    soft_rate_pps_cut = np.copy(soft_rate_pps)
+    soft_rate_pps_cut[pps_clean_min != 0] = np.nan
+    del qual_cut_sum, unix_clean_min, pps_clean_min
 
     print('Event rate collecting is done!')
 
@@ -48,19 +54,27 @@ def evt_rate_collector(Data, Ped, analyze_blind_dat = False):
             'trig_type':trig_type,
             'unix_time':unix_time,
             'pps_number':pps_number,
-            'bad_event_number':bad_event_number,
-            'time_bins_unix':time_bins_unix,
-            'num_secs_unix':num_secs_unix,
+            'total_qual_cut':total_qual_cut,
+            'unix_min_bins':unix_min_bins,
+            'unix_min_counts':unix_min_counts,
             'evt_rate_unix':evt_rate_unix,
-            'rf_evt_rate_unix':rf_evt_rate_unix,
-            'cal_evt_rate_unix':cal_evt_rate_unix,
-            'soft_evt_rate_unix':soft_evt_rate_unix,
-            'time_bins_pps':time_bins_pps,
-            'num_secs_pps':num_secs_pps,
+            'rf_rate_unix':rf_rate_unix,
+            'cal_rate_unix':cal_rate_unix,
+            'soft_rate_unix':soft_rate_unix,
+            'pps_min_bins':pps_min_bins,
+            'pps_min_counts':pps_min_counts,
             'evt_rate_pps':evt_rate_pps,
-            'rf_evt_rate_pps':rf_evt_rate_pps,
-            'cal_evt_rate_pps':cal_evt_rate_pps,
-            'soft_evt_rate_pps':soft_evt_rate_pps}
+            'rf_rate_pps':rf_rate_pps,
+            'cal_rate_pps':cal_rate_pps,
+            'soft_rate_pps':soft_rate_pps,
+            'evt_rate_unix_cut':evt_rate_unix_cut,
+            'rf_rate_unix_cut':rf_rate_unix_cut,
+            'cal_rate_unix_cut':cal_rate_unix_cut,
+            'soft_rate_unix_cut':soft_rate_unix_cut,
+            'evt_rate_pps_cut':evt_rate_pps_cut,
+            'rf_rate_pps_cut':rf_rate_pps_cut,
+            'cal_rate_pps_cut':cal_rate_pps_cut,
+            'soft_rate_pps_cut':soft_rate_pps_cut}
 
 
 
