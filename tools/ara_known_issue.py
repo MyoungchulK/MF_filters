@@ -46,8 +46,8 @@ class known_issue_loader:
 
         if self.st == 2:
 
-            if ((unix_time>=1364291997 and unix_time<=1364313598) or # 1605 2013/04/26 unknown signal
-            (unix_time>=1365005690 and unix_time<=1365007171) or # 1653 2013/04/04 unknown signal
+            #if ((unix_time>=1364291997 and unix_time<=1364313598) or # 1605 2013/04/26 unknown signal
+            if ((unix_time>=1365005690 and unix_time<=1365007171) or # 1653 2013/04/04 unknown signal
             (unix_time==1365158576) or # 1662 2013/04/05 ev56559 unknown signal
             (unix_time>=1365180309 and unix_time<=1365181221) or # 1663 2013/04/06 unknown signal
             (unix_time>=1365200930 and unix_time<=1365203643) or # 1664 2013/04/06 unknown signal
@@ -67,191 +67,191 @@ class known_issue_loader:
             (unix_time==1368153002) or # 1781 2013/05/10 ev67608 unknown signal
             (unix_time>=1368269973 and unix_time<=1368271966) or # 1788 2013/05/11 unknown signal
             (unix_time==1368976302) or # 1829 2013/05/19 ev76701 unknown signal    
-            (unix_time>=1368985684 and unix_time<=1369007282) or # 1830 2013/05/20 unknown signal
-            (unix_time>=1369014843 and unix_time<=1369017671) or # 1831 2013/05/20 unknown signal
+            #(unix_time>=1368985684 and unix_time<=1369007282) or # 1830 2013/05/20 unknown signal
+            #(unix_time>=1369014843 and unix_time<=1369017671) or # 1831 2013/05/20 unknown signal
             (unix_time==1370993889) or # 1902 2013/06/12 ev89323 unknown signal
             (unix_time==1371062135) or # 1905 2013/06/12 ev110714 unknown signal
             (unix_time==1378386757) or # 2320 2013/09/05 ev48411 unknown signal
             (unix_time==1379042233) or # 2359 2013/09/13 ev27058 unknown signal
             (unix_time==1379348598) or # 2377 2013/09/16 ev50469 unknown signal
-            (unix_time>=1380227664 and unix_time<=1380249257) or # 2428 2013/09/27 unknown signal
+            #(unix_time>=1380227664 and unix_time<=1380249257) or # 2428 2013/09/27 unknown signal
             (unix_time==1381889044) or # 2527 2013/10/16 ev75114 unknown signal
             (unix_time==1377413436) or # 2669 2013/08/25 ev120615 unknown signal
             (unix_time==1382919018) or # 2586 2013/10/28 ev94938 unknown signal
-            (unix_time>=1383683339 and unix_time<=1383704926) or # 2631 2013/11/06 unknown signal
+            #(unix_time>=1383683339 and unix_time<=1383704926) or # 2631 2013/11/06 unknown signal
             (unix_time==1385061252) or # 2711 2013/11/22 ev59463 unknown signal
             (unix_time==1385095045) or # 2712 2013/11/22 ev143445 unknown signal
             (unix_time==1388718619) or # 2829 2014/02/09 ev57693 unknown signal
-            (unix_time>=1389075034 and unix_time<=1389078167) or # 2849 2014/02/10 unknown signal 
-            (unix_time==1389277730) or # 2861 2014/02/11 ev34856 unknown signal
-            (unix_time>=1389316086 and unix_time<=1389337687) or # 2864 2014/02/11 unknown signal
-            (unix_time>=1389380987 and unix_time<=1389402587) or # 2868 2014/02/11 unknown signal
-            (unix_time==1389406778) or # 2869 2014/02/11 ev29309 unknown signal
+            #(unix_time>=1389075034 and unix_time<=1389078167) or # 2849 2014/02/10 unknown signal 
+            #(unix_time==1389277730) or # 2861 2014/02/11 ev34856 unknown signal
+            #(unix_time>=1389316086 and unix_time<=1389337687) or # 2864 2014/02/11 unknown signal
+            #(unix_time>=1389380987 and unix_time<=1389402587) or # 2868 2014/02/11 unknown signal
+            #(unix_time==1389406778) or # 2869 2014/02/11 ev29309 unknown signal
             (unix_time>=1394225932 and unix_time<=1394247529) or # 3206 2014/03/08 unknown signal
-            (unix_time>=1397847956 and unix_time<=1397869555) or # 3442 2014/04/19 unknown signal
+            #(unix_time>=1397847956 and unix_time<=1397869555) or # 3442 2014/04/19 unknown signal
             (unix_time==1397959819) or # 3448 2014/04/20 ev29089 unknown signal
             (unix_time==1398013597) or # 3450 2014/04/20 ev110977 unknown signal
             (unix_time>=1402626427 and unix_time<=1402635831) or # 3750 2014/06/13 unknown signal
             (unix_time==1402732600) or # 3756 2014/06/14 ev94030 unknown signal       
             (unix_time>=1404275398 and unix_time<=1404276477) or # 3845 2014/07/02 unknown signal 
             (unix_time>=1405005392 and unix_time<=1405015777) or # 3886 2014/07/10 unknown signal 
-            (unix_time>=1405540485 and unix_time<=1405562082) or # 3917 2014/07/17 unknown signal 
-            (unix_time>=1405563124 and unix_time<=1405584720) or # 3919 2014/07/17 unknown signal 
-            (unix_time>=1412273315 and unix_time<=1412294914) or # 4316 2014/10/28 unknown signal 
-            (unix_time>=1418085579 and unix_time<=1418086324) or # 4645 2014/12/08 unknown daq error 
+            #(unix_time>=1405540485 and unix_time<=1405562082) or # 3917 2014/07/17 unknown signal 
+            #(unix_time>=1405563124 and unix_time<=1405584720) or # 3919 2014/07/17 unknown signal 
+            #(unix_time>=1412273315 and unix_time<=1412294914) or # 4316 2014/10/28 unknown signal 
+            #(unix_time>=1418085579 and unix_time<=1418086324) or # 4645 2014/12/08 unknown daq error 
             (unix_time==1420546039) or # 4789 2015/01/06 ev29317 unknown signal           
             (unix_time>=1427755456 and unix_time<=1427757054) or # 5344 2015/03/30 unknown signal
             (unix_time==1427786641) or # 5345 2015/03/30 ev62457 unknown signal
             (unix_time>=1428163002 and unix_time<=1428184597) or # 5369 2015/04/04 unknown signal
             (unix_time==1428192620) or # 5370 2015/04/04 ev45146 unknown signal
             (unix_time==1435689453) or # 5805 2015/06/30 ev33371 unknown signal
-            (unix_time>=1437535952 and unix_time<=1437557546) or # 5911 2015/07/21 unknown signal
+            #(unix_time>=1437535952 and unix_time<=1437557546) or # 5911 2015/07/21 unknown signal
             (unix_time>=1452458202 and unix_time<=1452458308) or # 6694 2016/01/10 unknown signal
             (unix_time>=1453806013 and unix_time<=1453827605) or # 6770 2016/01/26 unknown signal
             (unix_time>=1456487612 and unix_time<=1456500604) or # 6933 2016/02/26 unknown signal
-            (unix_time>=1460489979 and unix_time<=1460511573) or # 7100 2016/04/12 unknown daq error
+            #(unix_time>=1460489979 and unix_time<=1460511573) or # 7100 2016/04/12 unknown daq error
             (unix_time==1463141756) or # 7251 2016/05/13 ev89961 unknown signal  
             (unix_time>=1467446591 and unix_time<=1467468181) or # 7526 2016/07/02 unknown signal
             (unix_time>=1468892061 and unix_time<=1468897890) or # 7610 2016/07/18 unknown signal
-            (unix_time>=1469121769 and unix_time<=1469121836) or # 7624 2016/07/21 unknown signal
+            #(unix_time>=1469121769 and unix_time<=1469121836) or # 7624 2016/07/21 unknown signal
             (unix_time==1472429614) or # 7836 2016/08/28 ev66045 unknown signal
             (unix_time>=1472439514 and unix_time<=1472439944) or # 7836 2016/08/28 unknown signal
             (unix_time==1472507046) or # 7841 2016/08/29 ev7308 unknown signal
             (unix_time==1474313716) or # 7953 2016/09/19 ev104430 unknown signal
-            (unix_time>=1484277608 and unix_time<=1484277772) or # 8518 2017/01/12 unknown signal
-            (unix_time>=1484339916 and unix_time<=1484340121) or # 8521 2017/01/13 unknown signal
-            (unix_time>=1484515348 and unix_time<=1484517471) or # 8525 2017/01/15 unknown signal
-            (unix_time>=1484533404 and unix_time<=1484533604) or # 8526 2017/01/15 unknown signal
-            (unix_time==1484539534) or # 8527 2017/01/15 ev2905 unknown signal
+            #(unix_time>=1484277608 and unix_time<=1484277772) or # 8518 2017/01/12 unknown signal
+            #(unix_time>=1484339916 and unix_time<=1484340121) or # 8521 2017/01/13 unknown signal
+            #(unix_time>=1484515348 and unix_time<=1484517471) or # 8525 2017/01/15 unknown signal
+            #(unix_time>=1484533404 and unix_time<=1484533604) or # 8526 2017/01/15 unknown signal
+            #(unix_time==1484539534) or # 8527 2017/01/15 ev2905 unknown signal
             (unix_time==1484586356) or # 8529 2017/01/16 ev109945 unknown signal
             (unix_time==1484780668) or # 8540 2017/01/18 ev94709 unknown signal
             (unix_time==1484786214) or # 8540 2017/01/18 ev133130 unknown signal
             (unix_time==1484794191) or # 8541 2017/01/18 ev39070 unknown signal
             (unix_time==1484849482) or # 8544 2017/01/19 ev113601 unknown signal
-            (unix_time>=1484858727 and unix_time<=1484858793) or # 8545 2017/01/19 unknown signal
-            (unix_time==1484873486) or # 8545 2017/01/19 ev129213 unknown signal           
-            (unix_time>=1484920230 and unix_time<=1484941825) or # 8549 2017/01/20 unknown signal
-            (unix_time>=1484941834 and unix_time<=1484985027) or # 8550 ~ 8551 2017/01/20 unknown signal            
-            (unix_time>=1485127509 and unix_time<=1485166161) or # 8562 ~ 8563 2017/01/22 only software
-            (unix_time>=1485166183 and unix_time<=1485217628) or # 8564 ~ 8566 2017/01/23 unknown signal            
-            (unix_time>=1485217646 and unix_time<=1485239239) or # 8567 2017/01/23 only software
-            (unix_time>=1485239686 and unix_time<=1485261281) or # 8569 2017/01/24 unknown signal
-            (unix_time>=1485275601 and unix_time<=1485277009) or # 8570 2017/01/24 unknwon signal
-            (unix_time>=1485595456 and unix_time<=1485690018) or # 8591 ~ 8595 2017/01/28 unknown signal
-            (unix_time>=1485690030 and unix_time<=1485695000) or # 8596 2017/01/29 unknown signal
+            #(unix_time>=1484858727 and unix_time<=1484858793) or # 8545 2017/01/19 unknown signal
+            #(unix_time==1484873486) or # 8545 2017/01/19 ev129213 unknown signal           
+            #(unix_time>=1484920230 and unix_time<=1484941825) or # 8549 2017/01/20 unknown signal
+            #(unix_time>=1484941834 and unix_time<=1484985027) or # 8550 ~ 8551 2017/01/20 unknown signal            
+            #(unix_time>=1485127509 and unix_time<=1485166161) or # 8562 ~ 8563 2017/01/22 only software
+            #(unix_time>=1485166183 and unix_time<=1485217628) or # 8564 ~ 8566 2017/01/23 unknown signal            
+            #(unix_time>=1485217646 and unix_time<=1485239239) or # 8567 2017/01/23 only software
+            #(unix_time>=1485239686 and unix_time<=1485261281) or # 8569 2017/01/24 unknown signal
+            #(unix_time>=1485275601 and unix_time<=1485277009) or # 8570 2017/01/24 unknwon signal
+            #(unix_time>=1485595456 and unix_time<=1485690018) or # 8591 ~ 8595 2017/01/28 unknown signal
+            #(unix_time>=1485690030 and unix_time<=1485695000) or # 8596 2017/01/29 unknown signal
             (unix_time==1485752464) or # 8598 2017/01/29 ev128769 unknown signal
             (unix_time==1486068673) or # 8617 2017/02/02 ev51160 unknown signal
-            (unix_time>=1486168830 and unix_time<=1486190425) or # 8622 2017/02/03 unknown signal
-            (unix_time>=1486475432 and unix_time<=1486699107) or # 8640 ~ 8652 2017/02/07 ~ 09 unknown signal
-            (unix_time>=1487136780 and unix_time<=1487202291) or # 8680 ~ 8683 2017/02/14 ~ 15 unknown signal
-            (unix_time>=1487209220 and unix_time<=1487230815) or # 8684 2017/02/15 unknown signal
-            (unix_time==1487287677) or # 8687 2017/02/16 ev93962 unknown signal
+            #(unix_time>=1486168830 and unix_time<=1486190425) or # 8622 2017/02/03 unknown signal
+            #(unix_time>=1486475432 and unix_time<=1486699107) or # 8640 ~ 8652 2017/02/07 ~ 09 unknown signal
+            #(unix_time>=1487136780 and unix_time<=1487202291) or # 8680 ~ 8683 2017/02/14 ~ 15 unknown signal
+            #(unix_time>=1487209220 and unix_time<=1487230815) or # 8684 2017/02/15 unknown signal
+            #(unix_time==1487287677) or # 8687 2017/02/16 ev93962 unknown signal
             (unix_time==1487737935) or # 8713 2017/02/21 ev91749 unknown signal 
             (unix_time==1487828177) or # 8717 2017/02/22 ev125435 unknown signal
-            (unix_time>=1487854672 and unix_time<=1487876266) or # 8720 2017/02/23 unknown signal
-            (unix_time==1487891823) or # 8721 2017/02/23 ev105986 unknown signal 
-            (unix_time>=1488408765 and unix_time<=1488430359) or # 8763 2017/03/01 unknown signal
+            #(unix_time>=1487854672 and unix_time<=1487876266) or # 8720 2017/02/23 unknown signal
+            #(unix_time==1487891823) or # 8721 2017/02/23 ev105986 unknown signal 
+            #(unix_time>=1488408765 and unix_time<=1488430359) or # 8763 2017/03/01 unknown signal
             (unix_time>=1488749304 and unix_time<=1488749444) or # 8782 2017/03/05 unknown signal
             (unix_time==1488789009) or # 8785 2017/03/06 ev20944 unknown signal
             (unix_time==1488803885) or # 8785 2017/03/06 ev123098 unknown signal
             (unix_time==1488819624) or # 8786 2017/03/06 ev82291 unknown signal
-            (unix_time>=1488829221 and unix_time<=1488850797) or # 8787 2017/03/06 unknown signal
-            (unix_time>=1488851843 and unix_time<=1488873438) or # 8789 2017/03/06 unknown signal            
-            (unix_time>=1488873446 and unix_time<=1488895038) or # 8790 2017/03/07 unknown signal
-            (unix_time>=1488916652 and unix_time<=1488938248) or # 8792 2017/03/07 unknown signal
+            #(unix_time>=1488829221 and unix_time<=1488850797) or # 8787 2017/03/06 unknown signal
+            #(unix_time>=1488851843 and unix_time<=1488873438) or # 8789 2017/03/06 unknown signal            
+            #(unix_time>=1488873446 and unix_time<=1488895038) or # 8790 2017/03/07 unknown signal
+            #(unix_time>=1488916652 and unix_time<=1488938248) or # 8792 2017/03/07 unknown signal
             (unix_time>=1489226852 and unix_time<=1489240906) or # 8810 2017/03/11 unknown signal
-            (unix_time>=1489427707 and unix_time<=1489429596) or # 8821 2017/03/13 unknown signal
+            #(unix_time>=1489427707 and unix_time<=1489429596) or # 8821 2017/03/13 unknown signal
             (unix_time==1490012910) or # 8856 2017/03/20 ev4283 unknown signal           
             (unix_time>=1490481308 and unix_time<=1490481616) or # 8881 2017/03/25 unknown signal
-            (unix_time==1491385142) or # 8933 2017/04/05 ev45771 unknown signal 
-            (unix_time>=1491398237 and unix_time<=1491404695) or # 8933 ~ 8934 2017/04/05 unknown signal
+            #(unix_time==1491385142) or # 8933 2017/04/05 ev45771 unknown signal 
+            #(unix_time>=1491398237 and unix_time<=1491404695) or # 8933 ~ 8934 2017/04/05 unknown signal
             (unix_time>=1491636026 and unix_time<=1491642052) or # 8947 2017/04/07 unknown signal
             (unix_time>=1494298072 and unix_time<=1494310350) or # 9315 2017/05/08 unknown signal
             (unix_time==1495264665) or # 9369 2017/05/19 ev78691 unknown signal
             (unix_time>=1495282918 and unix_time<=1495283656) or # 9371 2017/05/20 unknown signal
-            (unix_time>=1514952103 and unix_time<=1514973698) or # 9511 2018/01/02 unknown signal
-            (unix_time>=1515057615 and unix_time<=1515058703) or # 9516 2018/01/04 only software
-            (unix_time>=1515279938 and unix_time<=1515301534) or # 9530 2018/01/06 unknown signal
-            (unix_time>=1515352635 and unix_time<=1515356375) or # 9557 ~ 9559 2018/01/07 unknown signal
-            (unix_time>=1516135871 and unix_time<=1516140648) or # 9755 ~ 9759 2018/01/16 unknown signal 
-            (unix_time==1516399622) or # 9813 2018/01/19 ev534 unknown signal
-            (unix_time>=1518035003 and unix_time<=1518056598) or # 9916 2018/02/07 unknown signal
+            #(unix_time>=1514952103 and unix_time<=1514973698) or # 9511 2018/01/02 unknown signal
+            #(unix_time>=1515057615 and unix_time<=1515058703) or # 9516 2018/01/04 only software
+            #(unix_time>=1515279938 and unix_time<=1515301534) or # 9530 2018/01/06 unknown signal
+            #(unix_time>=1515352635 and unix_time<=1515356375) or # 9557 ~ 9559 2018/01/07 unknown signal
+            #(unix_time>=1516135871 and unix_time<=1516140648) or # 9755 ~ 9759 2018/01/16 unknown signal 
+            #(unix_time==1516399622) or # 9813 2018/01/19 ev534 unknown signal
+            #(unix_time>=1518035003 and unix_time<=1518056598) or # 9916 2018/02/07 unknown signal
             (unix_time>=1519366238 and unix_time<=1519368402) or # 10001 2018/02/22 unknown signal
             (unix_time==1521786112) or # 10185 2018/03/22 ev36449 unknown signal
             (unix_time>=1528963594 and unix_time<=1528967442) or # 10948 2018/06/14 unknown signal
-            (unix_time>=1529919692 and unix_time<=1529967349) or # 11071 ~ 11076 2018/06/25 unknown signal
+            #(unix_time>=1529919692 and unix_time<=1529967349) or # 11071 ~ 11076 2018/06/25 unknown signal
             (unix_time>=1530292340 and unix_time<=1530294903) or # 11109 2018/06/29 unknown signal
             (unix_time>=1530432024 and unix_time<=1530442821) or # 11124 2018/07/01 unknown signal
             (unix_time>=1532659100 and unix_time<=1532662001) or # 11214 2018/07/26 unknown signal
             (unix_time>=1536270217 and unix_time<=1536270417) or # 11606 2018/09/06 unknown signal
             (unix_time==1536594391) or # 11651 2018/09/10 ev46296 unknown signal
-            (unix_time>=1536615278 and unix_time<=1536620571) or # 11654 ~ 11655 2018/09/10 unknown signal
+            #(unix_time>=1536615278 and unix_time<=1536620571) or # 11654 ~ 11655 2018/09/10 unknown signal
             (unix_time>=1537528259 and unix_time<=1537529685) or # 11750 2018/09/21 unknown signal
             (unix_time>=1537653570 and unix_time<=1537654170) or # 11765 2018/09/22 unknown signal
             (unix_time==1537817429) or # 11781 2018/09/24 ev54262 unknown signal
             (unix_time>=1540683879 and unix_time<=1540686065) or # 12084 2018/10/27 unknown signal
             (unix_time>=1540879759 and unix_time<=1540882966) or # 12104 2018/10/29 unknown signal
-            (unix_time>=1541133032 and unix_time<=1541143829) or # 12131 2018/11/01 unknown signal
-            (unix_time>=1542394856 and unix_time<=1542405653) or # 12259 2018/11/16 unknown signal
-            (unix_time>=1543000089 and unix_time<=1543000501) or # 12345 2018/11/23 unknown signal
-            (unix_time==1543004788) or # 12345 2018/11/23 ev39161 unknown signal 
-            (unix_time>=1543174423 and unix_time<=1543193164) or # 12364 ~ 12365 2018/11/25 unknown signal
-            (unix_time>=1543272737 and unix_time<=1543281657) or # 12374 ~ 12375 2018/11/26 unknown signal
-            (unix_time>=1544060237 and unix_time<=1544061739) or # 12421 2018/12/05 unknow daq error
-            (unix_time==1544173852) or # 12430 2018/12/07 ev2921 unknown signal
-            (unix_time>=1544178891 and unix_time<=1544179107) or # 12430 2018/12/07 unknown daq error
-            (unix_time>=1544216543 and unix_time<=1544217194) or # 12435 2018/12/07 unknown signal
-            (unix_time>=1544287259 and unix_time<=1544315436) or # 12441 ~ 12443 2018/12/08 unknown signal
-            (unix_time>=1544473656 and unix_time<=1544512049) or # 12446 ~ 12449 2018/12/10 unknown signal
-            (unix_time>=1544654007 and unix_time<=1544654489) or # 12464 2018/12/12 unknown signal
-            (unix_time>=1544789738 and unix_time<=1544790291) or # 12470 2018/12/14 unknown signal
-            (unix_time>=1544814958 and unix_time<=1544825752) or # 12473 2018/12/14 unknown signal
-            (unix_time>=1545096700 and unix_time<=1545107496) or # 12502 2018/12/17 unknown signal
-            (unix_time>=1545433692 and unix_time<=1545433902) or # 12540 2018/12/21 unknown signal
-            (unix_time>=1545441082 and unix_time<=1545442425) or # 12540 2018/12/21 unknown signal
-            (unix_time>=1545508000 and unix_time<=1545519104) or # 12547 ~ 12548 2018/12/22 unknown signal
-            (unix_time>=1545763692 and unix_time<=1545786218) or # 12574 ~ 12576 2018/12/25 unknown signal
-            (unix_time>=1545862246 and unix_time<=1545870745) or # 12585 2018/12/26 unknown signal
-            (unix_time>=1545881645 and unix_time<=1545892246) or # 12592 2018/12/26 unknown signal
-            (unix_time>=1545941091 and unix_time<=1545950845) or # 12598 2018/12/27 unknown signal
-            (unix_time>=1546033422 and unix_time<=1546040180) or # 12608 2018/12/28 unknown signal
-            (unix_time>=1546112069 and unix_time<=1546144477) or # 12616 ~ 12618 2018/12/29 unknown signal
-            (unix_time>=1546144477 and unix_time<=1546295392) or # 12633 ~ 12634 2018/12/31 unknown signal
-            (unix_time>=1546317014 and unix_time<=1546327811) or # 12637 2018/12/31 unknown signal
-            (unix_time==1544062179) or # 12422 2018/12/05 ev3809 unknown signal
-            (unix_time>=1546372078 and unix_time<=1546393678) or # 12643 ~ 12644 2019/01/01 unknown signal
+            #(unix_time>=1541133032 and unix_time<=1541143829) or # 12131 2018/11/01 unknown signal
+            #(unix_time>=1542394856 and unix_time<=1542405653) or # 12259 2018/11/16 unknown signal
+            #(unix_time>=1543000089 and unix_time<=1543000501) or # 12345 2018/11/23 unknown signal
+            #(unix_time==1543004788) or # 12345 2018/11/23 ev39161 unknown signal 
+            #(unix_time>=1543174423 and unix_time<=1543193164) or # 12364 ~ 12365 2018/11/25 unknown signal
+            #(unix_time>=1543272737 and unix_time<=1543281657) or # 12374 ~ 12375 2018/11/26 unknown signal
+            #(unix_time>=1544060237 and unix_time<=1544061739) or # 12421 2018/12/05 unknow daq error
+            #(unix_time==1544173852) or # 12430 2018/12/07 ev2921 unknown signal
+            #(unix_time>=1544178891 and unix_time<=1544179107) or # 12430 2018/12/07 unknown daq error
+            #(unix_time>=1544216543 and unix_time<=1544217194) or # 12435 2018/12/07 unknown signal
+            #(unix_time>=1544287259 and unix_time<=1544315436) or # 12441 ~ 12443 2018/12/08 unknown signal
+            #(unix_time>=1544473656 and unix_time<=1544512049) or # 12446 ~ 12449 2018/12/10 unknown signal
+            #(unix_time>=1544654007 and unix_time<=1544654489) or # 12464 2018/12/12 unknown signal
+            #(unix_time>=1544789738 and unix_time<=1544790291) or # 12470 2018/12/14 unknown signal
+            #(unix_time>=1544814958 and unix_time<=1544825752) or # 12473 2018/12/14 unknown signal
+            #(unix_time>=1545096700 and unix_time<=1545107496) or # 12502 2018/12/17 unknown signal
+            #(unix_time>=1545433692 and unix_time<=1545433902) or # 12540 2018/12/21 unknown signal
+            #(unix_time>=1545441082 and unix_time<=1545442425) or # 12540 2018/12/21 unknown signal
+            #(unix_time>=1545508000 and unix_time<=1545519104) or # 12547 ~ 12548 2018/12/22 unknown signal
+            #(unix_time>=1545763692 and unix_time<=1545786218) or # 12574 ~ 12576 2018/12/25 unknown signal
+            #(unix_time>=1545862246 and unix_time<=1545870745) or # 12585 2018/12/26 unknown signal
+            #(unix_time>=1545881645 and unix_time<=1545892246) or # 12592 2018/12/26 unknown signal
+            #(unix_time>=1545941091 and unix_time<=1545950845) or # 12598 2018/12/27 unknown signal
+            #(unix_time>=1546033422 and unix_time<=1546040180) or # 12608 2018/12/28 unknown signal
+            #(unix_time>=1546112069 and unix_time<=1546144477) or # 12616 ~ 12618 2018/12/29 unknown signal
+            #(unix_time>=1546144477 and unix_time<=1546295392) or # 12633 ~ 12634 2018/12/31 unknown signal
+            #(unix_time>=1546317014 and unix_time<=1546327811) or # 12637 2018/12/31 unknown signal
+            #(unix_time==1544062179) or # 12422 2018/12/05 ev3809 unknown signal
+            #(unix_time>=1546372078 and unix_time<=1546393678) or # 12643 ~ 12644 2019/01/01 unknown signal
             (unix_time==1546527774) or # 12660 2019/01/03 ev2268 unknown signal
-            (unix_time>=1546723827 and unix_time<=1546734624) or # 12680 2019/01/01 unknown signal
-            (unix_time==1546743335) or # 12681 2019/01/05 ev48667 unknown signal
-            (unix_time>=1546745437 and unix_time<=1546756234) or # 12682 2019/01/05 unknown signal
-            (unix_time>=1546832915 and unix_time<=1546843712) or # 12691 2019/01/06 unknown signal
-            (unix_time>=1547078029 and unix_time<=1547088827) or # 12717 2019/01/09 unknown signal
-            (unix_time>=1547154704 and unix_time<=1547165498) or # 12725 2019/01/10 unknown signal
-            (unix_time>=1547176314 and unix_time<=1547187110) or # 12727 2019/01/10 unknown signal
+            #(unix_time>=1546723827 and unix_time<=1546734624) or # 12680 2019/01/01 unknown signal
+            #(unix_time==1546743335) or # 12681 2019/01/05 ev48667 unknown signal
+            #(unix_time>=1546745437 and unix_time<=1546756234) or # 12682 2019/01/05 unknown signal
+            #(unix_time>=1546832915 and unix_time<=1546843712) or # 12691 2019/01/06 unknown signal
+            #(unix_time>=1547078029 and unix_time<=1547088827) or # 12717 2019/01/09 unknown signal
+            #(unix_time>=1547154704 and unix_time<=1547165498) or # 12725 2019/01/10 unknown signal
+            #(unix_time>=1547176314 and unix_time<=1547187110) or # 12727 2019/01/10 unknown signal
             (unix_time==1547238967) or # 12733 2019/01/11 ev42737 unknown signal
-            (unix_time>=1547409505 and unix_time<=1547417218) or # 12752 2019/01/13 unknown signal
-            (unix_time>=1547778399 and unix_time<=1547779000) or # 12770 2019/01/17 unknown signal
-            (unix_time>=1547859028 and unix_time<=1547868920) or # 12778 ~ 12779 2019/01/18 unknown signal
-            (unix_time>=1548619137 and unix_time<=1548640740) or # 12922 ~ 12923 2019/01/27 unknown signal
-            (unix_time>=1548700875 and unix_time<=1548706609) or # 12930 2019/01/28 unknown signal
-            (unix_time>=1548870785 and unix_time<=1548903191) or # 12948 ~ 12950 2019/01/30 unknown signal
-            (unix_time>=1549064973 and unix_time<=1549067340) or # 12967 2019/02/01 unknown signal
-            (unix_time>=1549324753 and unix_time<=1549325527) or # 12994 2019/02/04 unknown signal
-            (unix_time==1549392031) or # 13001 2019/02/05 ev8850 unknown signal
+            #(unix_time>=1547409505 and unix_time<=1547417218) or # 12752 2019/01/13 unknown signal
+            #(unix_time>=1547778399 and unix_time<=1547779000) or # 12770 2019/01/17 unknown signal
+            #(unix_time>=1547859028 and unix_time<=1547868920) or # 12778 ~ 12779 2019/01/18 unknown signal
+            #(unix_time>=1548619137 and unix_time<=1548640740) or # 12922 ~ 12923 2019/01/27 unknown signal
+            #(unix_time>=1548700875 and unix_time<=1548706609) or # 12930 2019/01/28 unknown signal
+            #(unix_time>=1548870785 and unix_time<=1548903191) or # 12948 ~ 12950 2019/01/30 unknown signal
+            #(unix_time>=1549064973 and unix_time<=1549067340) or # 12967 2019/02/01 unknown signal
+            #(unix_time>=1549324753 and unix_time<=1549325527) or # 12994 2019/02/04 unknown signal
+            #(unix_time==1549392031) or # 13001 2019/02/05 ev8850 unknown signal
             (unix_time==1550713678) or # 13167 2019/02/20 ev24484 unknown signal
-            (unix_time==1551536370) or # 13253 2019/03/02 ev6148 unknown signal
-            (unix_time>=1554112083 and unix_time<=1554112319) or # 13583 2019/04/01 unknown signal
+            #(unix_time==1551536370) or # 13253 2019/03/02 ev6148 unknown signal
+            #(unix_time>=1554112083 and unix_time<=1554112319) or # 13583 2019/04/01 unknown signal
             (unix_time==1554558561) or # 13685 2019/04/06 ev2205 unknown signal
             (unix_time==1554616905) or # 13691 2019/04/06 ev20905 unknown signal
             (unix_time==1554726152) or # 13702 2019/04/08 ev30542 unknown signal
             (unix_time==1555253840) or # 13806 2019/04/14 ev33746 unknown signal
             (unix_time==1555307059) or # 13811 2019/04/14 ev29231 unknown signal
             (unix_time==1555330618) or # 13814 2019/04/15 ev34245 unknown signal
-            (unix_time>=1560373936 and unix_time<=1560374098) or # 14805 2019/06/12 unknown signal
-            (unix_time>=1563301523 and unix_time<=1563312320) or # 15246 2019/07/16 unknown signal
-            (unix_time==1564205064) or # 15340 2019/07/26 ev14551 unknown signal
-            (unix_time==1564217347) or # 15341 2019/07/27 ev21787 unknown signal
-            (unix_time==1564234689) or # 15343 2019/07/27 ev51097 unknown signal
+            #(unix_time>=1560373936 and unix_time<=1560374098) or # 14805 2019/06/12 unknown signal
+            #(unix_time>=1563301523 and unix_time<=1563312320) or # 15246 2019/07/16 unknown signal
+            #(unix_time==1564205064) or # 15340 2019/07/26 ev14551 unknown signal
+            #(unix_time==1564217347) or # 15341 2019/07/27 ev21787 unknown signal
+            #(unix_time==1564234689) or # 15343 2019/07/27 ev51097 unknown signal
             (unix_time>=1564787556 and unix_time<=1564792632) or # 15401 2019/08/02 unknown signal
             (unix_time>=1564814402 and unix_time<=1564819157)): # 15404 2019/08/02 unknown signal
 
@@ -1117,9 +1117,229 @@ class known_issue_loader:
 
         if self.st == 2:
 
+            bad_run = np.append(bad_run, 1543) # short...
+            bad_run = np.append(bad_run, 1605) # 1605 2013/04/26 unknown signal
+            bad_run = np.append(bad_run, np.arange(1635, 1644 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 1714) # short...
+            bad_run = np.append(bad_run, np.arange(1750, 1757 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, np.arange(1771, 1773 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, np.arange(1830, 1831 + 1, dtype = int)) # 2013/05/20 unknown signal
+            bad_run = np.append(bad_run, 1846) # short...
+            bad_run = np.append(bad_run, 1952) # short...
+            bad_run = np.append(bad_run, np.arange(2134, 2146 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, np.arange(2210, 2228 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 2239) # short...
+            bad_run = np.append(bad_run, 2295) # short...
+            bad_run = np.append(bad_run, np.arange(2318, 2319 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 2346) # short...
+            bad_run = np.append(bad_run, 2428) # 2428 2013/09/27 unknown signal
+            bad_run = np.append(bad_run, 2631) # 2631 2013/11/06 unknown signal
+            bad_run = np.append(bad_run, 2721) # short...
+            bad_run = np.append(bad_run, np.arange(2792, 2811 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 2849) # 2849 2014/02/10 unknown signal
+            bad_run = np.append(bad_run, np.arange(2861, 2869 + 1, dtype = int)) # 2861 ~ 2869 2014/02/11 unknown signal
+            bad_run = np.append(bad_run, np.arange(2918, 2932 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, np.arange(3128, 3130 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, np.arange(3138, 3187 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 3227) # short...
+            bad_run = np.append(bad_run, np.arange(3289, 3312 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 3442) # 3442 2014/04/19 unknown signal
+            bad_run = np.append(bad_run, 3514) # short...
+            bad_run = np.append(bad_run, 3563) # short...
+            bad_run = np.append(bad_run, np.arange(3578, 3598 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 3695) # short...
+            bad_run = np.append(bad_run, np.arange(3700, 3706 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 3780) # short...   
+            bad_run = np.append(bad_run, np.arange(3917, 3919 + 1, dtype = int)) # 2014/07/17 unknown signal
+            bad_run = np.append(bad_run, np.arange(3988, 3994 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, np.arange(4019, 4023 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 4068) # short...
+            bad_run = np.append(bad_run, np.arange(4223, 4270 + 1, dtype = int)) # few...
+            bad_run = np.append(bad_run, 4316) # 4316 2014/10/28 unknown signal
+            bad_run = np.append(bad_run, np.arange(4611, 4613 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 4645) # 4645 2014/12/08 unknown daq error
+            bad_run = np.append(bad_run, 4765) # short... 
+            bad_run = np.append(bad_run, np.arange(4818, 4830 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, np.arange(4849, 4854 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, np.arange(4879, 4935 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 5179) # short...
+            bad_run = np.append(bad_run, np.arange(5209, 5277 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 5362) # short...   
+            bad_run = np.append(bad_run, 5396) # short...   
+            bad_run = np.append(bad_run, 5537) # short...   
+            bad_run = np.append(bad_run, np.arange(5558, 5560 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 5734) # short... 
+            bad_run = np.append(bad_run, 5911) # 5911 2015/07/21 unknown signal
+            bad_run = np.append(bad_run, 6336) # short... 
+            bad_run = np.append(bad_run, 6435) # short... 
             bad_run = np.append(bad_run, np.arange(6460, 6499 + 1, dtype = int))
             bad_run = np.append(bad_run, np.arange(7000, 7100 + 1, dtype = int))
-            bad_run = np.append(bad_run, np.arange(9530, 9848 + 1, dtype = int))
+            bad_run = np.append(bad_run, 6713) # short...
+            bad_run = np.append(bad_run, np.arange(6718, 6719 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 6908) # short...
+            bad_run = np.append(bad_run, 7116) # short...
+            bad_run = np.append(bad_run, 7126) # short...
+            bad_run = np.append(bad_run, np.arange(7368, 7409 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 7544) # short...
+            bad_run = np.append(bad_run, np.arange(7621, 7683 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 7805) # short...
+            bad_run = np.append(bad_run, 7928) # short...
+            bad_run = np.append(bad_run, np.arange(8247, 8508 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 8518) # 8518 2017/01/12 unknown signal
+            bad_run = np.append(bad_run, 8521) # 8521 2017/01/13 unknown signal
+            bad_run = np.append(bad_run, np.arange(8523, 8527 + 1, dtype = int)) # 2017/01/15 unknown signal, temp issue
+            bad_run = np.append(bad_run, 8545) # 8545 2017/01/19 unknown signal
+            bad_run = np.append(bad_run, np.arange(8549, 8551 + 1, dtype = int)) # 8549 ~ 8551 2017/01/20 unknown signal
+            bad_run = np.append(bad_run, np.arange(8558, 8574 + 1, dtype = int)) # 2017/01/22 ~ 3 only software, unknown signal
+            bad_run = np.append(bad_run, 8578) # short...
+            bad_run = np.append(bad_run, np.arange(8591, 8596 + 1, dtype = int)) # 8591 ~ 8595 2017/01/28 unknown signal
+            bad_run = np.append(bad_run, 8622) # 2017/02/03 unknown signal
+            bad_run = np.append(bad_run, np.arange(8640, 8652 + 1, dtype = int)) # 8640 ~ 8652 2017/02/07 ~ 09 unknown signal
+            bad_run = np.append(bad_run, np.arange(8680, 8687 + 1, dtype = int)) # 8680 ~ 8687 2017/02/14 ~ 16 unknown signal
+            bad_run = np.append(bad_run, np.arange(8720, 8721 + 1, dtype = int)) # 2017/02/23 unknown signal
+            bad_run = np.append(bad_run, 8763) # 8763 2017/03/01 unknown signal
+            bad_run = np.append(bad_run, 8777) # short...
+            bad_run = np.append(bad_run, np.arange(8787, 8792 + 1, dtype = int)) # 2017/03/06 ~ 7 unknown signal
+            bad_run = np.append(bad_run, 8821) # 2017/03/13 unknown signal
+            bad_run = np.append(bad_run, 8845) # short...
+            bad_run = np.append(bad_run, np.arange(8933, 8934 + 1, dtype = int)) # 8933 ~ 8934 2017/04/05 unknown signal
+            bad_run = np.append(bad_run, 8943) # short...
+            bad_run = np.append(bad_run, np.arange(8963, 9054 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 9088) # short...
+            bad_run = np.append(bad_run, 9108) # short...
+            bad_run = np.append(bad_run, np.arange(9129, 9161 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 9175) # short...
+            bad_run = np.append(bad_run, np.arange(9184, 9298 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, np.arange(9402, 9848 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 9858) # short...
+            bad_run = np.append(bad_run, 9916) # 9916 2018/02/07 unknown signal
+            bad_run = np.append(bad_run, np.arange(9940, 9946 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 9981) # short...
+            bad_run = np.append(bad_run, 10020) # short...
+            bad_run = np.append(bad_run, 10054) # short...
+            bad_run = np.append(bad_run, 10093) # short...
+            bad_run = np.append(bad_run, 10125) # short...
+            bad_run = np.append(bad_run, 10194) # short...
+            bad_run = np.append(bad_run, 10225) # short...
+            bad_run = np.append(bad_run, 10284) # short...
+            bad_run = np.append(bad_run, 10300) # short...
+            bad_run = np.append(bad_run, 10322) # short...
+            bad_run = np.append(bad_run, 10377) # short...
+            bad_run = np.append(bad_run, 10384) # short...
+            bad_run = np.append(bad_run, np.arange(10420, 10421 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 10482) # short...
+            bad_run = np.append(bad_run, 10708) # short...
+            bad_run = np.append(bad_run, 10740) # short...
+            bad_run = np.append(bad_run, np.arange(10793, 10798 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 10834) # short...
+            bad_run = np.append(bad_run, np.arange(10881, 10882 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 11012) # short...
+            bad_run = np.append(bad_run, np.arange(11019, 11048 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 11068) # short...
+            bad_run = np.append(bad_run, np.arange(11071, 11076 + 1, dtype = int)) # 11071 ~ 11076 2018/06/25 unknown signal
+            bad_run = np.append(bad_run, 11149) # short...
+            bad_run = np.append(bad_run, 11349) # short...
+            bad_run = np.append(bad_run, 11384) # short...
+            bad_run = np.append(bad_run, 11469) # short...
+            bad_run = np.append(bad_run, 11512) # short...
+            bad_run = np.append(bad_run, np.arange(11654, 11655 + 1, dtype = int)) # 11654 ~ 11655 2018/09/10 unknown signal
+            bad_run = np.append(bad_run, 11662) # short...
+            bad_run = np.append(bad_run, 11698) # short...
+            bad_run = np.append(bad_run, 11711) # short...
+            bad_run = np.append(bad_run, np.arange(11760, 11762 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 11794) # short...
+            bad_run = np.append(bad_run, 11839) # short...
+            bad_run = np.append(bad_run, np.arange(11885, 11887 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 11924) # short...
+            bad_run = np.append(bad_run, np.arange(12040, 12047 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 12072) # short...
+            bad_run = np.append(bad_run, np.arange(12128, 12131 + 1, dtype = int)) # 12131 2018/11/01 unknown signal
+            bad_run = np.append(bad_run, 12161) # short...
+            bad_run = np.append(bad_run, 12188) # short...
+            bad_run = np.append(bad_run, 12216) # short...
+            bad_run = np.append(bad_run, 12188) # short...
+            bad_run = np.append(bad_run, 12259) # 12259 2018/11/16 unknown signal 
+            bad_run = np.append(bad_run, np.arange(12283, 12284 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 12345) # 12345 2018/11/23 unknown signal
+            bad_run = np.append(bad_run, np.arange(12364, 12375 + 1, dtype = int)) # 12364 ~ 12375 2018/11/25 ~ 26 unknown signal
+            bad_run = np.append(bad_run, 12384) # long!!!
+            bad_run = np.append(bad_run, 12402) # short...
+            bad_run = np.append(bad_run, 12408) # short...
+            bad_run = np.append(bad_run, np.arange(12421, 12422 + 1, dtype = int)) # 12421 2018/12/05 unknow daq error
+            bad_run = np.append(bad_run, 12431) # short...
+            bad_run = np.append(bad_run, np.arange(12429, 12430 + 1, dtype = int)) # 12430 2018/12/07 unknown daq error
+            bad_run = np.append(bad_run, np.arange(12435, 12436 + 1, dtype = int)) # 2018/12/07 unknown signal
+            bad_run = np.append(bad_run, np.arange(12441, 12449 + 1, dtype = int)) # 2018/12/08 ~ 10 unknown signal
+            bad_run = np.append(bad_run, np.arange(12463, 12465 + 1, dtype = int)) # 12464 2018/12/12 unknown signal
+            bad_run = np.append(bad_run, np.arange(12470, 12474 + 1, dtype = int)) # 12470 ~ 12473 2018/12/14 unknown signal
+            bad_run = np.append(bad_run, np.arange(12502, 12504 + 1, dtype = int)) # 12502 2018/12/17 unknown signal
+            bad_run = np.append(bad_run, np.arange(12511, 12512 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 12533) # short...
+            bad_run = np.append(bad_run, np.arange(12540, 12541 + 1, dtype = int)) # 12540 2018/12/21 unknown signal
+            bad_run = np.append(bad_run, np.arange(12547, 12550 + 1, dtype = int)) # 12547 ~ 12548 2018/12/22 unknown signal
+            bad_run = np.append(bad_run, np.arange(12574, 12576 + 1, dtype = int)) # 12574 ~ 12576 2018/12/25 unknown signal
+            bad_run = np.append(bad_run, np.arange(12583, 12598 + 1, dtype = int)) # 2018/12/26 ~ 27 unknown signal
+            bad_run = np.append(bad_run, np.arange(12600, 12610 + 1, dtype = int)) # 12608 2018/12/28 unknown signal
+            bad_run = np.append(bad_run, np.arange(12616, 12618 + 1, dtype = int)) # 12616 ~ 12618 2018/12/29 unknown signal
+            bad_run = np.append(bad_run, 12625) # short...
+            bad_run = np.append(bad_run, np.arange(12633, 12647 + 1, dtype = int)) # 2018/12/31 ~ 01 unknown signal
+            bad_run = np.append(bad_run, np.arange(12680, 12682 + 1, dtype = int)) # 2019/01/05 unknown signal
+            bad_run = np.append(bad_run, np.arange(12691, 12692 + 1, dtype = int)) # 2019/01/06 unknown signal
+            bad_run = np.append(bad_run, np.arange(12717, 12719 + 1, dtype = int)) # 2019/01/09 unknown signal
+            bad_run = np.append(bad_run, np.arange(12725, 12727 + 1, dtype = int)) # 2019/01/10 unknown signal
+            bad_run = np.append(bad_run, 12741) # short...
+            bad_run = np.append(bad_run, np.arange(12751, 12753 + 1, dtype = int)) # 12752 2019/01/13 unknown signal 
+            bad_run = np.append(bad_run, np.arange(12770, 12771 + 1, dtype = int)) # 12770 2019/01/17 unknown signal
+            bad_run = np.append(bad_run, np.arange(12778, 12779 + 1, dtype = int)) # 12778 ~ 12779 2019/01/18 unknown signal
+            bad_run = np.append(bad_run, np.arange(12835, 12905 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, np.arange(12922, 12923 + 1, dtype = int)) # 12922 ~ 12923 2019/01/27 unknown signal
+            bad_run = np.append(bad_run, np.arange(12930, 12932 + 1, dtype = int)) # 12930 2019/01/28 unknown signal
+            bad_run = np.append(bad_run, np.arange(12948, 12950 + 1, dtype = int)) # 12948 ~ 12950 2019/01/30 unknown signal
+            bad_run = np.append(bad_run, 12967) # 12967 2019/02/01 unknown signal
+            bad_run = np.append(bad_run, 12994) # 12994 2019/02/04 unknown signal
+            bad_run = np.append(bad_run, np.arange(13001, 13002 + 1, dtype = int)) # 13001 2019/02/05 ev8850 unknown signal
+            bad_run = np.append(bad_run, 13085) # short...
+            bad_run = np.append(bad_run, 13119) # short...
+            bad_run = np.append(bad_run, np.arange(13192, 13194 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 13227) # short...
+            bad_run = np.append(bad_run, 13253) # short...
+            bad_run = np.append(bad_run, 13319) # short...
+            bad_run = np.append(bad_run, 13323) # short...
+            bad_run = np.append(bad_run, np.arange(13404, 13405 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, np.arange(13441, 13461 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, np.arange(13514, 13533 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, np.arange(13541, 13554 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 13583) # 13583 2019/04/01 unknown signal
+            bad_run = np.append(bad_run, np.arange(13590, 13644 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, np.arange(13652, 13663 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 13678) # short...
+            bad_run = np.append(bad_run, np.arange(13708, 13775 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, np.arange(13827, 13829 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 13834) # short...
+            bad_run = np.append(bad_run, np.arange(13847, 13880 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, np.arange(13897, 14237 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, np.arange(14243, 14245 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 14282) # short...
+            bad_run = np.append(bad_run, 14328) # short...
+            bad_run = np.append(bad_run, 14399) # short...
+            bad_run = np.append(bad_run, np.arange(14432, 14473 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, np.arange(14562, 14588 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, np.arange(14606, 14632 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, np.arange(14777, 15003 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 15064) # short...
+            bad_run = np.append(bad_run, 15136) # short...
+            bad_run = np.append(bad_run, 15141) # short...
+            bad_run = np.append(bad_run, 15149) # short...
+            bad_run = np.append(bad_run, 15246) # 15246 2019/07/16 unknown signal
+            bad_run = np.append(bad_run, 15264) # short...
+            bad_run = np.append(bad_run, 15282) # short...
+            bad_run = np.append(bad_run, np.arange(15340, 15343 + 1, dtype = int)) # 15340 ~ 15343 unknown signal
+            bad_run = np.append(bad_run, 15348) # short...
+            bad_run = np.append(bad_run, 15364) # short...
+            bad_run = np.append(bad_run, 15378) # short...
+            bad_run = np.append(bad_run, 15391) # short...
+            bad_run = np.append(bad_run, 15433) # short...
+            bad_run = np.append(bad_run, 15478) # short...
 
         elif self.st == 3:
         
