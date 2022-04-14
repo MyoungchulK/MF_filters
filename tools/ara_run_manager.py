@@ -86,6 +86,9 @@ class run_info_loader:
             elif self.analyze_blind_dat == True and self.st == 3 and (self.run == 1922 or self.run == 1924 or self.run == 1925 or self.run == 1926 or self.run == 1929):
                 run_6_digit = self.get_6_digit_run_number()
                 dat_name = f'{file_type}{run_6_digit}.root'
+            elif self.analyze_blind_dat == False and self.st == 3 and self.run == 1746:
+                run_6_digit = self.get_6_digit_run_number()
+                dat_name = f'{file_type}{run_6_digit}.root'
             else:
                 dat_name = f'{file_type}{self.run}.root'
         else:

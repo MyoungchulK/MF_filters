@@ -31,6 +31,12 @@ def sub_off_collector(Data, Ped, analyze_blind_dat = False):
     qual_cut_sum = np.nansum(total_qual_cut, axis = 1)  
     daq_qual_sum = np.nansum(total_qual_cut[:, :6], axis = 1)
     
+    wo_1min = np.copy(total_qual_cut)
+    wo_1min[:, 11] = (evt_num < 7).astype(int)
+    wo_1min_sum = np.nansum(wo_1min, axis = 1)
+    wo_1min_idx = np.logical_and(wo_1min_sum == 0, trig_type == 0)
+    del wo_1min, wo_1min_sum
+
     clean_evt_idx = np.logical_and(qual_cut_sum == 0, trig_type == 0)
     clean_evt = evt_num[clean_evt_idx]
     print(f'Number of clean event is {len(clean_evt)}')
@@ -59,41 +65,13 @@ def sub_off_collector(Data, Ped, analyze_blind_dat = False):
         ara_root.del_usefulEvt() 
     del ara_root, num_evts, daq_qual_sum, num_ants
 
-    #std
-    sub_std = np.nanstd(sub_off, axis = 1)
-    sub_rf_copy = np.copy(sub_off)
-    sub_rf_copy[:, trig_type != 0] = np.nan
-    sub_rf_std = np.nanstd(sub_rf_copy, axis = 1)
-    sub_rf_cut_copy = np.copy(sub_off)
-    sub_rf_cut_copy[:, ~clean_evt_idx] = np.nan
-    sub_rf_cut_std = np.nanstd(sub_rf_cut_copy, axis = 1)
-
-    # first/end diff
-    min_2nd_idx = np.logical_and(unix_time > unix_time[0] + 59, unix_time < unix_time[0] + 180)
-    min_last_idx = unix_time > unix_time[-1] - 120
-
-    def get_sub_diff(dat):
-        sub_2nd_min = np.copy(dat)
-        sub_last_min = np.copy(dat)
-        sub_2nd_min[:, ~min_2nd_idx] = np.nan
-        sub_last_min[:, ~min_last_idx] = np.nan
-        sub_2nd_min_medi = np.nanmedian(sub_2nd_min, axis = 1)
-        sub_last_min_medi = np.nanmedian(sub_last_min, axis = 1)
-        sub_diff = np.abs(sub_2nd_min_medi - sub_last_min_medi)
-        del sub_2nd_min, sub_last_min, sub_2nd_min_medi, sub_last_min_medi
-        return sub_diff
-
-    sub_diff = get_sub_diff(sub_off)
-    sub_rf_diff = get_sub_diff(sub_rf_copy)
-    sub_rf_cut_diff = get_sub_diff(sub_rf_cut_copy)
-    del sub_rf_copy, sub_rf_cut_copy, min_2nd_idx, min_last_idx
-
     bit_range = np.arange(-200, 200)
     bit_bins = np.linspace(-200, 200, 200*2 + 1)
     ara_hist = hist_loader(bit_bins)
     bit_bin_center = ara_hist.bin_x_center    
     sub_hist = ara_hist.get_1d_hist(sub_off)
     sub_rf_hist = ara_hist.get_1d_hist(sub_off, cut = trig_type != 0)
+    sub_rf_wo_1min_cut_hist = ara_hist.get_1d_hist(sub_off, cut = ~wo_1min_idx)
     sub_rf_w_cut_hist = ara_hist.get_1d_hist(sub_off, cut = ~clean_evt_idx)
     del ara_hist
     
@@ -104,8 +82,20 @@ def sub_off_collector(Data, Ped, analyze_blind_dat = False):
     min_bin_center = ara_hist.bin_x_center
     sub_2d_hist = ara_hist.get_sub_off_2d_hist(unix_min, sub_off)
     sub_rf_2d_hist = ara_hist.get_sub_off_2d_hist(unix_min, sub_off, cut = trig_type != 0)
+    sub_rf_wo_1min_cut_2d_hist = ara_hist.get_sub_off_2d_hist(unix_min, sub_off, cut = ~wo_1min_idx)
     sub_rf_w_cut_2d_hist = ara_hist.get_sub_off_2d_hist(unix_min, sub_off, cut = ~clean_evt_idx)
-    del ara_hist, unix_min, clean_evt_idx
+    del ara_hist, unix_min
+
+    unix_sec = (unix_time - unix_time[0]).astype(float)
+    sec_range = np.arange(0, 200)
+    sec_bins = np.linspace(0, 200, 200 + 1)
+    ara_hist = hist_loader(sec_bins, bit_bins)
+    sec_bin_center = ara_hist.bin_x_center 
+    sub_sec_2d_hist = ara_hist.get_sub_off_2d_hist(unix_sec, sub_off)
+    sub_rf_sec_2d_hist = ara_hist.get_sub_off_2d_hist(unix_sec, sub_off, cut = trig_type != 0)
+    sub_rf_wo_1min_cut_sec_2d_hist = ara_hist.get_sub_off_2d_hist(unix_sec, sub_off, cut = ~wo_1min_idx)
+    sub_rf_w_cut_sec_2d_hist = ara_hist.get_sub_off_2d_hist(unix_sec, sub_off, cut = ~clean_evt_idx)
+    del ara_hist, clean_evt_idx, wo_1min_idx, unix_sec
    
     print('Sub off collecting is done!')
 
@@ -115,23 +105,27 @@ def sub_off_collector(Data, Ped, analyze_blind_dat = False):
             'unix_time':unix_time,
             'total_qual_cut':total_qual_cut,
             'sub_off':sub_off,
-            'sub_std':sub_std,
-            'sub_rf_std':sub_rf_std,
-            'sub_rf_cut_std':sub_rf_cut_std,
-            'sub_diff':sub_diff,
-            'sub_rf_diff':sub_rf_diff,
-            'sub_rf_cut_diff':sub_rf_cut_diff,
             'bit_range':bit_range,
             'bit_bins':bit_bins,
             'bit_bin_center':bit_bin_center,
             'sub_hist':sub_hist,
             'sub_rf_hist':sub_rf_hist,
+            'sub_rf_wo_1min_cut_hist':sub_rf_wo_1min_cut_hist,
             'sub_rf_w_cut_hist':sub_rf_w_cut_hist,
             'min_range':min_range,
             'min_bins':min_bins,
             'min_bin_center':min_bin_center,
             'sub_2d_hist':sub_2d_hist,
             'sub_rf_2d_hist':sub_rf_2d_hist,
-            'sub_rf_w_cut_2d_hist':sub_rf_w_cut_2d_hist}
+            'sub_rf_wo_1min_cut_2d_hist':sub_rf_wo_1min_cut_2d_hist,
+            'sub_rf_w_cut_2d_hist':sub_rf_w_cut_2d_hist,
+            'sec_range':sec_range,
+            'sec_bins':sec_bins,
+            'sec_bin_center':sec_bin_center,
+            'sub_sec_2d_hist':sub_sec_2d_hist,
+            'sub_rf_sec_2d_hist':sub_rf_sec_2d_hist,
+            'sub_rf_wo_1min_cut_sec_2d_hist':sub_rf_wo_1min_cut_sec_2d_hist,
+            'sub_rf_w_cut_sec_2d_hist':sub_rf_w_cut_sec_2d_hist}
+
 
 
