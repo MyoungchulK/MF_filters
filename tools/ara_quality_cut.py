@@ -283,8 +283,8 @@ class pre_qual_cut_loader:
 
         evt_rate_dat = self.run_info.get_result_path(file_type = 'evt_rate', verbose = self.verbose, force_blind = True)
         evt_rate_hf = h5py.File(evt_rate_dat, 'r')
-        evt_rate_bins = (evt_rate_hf['time_bins_pps'][:-1] + 0.5).astype(int) # bins to bincenter
-        cal_evt_rate = evt_rate_hf['cal_evt_rate_pps'][:] 
+        evt_rate_bins = (evt_rate_hf['pps_min_bins'][:-1] + 0.5).astype(int) # bins to bincenter
+        cal_evt_rate = evt_rate_hf['cal_rate_pps'][:] 
         del evt_rate_dat, evt_rate_hf
 
         min_to_sec_arr = np.arange(60, dtype = int)

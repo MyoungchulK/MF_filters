@@ -18,7 +18,7 @@ def script_loader(Key = None, Station = None, Run = None, Act_Evt = None, analyz
         Data, Ped = run_info.get_data_ped_path(file_type = 'sensorHk', return_none = True, verbose = True, return_dat_only = True)
     elif Key == 'l1':
         Data, Ped = run_info.get_data_ped_path(file_type = 'eventHk', return_none = True, verbose = True, return_dat_only = True)
-    elif Key == 'blk_len' or Key == 'evt_rate' or Key == 'run_time':
+    elif Key == 'blk_len' or Key == 'evt_rate' or Key == 'run_time' or Key == 'ped' or Key == 'qual_cut':
         Data, Ped = run_info.get_data_ped_path(verbose = True, return_dat_only = True)
     else:
         Data, Ped = run_info.get_data_ped_path(verbose = True, return_dat_only = False)

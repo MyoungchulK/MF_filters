@@ -9,6 +9,7 @@ sys.path.append(curr_path+'/../')
 from tools.ara_run_manager import batch_info_loader
 from tools.ara_run_manager import config_info_loader
 from tools.ara_utility import size_checker
+from tools.ara_known_issue import known_issue_loader
 
 def run_time_loader(Station = None):
 
@@ -21,7 +22,6 @@ def run_time_loader(Station = None):
     evt_stop_unix = np.copy(run_arr)
     config_start_unix = np.copy(run_arr)
     config_stop_unix = np.copy(run_arr)
-    del arr_len
 
     print('pedestal!')
     batch_info = batch_info_loader(Station)
@@ -91,6 +91,31 @@ def run_time_loader(Station = None):
     config_run_time = config_stop_unix - config_start_unix
     evt_run_time = evt_stop_unix - evt_start_unix
 
+    knwon_issue = known_issue_loader(Station)
+    bad_runs = knwon_issue.get_knwon_bad_run()
+    del knwon_issue
+
+    run_arr_cut = np.copy(run_arr)
+    run_type_cut = np.copy(run_type)
+    evt_start_unix_cut = np.copy(evt_start_unix)
+    evt_stop_unix_cut = np.copy(evt_stop_unix)
+    config_start_unix_cut = np.copy(config_start_unix)
+    config_stop_unix_cut = np.copy(config_stop_unix)
+    config_run_time_cut = np.copy(config_run_time)
+    evt_run_time_cut = np.copy(evt_run_time)
+
+    for c in tqdm(range(arr_len)):
+      if c in bad_runs:
+        run_arr_cut[c] = np.nan
+        run_type_cut[c] = np.nan
+        evt_start_unix_cut[c] = np.nan
+        evt_stop_unix_cut[c] = np.nan
+        config_start_unix_cut[c] = np.nan
+        config_stop_unix_cut[c] = np.nan
+        config_run_time_cut[c] = np.nan
+        evt_run_time_cut[c] = np.nan
+    del arr_len
+
     print('Run time collecting is done!')
 
     # create output dir
@@ -98,7 +123,7 @@ def run_time_loader(Station = None):
     print(f'Output path check:{Output}')
     if not os.path.exists(Output):
         os.makedirs(Output)
-    h5_file_name = f'{Output}Run_time_A{Station}'
+    h5_file_name = f'{Output}Run_Time_A{Station}'
     h5_file_name += f'.h5'
     hf = h5py.File(h5_file_name, 'w')
 
@@ -111,6 +136,15 @@ def run_time_loader(Station = None):
     hf.create_dataset('config_stop_unix', data=config_stop_unix, compression="gzip", compression_opts=9)
     hf.create_dataset('evt_run_time', data=evt_run_time, compression="gzip", compression_opts=9) 
     hf.create_dataset('config_run_time', data=config_run_time, compression="gzip", compression_opts=9) 
+    hf.create_dataset('run_arr_cut', data=run_arr_cut, compression="gzip", compression_opts=9)
+    hf.create_dataset('run_type_cut', data=run_type_cut, compression="gzip", compression_opts=9)
+    hf.create_dataset('evt_start_unix_cut', data=evt_start_unix_cut, compression="gzip", compression_opts=9)
+    hf.create_dataset('evt_stop_unix_cut', data=evt_stop_unix_cut, compression="gzip", compression_opts=9)
+    hf.create_dataset('config_start_unix_cut', data=config_start_unix_cut, compression="gzip", compression_opts=9)
+    hf.create_dataset('config_stop_unix_cut', data=config_stop_unix_cut, compression="gzip", compression_opts=9)
+    hf.create_dataset('evt_run_time_cut', data=evt_run_time_cut, compression="gzip", compression_opts=9)
+    hf.create_dataset('config_run_time_cut', data=config_run_time_cut, compression="gzip", compression_opts=9)
+    hf.create_dataset('bad_runs', data=bad_runs, compression="gzip", compression_opts=9)
     hf.close()
     print(f'output is {h5_file_name}')
 

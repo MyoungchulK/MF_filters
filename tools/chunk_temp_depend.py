@@ -2,7 +2,7 @@ import numpy as np
 from tqdm import tqdm
 import h5py
 
-def medi_collector(Data, Ped, analyze_blind_dat = False):
+def temp_depend_collector(Data, Ped, analyze_blind_dat = False):
 
     print('Collecting median starts!')
 
@@ -10,7 +10,6 @@ def medi_collector(Data, Ped, analyze_blind_dat = False):
     from tools.ara_data_load import ara_root_loader
     from tools.ara_constant import ara_const
     from tools.ara_quality_cut import qual_cut_loader
-    from tools.ara_wf_analyzer import hist_loader
     from tools.ara_run_manager import run_info_loader
 
     # geom. info.
@@ -44,8 +43,7 @@ def medi_collector(Data, Ped, analyze_blind_dat = False):
     sensor_hf = h5py.File(sensor_dat, 'r')
     sensor_unix = sensor_hf['unix_time'][:]
     dda_temp = sensor_hf['dda_temp'][:]
-    tda_temp = sensor_hf['tda_temp'][:]
-    print(dda_temp.shape)
+    dda_volt = sensor_hf['dda_volt'][:]
     del run_info, sensor_dat, sensor_hf, ara_uproot
 
     # output arr
@@ -98,7 +96,11 @@ def medi_collector(Data, Ped, analyze_blind_dat = False):
     sub_rf_cut_std = np.nanstd(sub_rf_cut_copy, axis = 1)
 
     dda_std = np.nanstd(dda_temp, axis = 0)
-    tda_std = np.nanstd(tda_temp, axis = 0)
+    sensor_cut = np.logical_and(dda_volt > 3, dda_volt < 3.5)
+    dda_temp_cut = np.copy(dda_temp).astype(float)
+    dda_temp_cut[~sensor_cut] = np.nan
+    dda_cut_std = np.nanstd(dda_temp_cut, axis = 0)
+    del sensor_cut
 
     # first/end diff
     min_2nd_idx = np.logical_and(unix_time > unix_time[0] + 59, unix_time < unix_time[0] + 180)
@@ -141,9 +143,13 @@ def medi_collector(Data, Ped, analyze_blind_dat = False):
         return sub_diff
 
     dda_diff = get_sub_diff(dda_temp, min_2nd_idx, min_last_idx)
-    tda_diff = get_sub_diff(tda_temp, min_2nd_idx, min_last_idx)
+    dda_cut_diff = get_sub_diff(dda_temp_cut, min_2nd_idx, min_last_idx)
     del min_2nd_idx, min_last_idx  
  
+    # max/min diff
+    dda_temp_mm_diff = np.abs(np.nanmax(dda_temp, axis = 0) - np.nanmin(dda_temp, axis = 0))
+    dda_temp_cut_mm_diff = np.abs(np.nanmax(dda_temp_cut, axis = 0) - np.nanmin(dda_temp_cut, axis = 0))
+
     print('Median collecting is done!')
 
     return {'evt_num':evt_num,
@@ -153,7 +159,7 @@ def medi_collector(Data, Ped, analyze_blind_dat = False):
             'total_qual_cut':total_qual_cut,
             'sensor_unix':sensor_unix,
             'dda_temp':dda_temp,
-            'tda_temp':tda_temp,
+            'dda_temp_cut':dda_temp_cut,
             'adc_medi':adc_medi,
             'sub_medi':sub_medi,
             'adc_std':adc_std,
@@ -163,7 +169,7 @@ def medi_collector(Data, Ped, analyze_blind_dat = False):
             'sub_rf_std':sub_rf_std,
             'sub_rf_cut_std':sub_rf_cut_std,
             'dda_std':dda_std,
-            'tda_std':tda_std,
+            'dda_cut_std':dda_cut_std,
             'adc_diff':adc_diff,
             'adc_rf_diff':adc_rf_diff,
             'adc_rf_cut_diff':adc_rf_cut_diff,
@@ -171,6 +177,8 @@ def medi_collector(Data, Ped, analyze_blind_dat = False):
             'sub_rf_diff':sub_rf_diff,
             'sub_rf_cut_diff':sub_rf_cut_diff,
             'dda_diff':dda_diff,
-            'tda_diff':tda_diff}
+            'dda_cut_diff':dda_cut_diff,
+            'dda_temp_mm_diff':dda_temp_mm_diff,
+            'dda_temp_cut_mm_diff':dda_temp_cut_mm_diff}
 
 
