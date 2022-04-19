@@ -36,7 +36,7 @@ class wf_analyzer:
 
     def get_band_pass_filter(self, low_freq_cut = 0.13, high_freq_cut = 0.85, order = 10, pass_type = 'band'):
 
-        self.nu, self.de = butter(order, [low_freq_cut, high_freq_cut], btype = pass_type)
+        self.nu, self.de = butter(order, [low_freq_cut, high_freq_cut], btype = pass_type, fs = 1 / self.dt)
         self.de_pad = 3*len(self.nu)
 
     def get_band_passed_wf(self, volt):
@@ -131,8 +131,7 @@ class wf_analyzer:
             if use_rfft:
                 rfft_len = self.pad_num//2 + 1
                 for ant in range(self.num_chs):
-                    freq_temp = np.fft.rfftfreq(self.pad_num[ant], self.dt)
-                    self.pad_freq[:rfft_len[ant], ant] = freq_temp = np.fft.rfftfreq(self.pad_num[ant], self.dt)
+                    self.pad_freq[:rfft_len[ant], ant] = np.fft.rfftfreq(self.pad_num[ant], self.dt)
                     self.pad_fft[:rfft_len[ant], ant] = np.fft.rfft(self.pad_v[:self.pad_num[ant], ant])
                 del rfft_len
             else:
@@ -237,6 +236,21 @@ class hist_loader():
         dat_2d_hist = np.full((dat_y.shape[1], len(self.bin_x_center), len(self.bin_y_center)), 0, dtype = int)
         for ant in range(dat_y.shape[1]):
             dat_2d_hist[ant] = np.histogram2d(dat_x, dat_y[:, ant].flatten(), bins = (self.bins_x, self.bins_y))[0].astype(int)
+        del dat_x, dat_y
+
+        return dat_2d_hist
+
+    def get_cw_2d_hist(self, dat_x_ori, dat_y_ori, fill_val = np.nan, cut = None):
+
+        dat_x = np.copy(dat_x_ori)
+        dat_y = np.copy(dat_y_ori)
+        if cut is not None:
+            dat_x[:, :, cut] = fill_val
+            dat_y[:, :, cut] = fill_val
+    
+        dat_2d_hist = np.full((len(self.bin_x_center), len(self.bin_y_center), dat_y.shape[1]), 0, dtype = int)
+        for ant in range(dat_y.shape[1]):
+            dat_2d_hist[:, :, ant] = np.histogram2d(dat_x[:, ant].flatten(), dat_y[:, ant].flatten(), bins = (self.bins_x, self.bins_y))[0].astype(int)
         del dat_x, dat_y
 
         return dat_2d_hist
