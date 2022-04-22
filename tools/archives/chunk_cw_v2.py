@@ -51,11 +51,8 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
     fft_map = np.full((len(freq_bins) - 1, len(amp_bins) - 1, num_ants), 0, dtype = int)
     fft_rf_map = np.copy(fft_map)
     fft_rf_cut_map = np.copy(fft_map)
-    clean_map = np.copy(fft_map)
-    clean_rf_map = np.copy(fft_map)
-    clean_rf_cut_map = np.copy(fft_map)
     map_dim = fft_map.shape
-    num_cw_freq = 60
+    num_cw_freq = 50
     sub_freq = np.full((num_cw_freq, num_ants, num_evts), np.nan, dtype = float)
     sub_amp = np.copy(sub_freq)
     cw_freq = np.copy(sub_freq)
@@ -101,7 +98,7 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
         # loop over the antennas
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_cw = True)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_cw = True)
             num_sols = wf_int.sin_sub.num_sols
             sub_freq_evt = wf_int.sin_sub.num_freqs
             sub_freq[:num_sols, ant, evt] = sub_freq_evt
@@ -121,27 +118,15 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()
         del fft_map_evt, fft_map_evt_max
-
-        wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_abs = True)
-        clean_fft_evt = np.log10(wf_int.pad_fft)
-        clean_map_evt = np.full(map_dim, 0, dtype = int)
-        for ant in range(num_ants):
-            clean_map_evt[:, :, ant] = np.histogram2d(freq_range, clean_fft_evt[:, ant], bins = (freq_bins, amp_bins))[0].astype(int)
-        clean_map += clean_map_evt
-        if trig_type[evt] == 0:
-            clean_rf_map += clean_map_evt
-        if clean_evt_idx[evt]:
-            clean_rf_cut_map += clean_map_evt
-        del clean_fft_evt, clean_map_evt
-    del ara_root, num_evts, num_ants, wf_int, daq_qual_sum, map_dim, freq_bin_len 
+    del ara_root, num_evts, num_ants, wf_int, daq_qual_sum, map_dim 
 
     sub_amp = np.log10(sub_amp)
     sub_map = ara_hist.get_cw_2d_hist(sub_freq, sub_amp)
-    sub_rf_map = ara_hist.get_cw_2d_hist(sub_freq, sub_amp, cut = trig_type != 0)
-    sub_rf_cut_map = ara_hist.get_cw_2d_hist(sub_freq, sub_amp, cut = ~clean_evt_idx)
+    sub_rf_map = ara_hist.get_cw_2d_hist(sub_freq, sub_amp, trig_type != 0)
+    sub_rf_cut_map = ara_hist.get_cw_2d_hist(sub_freq, sub_amp, ~clean_evt_idx)
     cw_map = ara_hist.get_cw_2d_hist(cw_freq, cw_amp)
-    cw_rf_map = ara_hist.get_cw_2d_hist(cw_freq, cw_amp, cut = trig_type != 0)
-    cw_rf_cut_map = ara_hist.get_cw_2d_hist(cw_freq, cw_amp, cut = ~clean_evt_idx)
+    cw_rf_map = ara_hist.get_cw_2d_hist(cw_freq, cw_amp, trig_type != 0)
+    cw_rf_cut_map = ara_hist.get_cw_2d_hist(cw_freq, cw_amp, ~clean_evt_idx)
     del ara_hist, clean_evt_idx
 
     print('cw collecting is done!')
@@ -160,9 +145,6 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
             'fft_map':fft_map,
             'fft_rf_map':fft_rf_map,
             'fft_rf_cut_map':fft_rf_cut_map,
-            'clean_map':clean_map,
-            'clean_rf_map':clean_rf_map,
-            'clean_rf_cut_map':clean_rf_cut_map,
             'cw_freq':cw_freq,
             'cw_amp':cw_amp,
             'cw_map':cw_map,

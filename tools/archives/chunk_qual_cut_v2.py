@@ -1,4 +1,3 @@
-import os
 import numpy as np
 from tqdm import tqdm
 
@@ -19,9 +18,7 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
     trig_type = ara_uproot.get_trig_type()
     pps_number = ara_uproot.pps_number
     unix_time = ara_uproot.unix_time
-    run = ara_uproot.run
-    st = ara_uproot.station_id
-    ara_root = ara_root_loader(Data, Ped, st, ara_uproot.year)
+    ara_root = ara_root_loader(Data, Ped, ara_uproot.station_id, ara_uproot.year)
 
     # quality cut config
     pre_qual = pre_qual_cut_loader(ara_uproot, analyze_blind_dat = analyze_blind_dat, verbose = True)
@@ -49,37 +46,13 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
     total_qual_cut = np.append(pre_qual_cut, post_qual_cut, axis = 1)
     del pre_qual_cut, post_qual_cut
 
-    # bad run
-    qual_cut_sum = np.nansum(total_qual_cut, axis = 1)
-    ped_cut = total_qual_cut[:, 15] + total_qual_cut[:, 16]
-    bad_run = np.array([0, 0], dtype = int)
-    sum_flag = np.all(qual_cut_sum != 0)
-    ped_flag = np.any(ped_cut != 0)
-    if analyze_blind_dat == True and (sum_flag or ped_flag):
-        bad_run[0] = int(sum_flag)
-        bad_run[1] = int(ped_flag)
-        print(f'A{st} R{run} is bad!!! Bad type:{bad_run}')
-        bad_path = f'/home/mkim/analysis/MF_filters/data/qual_runs/qual_run_A{st}.txt'
-        bad_run_info = f'{run} {bad_run[0]} {bad_run[1]}\n'
-        if os.path.exists(bad_path):
-            print(f'There is {bad_path}')
-            with open(bad_path, 'a') as f:
-                f.write(bad_run_info)
-        else:
-            print(f'There is NO {bad_path}')
-            with open(bad_path, 'w') as f:
-                f.write(bad_run_info)
-        del bad_path, bad_run_info
-    del qual_cut_sum, ped_cut, st, run, sum_flag, ped_flag
-
     print('Quality cut is done!')
 
     return {'evt_num':evt_num,
             'trig_type':trig_type,
             'unix_time':unix_time,
             'pps_number':pps_number,
-            'total_qual_cut':total_qual_cut,
-            'bad_run':bad_run}
+            'total_qual_cut':total_qual_cut}
 
 
 

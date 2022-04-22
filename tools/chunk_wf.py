@@ -7,7 +7,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
 
     from tools.ara_run_manager import run_info_loader
     from tools.ara_data_load import ara_uproot_loader
-    from tools.ara_data_load import ara_Hk_uproot_loader
+    from tools.ara_data_load import ara_sensorHk_uproot_loader
     from tools.ara_data_load import ara_root_loader
     from tools.ara_data_load import analog_buffer_info_loader
     from tools.ara_constant import ara_const
@@ -39,7 +39,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
  
     run_info = run_info_loader(ara_uproot.station_id, ara_uproot.run, analyze_blind_dat = analyze_blind_dat)
     Data = run_info.get_data_path(file_type = 'sensorHk', return_none = True, verbose = True)
-    ara_Hk_uproot = ara_Hk_uproot_loader(Data)
+    ara_Hk_uproot = ara_sensorHk_uproot_loader(Data)
     atri_volt, atri_curr, dda_volt, dda_curr, dda_temp, tda_volt, tda_curr, tda_temp = ara_Hk_uproot.get_daq_sensor_info()   
     sensor_unix_time = ara_Hk_uproot.unix_time
     del run_info, Data, ara_Hk_uproot

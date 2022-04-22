@@ -595,6 +595,8 @@ class known_issue_loader:
         knwon_bad_run = np.append(knwon_bad_run, ARARunLogDataBase)
         ob_bad_run = self.get_obviously_bad_run()
         knwon_bad_run = np.append(knwon_bad_run, ob_bad_run)
+        qual_bad_run = self.get_qual_bad_run()
+        knwon_bad_run = np.append(knwon_bad_run, qual_bad_run)
 
         #untagged_calpulser_run = self.get_untagged_calpulser_run()
         #knwon_bad_run = np.append(knwon_bad_run, untagged_calpulser_run) 
@@ -693,6 +695,19 @@ class known_issue_loader:
         else:
             pass
 
+        return bad_run
+
+    def get_qual_bad_run(self):
+
+        bad_path = f'/home/mkim/analysis/MF_filters/data/qual_runs/qual_run_A{self.st}.txt'
+        bad_run = []
+        bad_file = open(bad_path, "r")
+        for lines in bad_file:
+            run_num = int(lines.split()[0])
+            bad_run.append(run_num)
+        bad_run = np.asarray(bad_run)
+        bad_file.close()
+        
         return bad_run
 
     def get_bad_surface_run(self):
