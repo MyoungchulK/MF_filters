@@ -28,7 +28,7 @@ class run_info_loader:
             if verbose:
                 print(f'{file_type}{blind_type}_path:{result_path}')
         else:
-            print('There is no desired {result_path}')
+            print(f'There is no desired {result_path}')
             if return_none == True:
                 return None
             else:
