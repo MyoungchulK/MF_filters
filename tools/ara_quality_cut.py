@@ -335,7 +335,7 @@ class pre_qual_cut_loader:
         tot_pre_qual_cut[:, 11] = self.get_first_minute_events()
         tot_pre_qual_cut[:, 12] = self.get_bias_voltage_events()
         tot_pre_qual_cut[:, 13] = self.get_no_calpulser_events(apply_bias_volt = tot_pre_qual_cut[:,12])
-        tot_pre_qual_cut[:, 14:16] = self.get_bad_rate_events(apply_bad_evt_num = tot_pre_qual_cut[:, 9])
+        tot_pre_qual_cut[:, 14:] = self.get_bad_rate_events(apply_bad_evt_num = tot_pre_qual_cut[:, 9])
 
         if self.verbose:
             quick_qual_check(np.nansum(tot_pre_qual_cut, axis = 1) != 0, self.evt_num, 'total pre qual cut!')
@@ -433,30 +433,28 @@ class ped_qual_cut_loader:
 
     def get_clean_events(self):
 
-        qual_len = self.total_qual_cut.shape[1]
-        clean_evts_qual_type = np.full((qual_len, self.num_qual_type), 0, dtype = int)
+        clean_evts_qual_type = np.full((self.total_qual_cut.shape[1], self.num_qual_type), 0, dtype = int)
         clean_evts = np.full((self.num_evts, self.num_qual_type), 0, dtype = int)
 
         # turn on all cuts
-        qual_type = np.arange(qual_len, dtype = int)
-        clean_evts_qual_type[qual_type, 0] = 1
+        clean_evts_qual_type[:, 0] = 1
         clean_evts[:, 0] = np.logical_and(np.nansum(self.total_qual_cut, axis = 1) == 0, self.trig_type != 1).astype(int)
 
         # not use bad unix time and rf ratio cut
-        qual_type = np.array([0,1,2,3,4,5,6,7,8,9,11,12,13,14,16], dtype = int)
+        qual_type = np.array([0,1,2,3,4,5,6,7,8,9,11,12,13,15,16], dtype = int)
         clean_evts_qual_type[qual_type, 1] = 1
         clean_evts[:, 1] = np.logical_and(np.nansum(self.total_qual_cut[:, qual_type], axis = 1) == 0, self.trig_type != 1).astype(int)
     
         # hardware error only
-        qual_type = np.array([0,1,2,3,4,5,6,7,8,11,12,14,16], dtype = int) # hardware only
+        qual_type = np.array([0,1,2,3,4,5,6,7,8,11,12,15,16], dtype = int)
         clean_evts_qual_type[qual_type, 2] = 1
         clean_evts[:, 2] = np.logical_and(np.nansum(self.total_qual_cut[:, qual_type], axis = 1) == 0, self.trig_type != 1).astype(int)
 
         # only rf/software
-        qual_type = np.array([0,1,2,3,4,5], dtype = int)  # only rf/software
+        qual_type = np.array([0,1,2,3,4,5], dtype = int)
         clean_evts_qual_type[qual_type, 3] = 1
         clean_evts[:, 3] = np.logical_and(np.nansum(self.total_qual_cut[:, qual_type], axis = 1) == 0, self.trig_type != 1).astype(int)
-        del qual_type, qual_len
+        del qual_type
     
         # clean evts for repeder
         clean_num_evts = np.nansum(clean_evts, axis = 0)
@@ -492,7 +490,7 @@ class ped_qual_cut_loader:
     def get_pedestal_qualities(self, clean_evts, block_usage, low_block_usage):
 
         # select final type
-        final_type = np.full((1), 0, dtype = int)
+        final_type = np.full((1), len(low_block_usage) - 1, dtype = int)
         ped_counts = np.copy(block_usage[:, -1])
         ped_qualities = np.copy(clean_evts[:, -1])
 
@@ -500,8 +498,8 @@ class ped_qual_cut_loader:
             if low_block_usage[t] == 0:
                 ped_counts = np.copy(block_usage[:, t])
                 ped_qualities = np.copy(clean_evts[:, t])
+                final_type[t] = t
                 break
-            final_type[0] += 1
         print(f'type {final_type} was chosen for ped!')
 
         st = self.ara_uproot.station_id
