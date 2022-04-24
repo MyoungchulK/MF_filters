@@ -52,7 +52,7 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
 
     # ped quailty cut
     ped_qual = ped_qual_cut_loader(ara_uproot, total_qual_cut, analyze_blind_dat = analyze_blind_dat, verbose = True)
-    ped_qual_evt_num, ped_qual_type, ped_qual_num_evts, blk_usage, low_blk_usage, ped_qualities, ped_counts, final_type = ped_qual.get_pedestal_information()
+    ped_qual_evt_num, ped_qual_type, ped_qual_num_evts, ped_blk_usage, ped_low_blk_usage, ped_qualities, ped_counts, ped_final_type = ped_qual.get_pedestal_information()
     ped_blk_evts = ped_qual.get_pedestal_block_events()
     del ara_uproot, ped_qual
 
@@ -78,11 +78,11 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
             'ped_qual_evt_num':ped_qual_evt_num,
             'ped_qual_type':ped_qual_type,
             'ped_qual_num_evts':ped_qual_num_evts,
-            'blk_usage':blk_usage,
-            'low_blk_usage':low_blk_usage,
+            'ped_blk_usage':ped_blk_usage,
+            'ped_low_blk_usage':ped_low_blk_usage,
             'ped_qualities':ped_qualities,
             'ped_counts':ped_counts,
-            'final_type':final_type}
+            'ped_final_type':ped_final_type}
 
 
 
