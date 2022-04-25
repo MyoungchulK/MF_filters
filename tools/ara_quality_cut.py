@@ -271,39 +271,53 @@ class pre_qual_cut_loader:
 
         return no_cal_evts
 
-    def get_bad_rate_events(self, cal_rate_cut = 0.6, rf_rate_cut = 2.5, apply_bad_evt_num = None):
+    def get_bad_rate_events(self, rf_rate_cut = 2.5, cal_rate_cut = 0.85, soft_rate_cut = 0.75, upper_cut = 1.1, apply_bad_evt_num = None):
     
         if self.st == 3 and self.run < 10001:
             rf_rate_cut = 4
         if self.st == 3 and self.run > 10000:
             rf_rate_cut = 2
 
-        bad_rate_evts = np.full((self.num_evts, 2), 0, dtype = int)
+        if self.st == 2 and (self.run > 6499 or self.run < 7175):
+            cal_rate_cut = 0.75
+        if self.st == 3 and (self.run > 6001 or self.run < 6678):
+            cal_rate_cut = 0.8
+
+        bad_rate_evts = np.full((self.num_evts, 3), 0, dtype = int)
         if apply_bad_evt_num is not None and np.all(apply_bad_evt_num != 0):
             return bad_rate_evts
 
         evt_rate_dat = self.run_info.get_result_path(file_type = 'evt_rate', verbose = self.verbose, force_blind = True)
         evt_rate_hf = h5py.File(evt_rate_dat, 'r')
-        pps_rate_bins = (evt_rate_hf['pps_min_bins'][:-1] + 0.5).astype(int) # bins to bincenter
         unix_rate_bins = (evt_rate_hf['unix_min_bins'][:-1] + 0.5).astype(int) # bins to bincenter
-        cal_evt_rate = evt_rate_hf['cal_rate_pps'][:]
+        pps_rate_bins = (evt_rate_hf['pps_min_bins'][:-1] + 0.5).astype(int) # bins to bincenter
         rf_evt_rate = evt_rate_hf['rf_rate_unix'][:]
+        cal_evt_rate = evt_rate_hf['cal_rate_pps'][:]
+        soft_evt_rate = evt_rate_hf['soft_rate_unix'][:]
         del evt_rate_dat, evt_rate_hf
 
-        cal_cut_idx = cal_evt_rate < cal_rate_cut
         rf_cut_idx = rf_evt_rate < rf_rate_cut
-        del cal_evt_rate, rf_evt_rate
+        cal_cut_idx = np.logical_or(cal_evt_rate < cal_rate_cut, cal_evt_rate > upper_cut)
+        soft_cut_idx = np.logical_or(soft_evt_rate < soft_rate_cut, soft_evt_rate > upper_cut)
+        del cal_evt_rate, rf_evt_rate, soft_evt_rate
 
         min_to_sec_arr = np.arange(60, dtype = int)
-        bad_unix_sec = unix_rate_bins[rf_cut_idx]
-        bad_unix_sec = np.repeat(bad_unix_sec[:, np.newaxis], len(min_to_sec_arr), axis = 1)
-        bad_unix_sec += min_to_sec_arr[np.newaxis, :]
-        bad_unix_sec = bad_unix_sec.flatten()
+
+        bad_rf_unix_sec = unix_rate_bins[rf_cut_idx]
+        bad_rf_unix_sec = np.repeat(bad_rf_unix_sec[:, np.newaxis], len(min_to_sec_arr), axis = 1)
+        bad_rf_unix_sec += min_to_sec_arr[np.newaxis, :]
+        bad_rf_unix_sec = bad_rf_unix_sec.flatten()
+    
         bad_pps_sec = pps_rate_bins[cal_cut_idx]
         bad_pps_sec = np.repeat(bad_pps_sec[:, np.newaxis], len(min_to_sec_arr), axis = 1)
         bad_pps_sec += min_to_sec_arr[np.newaxis, :]
         bad_pps_sec = bad_pps_sec.flatten()
-        del min_to_sec_arr, cal_cut_idx, rf_cut_idx, pps_rate_bins, unix_rate_bins
+        
+        bad_soft_unix_sec = unix_rate_bins[soft_cut_idx]
+        bad_soft_unix_sec = np.repeat(bad_soft_unix_sec[:, np.newaxis], len(min_to_sec_arr), axis = 1)
+        bad_soft_unix_sec += min_to_sec_arr[np.newaxis, :]
+        bad_soft_unix_sec = bad_soft_unix_sec.flatten()
+        del min_to_sec_arr, cal_cut_idx, rf_cut_idx, soft_cut_idx, pps_rate_bins, unix_rate_bins
 
         pps_num = np.copy(self.pps_number)
         time_reset_point = np.where(np.diff(pps_num) < 0)[0]
@@ -312,9 +326,10 @@ class pre_qual_cut_loader:
             pps_num[time_reset_point[0]+1:] += pps_limit
         del time_reset_point
 
-        bad_rate_evts[:, 0] = np.in1d(self.unix_time, bad_unix_sec).astype(int)
+        bad_rate_evts[:, 0] = np.in1d(self.unix_time, bad_rf_unix_sec).astype(int)
         bad_rate_evts[:, 1] = np.in1d(pps_num, bad_pps_sec).astype(int)
-        del pps_num, bad_unix_sec, bad_pps_sec
+        bad_rate_evts[:, 2] = np.in1d(self.unix_time, bad_soft_unix_sec).astype(int)
+        del pps_num, bad_rf_unix_sec, bad_pps_sec, bad_soft_unix_sec
 
         if self.st == 3 and (self.run > 1124 and self.run < 1429):
             bad_rate_evts[:, 1] = 0
@@ -322,12 +337,13 @@ class pre_qual_cut_loader:
         if self.verbose:
             quick_qual_check(bad_rate_evts[:, 0] != 0, self.evt_num, f'bad rf rate events')
             quick_qual_check(bad_rate_evts[:, 1] != 0, self.evt_num, f'bad calpulser rate events')
+            quick_qual_check(bad_rate_evts[:, 2] != 0, self.evt_num, f'bad software rate events')
 
         return bad_rate_evts
 
     def run_pre_qual_cut(self):
 
-        tot_pre_qual_cut = np.full((self.num_evts, 16), 0, dtype = int)
+        tot_pre_qual_cut = np.full((self.num_evts, 17), 0, dtype = int)
         tot_pre_qual_cut[:, :5] = self.get_daq_structure_errors()
         tot_pre_qual_cut[:, 5:9] = self.get_readout_window_errors()
         tot_pre_qual_cut[:, 9] = self.get_bad_event_number()
@@ -455,20 +471,21 @@ class ped_qual_cut_loader:
         # 13 bad cal ratio
         # 14 bad rf rate
         # 15 bad cal rate
-        # 16 unlock calpulser
+        # 16 bad soft rate
+        # 17 unlock calpulser
 
         # turn on all cuts
         clean_evts_qual_type[:, 0] = 1
         clean_evts[:, 0] = np.logical_and(np.nansum(self.total_qual_cut, axis = 1) == 0, self.trig_type != 1).astype(int)
 
-        # not use 1) bad unix time, and 2) bad rf rate
-        qual_type = np.array([0,1,2,3,4,5,6,7,8,9,11,12,13,15,16], dtype = int)
+        # not use 1) 10 bad unix time, and 2) 14 bad rf rate
+        qual_type = np.array([0,1,2,3,4,5,6,7,8,9,11,12,13,15,16,17], dtype = int)
         clean_evts_qual_type[qual_type, 1] = 1
         clean_evts[:, 1] = np.logical_and(np.nansum(self.total_qual_cut[:, qual_type], axis = 1) == 0, self.trig_type != 1).astype(int)
         del qual_type   
  
-        # hardware error only. not use 1) bad event number, 2) bad unix time 3), bad cal ratio, and 4) bad rf rate
-        qual_type = np.array([0,1,2,3,4,5,6,7,8,11,12,15,16], dtype = int)
+        # hardware error only. not use 1) 9 bad event number, 2) 10 bad unix time, 3) 13 bad cal ratio, and 4) 14 bad rf rate
+        qual_type = np.array([0,1,2,3,4,5,6,7,8,11,12,15,16,17], dtype = int)
         clean_evts_qual_type[qual_type, 2] = 1
         clean_evts[:, 2] = np.logical_and(np.nansum(self.total_qual_cut[:, qual_type], axis = 1) == 0, self.trig_type != 1).astype(int)
         del qual_type
@@ -590,7 +607,7 @@ class ped_qual_cut_loader:
 
         return ped_blk_evts
 
-def get_bad_run(st, run, total_qual_cut, ped_cut = [17, 18]):
+def get_bad_run(st, run, total_qual_cut, ped_cut = [18, 19]):
 
     # bad run
     ped_cut = np.asarray(ped_cut)
@@ -613,7 +630,7 @@ def get_bad_run(st, run, total_qual_cut, ped_cut = [17, 18]):
                 for lines in f:
                     run_num = int(lines.split()[0])
                     bad_run_arr.append(run_num)
-            bad_run_arr = np.asarray(bad_run_arr)
+            bad_run_arr = np.asarray(bad_run_arr, dtype = int)
             if run in bad_run_arr:
                 print(f'Run{run} is already in {bad_path}!')
             else:
@@ -623,6 +640,7 @@ def get_bad_run(st, run, total_qual_cut, ped_cut = [17, 18]):
             del bad_run_arr
         else:
             print(f'There is NO {bad_path}')
+            print(f'Add run{run} in {bad_path}!')
             with open(bad_path, 'w') as f:
                 f.write(bad_run_info)
         del bad_path, bad_run_info
