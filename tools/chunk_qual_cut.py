@@ -28,19 +28,19 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
     # quality cut config
     pre_qual = pre_qual_cut_loader(ara_uproot, analyze_blind_dat = analyze_blind_dat, verbose = True)
     pre_qual_cut = pre_qual.run_pre_qual_cut()
-    daq_qual_sum = np.nansum(pre_qual_cut[:, :6], axis = 1)
+    daq_cut_sum = pre_qual.daq_cut_sum
     post_qual = post_qual_cut_loader(ara_uproot, ara_root, verbose = True)
     del pre_qual
 
     # loop over the events
     for evt in tqdm(range(num_evts)):
       #if evt<100:
-        if daq_qual_sum[evt] != 0:
+        if daq_cut_sum[evt] != 0:
             continue
 
         # post quality cut
         post_qual.run_post_qual_cut(evt)
-    del ara_root, num_evts, daq_qual_sum
+    del ara_root, num_evts
 
     # post quality cut
     post_qual_cut = post_qual.get_post_qual_cut()
@@ -51,10 +51,10 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
     del pre_qual_cut, post_qual_cut
 
     # ped quailty cut
-    ped_qual = ped_qual_cut_loader(ara_uproot, total_qual_cut, analyze_blind_dat = analyze_blind_dat, verbose = True)
+    ped_qual = ped_qual_cut_loader(ara_uproot, total_qual_cut, daq_cut_sum, analyze_blind_dat = analyze_blind_dat, verbose = True)
     ped_qual_evt_num, ped_qual_type, ped_qual_num_evts, ped_blk_usage, ped_low_blk_usage, ped_qualities, ped_counts, ped_final_type = ped_qual.get_pedestal_information()
     ped_blk_evts = ped_qual.get_pedestal_block_events()
-    del ara_uproot, ped_qual
+    del ara_uproot, ped_qual, daq_cut_sum
 
     # final total quality cut
     total_qual_cut = np.append(total_qual_cut, ped_blk_evts, axis = 1)

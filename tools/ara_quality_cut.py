@@ -5,6 +5,7 @@ import h5py
 
 # custom lib
 from tools.ara_constant import ara_const
+from tools.ara_run_manager import run_info_loader
 
 ara_const = ara_const()
 num_ddas = ara_const.DDA_PER_ATRI
@@ -37,7 +38,6 @@ class pre_qual_cut_loader:
         self.blk_len = ara_uproot.read_win//num_ddas
         self.verbose = verbose
 
-        from tools.ara_run_manager import run_info_loader
         self.run_info = run_info_loader(self.st, self.run, analyze_blind_dat = analyze_blind_dat)
 
     def get_daq_structure_errors(self):
@@ -337,8 +337,12 @@ class pre_qual_cut_loader:
         tot_pre_qual_cut[:, 13] = self.get_no_calpulser_events(apply_bias_volt = tot_pre_qual_cut[:,12])
         tot_pre_qual_cut[:, 14:] = self.get_bad_rate_events(apply_bad_evt_num = tot_pre_qual_cut[:, 9])
 
+        self.daq_cut_sum = np.nansum(tot_pre_qual_cut[:, :6], axis = 1)
+        self.pre_cut_sum = np.nansum(tot_pre_qual_cut, axis = 1)
+
         if self.verbose:
-            quick_qual_check(np.nansum(tot_pre_qual_cut, axis = 1) != 0, self.evt_num, 'total pre qual cut!')
+            quick_qual_check(self.daq_cut_sum != 0, self.evt_num, 'daq error cut!')
+            quick_qual_check(self.pre_cut_sum != 0, self.evt_num, 'total pre qual cut!')
 
         return tot_pre_qual_cut
 
@@ -412,23 +416,28 @@ class post_qual_cut_loader:
         tot_post_qual_cut = np.full((self.num_evts, 1), 0, dtype = int)
         tot_post_qual_cut[:, 0] = self.unlock_cal_evts
 
+        self.post_cut_sum = np.nansum(tot_post_qual_cut, axis = 1)
+
         if self.verbose:
             quick_qual_check(tot_post_qual_cut[:, 0] != 0, self.evt_num, 'unlocked calpulser events!')
-            quick_qual_check(np.nansum(tot_post_qual_cut, axis = 1) != 0, self.evt_num, 'total post qual cut!')
+            quick_qual_check(self.post_cut_sum != 0, self.evt_num, 'total post qual cut!')
         
         return tot_post_qual_cut
 
 class ped_qual_cut_loader:
 
-    def __init__(self, ara_uproot, total_qual_cut, analyze_blind_dat = False, verbose = False):
+    def __init__(self, ara_uproot, total_qual_cut, daq_cut_sum, analyze_blind_dat = False, verbose = False):
     
         self.analyze_blind_dat = analyze_blind_dat
         self.verbose = verbose
         self.ara_uproot = ara_uproot
         self.trig_type = self.ara_uproot.get_trig_type()
         self.num_evts = self.ara_uproot.num_evts
+        self.evt_num = ara_uproot.evt_num
+        self.st = self.ara_uproot.station_id
+        self.run = self.ara_uproot.run
         self.total_qual_cut = total_qual_cut
-        self.daq_qual_sum = np.nansum(self.total_qual_cut[:, :6], axis = 1)
+        self.daq_cut_sum = daq_cut_sum
         self.num_qual_type = 4
 
     def get_clean_events(self):
@@ -436,19 +445,33 @@ class ped_qual_cut_loader:
         clean_evts_qual_type = np.full((self.total_qual_cut.shape[1], self.num_qual_type), 0, dtype = int)
         clean_evts = np.full((self.num_evts, self.num_qual_type), 0, dtype = int)
 
+        # 0~4 daq error
+        # 5 single block
+        # 6~8 readout window
+        # 9 bad event number
+        # 10 bad unix time
+        # 11 first minute
+        # 12 dda voltage
+        # 13 bad cal ratio
+        # 14 bad rf rate
+        # 15 bad cal rate
+        # 16 unlock calpulser
+
         # turn on all cuts
         clean_evts_qual_type[:, 0] = 1
         clean_evts[:, 0] = np.logical_and(np.nansum(self.total_qual_cut, axis = 1) == 0, self.trig_type != 1).astype(int)
 
-        # not use bad unix time and rf ratio cut
+        # not use 1) bad unix time, and 2) bad rf rate
         qual_type = np.array([0,1,2,3,4,5,6,7,8,9,11,12,13,15,16], dtype = int)
         clean_evts_qual_type[qual_type, 1] = 1
         clean_evts[:, 1] = np.logical_and(np.nansum(self.total_qual_cut[:, qual_type], axis = 1) == 0, self.trig_type != 1).astype(int)
-    
-        # hardware error only
+        del qual_type   
+ 
+        # hardware error only. not use 1) bad event number, 2) bad unix time 3), bad cal ratio, and 4) bad rf rate
         qual_type = np.array([0,1,2,3,4,5,6,7,8,11,12,15,16], dtype = int)
         clean_evts_qual_type[qual_type, 2] = 1
         clean_evts[:, 2] = np.logical_and(np.nansum(self.total_qual_cut[:, qual_type], axis = 1) == 0, self.trig_type != 1).astype(int)
+        del qual_type
 
         # only rf/software
         qual_type = np.array([0,1,2,3,4,5], dtype = int)
@@ -468,7 +491,7 @@ class ped_qual_cut_loader:
         block_usage = np.full((num_blks, self.num_qual_type), 0, dtype = int)
         for evt in range(self.num_evts):
 
-            if self.daq_qual_sum[evt] != 0:
+            if self.daq_cut_sum[evt] != 0:
                 continue
 
             blk_idx_arr = self.ara_uproot.get_block_idx(evt, trim_1st_blk = True)[0]
@@ -498,39 +521,36 @@ class ped_qual_cut_loader:
             if low_block_usage[t] == 0:
                 ped_counts = np.copy(block_usage[:, t])
                 ped_qualities = np.copy(clean_evts[:, t])
-                final_type[t] = t
+                final_type[0] = t
                 break
         print(f'type {final_type} was chosen for ped!')
 
-        st = self.ara_uproot.station_id
-        run = self.ara_uproot.run       
-        Output = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{st}/ped_full/'
+        Output = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{self.st}/ped_full/'
         if not os.path.exists(Output):
             os.makedirs(Output) 
 
-        txt_file_name = f'{Output}ped_full_qualities_A{st}_R{run}.dat'
+        txt_file_name = f'{Output}ped_full_qualities_A{self.st}_R{self.run}.dat'
         np.savetxt(txt_file_name, ped_qualities.astype(int), fmt='%i')
         print(f'output is {txt_file_name}')
-        del st, run
 
         return ped_qualities, ped_counts, final_type
 
     def get_pedestal_information(self):
 
         if self.analyze_blind_dat:
-            clean_evts, clean_evts_qual_type, clean_num_evts = get_clean_events()
-            block_usage, low_block_usage = get_block_usage(clean_evts)
+            clean_evts, clean_evts_qual_type, clean_num_evts = self.get_clean_events()
+            block_usage, low_block_usage = self.get_block_usage(clean_evts)
             ped_qualities, ped_counts, final_type = self.get_pedestal_qualities(clean_evts, block_usage, low_block_usage)
             self.ped_counts = ped_counts
         else:
-            clean_evts = np.full((1), np.nan, dtype = float)
-            clean_evts_qual_type = np.copy(clean_evts)
-            clean_num_evts = np.copy(clean_evts)
-            block_usage = np.copy(clean_evts)
-            low_block_usage = np.copy(clean_evts)
-            ped_qualities = np.copy(clean_evts)
-            ped_counts = np.copy(clean_evts)
-            final_type = np.copy(clean_evts)            
+            clean_evts = np.full((self.num_evts, self.num_qual_type), np.nan, dtype = float)
+            clean_evts_qual_type = np.full((self.total_qual_cut.shape[1], self.num_qual_type), np.nan, dtype = float)
+            clean_num_evts = np.full((self.num_qual_type), np.nan, dtype = float)
+            block_usage = np.full((num_blks, self.num_qual_type), np.nan, dtype = float)
+            low_block_usage = np.full((self.num_qual_type), np.nan, dtype = float)
+            ped_qualities = np.full((self.num_evts), np.nan, dtype = float)
+            ped_counts = np.full((num_blks), np.nan, dtype = float)
+            final_type = np.full((1), np.nan, dtype = float)         
 
         return clean_evts, clean_evts_qual_type, clean_num_evts, block_usage, low_block_usage, ped_qualities, ped_counts, final_type
 
@@ -539,10 +559,11 @@ class ped_qual_cut_loader:
         if self.analyze_blind_dat:
             ped_counts = np.copy(self.ped_counts)    
         else:
-            ped_count_dat = self.run_info.get_result_path(file_type = 'qual_cut', verbose = self.verbose, force_blind = True)
+            run_info = run_info_loader(self.st, self.run, analyze_blind_dat = self.analyze_blind_dat)
+            ped_count_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = self.verbose, force_blind = True)
             ped_count_hf = h5py.File(ped_count_dat, 'r')
             ped_counts = ped_count_hf['ped_counts'][:]
-            del ped_count_dat, ped_count_hf
+            del ped_count_dat, ped_count_hf, run_info
         zero_ped_counts = ped_counts < 1
         ped_blk_counts = ped_counts == 1
         del ped_counts
@@ -550,7 +571,7 @@ class ped_qual_cut_loader:
         ped_blk_evts = np.full((self.num_evts, 2), 0, dtype = int)
         for evt in range(self.num_evts):
 
-            if self.daq_qual_sum[evt] != 0:
+            if self.daq_cut_sum[evt] != 0:
                 continue
 
             blk_idx_arr = self.ara_uproot.get_block_idx(evt, trim_1st_blk = True)[0]
@@ -587,8 +608,19 @@ def get_bad_run(st, run, total_qual_cut, ped_cut = [17, 18]):
         bad_run_info = f'{run} {bad_run[0]} {bad_run[1]}\n'
         if os.path.exists(bad_path):
             print(f'There is {bad_path}')
-            with open(bad_path, 'a') as f:
-                f.write(bad_run_info)
+            bad_run_arr = []
+            with open(bad_path, 'r') as f:
+                for lines in f:
+                    run_num = int(lines.split()[0])
+                    bad_run_arr.append(run_num)
+            bad_run_arr = np.asarray(bad_run_arr)
+            if run in bad_run_arr:
+                print(f'Run{run} is already in {bad_path}!')
+            else:
+                print(f'Add run{run} in {bad_path}!')
+                with open(bad_path, 'a') as f:
+                    f.write(bad_run_info)
+            del bad_run_arr
         else:
             print(f'There is NO {bad_path}')
             with open(bad_path, 'w') as f:
@@ -622,9 +654,12 @@ class qual_cut_loader:
         self.evt_num = qual_file['evt_num'][:]
         self.unix_time = qual_file['unix_time'][:]
         total_qual_cut = qual_file['total_qual_cut'][:]
+        self.daq_cut_sum = np.nansum(total_qual_cut[:, :6], axis = 1)
+        self.tot_cut_sum = np.nansum(total_qual_cut, axis = 1)
 
         if self.verbose:
-            quick_qual_check(np.nansum(total_qual_cut, axis = 1) != 0, self.evt_num, 'total qual cut!')
+            quick_qual_check(self.daq_err_cut != 0, self.evt_num, 'daq error cut!')
+            quick_qual_check(self.tot_cut_sum != 0, self.evt_num, 'total qual cut!')
         del d_key, d_path, qual_file
 
         return total_qual_cut
