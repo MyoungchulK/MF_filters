@@ -4,8 +4,9 @@
 data=$1
 station=$2
 run=$3
-out=/data/user/mkim/OMF_filter/ARA0${station}/ped/ped_values_A${station}_R${run}.dat
-qual=/data/user/mkim/OMF_filter/ARA0${station}/ped/ped_qualities_A${station}_R${run}.dat
+ped_path=/data/user/mkim/OMF_filter/ARA0${station}/ped_full/
+qual=${ped_path}ped_full_qualities_A${station}_R${run}.dat
+out=${ped_path}ped_full_values_A${station}_R${run}.dat
 
 # run the reconstruction script
 export HDF5_USE_FILE_LOCKING='FALSE'

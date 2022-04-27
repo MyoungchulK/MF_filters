@@ -271,16 +271,17 @@ class pre_qual_cut_loader:
 
         return no_cal_evts
 
-    def get_bad_rate_events(self, rf_rate_cut = 2.5, cal_rate_cut = 0.85, soft_rate_cut = 0.75, upper_cut = 1.1, apply_bad_evt_num = None):
+    def get_bad_rate_events(self, rf_rate_cut = 2.8, cal_rate_cut = 0.85, soft_rate_cut = 0.75, upper_cut = 1.1, apply_bad_evt_num = None):
     
         if self.st == 3 and self.run < 10001:
             rf_rate_cut = 4
         if self.st == 3 and self.run > 10000:
             rf_rate_cut = 2
 
-        if self.st == 2 and (self.run > 6499 or self.run < 7175):
+        if self.st == 2 and (self.run > 6499 and self.run < 7175):
             cal_rate_cut = 0.75
-        if self.st == 3 and (self.run > 6001 or self.run < 6678):
+            rf_rate_cut = 2.6
+        if self.st == 3 and (self.run > 6001 and self.run < 6678):
             cal_rate_cut = 0.8
 
         bad_rate_evts = np.full((self.num_evts, 3), 0, dtype = int)
@@ -676,7 +677,7 @@ class qual_cut_loader:
         self.tot_cut_sum = np.nansum(total_qual_cut, axis = 1)
 
         if self.verbose:
-            quick_qual_check(self.daq_err_cut != 0, self.evt_num, 'daq error cut!')
+            quick_qual_check(self.daq_cut_sum != 0, self.evt_num, 'daq error cut!')
             quick_qual_check(self.tot_cut_sum != 0, self.evt_num, 'total qual cut!')
         del d_key, d_path, qual_file
 
