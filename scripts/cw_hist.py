@@ -24,68 +24,103 @@ del d_run_range
 
 # config array
 config_arr = []
+config_arr_cut = []
 run_arr = []
-freq_rf_hist = []
-freq_rf_w_cut_hist = []
-amp_rf_hist = []
-amp_rf_w_cut_hist = []
+run_arr_cut = []
 
-freq_range = np.arange(0,1,0.001)
-freq_bins = np.linspace(0,1000,1000+1)
-freq_bin_center = (freq_bins[1:] + freq_bins[:-1]) / 2
-amp_range = np.arange(-5,5,0.01)
-amp_bins = np.linspace(-5,5,1000+1)
-amp_bin_center = (amp_bins[1:] + amp_bins[:-1]) / 2
+hf = h5py.File(d_list[0], 'r')
+freq_range = hf['freq_range'][:]
+freq_bins = hf['freq_bins'][:]
+freq_bin_center = hf['freq_bin_center'][:]
+amp_range = hf['amp_range'][:]
+amp_bins = hf['amp_bins'][:]
+amp_bin_center = hf['amp_bin_center'][:]
+del hf
 
-freq_rf_1d = np.full((16, len(freq_range)), 0, dtype = int)
-freq_rf_w_cut_1d = np.copy(freq_rf_1d)
-amp_rf_1d = np.copy(freq_rf_1d)
-amp_rf_w_cut_1d = np.copy(freq_rf_1d)
+fft_map = np.full((len(freq_bins) - 1, len(amp_bins) - 1, 16), 0, dtype = int)
+fft_rf_map = np.copy(fft_map)
+fft_rf_cut_map = np.copy(fft_map)
+clean_map = np.copy(fft_map)
+clean_rf_map = np.copy(fft_map)
+clean_rf_cut_map = np.copy(fft_map)
+sub_map = np.copy(fft_map)
+sub_rf_map = np.copy(fft_map)
+sub_rf_cut_map = np.copy(fft_map)
+cw_map = np.copy(fft_map)
+cw_rf_map = np.copy(fft_map)
+cw_rf_cut_map = np.copy(fft_map)
 
 for r in tqdm(range(len(d_run_tot))):
     
   #if r <10:
 
+    hf = h5py.File(d_list[r], 'r')
+    config = hf['config'][2]
+    config_arr.append(config)
+    run_arr.append(d_run_tot[r])
+
+    fft_map_r = hf['fft_map'][:]
+    fft_rf_map_r = hf['fft_rf_map'][:]
+    clean_map_r = hf['clean_map'][:]
+    clean_rf_map_r = hf['clean_rf_map'][:]
+    sub_map_r = hf['sub_map'][:]
+    sub_rf_map_r = hf['sub_rf_map'][:]
+    cw_map_r = hf['cw_map'][:]
+    cw_rf_map_r = hf['cw_rf_map'][:]
+
+    if Station == 3:
+        if d_run_tot[r] > 12865 or (d_run_tot[r] > 1901 and d_run_tot[r] < 10001):
+            if d_run_tot[r] > 12865:
+                mask_ant = np.array([0,4,8,12], dtype = int)
+            if d_run_tot[r] > 1901 and d_run_tot[r] < 10001:
+                mask_ant = np.array([3,7,11,15], dtype = int)
+            fft_map_r[:,:,mask_ant] = 0
+            fft_rf_map_r[:,:,mask_ant] = 0
+            clean_map_r[:,:,mask_ant] = 0
+            clean_rf_map_r[:,:,mask_ant] = 0
+            sub_map_r[:,:,mask_ant] = 0
+            sub_rf_map_r[:,:,mask_ant] = 0
+            cw_map_r[:,:,mask_ant] = 0
+            cw_rf_map_r[:,:,mask_ant] = 0
+
+    fft_map += fft_map_r
+    fft_rf_map += fft_rf_map_r
+    clean_map += clean_map_r
+    clean_rf_map += clean_rf_map_r
+    sub_map += sub_map_r
+    sub_rf_map += sub_rf_map_r
+    cw_map += cw_map_r
+    cw_rf_map += cw_rf_map_r
+    del fft_map_r, fft_rf_map_r, clean_map_r, clean_rf_map_r, sub_map_r, sub_rf_map_r, cw_map_r, cw_rf_map_r
+
     if d_run_tot[r] in bad_runs:
         #print('bad run:', d_list[r], d_run_tot[r])
         continue
 
-    hf = h5py.File(d_list[r], 'r')
-    try:
-        config = hf['config'][2]
-        cw_freq_rf_hist = hf['cw_freq_rf_hist'][:]
-        cw_freq_rf_w_cut_hist = hf['cw_freq_rf_w_cut_hist'][:]
-        cw_amp_rf_hist = hf['cw_amp_rf_hist'][:]
-        cw_amp_rf_w_cut_hist = hf['cw_amp_rf_w_cut_hist'][:]
-    except KeyError:
-        continue
+    config_arr_cut.append(config)
+    run_arr_cut.append(d_run_tot[r])
 
-    config_arr.append(config)
-    run_arr.append(d_run_tot[r])
+    fft_rf_cut_map_r = hf['fft_rf_cut_map'][:]
+    clean_rf_cut_map_r = hf['clean_rf_cut_map'][:]
+    sub_rf_cut_map_r = hf['sub_rf_cut_map'][:]
+    cw_rf_cut_map_r = hf['cw_rf_cut_map'][:]
 
-    if Station == 3 and d_run_tot[r] > 12865:
-        mask_ant = np.array([0,4,8,12], dtype = int)
-        cw_freq_rf_hist[mask_ant] = 0
-        cw_freq_rf_w_cut_hist[mask_ant] = 0
-        cw_amp_rf_hist[mask_ant] = 0
-        cw_amp_rf_w_cut_hist[mask_ant] = 0
+    if Station == 3:
+        if d_run_tot[r] > 12865 or (d_run_tot[r] > 1901 and d_run_tot[r] < 10001):
+            if d_run_tot[r] > 12865:
+                mask_ant = np.array([0,4,8,12], dtype = int)
+            if d_run_tot[r] > 1901 and d_run_tot[r] < 10001:
+                mask_ant = np.array([3,7,11,15], dtype = int)
+            fft_rf_cut_map_r[:,:,mask_ant] = 0
+            clean_rf_cut_map_r[:,:,mask_ant] = 0
+            sub_rf_cut_map_r[:,:,mask_ant] = 0
+            cw_rf_cut_map_r[:,:,mask_ant] = 0
 
-    if Station == 3 and (d_run_tot[r] > 1901 and d_run_tot[r] < 10001) :
-        mask_ant = np.array([3,7,11,15], dtype = int)
-        cw_freq_rf_hist[mask_ant] = 0
-        cw_freq_rf_w_cut_hist[mask_ant] = 0
-        cw_amp_rf_hist[mask_ant] = 0
-        cw_amp_rf_w_cut_hist[mask_ant] = 0
-
-    freq_rf_1d += cw_freq_rf_hist
-    freq_rf_w_cut_1d += cw_freq_rf_w_cut_hist
-    amp_rf_1d += cw_amp_rf_hist
-    amp_rf_w_cut_1d += cw_amp_rf_w_cut_hist
-    freq_rf_hist.append(cw_freq_rf_hist)
-    freq_rf_w_cut_hist.append(cw_freq_rf_w_cut_hist)
-    amp_rf_hist.append(cw_amp_rf_hist)
-    amp_rf_w_cut_hist.append(cw_amp_rf_w_cut_hist)
-    del hf
+    fft_rf_cut_map += fft_rf_cut_map_r
+    clean_rf_cut_map += clean_rf_cut_map_r
+    sub_rf_cut_map += sub_rf_cut_map_r
+    cw_rf_cut_map += cw_rf_cut_map_r
+    del hf, fft_rf_cut_map_r, clean_rf_cut_map_r, sub_rf_cut_map_r, cw_rf_cut_map_r
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
 if not os.path.exists(path):
@@ -95,21 +130,27 @@ os.chdir(path)
 file_name = f'CW_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('config_arr', data=np.asarray(config_arr), compression="gzip", compression_opts=9)
+hf.create_dataset('config_arr_cut', data=np.asarray(config_arr_cut), compression="gzip", compression_opts=9)
 hf.create_dataset('run_arr', data=np.asarray(run_arr), compression="gzip", compression_opts=9)
+hf.create_dataset('run_arr_cut', data=np.asarray(run_arr_cut), compression="gzip", compression_opts=9)
 hf.create_dataset('freq_range', data=freq_range, compression="gzip", compression_opts=9)
 hf.create_dataset('freq_bins', data=freq_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('freq_bin_center', data=freq_bin_center, compression="gzip", compression_opts=9)
 hf.create_dataset('amp_range', data=amp_range, compression="gzip", compression_opts=9)
 hf.create_dataset('amp_bins', data=amp_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('amp_bin_center', data=amp_bin_center, compression="gzip", compression_opts=9)
-hf.create_dataset('freq_rf_hist', data=np.asarray(freq_rf_hist), compression="gzip", compression_opts=9)
-hf.create_dataset('freq_rf_w_cut_hist', data=np.asarray(freq_rf_w_cut_hist), compression="gzip", compression_opts=9)
-hf.create_dataset('amp_rf_hist', data=np.asarray(amp_rf_hist), compression="gzip", compression_opts=9)
-hf.create_dataset('amp_rf_w_cut_hist', data=np.asarray(amp_rf_w_cut_hist), compression="gzip", compression_opts=9)
-hf.create_dataset('freq_rf_1d', data=freq_rf_1d, compression="gzip", compression_opts=9)
-hf.create_dataset('freq_rf_w_cut_1d', data=freq_rf_w_cut_1d, compression="gzip", compression_opts=9)
-hf.create_dataset('amp_rf_1d', data=amp_rf_1d, compression="gzip", compression_opts=9)
-hf.create_dataset('amp_rf_w_cut_1d', data=amp_rf_w_cut_1d, compression="gzip", compression_opts=9)
+hf.create_dataset('fft_map', data=fft_map, compression="gzip", compression_opts=9)
+hf.create_dataset('fft_rf_map', data=fft_rf_map, compression="gzip", compression_opts=9)
+hf.create_dataset('fft_rf_cut_map', data=fft_rf_cut_map, compression="gzip", compression_opts=9)
+hf.create_dataset('clean_map', data=clean_map, compression="gzip", compression_opts=9)
+hf.create_dataset('clean_rf_map', data=clean_rf_map, compression="gzip", compression_opts=9)
+hf.create_dataset('clean_rf_cut_map', data=clean_rf_cut_map, compression="gzip", compression_opts=9)
+hf.create_dataset('sub_map', data=sub_map, compression="gzip", compression_opts=9)
+hf.create_dataset('sub_rf_map', data=sub_rf_map, compression="gzip", compression_opts=9)
+hf.create_dataset('sub_rf_cut_map', data=sub_rf_cut_map, compression="gzip", compression_opts=9)
+hf.create_dataset('cw_map', data=cw_map, compression="gzip", compression_opts=9)
+hf.create_dataset('cw_rf_map', data=cw_rf_map, compression="gzip", compression_opts=9)
+hf.create_dataset('cw_rf_cut_map', data=cw_rf_cut_map, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name)
 # quick size check
