@@ -111,6 +111,7 @@ for r in tqdm(range(len(d_run_tot))):
     l1_cut_hist2d_r = np.full(d_shape, 0, dtype = int)
     for a in range(16):
         l1_cut_hist_r[:, a] = np.histogram(l1_rate_cut[:, a], bins = l1_bins)[0].astype(int)
+        l1_cut_hist2d_r[:, :, a] = np.histogram2d(l1_unix, l1_rate_cut[:, a], bins = (min_bins, l1_bins))[0].astype(int)
     l1_cut_hist2d_max_r = get_2d_max(l1_cut_hist2d_r)
     l1_cut_hist2d_max.append(l1_cut_hist2d_max_r)
     l1_cut_hist.append(l1_cut_hist_r)
