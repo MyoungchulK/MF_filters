@@ -2,6 +2,8 @@ import numpy as np
 import os, sys
 from tqdm import tqdm
 import h5py
+from glob import glob
+import re
 
 # custom lib
 curr_path = os.getcwd()
@@ -15,13 +17,22 @@ def l1_loader(Station = None):
 
     print('Collecting l1 starts!')
 
+    mask_key = 'scalerGoalValues#I16='
+    end_key = ';'
+
     arr_len = 20000
     run_arr = np.full((arr_len), np.nan, dtype = float)
     run_type = np.copy(run_arr)
-    evt_start_unix = np.copy(run_arr)
-    evt_stop_unix = np.copy(run_arr)
-    config_start_unix = np.copy(run_arr)
-    config_stop_unix = np.copy(run_arr)
+    bad_type = np.copy(run_arr)
+    l1_goal = np.full((arr_len, 16), np.nan, dtype = float)
+    
+    knwon_issue = known_issue_loader(Station)
+    bad_runs = knwon_issue.get_knwon_bad_run()
+    bad_runs = np.sort(np.unique(bad_runs))
+    if Station == 3:
+        bad_runs = bad_runs[:-1]
+    bad_type[bad_runs] = 1 
+    del knwon_issue, bad_runs
 
     print('pedestal!')
     batch_info = batch_info_loader(Station)
@@ -31,15 +42,25 @@ def l1_loader(Station = None):
         if int(yrs) == 2013:
             continue
         ped_path = f'/data/exp/ARA/{int(yrs)}/calibration/pedestals/ARA0{Station}/'    
-        start_run_num_yrs, start_unix_time_yrs, start_date_time_yrs, stop_run_num_yrs, stop_unix_time_yrs, stop_date_time_yrs = ara_config.get_ped_start_n_stop(ped_path)
+        ped_config_path = glob(f'{ped_path}configFile*')
+        for p in ped_config_path:
+            run_num = int(re.sub("\D", "", p[-10:-4]))
+            run_arr[run_num] = run_num
+            run_type[run_num] = 0    
 
-        run_arr[start_run_num_yrs] = start_run_num_yrs
-        run_type[start_run_num_yrs] = 0
-        config_start_unix[start_run_num_yrs] = start_unix_time_yrs
-        run_arr[stop_run_num_yrs] = stop_run_num_yrs
-        run_type[stop_run_num_yrs] = 0
-        config_stop_unix[stop_run_num_yrs] = stop_unix_time_yrs    
-        del ped_path, start_run_num_yrs, start_unix_time_yrs, start_date_time_yrs, stop_run_num_yrs, stop_unix_time_yrs, stop_date_time_yrs
+            with open(p,'r') as p_file: 
+                p_read = p_file.read()
+
+                goal_idx = np.asarray([i.start() for i in re.finditer(mask_key, p_read)])
+                goal_idx_all = np.asarray([i.start() for i in re.finditer('//'+mask_key, p_read)]) + 2
+
+                l1_goal_num = ara_config.get_context(p_read, mask_key, end_key)          
+                if len(l1_goal_num) != 16: pass
+                else:
+                    l1_goal[run_num] = l1_goal_num
+                del l1_goal_num, p_read
+            del run_num
+        del ped_path, ped_config_path
     del yrs_arr
 
     print('unblined event!')
@@ -51,12 +72,19 @@ def l1_loader(Station = None):
     for run in tqdm(range(len(run_num))):
         slash_idx = evt_path[run].rfind('/')
         run_path = evt_path[run][:slash_idx] + '/'
-        unix_time, date_time = ara_config.get_run_start_n_stop(run_path)
-        if ~np.isnan(unix_time[0]):
-            config_start_unix[run_num[run]] = unix_time[0]
-        if ~np.isnan(unix_time[1]):
-            config_stop_unix[run_num[run]] = unix_time[1]
-        del slash_idx, run_path, unix_time, date_time
+        run_config_path = glob(f'{run_path}configFile*')
+        if len(run_config_path) != 1:
+            print(os.listdir(run_path))
+            continue
+
+        with open(run_config_path[0],'r') as r_file:
+            r_read = r_file.read()
+            l1_goal_num = ara_config.get_context(r_read, mask_key, end_key)
+            if len(l1_goal_num) != 16: pass
+            else:
+                l1_goal[run_num[run]] = l1_goal_num
+            del l1_goal_num, r_read
+        del slash_idx, run_path, run_config_path 
     del run_num, evt_path
 
     print('blinded event!')
@@ -68,53 +96,22 @@ def l1_loader(Station = None):
     for run in tqdm(range(len(run_num))):
         slash_idx = evt_path[run].rfind('/')
         run_path = evt_path[run][:slash_idx] + '/'
-        unix_time, date_time = ara_config.get_run_start_n_stop(run_path)
-        if ~np.isnan(unix_time[0]):
-            config_start_unix[run_num[run]] = unix_time[0]
-        if ~np.isnan(unix_time[1]):
-            config_stop_unix[run_num[run]] = unix_time[1]
-        del slash_idx, run_path, unix_time, date_time
+        run_config_path = glob(f'{run_path}configFile*')
+        if len(run_config_path) != 1:
+            print(os.listdir(run_path))
+            continue
+        
+        with open(run_config_path[0],'r') as r_file:
+            r_read = r_file.read()
+            l1_goal_num = ara_config.get_context(r_read, mask_key, end_key)
+            if len(l1_goal_num) != 16: pass
+            else:
+                l1_goal[run_num[run]] = l1_goal_num
+            del l1_goal_num, r_read
+        del slash_idx, run_path, run_config_path
+    del run_num, evt_path
 
-    for run in tqdm(range(len(run_num))):
-
-        try:
-            run_time_path = f'/data/user/mkim/OMF_filter/ARA0{Station}/run_time_full/run_time_full_A{Station}_R{run_num[run]}.h5'
-            hf = h5py.File(run_time_path, 'r')   
-            evt_unix = hf['evt_unix'][:] 
-            evt_start_unix[run_num[run]] = evt_unix[0]
-            evt_stop_unix[run_num[run]] = evt_unix[1]
-            del run_time_path, hf, evt_unix
-        except FileNotFoundError:
-            print(f'A{Station} R{run_num[run]} is missing!')
-    del batch_info, run_num, evt_path, ara_config
-
-    config_run_time = config_stop_unix - config_start_unix
-    evt_run_time = evt_stop_unix - evt_start_unix
-
-    knwon_issue = known_issue_loader(Station)
-    bad_runs = knwon_issue.get_knwon_bad_run()
-    del knwon_issue
-
-    run_arr_cut = np.copy(run_arr)
-    run_type_cut = np.copy(run_type)
-    evt_start_unix_cut = np.copy(evt_start_unix)
-    evt_stop_unix_cut = np.copy(evt_stop_unix)
-    config_start_unix_cut = np.copy(config_start_unix)
-    config_stop_unix_cut = np.copy(config_stop_unix)
-    config_run_time_cut = np.copy(config_run_time)
-    evt_run_time_cut = np.copy(evt_run_time)
-
-    for c in tqdm(range(arr_len)):
-      if c in bad_runs:
-        run_arr_cut[c] = np.nan
-        run_type_cut[c] = np.nan
-        evt_start_unix_cut[c] = np.nan
-        evt_stop_unix_cut[c] = np.nan
-        config_start_unix_cut[c] = np.nan
-        config_stop_unix_cut[c] = np.nan
-        config_run_time_cut[c] = np.nan
-        evt_run_time_cut[c] = np.nan
-    del arr_len
+    del batch_info, ara_config
 
     print('L1 collecting is done!')
 
@@ -130,21 +127,8 @@ def l1_loader(Station = None):
     #saving result
     hf.create_dataset('run_arr', data=run_arr, compression="gzip", compression_opts=9)
     hf.create_dataset('run_type', data=run_type, compression="gzip", compression_opts=9)
-    hf.create_dataset('evt_start_unix', data=evt_start_unix, compression="gzip", compression_opts=9)
-    hf.create_dataset('evt_stop_unix', data=evt_stop_unix, compression="gzip", compression_opts=9)
-    hf.create_dataset('config_start_unix', data=config_start_unix, compression="gzip", compression_opts=9)
-    hf.create_dataset('config_stop_unix', data=config_stop_unix, compression="gzip", compression_opts=9)
-    hf.create_dataset('evt_run_time', data=evt_run_time, compression="gzip", compression_opts=9) 
-    hf.create_dataset('config_run_time', data=config_run_time, compression="gzip", compression_opts=9) 
-    hf.create_dataset('run_arr_cut', data=run_arr_cut, compression="gzip", compression_opts=9)
-    hf.create_dataset('run_type_cut', data=run_type_cut, compression="gzip", compression_opts=9)
-    hf.create_dataset('evt_start_unix_cut', data=evt_start_unix_cut, compression="gzip", compression_opts=9)
-    hf.create_dataset('evt_stop_unix_cut', data=evt_stop_unix_cut, compression="gzip", compression_opts=9)
-    hf.create_dataset('config_start_unix_cut', data=config_start_unix_cut, compression="gzip", compression_opts=9)
-    hf.create_dataset('config_stop_unix_cut', data=config_stop_unix_cut, compression="gzip", compression_opts=9)
-    hf.create_dataset('evt_run_time_cut', data=evt_run_time_cut, compression="gzip", compression_opts=9)
-    hf.create_dataset('config_run_time_cut', data=config_run_time_cut, compression="gzip", compression_opts=9)
-    hf.create_dataset('bad_runs', data=bad_runs, compression="gzip", compression_opts=9)
+    hf.create_dataset('bad_type', data=bad_type, compression="gzip", compression_opts=9)
+    hf.create_dataset('l1_goal', data=l1_goal, compression="gzip", compression_opts=9)
     hf.close()
     print(f'output is {h5_file_name}')
 

@@ -420,13 +420,13 @@ class config_info_loader:
         if val_i != -1:
             val_i += len(key)
             val_f = config_file.find(end_key,val_i)
-            if key == 'enableL1Trigger#I20=' or key == 'triggerDelays#I16=':
+            if key == 'enableL1Trigger#I20=' or key == 'triggerDelays#I16=' or key == 'scalerGoalValues#I16=':
                 val = np.asarray(config_file[val_i:val_f].split(",")).astype(int)
             else:
                 val = int(config_file[val_i:val_f])
             del val_f
         else:
-            val = empty
+            val = np.full((1), np.nan, dtype = float)
         del val_i
 
         return val

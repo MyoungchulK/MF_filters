@@ -69,6 +69,9 @@ for r in tqdm(range(len(d_run_tot))):
     run_arr.append(d_run_tot[r])
     
     l1_unix = hf['unix_time'][:]
+    min_unix = np.copy(l1_unix)
+    min_unix = min_unix.astype(float)
+    min_unix = (min_unix - min_unix[0]) / 60
     trig_ch = hf['trig_ch'][:]
     l1_rate = hf['l1_rate'][:] / 32
     l1_rate = l1_rate[:, trig_ch]
@@ -78,7 +81,7 @@ for r in tqdm(range(len(d_run_tot))):
     l1_hist2d_r = np.full(d_shape, 0, dtype = int)
     for a in range(16):
         l1_hist_r[:, a] = np.histogram(l1_rate[:, a], bins = l1_bins)[0].astype(int)
-        l1_hist2d_r[:, :, a] = np.histogram2d(l1_unix, l1_rate[:, a], bins = (min_bins, l1_bins))[0].astype(int)
+        l1_hist2d_r[:, :, a] = np.histogram2d(min_unix, l1_rate[:, a], bins = (min_bins, l1_bins))[0].astype(int)
     l1_hist2d_max_r = get_2d_max(l1_hist2d_r)
     l1_hist2d_max.append(l1_hist2d_max_r)
     l1_hist.append(l1_hist_r)
@@ -111,13 +114,13 @@ for r in tqdm(range(len(d_run_tot))):
     l1_cut_hist2d_r = np.full(d_shape, 0, dtype = int)
     for a in range(16):
         l1_cut_hist_r[:, a] = np.histogram(l1_rate_cut[:, a], bins = l1_bins)[0].astype(int)
-        l1_cut_hist2d_r[:, :, a] = np.histogram2d(l1_unix, l1_rate_cut[:, a], bins = (min_bins, l1_bins))[0].astype(int)
+        l1_cut_hist2d_r[:, :, a] = np.histogram2d(min_unix, l1_rate_cut[:, a], bins = (min_bins, l1_bins))[0].astype(int)
     l1_cut_hist2d_max_r = get_2d_max(l1_cut_hist2d_r)
     l1_cut_hist2d_max.append(l1_cut_hist2d_max_r)
     l1_cut_hist.append(l1_cut_hist_r)
     l1_cut_hist2d += l1_cut_hist2d_r
 
-    del hf, l1_rate, l1_unix, l1_unix_bins, unix_time, l1_rate_cut, unix_clean, total_qual_cut, hf_q, q_path
+    del hf, l1_rate, min_unix, l1_unix, l1_unix_bins, unix_time, l1_rate_cut, unix_clean, total_qual_cut, hf_q, q_path
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
 if not os.path.exists(path):
