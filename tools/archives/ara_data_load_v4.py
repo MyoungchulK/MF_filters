@@ -297,53 +297,40 @@ class ara_uproot_loader:
 
         return blk_idx_arr, blk_idx_len
 
-    def get_reset_pps_number(self, use_evt_num_sort = False):
-
-        pps_reset = np.copy(self.pps_number)
-        if use_evt_num_sort:
-            evt_sort_idx = np.argsort(self.evt_num)
-            pps_reset = pps_reset[evt_sort_idx]
-            del evt_sort_idx
-
-        pps_reset_idx = np.where(np.diff(pps_reset) < -55000)[0]
-        if len(pps_reset_idx) > 0:
-            pps_limit = 65536
-            pps_reset[pps_reset_idx[0]+1:] += pps_limit
-            del pps_limit
-        del pps_reset_idx
-
-        return pps_reset
-
-    def get_event_rate(self, use_pps = False):
-
-        evt_sort_idx = np.argsort(self.evt_num)
-        trig_type = self.get_trig_type()
-        trig_sort = trig_type[evt_sort_idx]
-        del trig_type
+    def get_event_rate(self, time = None, trig_type = None, use_pps = False):
 
         if use_pps:
-            time_sort = self.get_reset_pps_number(use_evt_num_sort = True)
+            if time is None:
+                time = np.copy(self.pps_number)
+            time_reset_point = np.where(np.diff(time) < 0)[0]
+            if len(time_reset_point) > 0:
+                pps_limit = 65536
+                time[time_reset_point[0]+1:] += pps_limit
+                del pps_limit    
+            time_unique = np.sort(np.unique(time))
+            del time_reset_point
         else:
-            time_sort = self.unix_time[evt_sort_idx]
-        time_unique = np.sort(np.unique(time_sort))
-        del evt_sort_idx
+            if time is None:
+                time = np.copy(self.unix_time)
+            time_unique = np.sort(np.unique(time))
 
         sec_to_min = 60
         time_bins = np.arange(np.nanmin(time_unique), np.nanmax(time_unique)+1, sec_to_min, dtype = int)
         time_bins = time_bins.astype(float)
         time_bins -= 0.5
-        time_bins = np.append(time_bins, np.nanmax(time_unique) + 0.5)
-        time_bin_center = (time_bins[1:] + time_bins[:-1]) / 2
+        time_bins = np.append(time_bins, time_unique[-1] + 0.5)
         num_secs = np.diff(time_bins).astype(int)
+        if trig_type is None:
+            trig_type = self.get_trig_type()
         del sec_to_min, time_unique
 
-        evt_rate = np.histogram(time_sort, bins = time_bins)[0] / num_secs
-        rf_evt_rate = np.histogram(time_sort[trig_sort == 0], bins = time_bins)[0] / num_secs
-        cal_evt_rate = np.histogram(time_sort[trig_sort == 1], bins = time_bins)[0] / num_secs
-        soft_evt_rate = np.histogram(time_sort[trig_sort == 2], bins = time_bins)[0] / num_secs
-        del time_sort, trig_sort
+        evt_rate = np.histogram(time, bins = time_bins)[0] / num_secs
+        rf_evt_rate = np.histogram(time[trig_type == 0], bins = time_bins)[0] / num_secs
+        cal_evt_rate = np.histogram(time[trig_type == 1], bins = time_bins)[0] / num_secs
+        soft_evt_rate = np.histogram(time[trig_type == 2], bins = time_bins)[0] / num_secs
+        del time, trig_type 
 
-        return time_bins, time_bin_center, num_secs, evt_rate, rf_evt_rate, cal_evt_rate, soft_evt_rate
+        return time_bins, num_secs, evt_rate, rf_evt_rate, cal_evt_rate, soft_evt_rate
 
 class ara_sensorHk_uproot_loader:
 
@@ -534,7 +521,6 @@ class ara_eventHk_uproot_loader:
         self.empty_file_error = False
         if data is None:
             self.unix_time = np.full((1), np.nan, dtype = float)
-            self.pps_counter = np.copy(self.unix_time)
             self.empty_file_error = True
             print('There is no eventHk file!')
             return
@@ -543,7 +529,6 @@ class ara_eventHk_uproot_loader:
             file = uproot.open(data)
         except ValueError:
             self.unix_time = np.full((1), np.nan, dtype = float)
-            self.pps_counter = np.copy(self.unix_time)
             self.empty_file_error = True
             print('eventHk is empty!')
             return
@@ -560,7 +545,6 @@ class ara_eventHk_uproot_loader:
             del st_arr, run_str
         except uproot.exceptions.KeyInFileError:
             self.unix_time = np.full((1), np.nan, dtype = float)
-            self.pps_counter = np.copy(self.unix_time)
             self.empty_file_error = True
             self.hasKeyInFileError = True
             print('File is currupted!')
@@ -569,7 +553,6 @@ class ara_eventHk_uproot_loader:
 
         self.unix_time = np.asarray(self.evtTree['eventHk/unixTime'],dtype=int)
         self.unix_time_us = np.asarray(self.evtTree['eventHk/unixTimeUs'],dtype=int)
-        self.pps_counter = np.asarray(self.evtTree['eventHk/ppsCounter'],dtype=int)
         self.l1_scaler = np.asarray(self.evtTree['eventHk/l1Scaler[32]'],dtype=int)
         self.l1_threshold = np.asarray(self.evtTree['eventHk/thresholdDac[32]'],dtype=int)
 
@@ -603,8 +586,6 @@ class sin_subtract_loader:
         #self.sin_sub.unsetFreqLimits()
         
     def get_sin_subtract_wf(self, int_v, int_num):
-
-        int_v = int_v.astype(np.double)
 
         cw_v = np.full((int_num), 0, dtype = np.double)
         self.sin_sub.subtractCW(int_num, int_v, self.dt, cw_v)

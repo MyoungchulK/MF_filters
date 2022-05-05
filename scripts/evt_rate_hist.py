@@ -82,10 +82,10 @@ for r in tqdm(range(len(d_run_tot))):
     config_arr.append(config)
     run_arr.append(d_run_tot[r])
 
-    evt_r = hf[f'evt_rate_unix'][:]    
-    rf_r = hf[f'rf_rate_unix'][:]    
+    evt_r = hf[f'evt_rate_pps'][:]    
+    rf_r = hf[f'rf_rate_pps'][:]    
     cal_r = hf[f'cal_rate_pps'][:]    
-    soft_r = hf[f'soft_rate_unix'][:]    
+    soft_r = hf[f'soft_rate_pps'][:]    
 
     evt_len_r = len(evt_r)
     rf_len_r = len(rf_r)
@@ -161,52 +161,39 @@ for r in tqdm(range(len(d_run_tot))):
 
     q_path = f'/data/user/mkim/OMF_filter/ARA0{Station}/qual_cut_full/qual_cut_full_A{Station}_R{d_run_tot[r]}.h5'
     hf_q = h5py.File(q_path, 'r')
-    unix_time = hf_q['unix_time'][:]
-    pps_number = hf_q['pps_number'][:]
-    time_reset_point = np.where(np.diff(pps_number) < 0)[0]
-    if len(time_reset_point) > 0:
-        pps_limit = 65536
-        pps_number[time_reset_point[0]+1:] += pps_limit
-        del pps_limit
-    del time_reset_point
+    evt_num = hf_q['evt_num'][:]
+    evt_sort_idx = np.argsort(evt_num)
     total_qual_cut = hf_q['total_qual_cut'][:]
     total_qual_cut[:, 17] = 0 #remove unlock unix time
     qual_cut_sum = np.nansum(total_qual_cut, axis = 1)  
-    del total_qual_cut 
+    qual_cut_sum = qual_cut_sum[evt_sort_idx]
+    del total_qual_cut, evt_sort_idx, evt_num
 
-    unix_min_bins = hf['unix_min_bins'][:]
+    pps_number = hf['pps_number_sort_reset'][:]
     pps_min_bins = hf['pps_min_bins'][:]
-    unix_clean_min = np.histogram(unix_time, bins = unix_min_bins, weights = qual_cut_sum)[0].astype(int)
     pps_clean_min = np.histogram(pps_number, bins = pps_min_bins, weights = qual_cut_sum)[0].astype(int)
-
-    unix_noncount = np.histogram(unix_time, bins = unix_min_bins)[0].astype(int)
     pps_noncount = np.histogram(pps_number, bins = pps_min_bins)[0].astype(int)
 
-    unix_len = len(unix_clean_min)
-    if unix_len > est_len:
-        unix_clean_min = unix_clean_min[:est_len]
-        unix_noncount = unix_noncount[:est_len]
-        print(f'{d_run_tot[r]} unix! {unix_len}')
     pps_len = len(pps_clean_min)
     if pps_len > est_len:
         pps_clean_min = pps_clean_min[:est_len]
         pps_noncount = pps_noncount[:est_len]
         print(f'{d_run_tot[r]} pps! {pps_len}')
-    del unix_len, pps_len
+    del pps_len
 
     evt_cut_r = np.copy(evt_r)
-    evt_cut_r[unix_clean_min != 0] = np.nan
-    evt_cut_r[unix_noncount == 0] = np.nan
+    evt_cut_r[pps_clean_min != 0] = np.nan
+    evt_cut_r[pps_noncount == 0] = np.nan
     rf_cut_r = np.copy(rf_r)
-    rf_cut_r[unix_clean_min != 0] = np.nan
-    rf_cut_r[unix_noncount == 0] = np.nan
+    rf_cut_r[pps_clean_min != 0] = np.nan
+    rf_cut_r[pps_noncount == 0] = np.nan
     cal_cut_r = np.copy(cal_r)
     cal_cut_r[pps_clean_min != 0] = np.nan
     cal_cut_r[pps_noncount == 0] = np.nan
     soft_cut_r = np.copy(soft_r)
-    soft_cut_r[unix_clean_min != 0] = np.nan
-    soft_cut_r[unix_noncount == 0] = np.nan
-    del unix_noncount, pps_noncount
+    soft_cut_r[pps_clean_min != 0] = np.nan
+    soft_cut_r[pps_noncount == 0] = np.nan
+    del pps_noncount
 
     evt_cut_h = np.histogram(evt_cut_r, bins = rate_bins)[0].astype(int)
     rf_cut_h = np.histogram(rf_cut_r, bins = rate_bins)[0].astype(int)
@@ -241,8 +228,8 @@ for r in tqdm(range(len(d_run_tot))):
     rf_cut.append(rf_cut_pad)
     cal_cut.append(cal_cut_pad)
     soft_cut.append(soft_cut_pad)
-    del hf, evt_r, rf_r, cal_r, soft_r, unix_clean_min, pps_clean_min, unix_min_bins, pps_min_bins, evt_len_r, rf_len_r, cal_len_r, soft_len_r
-    del evt_len_r_arr, rf_len_r_arr, cal_len_r_arr, soft_len_r_arr, qual_cut_sum, unix_time, pps_number, q_path, hf_q
+    del hf, evt_r, rf_r, cal_r, soft_r, pps_clean_min, pps_min_bins, evt_len_r, rf_len_r, cal_len_r, soft_len_r
+    del evt_len_r_arr, rf_len_r_arr, cal_len_r_arr, soft_len_r_arr, qual_cut_sum, pps_number, q_path, hf_q
     del evt_cut_r, rf_cut_r, cal_cut_r, soft_cut_r
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'

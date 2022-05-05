@@ -37,7 +37,7 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
     del qual_cut_sum, ara_qual, ara_uproot
 
     # wf analyzer
-    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_rfft = True, use_cw = True, cw_config = (3, 0.05, 0.13, 0.85))
+    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_rfft = True, use_band_pass = True, use_cw = True, cw_config = (3, 0.05, 0.13, 0.85))
     freq_range = wf_int.pad_zero_freq
     freq_bins = np.fft.rfftfreq(200, wf_int.dt)
     amp_range = np.arange(-5, 5, 0.05)
@@ -76,7 +76,7 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
         # loop over the antennas
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True)
             del raw_t, raw_v 
             ara_root.del_TGraph()
 
@@ -101,7 +101,7 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
         # loop over the antennas
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_cw = True)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True)
             num_sols = wf_int.sin_sub.num_sols
             sub_freq_evt = wf_int.sin_sub.num_freqs
             sub_freq[:num_sols, ant, evt] = sub_freq_evt

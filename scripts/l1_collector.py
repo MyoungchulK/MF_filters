@@ -9,9 +9,26 @@ import re
 curr_path = os.getcwd()
 sys.path.append(curr_path+'/../')
 from tools.ara_run_manager import batch_info_loader
-from tools.ara_run_manager import config_info_loader
 from tools.ara_utility import size_checker
 from tools.ara_known_issue import known_issue_loader
+
+def get_context(p, mask_key, end_key):
+    maks_key_len = len(mask_key)
+    val_arr = np.full((16), np.nan, dtype = float)
+
+    with open(p,'r') as p_file:
+        p_read = p_file.read()
+
+        key_idxs = np.asarray([i.start() for i in re.finditer(mask_key, p_read)]).astype(int)
+        key_idxs_mask = np.asarray([i.start() for i in re.finditer('//'+mask_key, p_read)]).astype(int) + 2
+        key_idxs_bool = np.in1d(key_idxs, key_idxs_mask, invert = True)
+        key_idx = key_idxs[key_idxs_bool]
+        if len(key_idx) == 1:
+            key_idx_f = key_idx[0] + maks_key_len
+            end_key_idx = p_read.find(end_key, key_idx_f)
+            val_arr[:] = np.asarray(p_read[key_idx_f:end_key_idx].split(",")).astype(int)
+
+    return val_arr
 
 def l1_loader(Station = None):
 
@@ -36,7 +53,6 @@ def l1_loader(Station = None):
 
     print('pedestal!')
     batch_info = batch_info_loader(Station)
-    ara_config = config_info_loader(verbose = False)
     yrs_arr = batch_info.years
     for yrs in tqdm(yrs_arr):
         if int(yrs) == 2013:
@@ -48,18 +64,12 @@ def l1_loader(Station = None):
             run_arr[run_num] = run_num
             run_type[run_num] = 0    
 
-            with open(p,'r') as p_file: 
-                p_read = p_file.read()
-
-                goal_idx = np.asarray([i.start() for i in re.finditer(mask_key, p_read)])
-                goal_idx_all = np.asarray([i.start() for i in re.finditer('//'+mask_key, p_read)]) + 2
-
-                l1_goal_num = ara_config.get_context(p_read, mask_key, end_key)          
-                if len(l1_goal_num) != 16: pass
-                else:
-                    l1_goal[run_num] = l1_goal_num
-                del l1_goal_num, p_read
-            del run_num
+            l1_goal_num  = get_context(p, mask_key, end_key)
+            if np.all(np.isnan(l1_goal_num)):
+                pass
+            else:
+                l1_goal[run_num] = l1_goal_num
+            del run_num, l1_goal_num
         del ped_path, ped_config_path
     del yrs_arr
 
@@ -77,14 +87,12 @@ def l1_loader(Station = None):
             print(os.listdir(run_path))
             continue
 
-        with open(run_config_path[0],'r') as r_file:
-            r_read = r_file.read()
-            l1_goal_num = ara_config.get_context(r_read, mask_key, end_key)
-            if len(l1_goal_num) != 16: pass
-            else:
-                l1_goal[run_num[run]] = l1_goal_num
-            del l1_goal_num, r_read
-        del slash_idx, run_path, run_config_path 
+        l1_goal_num  = get_context(run_config_path[0], mask_key, end_key)
+        if np.all(np.isnan(l1_goal_num)):
+            pass
+        else:
+            l1_goal[run_num[run]] = l1_goal_num
+        del slash_idx, run_path, run_config_path, l1_goal_num 
     del run_num, evt_path
 
     print('blinded event!')
@@ -100,18 +108,14 @@ def l1_loader(Station = None):
         if len(run_config_path) != 1:
             print(os.listdir(run_path))
             continue
-        
-        with open(run_config_path[0],'r') as r_file:
-            r_read = r_file.read()
-            l1_goal_num = ara_config.get_context(r_read, mask_key, end_key)
-            if len(l1_goal_num) != 16: pass
-            else:
-                l1_goal[run_num[run]] = l1_goal_num
-            del l1_goal_num, r_read
-        del slash_idx, run_path, run_config_path
-    del run_num, evt_path
-
-    del batch_info, ara_config
+    
+        l1_goal_num  = get_context(run_config_path[0], mask_key, end_key)
+        if np.all(np.isnan(l1_goal_num)):
+            pass
+        else:
+            l1_goal[run_num[run]] = l1_goal_num       
+        del slash_idx, run_path, run_config_path, l1_goal_num
+    del run_num, evt_path, batch_info
 
     print('L1 collecting is done!')
 
