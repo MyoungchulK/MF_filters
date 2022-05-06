@@ -314,7 +314,7 @@ class ara_uproot_loader:
 
         return pps_reset
 
-    def get_event_rate(self, use_pps = False):
+    def get_event_rate(self, use_pps = False, use_sec = False):
 
         evt_sort_idx = np.argsort(self.evt_num)
         trig_type = self.get_trig_type()
@@ -328,14 +328,18 @@ class ara_uproot_loader:
         time_unique = np.sort(np.unique(time_sort))
         del evt_sort_idx
 
-        sec_to_min = 60
-        time_bins = np.arange(np.nanmin(time_unique), np.nanmax(time_unique)+1, sec_to_min, dtype = int)
+        if use_sec:
+            time_bins = np.arange(np.nanmin(time_unique), np.nanmax(time_unique)+1, 1, dtype = int)
+        else:
+            sec_to_min = 60
+            time_bins = np.arange(np.nanmin(time_unique), np.nanmax(time_unique)+1, sec_to_min, dtype = int)       
+            del sec_to_min
         time_bins = time_bins.astype(float)
         time_bins -= 0.5
         time_bins = np.append(time_bins, np.nanmax(time_unique) + 0.5)
         time_bin_center = (time_bins[1:] + time_bins[:-1]) / 2
         num_secs = np.diff(time_bins).astype(int)
-        del sec_to_min, time_unique
+        del time_unique
 
         evt_rate = np.histogram(time_sort, bins = time_bins)[0] / num_secs
         rf_evt_rate = np.histogram(time_sort[trig_sort == 0], bins = time_bins)[0] / num_secs

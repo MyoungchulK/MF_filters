@@ -27,9 +27,14 @@ def evt_rate_collector(Data, Ped, analyze_blind_dat = False):
     # remove pps reset
     pps_number_sort_reset = ara_uproot.get_reset_pps_number(use_evt_num_sort = True)
 
-    # event rate
-    unix_min_bins, unix_min_bin_center, unix_min_counts, evt_rate_unix, rf_rate_unix, cal_rate_unix, soft_rate_unix = ara_uproot.get_event_rate(use_pps = False)
-    pps_min_bins, pps_min_bin_center, pps_min_counts, evt_rate_pps, rf_rate_pps, cal_rate_pps, soft_rate_pps = ara_uproot.get_event_rate(use_pps =True)
+    # event min rate
+    unix_min_bins, unix_min_bin_center, unix_min_counts, evt_min_rate_unix, rf_min_rate_unix, cal_min_rate_unix, soft_min_rate_unix = ara_uproot.get_event_rate()
+    pps_min_bins, pps_min_bin_center, pps_min_counts, evt_min_rate_pps, rf_min_rate_pps, cal_min_rate_pps, soft_min_rate_pps = ara_uproot.get_event_rate(use_pps =True)
+    
+    # event sec rate
+    unix_sec_bins, unix_sec_bin_center, unix_sec_counts, evt_sec_rate_unix, rf_sec_rate_unix, cal_sec_rate_unix, soft_sec_rate_unix = ara_uproot.get_event_rate(use_sec = True)
+    pps_sec_bins, pps_sec_bin_center, pps_sec_counts, evt_sec_rate_pps, rf_sec_rate_pps, cal_sec_rate_pps, soft_sec_rate_pps = ara_uproot.get_event_rate(use_pps =True, use_sec = True)
+
     del ara_uproot
 
     print('Event rate collecting is done!')
@@ -48,17 +53,32 @@ def evt_rate_collector(Data, Ped, analyze_blind_dat = False):
             'unix_min_bins':unix_min_bins,
             'unix_min_bin_center':unix_min_bin_center,
             'unix_min_counts':unix_min_counts,
-            'evt_rate_unix':evt_rate_unix,
-            'rf_rate_unix':rf_rate_unix,
-            'cal_rate_unix':cal_rate_unix,
-            'soft_rate_unix':soft_rate_unix,
+            'evt_min_rate_unix':evt_min_rate_unix,
+            'rf_min_rate_unix':rf_min_rate_unix,
+            'cal_min_rate_unix':cal_min_rate_unix,
+            'soft_min_rate_unix':soft_min_rate_unix,
             'pps_min_bins':pps_min_bins,
             'pps_min_bin_center':pps_min_bin_center,
             'pps_min_counts':pps_min_counts,
-            'evt_rate_pps':evt_rate_pps,
-            'rf_rate_pps':rf_rate_pps,
-            'cal_rate_pps':cal_rate_pps,
-            'soft_rate_pps':soft_rate_pps}
+            'evt_min_rate_pps':evt_min_rate_pps,
+            'rf_min_rate_pps':rf_min_rate_pps,
+            'cal_min_rate_pps':cal_min_rate_pps,
+            'soft_min_rate_pps':soft_min_rate_pps,
+            'unix_sec_bins':unix_sec_bins,
+            'unix_sec_bin_center':unix_sec_bin_center,
+            'unix_sec_counts':unix_sec_counts,
+            'evt_sec_rate_unix':evt_sec_rate_unix,
+            'rf_sec_rate_unix':rf_sec_rate_unix,
+            'cal_sec_rate_unix':cal_sec_rate_unix,
+            'soft_sec_rate_unix':soft_sec_rate_unix,
+            'pps_sec_bins':pps_sec_bins,
+            'pps_sec_bin_center':pps_sec_bin_center,
+            'pps_sec_counts':pps_sec_counts,
+            'evt_sec_rate_pps':evt_sec_rate_pps,
+            'rf_sec_rate_pps':rf_sec_rate_pps,
+            'cal_sec_rate_pps':cal_sec_rate_pps,
+            'soft_sec_rate_pps':soft_sec_rate_pps}
+
 
 
 

@@ -39,6 +39,12 @@ class pre_qual_cut_loader:
         self.verbose = verbose
 
         self.run_info = run_info_loader(self.st, self.run, analyze_blind_dat = analyze_blind_dat)
+        evt_rate_dat = self.run_info.get_result_path(file_type = 'evt_rate', verbose = self.verbose, force_blind = True)
+        self.evt_rate_hf = h5py.File(evt_rate_dat, 'r')
+        self.evt_sort = self.evt_rate_hf['evt_num_sort'][:]
+        self.unix_sort = self.evt_rate_hf['unix_time_sort'][:]
+        self.pps_num = self.evt_rate_hf['pps_number_sort_reset'][:]
+        del evt_rate_dat
 
     def get_daq_structure_errors(self):
 
@@ -156,19 +162,39 @@ class pre_qual_cut_loader:
 
         return rf_readout_limit, soft_readout_limit
 
-    def get_bad_event_number(self):
-        
-        bad_evt_num = np.full((self.num_evts), 0, dtype = int)
+    def get_bad_unix_time_sequence(self):
 
-        negative_idx = np.where(np.diff(self.evt_num) < 0)[0]
-        if len(negative_idx) > 0:
-            bad_evt_num[negative_idx[0] + 1:] = 1
-        del negative_idx
+        bad_unix_sequence = np.full((self.num_evts), 0, dtype = int)
+        
+        if self.st == 3 and self.run == 3461: # condamn this run...
+            bad_unix_sequence[:] = 1
+            if self.verbose:
+                quick_qual_check(bad_unix_sequence != 0, self.evt_num, 'bad unix sequence')
+            return bad_unix_sequence
+        
+        n_idxs = np.where(np.diff(self.unix_sort) < 0)[0]
+        if len(n_idxs):
+            tot_bad_evts = []
+            for n_idx in n_idxs:
+                n_idx = int(n_idx)
+                unix_peak = self.unix_sort[:-1][n_idx]
+                bad_idx = np.where(self.unix_sort[n_idx + 1:] < unix_peak + 1)
+                bad_evts = self.evt_sort[n_idx + 1:][bad_idx]
+                tot_bad_evts.extend(bad_evts)
+                del unix_peak, bad_idx
+
+            tot_bad_evts = np.asarray(tot_bad_evts)
+            tot_bad_evts = np.unique(tot_bad_evts)
+            bad_unix_sequence[:] = np.in1d(self.evt_num, tot_bad_evts).astype(int)
+            del tot_bad_evts
+        else:
+            return bad_unix_sequence
+        del n_idxs
 
         if self.verbose:
-            quick_qual_check(bad_evt_num != 0, self.evt_num, 'bad evt num')
+            quick_qual_check(bad_unix_sequence != 0, self.evt_num, 'bad unix sequence')
 
-        return bad_evt_num
+        return bad_unix_sequence
 
     def get_bad_unix_time_events(self, add_unchecked_unix_time = False):
 
@@ -193,8 +219,16 @@ class pre_qual_cut_loader:
     def get_first_minute_events(self, first_evt_limit = 7):
 
         unix_cut = self.unix_time[0] + 60
-        first_min_evts = (self.unix_time < unix_cut).astype(int)
+        first_min_evt_bools = (self.unix_time < unix_cut)
         del unix_cut
+
+        unix_sort_cut = self.unix_sort[0] + 60
+        first_min_evt_sort = self.evt_sort[self.unix_sort < unix_sort_cut]
+        first_min_evt_sort_bools = np.in1d(self.evt_num, first_min_evt_sort)
+        del unix_sort_cut, first_min_evt_sort
+
+        first_min_evts = np.logical_or(first_min_evt_bools, first_min_evt_sort_bools).astype(int)
+        del first_min_evt_bools, first_min_evt_sort_bools
 
         if self.verbose:
             quick_qual_check(first_min_evts != 0, self.evt_num, f'first minute events')
@@ -271,7 +305,27 @@ class pre_qual_cut_loader:
 
         return no_cal_evts
 
-    def get_bad_rate_events(self, rf_rate_cut = 2.8, cal_rate_cut = 0.85, soft_rate_cut = 0.75, upper_cut = 1.1, apply_bad_evt_num = None):
+    def get_bad_trig_rate_events(self, rate, lower_cut, upper_cut = None):
+
+        if upper_cut == None:
+            bad_rate_idx = rate < lower_cut
+        else:
+            bad_rate_idx = np.logical_or(rate < lower_cut, rate > upper_cut)
+
+        sec_arr = np.arange(60, dtype = int)
+        bad_sec = self.rate_min[bad_rate_idx]
+        bad_sec = np.repeat(bad_sec[:, np.newaxis], len(sec_arr), axis = 1)
+        bad_sec += sec_arr[np.newaxis, :]
+        bad_sec = bad_sec.flatten()
+        del sec_arr, bad_rate_idx
+
+        bad_pps_idx = np.in1d(self.pps_num, bad_sec)
+        bad_evt_sort = self.evt_sort[bad_pps_idx]
+        del bad_pps_idx
+
+        return bad_evt_sort
+
+    def get_bad_rate_minute_events(self, rf_rate_cut = 2.8, cal_rate_cut = 0.85, soft_rate_cut = 0.75, upper_cut = 1.1):
     
         if self.st == 3 and self.run < 10001:
             rf_rate_cut = 4
@@ -284,82 +338,50 @@ class pre_qual_cut_loader:
         if self.st == 3 and (self.run > 6001 and self.run < 6678):
             cal_rate_cut = 0.8
 
-        bad_rate_evts = np.full((self.num_evts, 3), 0, dtype = int)
-        if apply_bad_evt_num is not None and np.all(apply_bad_evt_num != 0):
-            return bad_rate_evts
+        self.rate_min = (self.evt_rate_hf['pps_min_bins'][:-1] + 0.5).astype(int) # bin edge to corresponding minute
+        rf_evt_rate = self.evt_rate_hf['rf_min_rate_pps'][:]
+        cal_evt_rate = self.evt_rate_hf['cal_min_rate_pps'][:]
+        soft_evt_rate = self.evt_rate_hf['soft_min_rate_pps'][:]
 
-        evt_rate_dat = self.run_info.get_result_path(file_type = 'evt_rate', verbose = self.verbose, force_blind = True)
-        evt_rate_hf = h5py.File(evt_rate_dat, 'r')
-        unix_rate_bins = (evt_rate_hf['unix_min_bins'][:-1] + 0.5).astype(int) # bins to bincenter
-        pps_rate_bins = (evt_rate_hf['pps_min_bins'][:-1] + 0.5).astype(int) # bins to bincenter
-        rf_evt_rate = evt_rate_hf['rf_rate_unix'][:]
-        cal_evt_rate = evt_rate_hf['cal_rate_pps'][:]
-        soft_evt_rate = evt_rate_hf['soft_rate_unix'][:]
-        del evt_rate_dat, evt_rate_hf
-
-        rf_cut_idx = rf_evt_rate < rf_rate_cut
-        cal_cut_idx = np.logical_or(cal_evt_rate < cal_rate_cut, cal_evt_rate > upper_cut)
-        soft_cut_idx = np.logical_or(soft_evt_rate < soft_rate_cut, soft_evt_rate > upper_cut)
+        bad_rf_sort = self.get_bad_trig_rate_events(rf_evt_rate, rf_rate_cut)
+        bad_cal_sort = self.get_bad_trig_rate_events(cal_evt_rate, cal_rate_cut, upper_cut)
+        bad_soft_sort = self.get_bad_trig_rate_events(soft_evt_rate, soft_rate_cut, upper_cut)
         del cal_evt_rate, rf_evt_rate, soft_evt_rate
 
-        min_to_sec_arr = np.arange(60, dtype = int)
-
-        bad_rf_unix_sec = unix_rate_bins[rf_cut_idx]
-        bad_rf_unix_sec = np.repeat(bad_rf_unix_sec[:, np.newaxis], len(min_to_sec_arr), axis = 1)
-        bad_rf_unix_sec += min_to_sec_arr[np.newaxis, :]
-        bad_rf_unix_sec = bad_rf_unix_sec.flatten()
-    
-        bad_pps_sec = pps_rate_bins[cal_cut_idx]
-        bad_pps_sec = np.repeat(bad_pps_sec[:, np.newaxis], len(min_to_sec_arr), axis = 1)
-        bad_pps_sec += min_to_sec_arr[np.newaxis, :]
-        bad_pps_sec = bad_pps_sec.flatten()
-        
-        bad_soft_unix_sec = unix_rate_bins[soft_cut_idx]
-        bad_soft_unix_sec = np.repeat(bad_soft_unix_sec[:, np.newaxis], len(min_to_sec_arr), axis = 1)
-        bad_soft_unix_sec += min_to_sec_arr[np.newaxis, :]
-        bad_soft_unix_sec = bad_soft_unix_sec.flatten()
-        del min_to_sec_arr, cal_cut_idx, rf_cut_idx, soft_cut_idx, pps_rate_bins, unix_rate_bins
-
-        pps_num = np.copy(self.pps_number)
-        time_reset_point = np.where(np.diff(pps_num) < 0)[0]
-        if len(time_reset_point) > 0:
-            pps_limit = 65536
-            pps_num[time_reset_point[0]+1:] += pps_limit
-        del time_reset_point
-
-        bad_rate_evts[:, 0] = np.in1d(self.unix_time, bad_rf_unix_sec).astype(int)
-        bad_rate_evts[:, 1] = np.in1d(pps_num, bad_pps_sec).astype(int)
-        bad_rate_evts[:, 2] = np.in1d(self.unix_time, bad_soft_unix_sec).astype(int)
-        del pps_num, bad_rf_unix_sec, bad_pps_sec, bad_soft_unix_sec
+        bad_rate_min_evts = np.full((self.num_evts, 3), 0, dtype = int)
+        bad_rate_min_evts[:, 0] = np.in1d(self.evt_num, bad_rf_sort).astype(int)
+        bad_rate_min_evts[:, 1] = np.in1d(self.evt_num, bad_cal_sort).astype(int)
+        bad_rate_min_evts[:, 2] = np.in1d(self.evt_num, bad_soft_sort).astype(int)
+        del bad_rf_sort, bad_cal_sort, bad_soft_sort, self.rate_min, self.pps_num
 
         if self.st == 3 and (self.run > 1124 and self.run < 1429):
-            bad_rate_evts[:, 1] = 0
+            bad_rate_min_evts[:, 1] = 0
 
         if self.verbose:
-            quick_qual_check(bad_rate_evts[:, 0] != 0, self.evt_num, f'bad rf rate events')
-            quick_qual_check(bad_rate_evts[:, 1] != 0, self.evt_num, f'bad calpulser rate events')
-            quick_qual_check(bad_rate_evts[:, 2] != 0, self.evt_num, f'bad software rate events')
+            quick_qual_check(bad_rate_min_evts[:, 0] != 0, self.evt_num, f'bad rf rate minute events')
+            quick_qual_check(bad_rate_min_evts[:, 1] != 0, self.evt_num, f'bad calpulser rate minute events')
+            quick_qual_check(bad_rate_min_evts[:, 2] != 0, self.evt_num, f'bad software rate minute events')
 
-        return bad_rate_evts
+        return bad_rate_min_evts
 
     def run_pre_qual_cut(self):
 
         tot_pre_qual_cut = np.full((self.num_evts, 17), 0, dtype = int)
         tot_pre_qual_cut[:, :5] = self.get_daq_structure_errors()
         tot_pre_qual_cut[:, 5:9] = self.get_readout_window_errors()
-        tot_pre_qual_cut[:, 9] = self.get_bad_event_number()
+        tot_pre_qual_cut[:, 9] = self.get_bad_unix_time_sequence()
         tot_pre_qual_cut[:, 10] = self.get_bad_unix_time_events(add_unchecked_unix_time = True)
         tot_pre_qual_cut[:, 11] = self.get_first_minute_events()
         tot_pre_qual_cut[:, 12] = self.get_bias_voltage_events()
         tot_pre_qual_cut[:, 13] = self.get_no_calpulser_events(apply_bias_volt = tot_pre_qual_cut[:,12])
-        tot_pre_qual_cut[:, 14:] = self.get_bad_rate_events(apply_bad_evt_num = tot_pre_qual_cut[:, 9])
+        tot_pre_qual_cut[:, 14:] = self.get_bad_rate_minute_events()
 
-        self.daq_cut_sum = np.nansum(tot_pre_qual_cut[:, :6], axis = 1)
-        self.pre_cut_sum = np.nansum(tot_pre_qual_cut, axis = 1)
+        self.daq_qual_cut_sum = np.nansum(tot_pre_qual_cut[:, :6], axis = 1)
+        self.pre_qual_cut_sum = np.nansum(tot_pre_qual_cut, axis = 1)
 
         if self.verbose:
-            quick_qual_check(self.daq_cut_sum != 0, self.evt_num, 'daq error cut!')
-            quick_qual_check(self.pre_cut_sum != 0, self.evt_num, 'total pre qual cut!')
+            quick_qual_check(self.daq_qual_cut_sum != 0, self.evt_num, 'daq error cut!')
+            quick_qual_check(self.pre_qual_cut_sum != 0, self.evt_num, 'total pre qual cut!')
 
         return tot_pre_qual_cut
 
@@ -433,11 +455,11 @@ class post_qual_cut_loader:
         tot_post_qual_cut = np.full((self.num_evts, 1), 0, dtype = int)
         tot_post_qual_cut[:, 0] = self.unlock_cal_evts
 
-        self.post_cut_sum = np.nansum(tot_post_qual_cut, axis = 1)
+        self.post_qual_cut_sum = np.nansum(tot_post_qual_cut, axis = 1)
 
         if self.verbose:
             quick_qual_check(tot_post_qual_cut[:, 0] != 0, self.evt_num, 'unlocked calpulser events!')
-            quick_qual_check(self.post_cut_sum != 0, self.evt_num, 'total post qual cut!')
+            quick_qual_check(self.post_qual_cut_sum != 0, self.evt_num, 'total post qual cut!')
         
         return tot_post_qual_cut
 
@@ -572,7 +594,7 @@ class ped_qual_cut_loader:
 
         return clean_evts, clean_evts_qual_type, clean_num_evts, block_usage, low_block_usage, ped_qualities, ped_counts, final_type
 
-    def get_pedestal_block_events(self):
+    def run_ped_qual_cut(self):
 
         if self.analyze_blind_dat:
             ped_counts = np.copy(self.ped_counts)    
@@ -586,34 +608,34 @@ class ped_qual_cut_loader:
         ped_blk_counts = ped_counts == 1
         del ped_counts
 
-        ped_blk_evts = np.full((self.num_evts, 2), 0, dtype = int)
+        ped_qual_cut = np.full((self.num_evts, 2), 0, dtype = int)
         for evt in range(self.num_evts):
 
             if self.daq_cut_sum[evt] != 0:
                 continue
 
             blk_idx_arr = self.ara_uproot.get_block_idx(evt, trim_1st_blk = True)[0]
-            ped_blk_evts[evt, 0] = np.nansum(zero_ped_counts[blk_idx_arr])
+            ped_qual_cut[evt, 0] = np.nansum(zero_ped_counts[blk_idx_arr])
 
             if self.trig_type[evt] == 1:
                 continue
 
-            ped_blk_evts[evt, 1] = np.nansum(ped_blk_counts[blk_idx_arr])
+            ped_qual_cut[evt, 1] = np.nansum(ped_blk_counts[blk_idx_arr])
             del blk_idx_arr
         del ped_blk_counts, zero_ped_counts
 
+        self.ped_qual_cut_sum = np.nansum(ped_qual_cut, axis = 1)
+
         if self.verbose:
-            quick_qual_check(ped_blk_evts[:, 0] != 0, self.evt_num, f'zero pedestal events')
-            quick_qual_check(ped_blk_evts[:, 1] != 0, self.evt_num, f'pedestal block events')
+            quick_qual_check(ped_qual_cut[:, 0] != 0, self.evt_num, f'zero pedestal events')
+            quick_qual_check(ped_qual_cut[:, 1] != 0, self.evt_num, f'pedestal block events')
+            quick_qual_check(self.ped_qual_cut_sum != 0, self.evt_num, 'total pedestal qual cut!')
 
-        return ped_blk_evts
+        return ped_qual_cut
 
-def get_bad_run(st, run, total_qual_cut, ped_cut = [18, 19]):
+def get_bad_run(st, run, qual_cut_sum, ped_cut_sum):
 
     # bad run
-    ped_cut = np.asarray(ped_cut)
-    qual_cut_sum = np.nansum(total_qual_cut, axis = 1)
-    ped_cut_sum = np.nansum(total_qual_cut[:, ped_cut], axis = 1)
     sum_flag = np.all(qual_cut_sum != 0)
     ped_flag = np.any(ped_cut_sum != 0)
     bad_run = np.array([0, 0], dtype = int)
@@ -645,7 +667,7 @@ def get_bad_run(st, run, total_qual_cut, ped_cut = [18, 19]):
             with open(bad_path, 'w') as f:
                 f.write(bad_run_info)
         del bad_path, bad_run_info
-    del qual_cut_sum, ped_cut_sum, sum_flag, ped_flag
+    del sum_flag, ped_flag
 
     return bad_run
 
@@ -673,8 +695,8 @@ class qual_cut_loader:
         self.evt_num = qual_file['evt_num'][:]
         self.unix_time = qual_file['unix_time'][:]
         total_qual_cut = qual_file['total_qual_cut'][:]
-        self.daq_cut_sum = np.nansum(total_qual_cut[:, :6], axis = 1)
-        self.tot_cut_sum = np.nansum(total_qual_cut, axis = 1)
+        self.daq_qual_cut_sum = qual_file['daq_qual_cut_sum'][:]
+        self.total_qual_cut_sum = qual_file['total_qual_cut_sum'][:]
 
         if self.verbose:
             quick_qual_check(self.daq_cut_sum != 0, self.evt_num, 'daq error cut!')
