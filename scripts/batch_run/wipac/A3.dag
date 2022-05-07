@@ -14134,7 +14134,7 @@ VARS job_ARA_S3_R10049 station="3" run="10049"
 JOB job_ARA_S3_R10050 ARA_job.sub 
 VARS job_ARA_S3_R10050 station="3" run="10050"
 
-JOB job_ARA_S3_R10051 ARA_job.sub 
+JOB job_ARA_S3_R10051 ARA_job_1.sub 
 VARS job_ARA_S3_R10051 station="3" run="10051"
 
 JOB job_ARA_S3_R10052 ARA_job_1.sub 

@@ -29,8 +29,8 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
     # qulity cut
     ara_qual = qual_cut_loader(analyze_blind_dat = analyze_blind_dat, verbose = True)
     total_qual_cut = ara_qual.load_qual_cut_result(ara_uproot.station_id, ara_uproot.run)
-    qual_cut_sum = np.nansum(total_qual_cut, axis = 1)  
-    daq_qual_sum = np.nansum(total_qual_cut[:, :6], axis = 1)
+    qual_cut_sum = ara_qual.total_qual_cut_sum
+    daq_qual_sum = ara_qual.daq_qual_cut_sum
     clean_evt_idx = np.logical_and(qual_cut_sum == 0, trig_type == 0)
     clean_evt = evt_num[clean_evt_idx]
     print(f'Number of clean event is {len(clean_evt)}') 

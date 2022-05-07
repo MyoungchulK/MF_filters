@@ -597,6 +597,7 @@ class known_issue_loader:
         knwon_bad_run = np.append(knwon_bad_run, ob_bad_run)
         qual_bad_run = self.get_qual_bad_run()
         knwon_bad_run = np.append(knwon_bad_run, qual_bad_run)
+        knwon_bad_run = np.unique(knwon_bad_run)
 
         #untagged_calpulser_run = self.get_untagged_calpulser_run()
         #knwon_bad_run = np.append(knwon_bad_run, untagged_calpulser_run) 

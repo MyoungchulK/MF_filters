@@ -40,8 +40,8 @@ soft_cut_hist = []
 rate_range = np.arange(0, 1000, 1)
 rate_bins = np.linspace(0, 1000, 1000 + 1)
 rate_bin_center = (rate_bins[1:] + rate_bins[:-1]) / 2
-min_range = np.arange(0, 360)
-min_bins = np.linspace(0, 360, 360 + 1)
+min_range = np.arange(0, 360*60, 60)
+min_bins = np.linspace(0, 360*60, 360 + 1)
 min_bin_center = (min_bins[1:] + min_bins[:-1]) / 2
 
 evt_hist_flat = np.full((len(rate_bin_center)), 0, dtype = int)
@@ -110,7 +110,7 @@ for r in tqdm(range(len(d_run_tot))):
     evt_num = hf_q['evt_num'][:]
     evt_sort_idx = np.argsort(evt_num)
     total_qual_cut = hf_q['total_qual_cut'][:]
-    total_qual_cut[:, 17] = 0 #remove unlock unix time
+    total_qual_cut[:, 20] = 0 #remove unlock unix time
     qual_cut_sum = np.nansum(total_qual_cut, axis = 1)  
     qual_cut_sum = qual_cut_sum[evt_sort_idx]
     del total_qual_cut, evt_sort_idx, evt_num
