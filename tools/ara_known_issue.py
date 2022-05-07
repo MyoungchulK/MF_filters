@@ -700,7 +700,7 @@ class known_issue_loader:
 
     def get_qual_bad_run(self):
 
-        bad_path = f'/home/mkim/analysis/MF_filters/data/qual_runs/qual_run_A{self.st}.txt'
+        bad_path = f'../data/qual_runs/qual_run_A{self.st}.txt'
         bad_run = []
         bad_file = open(bad_path, "r")
         for lines in bad_file:

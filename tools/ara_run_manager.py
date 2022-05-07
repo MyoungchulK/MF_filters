@@ -22,7 +22,7 @@ class run_info_loader:
         if force_blind:
             blind_type = '_full'
 
-        result_path = f'/data/user/mkim/OMF_filter/ARA0{self.st}/{file_type}{blind_type}/{file_type}{blind_type}_A{self.st}_R{self.run}.{file_format}'
+        result_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{self.st}/{file_type}{blind_type}/{file_type}{blind_type}_A{self.st}_R{self.run}.{file_format}'
 
         if os.path.exists(result_path):
             if verbose:
@@ -38,8 +38,8 @@ class run_info_loader:
 
     def get_ped_path(self, file_type = 'values', verbose = False, return_none = False):
 
-        ped_path = f'/data/user/mkim/OMF_filter/ARA0{self.st}/ped_full/ped_full_{file_type}_A{self.st}_R{self.run}.dat'
-        #ped_path = f'/data/user/mkim/OMF_filter/ARA0{self.st}/ped/ped_{file_type}_A{self.st}_R{self.run}.dat'
+        ped_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{self.st}/ped_full/ped_full_{file_type}_A{self.st}_R{self.run}.dat'
+        #ped_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{self.st}/ped/ped_{file_type}_A{self.st}_R{self.run}.dat'
 
         if os.path.exists(ped_path):
             if verbose:
@@ -76,10 +76,10 @@ class run_info_loader:
        
         if self.analyze_blind_dat == True and self.st == 2 and self.run == 2814: 
             run_6_digit = self.get_6_digit_run_number()
-            dat_ls_path = f'/data/exp/ARA/*/{dat_type}/L1/ARA0{self.st}/*/run{run_6_digit}/'
+            dat_ls_path = os.path.expandvars("$RAW_PATH") + f'/*/{dat_type}/L1/ARA0{self.st}/*/run{run_6_digit}/'
             dat_name = f'{file_type}{run_6_digit}.root' 
         elif (self.st == 2 and self.run < a2_2013_run_limit) or (self.st == 3 and self.run < a3_2013_run_limit):
-            dat_ls_path = f'/data/exp/ARA/2013/filtered/{dat_type_2013}/ARA0{self.st}/root/run{self.run}/'
+            dat_ls_path = os.path.expandvars("$RAW_PATH") + f'/2013/filtered/{dat_type_2013}/ARA0{self.st}/root/run{self.run}/'
             if self.analyze_blind_dat == True and self.st == 2 and (self.run == 2811 or self.run == 2812 or self.run == 2813 or self.run == 2815 or self.run == 2816 or self.run == 2818 or self.run == 2819):
                 run_6_digit = self.get_6_digit_run_number()
                 dat_name = f'{file_type}{run_6_digit}.root'
@@ -93,7 +93,7 @@ class run_info_loader:
                 dat_name = f'{file_type}{self.run}.root'
         else:
             run_6_digit = self.get_6_digit_run_number()
-            dat_ls_path = f'/data/exp/ARA/*/{dat_type}/L1/ARA0{self.st}/*/run{run_6_digit}/'
+            dat_ls_path = os.path.expandvars("$RAW_PATH") + f'/*/{dat_type}/L1/ARA0{self.st}/*/run{run_6_digit}/'
             dat_name = f'{file_type}{run_6_digit}.root'
         dat_goal = dat_ls_path + dat_name
         dat_path = glob(dat_goal)
@@ -296,9 +296,9 @@ class batch_info_loader:
         bad_dat_list =[]
         for yrs in self.years:
             if int(yrs) == 2013:
-                dat_path = f'/data/exp/ARA/{int(yrs)}/filtered/{dat_type_2013}/ARA0{self.st}/root/run[0-9]*/{file_type}[0-9]*.root' 
+                dat_path = os.path.expandvars("$RAW_PATH") + f'/{int(yrs)}/filtered/{dat_type_2013}/ARA0{self.st}/root/run[0-9]*/{file_type}[0-9]*.root' 
             else:
-                dat_path = f'/data/exp/ARA/{int(yrs)}/{dat_type}/L1/ARA0{self.st}/[0-9][0-9][0-9][0-9]/run[0-9][0-9][0-9][0-9][0-9][0-9]/{file_type}[0-9][0-9][0-9][0-9][0-9][0-9].root'
+                dat_path = os.path.expandvars("$RAW_PATH") + f'/{int(yrs)}/{dat_type}/L1/ARA0{self.st}/[0-9][0-9][0-9][0-9]/run[0-9][0-9][0-9][0-9][0-9][0-9]/{file_type}[0-9][0-9][0-9][0-9][0-9][0-9].root'
 
             print(dat_path) 
             run_yrs_list = []
@@ -516,7 +516,7 @@ def config_collector(Data, Station, Run, Year):
         run_start_path = f'{d_path}runStart.run{run}.dat'
         run_stop_path = f'{d_path}runStop.run{run}.dat'
     else:
-        d_path = f'/data/exp/ARA/{Year}/raw/ARA0{Station}-SPS-ARA/run_{run}/logs/'
+        d_path = os.path.expandvars("$RAW_PATH") + f'/{Year}/raw/ARA0{Station}-SPS-ARA/run_{run}/logs/'
         config_path = f'{d_path}configFile.run{run}.dat'
         run_start_path = f'{d_path}runStart.run{run}.dat'
         run_stop_path = f'{d_path}runStop.run{run}.dat' 
