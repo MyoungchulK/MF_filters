@@ -39,7 +39,6 @@ class run_info_loader:
     def get_ped_path(self, file_type = 'values', verbose = False, return_none = False):
 
         ped_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{self.st}/ped_full/ped_full_{file_type}_A{self.st}_R{self.run}.dat'
-        #ped_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{self.st}/ped/ped_{file_type}_A{self.st}_R{self.run}.dat'
 
         if os.path.exists(ped_path):
             if verbose:
@@ -136,27 +135,41 @@ class run_info_loader:
 
         return dat_path, ped_path
 
+    def get_path_info(self, dat_path, mask_key, end_key):
+
+        mask_idx = dat_path.find(mask_key)
+        if mask_idx == -1:
+            print('Cannot scrap the info from path!')
+            sys.exit(1)
+        mask_len = len(mask_key)
+        end_idx = dat_path.find(end_key, mask_idx + mask_len)        
+        val = dat_path[mask_idx + mask_len:end_idx]
+        del mask_idx, mask_len, end_idx
+
+        return val
+
     def get_data_info(self):
 
         # salvage just number
         dat_path = self.get_data_path()
-        dat_path_num = re.sub("\D", "", dat_path)
 
         config = self.get_config_number() 
-        year = int(dat_path_num[:4])
+        year = int(self.get_path_info(dat_path, 'ARA/', '/'))
         if year == 2013:
             if self.analyze_blind_dat == True:
-                station = int(dat_path_num[8:10])
+                station = int(self.get_path_info(dat_path, 'full2013Data/ARA', '/'))
             else:
-                station = int(dat_path_num[7:9])
-            run_num = int(re.sub("\D", "", dat_path[-11:]))
+                station = int(self.get_path_info(dat_path, 'burnSample1in10/ARA', '/'))
+            run_num = int(self.get_path_info(dat_path, 'run', '/'))
             month = -1
             date = -1
         else:
-            station = int(dat_path_num[5:7])
-            run_num = int(dat_path_num[11:17])
-            month = int(dat_path_num[7:9])
-            date = int(dat_path_num[9:11])
+            station = int(self.get_path_info(dat_path, 'L1/ARA', '/'))
+            run_num = int(self.get_path_info(dat_path, 'run', '/'))
+            mmdd = self.get_path_info(dat_path, f'ARA0{station}/', '/')
+            month = int(mmdd[:2])
+            date = int(mmdd[2:])
+            del mmdd
 
         if self.st != station or self.run != run_num:
             print('Station and Run number are different!')
