@@ -6,8 +6,11 @@ def samp_map_collector(Data, Ped, analyze_blind_dat = False):
 
     print('Collecting wf starts!')
 
+    from tools.ara_data_load import ara_geom_loader
     from tools.ara_data_load import ara_root_loader
     from tools.ara_data_load import ara_uproot_loader
+    from tools.ara_data_load import ara_sensorHk_uproot_loader
+    from tools.ara_data_load import ara_eventHk_uproot_loader
     from tools.ara_data_load import analog_buffer_info_loader
     from tools.ara_constant import ara_const
     from tools.ara_quality_cut import qual_cut_loader
@@ -30,31 +33,36 @@ def samp_map_collector(Data, Ped, analyze_blind_dat = False):
     pps_number = ara_uproot.pps_number
     time_stamp = ara_uproot.time_stamp
     trig_type = ara_uproot.get_trig_type()
-    
+   
+    ara_geom = ara_geom_loader(ara_uproot.station_id, ara_uproot.year, verbose = True)
+    trig_ch = ara_geom.get_trig_ch_idx()
+    del ara_geom
+ 
     # qulity cut
     ara_qual = qual_cut_loader(analyze_blind_dat = analyze_blind_dat, verbose = True)
     total_qual_cut = ara_qual.load_qual_cut_result(ara_uproot.station_id, ara_uproot.run)
-    qual_cut_sum = ara_qual.tot_cut_sum
-    daq_qual_sum = ara_qual.daq_cut_sum
+    qual_cut_sum = ara_qual.total_qual_cut_sum
+    daq_qual_sum = ara_qual.daq_qual_cut_sum
     clean_evt_idx = np.logical_and(qual_cut_sum == 0, trig_type == 0)
     clean_evt = evt_num[clean_evt_idx]
     print(f'Number of clean event is {len(clean_evt)}')
     del qual_cut_sum, ara_qual
 
-    # sensor info
-    run_info = run_info_loader(ara_uproot.station_id, ara_uproot.run, analyze_blind_dat = True)    
-    sensor_dat = run_info.get_result_path(file_type = 'sensor', verbose = True)
-    sensor_hf = h5py.File(sensor_dat, 'r')
-    sensor_unix = sensor_hf['unix_time'][:]
-    dda_volt = sensor_hf['dda_volt'][:]
-    dda_curr = sensor_hf['dda_curr'][:]
-    dda_temp = sensor_hf['dda_temp'][:]
-    tda_volt = sensor_hf['tda_volt'][:]
-    tda_curr = sensor_hf['tda_curr'][:]
-    tda_temp = sensor_hf['tda_temp'][:]
-    atri_volt = sensor_hf['atri_volt'][:]
-    atri_curr = sensor_hf['atri_curr'][:]
-    del run_info, sensor_dat, sensor_hf
+    run_info = run_info_loader(ara_uproot.station_id, ara_uproot.run, analyze_blind_dat = True)
+    Data = run_info.get_data_path(file_type = 'sensorHk', return_none = True, verbose = True)
+    ara_sensorHk_uproot = ara_sensorHk_uproot_loader(Data)
+    atri_volt, atri_curr, dda_volt, dda_curr, dda_temp, tda_volt, tda_curr, tda_temp = ara_sensorHk_uproot.get_daq_sensor_info()
+    sensor_unix = ara_sensorHk_uproot.unix_time
+    del Data
+
+    Data = run_info.get_data_path(file_type = 'eventHk', return_none = True, verbose = True)
+    ara_eventHk_uproot = ara_eventHk_uproot_loader(Data)
+    l1_rate, l1_thres = ara_eventHk_uproot.get_l1_info()
+    l1_rate = l1_rate[:, trig_ch]
+    l1_thres = l1_thres[:, trig_ch]
+    event_unix = ara_eventHk_uproot.unix_time
+    event_pps = ara_eventHk_uproot.pps_counter
+    del run_info, Data, ara_sensorHk_uproot, ara_eventHk_uproot, trig_ch
 
     # output array
     adc_medi = np.full((num_ants, num_evts), np.nan, dtype = float)
@@ -157,6 +165,10 @@ def samp_map_collector(Data, Ped, analyze_blind_dat = False):
             'tda_temp':tda_temp,
             'atri_volt':atri_volt,
             'atri_curr':atri_curr,
+            'event_unix':event_unix,
+            'event_pps':event_pps,
+            'l1_rate':l1_rate,
+            'l1_thres':l1_thres,
             'adc_medi':adc_medi,
             'ped_medi':ped_medi,
             'sub_medi':sub_medi,

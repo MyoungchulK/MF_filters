@@ -6,12 +6,14 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     print('Collecting wf starts!')
 
     from tools.ara_run_manager import run_info_loader
+    from tools.ara_data_load import ara_geom_loader
     from tools.ara_data_load import ara_uproot_loader
     from tools.ara_data_load import ara_sensorHk_uproot_loader
+    from tools.ara_data_load import ara_eventHk_uproot_loader
     from tools.ara_data_load import ara_root_loader
     from tools.ara_data_load import analog_buffer_info_loader
     from tools.ara_constant import ara_const
-    from tools.ara_quality_cut import pre_qual_cut_loader
+    from tools.ara_quality_cut import qual_cut_loader
     from tools.ara_wf_analyzer import wf_analyzer
     from tools.ara_py_interferometers import py_interferometers
 
@@ -34,19 +36,32 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     entry_num = ara_uproot.entry_num
     trig_type = ara_uproot.get_trig_type()
     #time_stamp = ara_uproot.time_stamp
-    #pps_number = ara_uproot.pps_number
+    pps_number = ara_uproot.pps_number
     unix_time = ara_uproot.unix_time
  
-    run_info = run_info_loader(ara_uproot.station_id, ara_uproot.run, analyze_blind_dat = analyze_blind_dat)
+    run_info = run_info_loader(ara_uproot.station_id, ara_uproot.run, analyze_blind_dat = True)
     Data = run_info.get_data_path(file_type = 'sensorHk', return_none = True, verbose = True)
-    ara_Hk_uproot = ara_sensorHk_uproot_loader(Data)
-    atri_volt, atri_curr, dda_volt, dda_curr, dda_temp, tda_volt, tda_curr, tda_temp = ara_Hk_uproot.get_daq_sensor_info()   
-    sensor_unix_time = ara_Hk_uproot.unix_time
-    del run_info, Data, ara_Hk_uproot
+    ara_sensorHk_uproot = ara_sensorHk_uproot_loader(Data)
+    atri_volt, atri_curr, dda_volt, dda_curr, dda_temp, tda_volt, tda_curr, tda_temp = ara_sensorHk_uproot.get_daq_sensor_info()   
+    sensor_unix_time = ara_sensorHk_uproot.unix_time
+    del Data
 
-    pre_qual = pre_qual_cut_loader(ara_uproot, analyze_blind_dat = analyze_blind_dat, verbose = True)
-    pre_qual_cut = pre_qual.run_pre_qual_cut()
-    del pre_qual
+    Data = run_info.get_data_path(file_type = 'eventHk', return_none = True, verbose = True)
+    ara_eventHk_uproot = ara_eventHk_uproot_loader(Data)
+    l1_rate, l1_thres = ara_eventHk_uproot.get_l1_info()
+    event_unix_time = ara_eventHk_uproot.unix_time
+    event_pps_counter = ara_eventHk_uproot.pps_counter
+    del run_info, Data, ara_sensorHk_uproot, ara_eventHk_uproot
+
+    ara_geom = ara_geom_loader(ara_uproot.station_id, ara_uproot.year, verbose = True)
+    ele_ch = ara_geom.get_ele_ch_idx()
+    trig_ch = ara_geom.get_trig_ch_idx()
+    del ara_geom
+
+    # qulity cut
+    ara_qual = qual_cut_loader(analyze_blind_dat = analyze_blind_dat, verbose = True)
+    tot_qual_cut = ara_qual.load_qual_cut_result(ara_uproot.station_id, ara_uproot.run)    
+    del ara_qual
 
     print(f'Example event number: {evt_num[:20]}')
     print(f'Example trigger number: {trig_type[:20]}')
@@ -68,7 +83,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_band_pass = True, add_double_pad = True, use_rfft = True, use_cw = True, cw_config = (3, 0.05, 0.13, 0.85))
     dt = wf_int.dt
     pad_fft_len = wf_int.pad_fft_len
-
 
     # interferometers
     ara_int = py_interferometers(41, 0, wf_int.pad_len, wf_int.dt, ara_uproot.station_id, ara_uproot.year, ara_uproot.run) 
@@ -366,7 +380,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'entry_num':entry_num,
             'trig_type':trig_type,
             #'time_stamp':time_stamp,
-            #'pps_number':pps_number,
+            'pps_number':pps_number,
             'unix_time':unix_time,
             'sensor_unix_time':sensor_unix_time,
             'atri_volt':atri_volt,
@@ -377,7 +391,13 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'tda_volt':tda_volt,
             'tda_curr':tda_curr,
             'tda_temp':tda_temp,
-            'pre_qual_cut':pre_qual_cut,
+            'l1_rate':l1_rate,
+            'l1_thres':l1_thres,
+            'event_unix_time':event_unix_time,
+            'event_pps_counter':event_pps_counter,
+            'ele_ch':ele_ch,
+            'trig_ch':trig_ch,
+            'tot_qual_cut':tot_qual_cut,
             'sel_entries':sel_entries,
             'sel_evts':sel_evts,
             'sel_trig':sel_trig,
