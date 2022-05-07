@@ -338,7 +338,7 @@ class pre_qual_cut_loader:
             cal_rate_cut = 1
             cal_upper_cut = 1
             soft_rate_cut = 0
-            soft_upper_cut = 1
+            soft_upper_cut = 2
         else:
             bin_type = 'min'
             rf_rate_cut = 2.8 
