@@ -338,7 +338,7 @@ class ara_uproot_loader:
         time_bins -= 0.5
         time_bins = np.append(time_bins, np.nanmax(time_unique) + 0.5)
         time_bin_center = (time_bins[1:] + time_bins[:-1]) / 2
-        num_secs = np.diff(time_bins).astype(int)
+        num_secs = np.diff(time_bins).astype(int) 
         del time_unique
 
         evt_rate = np.histogram(time_sort, bins = time_bins)[0] / num_secs
