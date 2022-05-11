@@ -306,39 +306,27 @@ class pre_qual_cut_loader:
 
         return no_cal_evts
 
-    def get_bad_trig_rate_events(self, rate, smear_val = 5, lower_cut = None, upper_cut = None, use_sec = False, use_smear = False):
+    def get_bad_trig_rate_events(self, rate, lower_cut, upper_cut = None, use_sec = False):
 
-        if lower_cut is not None and upper_cut == None:
+        if upper_cut == None:
             bad_rate_idx = rate < lower_cut
-        elif upper_cut is not None and lower_cut == None:
-            bad_rate_idx = rate > upper_cut
-        elif lower_cut is not None and upper_cut is not None:
-            bad_rate_idx = np.logical_or(rate < lower_cut, rate > upper_cut)
         else:
-            print('event rate cut value is not defined!')
-            sys.exit(1)
+            bad_rate_idx = np.logical_or(rate < lower_cut, rate > upper_cut)
 
         if use_sec:
             sec_arr = np.arange(1, dtype = int)
         else:   
             sec_arr = np.arange(60, dtype = int)
-       
-        if use_smear:
-            smear_arr = np.arange(-1* smear_val * len(sec_arr), (smear_val + 1) * len(sec_arr), 1, dtype = int)
-        else:
-            smear_arr = np.arange(1, dtype = int)
- 
+        
         bad_sec = self.rate_bins[bad_rate_idx]
-        bad_sec = np.tile(bad_sec, (len(sec_arr), len(smear_arr), 1))
-        bad_sec += sec_arr[:, np.newaxis, np.newaxis]
-        bad_sec += smear_arr[np.newaxis, :, np.newaxis]
+        bad_sec = np.repeat(bad_sec[:, np.newaxis], len(sec_arr), axis = 1)
+        bad_sec += sec_arr[np.newaxis, :]
         bad_sec = bad_sec.flatten()
-        bad_sec = np.sort(np.unique(bad_sec))
         del sec_arr, bad_rate_idx
 
         bad_pps_idx = np.in1d(self.pps_num, bad_sec)
         bad_evt_sort = self.evt_sort[bad_pps_idx]
-        del bad_pps_idx, bad_sec
+        del bad_pps_idx
 
         return bad_evt_sort
 
@@ -373,10 +361,10 @@ class pre_qual_cut_loader:
         cal_evt_rate = self.evt_rate_hf[f'cal_{bin_type}_rate_pps'][:]
         soft_evt_rate = self.evt_rate_hf[f'soft_{bin_type}_rate_pps'][:]
 
-        bad_rf_sort = self.get_bad_trig_rate_events(rf_evt_rate, lower_cut = rf_rate_cut, use_sec = use_sec)
-        bad_cal_sort = self.get_bad_trig_rate_events(cal_evt_rate, lower_cut = cal_rate_cut, upper_cut = cal_upper_cut, use_sec = use_sec)
-        bad_soft_sort = self.get_bad_trig_rate_events(soft_evt_rate, lower_cut = soft_rate_cut, upper_cut = soft_upper_cut, use_sec = use_sec)
-        del rf_evt_rate, cal_evt_rate, soft_evt_rate
+        bad_rf_sort = self.get_bad_trig_rate_events(rf_evt_rate, rf_rate_cut, use_sec = use_sec)
+        bad_cal_sort = self.get_bad_trig_rate_events(cal_evt_rate, cal_rate_cut, cal_upper_cut, use_sec = use_sec)
+        bad_soft_sort = self.get_bad_trig_rate_events(soft_evt_rate, soft_rate_cut, soft_upper_cut, use_sec = use_sec)
+        del cal_evt_rate, rf_evt_rate, soft_evt_rate
 
         bad_rate_evts = np.full((self.num_evts, 3), 0, dtype = int)
         bad_rate_evts[:, 0] = np.in1d(self.evt_num, bad_rf_sort).astype(int)
@@ -394,39 +382,9 @@ class pre_qual_cut_loader:
 
         return bad_rate_evts
 
-    def get_high_rf_rate_events(self):
-
-        if self.st == 2 and self.run < 1756:
-            rf_rate_cut = 38.5 
-        if self.st == 2 and self.run > 1755:
-            rf_rate_cut = 19.5
-
-        if self.st == 3 and self.run < 800: 
-            rf_rate_cut = 23.5
-        if self.st == 3 and (self.run > 799 and self.run < 10001):
-            rf_rate_cut = 17.5
-        if self.st == 3 and (self.run > 10000 and self.run < 13011):
-            rf_rate_cut = 18.5
-        if self.st == 3 and self.run > 13010:
-            rf_rate_cut = 26.5
-
-        self.rate_bins = (self.evt_rate_hf[f'pps_sec_bins'][:-1] + 0.5).astype(int) # bin edge to corresponding minute
-        rf_evt_rate = self.evt_rate_hf[f'rf_sec_rate_pps'][:]
-
-        bad_rf_sort = self.get_bad_trig_rate_events(rf_evt_rate, upper_cut = rf_rate_cut, use_sec = True, use_smear = True)
-        del rf_evt_rate
-
-        high_rf_rate_evts = np.in1d(self.evt_num, bad_rf_sort).astype(int)
-        del bad_rf_sort, self.rate_bins
-
-        if self.verbose:
-            quick_qual_check(high_rf_rate_evts != 0, self.evt_num, 'high rf sec rate events')
-    
-        return high_rf_rate_evts
-
     def run_pre_qual_cut(self):
 
-        tot_pre_qual_cut = np.full((self.num_evts, 21), 0, dtype = int)
+        tot_pre_qual_cut = np.full((self.num_evts, 20), 0, dtype = int)
         tot_pre_qual_cut[:, :5] = self.get_daq_structure_errors()
         tot_pre_qual_cut[:, 5:9] = self.get_readout_window_errors()
         tot_pre_qual_cut[:, 9] = self.get_bad_unix_time_sequence()
@@ -435,8 +393,7 @@ class pre_qual_cut_loader:
         tot_pre_qual_cut[:, 12] = self.get_bias_voltage_events()
         tot_pre_qual_cut[:, 13] = self.get_no_calpulser_events(apply_bias_volt = tot_pre_qual_cut[:,12])
         tot_pre_qual_cut[:, 14:17] = self.get_bad_rate_events()
-        tot_pre_qual_cut[:, 17:20] = self.get_bad_rate_events(use_sec = True)
-        tot_pre_qual_cut[:, 20] = self.get_high_rf_rate_events()
+        tot_pre_qual_cut[:, 17:] = self.get_bad_rate_events(use_sec = True)
 
         self.daq_qual_cut_sum = np.nansum(tot_pre_qual_cut[:, :6], axis = 1)
         self.pre_qual_cut_sum = np.nansum(tot_pre_qual_cut, axis = 1)
@@ -560,15 +517,14 @@ class ped_qual_cut_loader:
         # 17 bad rf sec rate
         # 18 bad cal sec rate
         # 19 bad soft sec rate
-        # 20 high rf sec rate
-        # 21 unlock calpulser
+        # 20 unlock calpulser
 
         # turn on all cuts
         clean_evts_qual_type[:, 0] = 1
         clean_evts[:, 0] = np.logical_and(np.nansum(self.total_qual_cut, axis = 1) == 0, self.trig_type != 1).astype(int)
 
         # hardware error only. not use 1) 10 bad unix time, 3) 13 bad cal ratio, and 4) 14 bad rf rate
-        qual_type = np.array([0,1,2,3,4,5,6,7,8,9,11,12,15,16,17,18,19,20,21], dtype = int)
+        qual_type = np.array([0,1,2,3,4,5,6,7,8,9,11,12,15,16,17,18,19,20], dtype = int)
         clean_evts_qual_type[qual_type, 1] = 1
         clean_evts[:, 1] = np.logical_and(np.nansum(self.total_qual_cut[:, qual_type], axis = 1) == 0, self.trig_type != 1).astype(int)
         del qual_type

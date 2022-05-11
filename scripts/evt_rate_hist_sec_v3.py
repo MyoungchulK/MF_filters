@@ -92,6 +92,7 @@ for r in tqdm(range(len(d_run_tot))):
     cal_r = hf[f'cal_sec_rate_pps'][:]    
     soft_r = hf[f'soft_sec_rate_pps'][:]    
 
+    """
     if Station == 2:
         evt_r[:a2_i_cut] = np.nan
         rf_r[:a2_i_cut] = np.nan
@@ -107,6 +108,7 @@ for r in tqdm(range(len(d_run_tot))):
         rf_r[:a3_i_cut_1] = np.nan
         cal_r[:a3_i_cut_1] = np.nan
         soft_r[:a3_i_cut_1] = np.nan
+    """
 
     evt_h = np.histogram(evt_r, bins = rate_bins)[0].astype(int)
     rf_h = np.histogram(rf_r, bins = rate_bins)[0].astype(int)
@@ -208,7 +210,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Evt_Rate_A{Station}_v2.h5'
+file_name = f'Evt_Rate_A{Station}_v3.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('config_arr', data=np.asarray(config_arr), compression="gzip", compression_opts=9)
 hf.create_dataset('run_arr', data=np.asarray(run_arr), compression="gzip", compression_opts=9)
