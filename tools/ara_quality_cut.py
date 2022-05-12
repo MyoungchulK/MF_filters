@@ -540,6 +540,7 @@ class ped_qual_cut_loader:
         self.total_qual_cut = total_qual_cut
         self.daq_cut_sum = daq_cut_sum
         self.num_qual_type = 3
+        self.minimum_usage = 20 # from pedestalSamples#I1=
 
     def get_clean_events(self):
 
@@ -603,7 +604,7 @@ class ped_qual_cut_loader:
                 block_usage[blk_idx_arr, 2] += 1
             del blk_idx_arr
 
-        low_block_usage = np.any(block_usage < 2, axis = 0).astype(int)
+        low_block_usage = np.any(block_usage < self.minimum_usage + 1, axis = 0).astype(int)
         print(f'low_block_usage flag: {low_block_usage}')
 
         return block_usage, low_block_usage
@@ -664,9 +665,10 @@ class ped_qual_cut_loader:
             del ped_count_dat, ped_count_hf, run_info
         zero_ped_counts = ped_counts < 1
         ped_blk_counts = ped_counts == 1
+        low_ped_counts = ped_counts < self.minimum_usage + 1
         del ped_counts
 
-        ped_qual_cut = np.full((self.num_evts, 2), 0, dtype = int)
+        ped_qual_cut = np.full((self.num_evts, 3), 0, dtype = int)
         for evt in range(self.num_evts):
 
             if self.daq_cut_sum[evt] != 0:
@@ -674,19 +676,21 @@ class ped_qual_cut_loader:
 
             blk_idx_arr = self.ara_uproot.get_block_idx(evt, trim_1st_blk = True)[0]
             ped_qual_cut[evt, 0] = np.nansum(zero_ped_counts[blk_idx_arr])
+            ped_qual_cut[evt, 2] = np.nansum(low_ped_counts[blk_idx_arr])
 
             if self.trig_type[evt] == 1:
                 continue
 
             ped_qual_cut[evt, 1] = np.nansum(ped_blk_counts[blk_idx_arr])
             del blk_idx_arr
-        del ped_blk_counts, zero_ped_counts
+        del ped_blk_counts, zero_ped_counts, low_ped_counts
 
         self.ped_qual_cut_sum = np.nansum(ped_qual_cut, axis = 1)
 
         if self.verbose:
             quick_qual_check(ped_qual_cut[:, 0] != 0, self.evt_num, f'zero pedestal events')
             quick_qual_check(ped_qual_cut[:, 1] != 0, self.evt_num, f'pedestal block events')
+            quick_qual_check(ped_qual_cut[:, 2] != 0, self.evt_num, f'low pedestal block events')
             quick_qual_check(self.ped_qual_cut_sum != 0, self.evt_num, 'total pedestal qual cut!')
 
         return ped_qual_cut

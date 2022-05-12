@@ -536,9 +536,13 @@ class ara_eventHk_uproot_loader:
     def __init__(self, data):
 
         self.empty_file_error = False
+        empty_unix = np.full((1), np.nan, dtype = float)
+        empty_pps = np.copy(empty_unix)
+        empty_clock = np.copy(empty_unix)
         if data is None:
-            self.unix_time = np.full((1), np.nan, dtype = float)
-            self.pps_counter = np.copy(self.unix_time)
+            self.unix_time = empty_unix
+            self.pps_counter = empty_pps
+            self.clock_counter = empty_clock
             self.empty_file_error = True
             print('There is no eventHk file!')
             return
@@ -546,8 +550,9 @@ class ara_eventHk_uproot_loader:
         try:
             file = uproot.open(data)
         except ValueError:
-            self.unix_time = np.full((1), np.nan, dtype = float)
-            self.pps_counter = np.copy(self.unix_time)
+            self.unix_time = empty_unix
+            self.pps_counter = empty_pps
+            self.clock_counter = empty_clock
             self.empty_file_error = True
             print('eventHk is empty!')
             return
@@ -563,8 +568,9 @@ class ara_eventHk_uproot_loader:
             self.run = int(run_str)
             del st_arr, run_str
         except uproot.exceptions.KeyInFileError:
-            self.unix_time = np.full((1), np.nan, dtype = float)
-            self.pps_counter = np.copy(self.unix_time)
+            self.unix_time = empty_unix
+            self.pps_counter = empty_pps
+            self.clock_counter = empty_clock
             self.empty_file_error = True
             self.hasKeyInFileError = True
             print('File is currupted!')
@@ -574,26 +580,68 @@ class ara_eventHk_uproot_loader:
         self.unix_time = np.asarray(self.evtTree['eventHk/unixTime'],dtype=int)
         self.unix_time_us = np.asarray(self.evtTree['eventHk/unixTimeUs'],dtype=int)
         self.pps_counter = np.asarray(self.evtTree['eventHk/ppsCounter'],dtype=int)
+        self.clock_counter = np.asarray(self.evtTree['eventHk/clockCounter'],dtype=int)
         self.l1_scaler = np.asarray(self.evtTree['eventHk/l1Scaler[32]'],dtype=int)
+        self.l2_scaler = np.asarray(self.evtTree['eventHk/l2Scaler[32]'],dtype=int)
+        self.l3_scaler = np.asarray(self.evtTree['eventHk/l3Scaler[16]'],dtype=int)
+        self.l4_scaler = np.asarray(self.evtTree['eventHk/l4Scaler[8]'],dtype=int)
         self.l1_threshold = np.asarray(self.evtTree['eventHk/thresholdDac[32]'],dtype=int)
+        self.ev_readout_err = np.asarray(self.evtTree['eventHk/evReadoutError'],dtype=int)
+        self.ev_readout_count_avg = np.asarray(self.evtTree['eventHk/evReadoutCountAvg'],dtype=int)
+        self.ev_readout_count_min = np.asarray(self.evtTree['eventHk/evReadoutCountMin'],dtype=int)
+        self.blk_buff_count_avg = np.asarray(self.evtTree['eventHk/blockBuffCountAvg'],dtype=int)
+        self.blk_buff_count_max = np.asarray(self.evtTree['eventHk/blockBuffCountMax'],dtype=int)
+        self.dig_dead_time = np.asarray(self.evtTree['eventHk/digDeadTime'],dtype=int)
+        self.buff_dead_time = np.asarray(self.evtTree['eventHk/buffDeadTime'],dtype=int)
+        self.tot_dead_time = np.asarray(self.evtTree['eventHk/totalDeadTime'],dtype=int)
 
         yyyymmdd_str = datetime.fromtimestamp(self.unix_time[0])
         yyyymmdd = yyyymmdd_str.strftime('%Y%m%d%H%M%S')
         self.year = int(yyyymmdd[:4])
         del yyyymmdd_str, yyyymmdd
 
-    def get_l1_info(self):
+    def get_eventHk_info(self, use_prescale = False):
 
         if self.empty_file_error:
-            l1_thres = np.full((1, num_eles), np.nan, dtype = float)
-            l1_rate = np.copy(l1_thres)
+            l1_rate = np.full((1, num_eles), np.nan, dtype = float)
+            l2_rate = np.copy(l1_rate)
+            l3_rate = np.full((1, num_useful_chs), np.nan, dtype = float)
+            l4_rate = np.full((1, num_chs), np.nan, dtype = float)
+            l1_thres = np.copy(l1_rate)
+            readout_err = np.full((1), np.nan, dtype = float)
+            readout_avg = np.copy(readout_err)
+            readout_min = np.copy(readout_err)
+            blk_buff_avg = np.copy(readout_err)
+            blk_buff_max = np.copy(readout_err)
+            dig_dead = np.copy(readout_err)
+            buff_dead = np.copy(readout_err)
+            tot_dead = np.copy(readout_err)
         else:
-            pre_scale = 32
             self.get_sub_info()
-            l1_rate = self.l1_scaler * pre_scale
+            l1_rate = self.l1_scaler
+            l2_rate = self.l2_scaler
+            l3_rate = self.l3_scaler
+            l4_rate = self.l4_scaler
             l1_thres = self.l1_threshold
+            readout_err = self.ev_readout_err
+            readout_avg = self.ev_readout_count_avg
+            readout_min = self.ev_readout_count_min
+            blk_buff_avg = self.blk_buff_count_avg
+            blk_buff_max = self.blk_buff_count_max
+            dig_dead = self.dig_dead_time
+            buff_dead = self.buff_dead_time
+            tot_dead = self.tot_dead_time
 
-        return l1_rate, l1_thres
+            if use_prescale:
+                pre_scale_32 = 32
+                pre_scale_16 = 16
+                l1_rate *= pre_scale_32            
+                dig_dead *= pre_scale_16
+                buff_dead *= pre_scale_16
+                tot_dead *= pre_scale_16
+                del pre_scale_32, pre_scale_16
+
+        return l1_rate, l2_rate, l3_rate, l4_rate, l1_thres, readout_err, readout_avg, readout_min, blk_buff_avg, blk_buff_max, dig_dead, buff_dead, tot_dead
 
 class sin_subtract_loader:
 

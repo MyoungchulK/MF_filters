@@ -107,15 +107,8 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
             sub_freq_evt = wf_int.sin_sub.num_freqs
             sub_freq[:num_sols, ant, evt] = sub_freq_evt
             sub_amp[:num_sols, ant, evt] = wf_int.sin_sub.num_amps
-           
-            num_sols_400 = wf_int.sin_sub_400.num_sols
-            sub_freq_evt_400 = wf_int.sin_sub_400.num_freqs 
-            sub_freq[num_sols:num_sols+num_sols_400, ant, evt] = sub_freq_evt_400
-            sub_amp[num_sols:num_sols+num_sols_400, ant, evt] = wf_int.sin_sub_400.num_amps
-
-            sub_freq_evt_tot = np.append(sub_freq_evt, sub_freq_evt_400)
-
-            sub_freq_hist = np.histogram(sub_freq_evt_tot, bins = freq_bins)[0].astype(int)
+            
+            sub_freq_hist = np.histogram(sub_freq_evt, bins = freq_bins)[0].astype(int)
             sub_freq_idx = np.full((freq_bin_len), np.nan, dtype = float)
             sub_freq_idx[sub_freq_hist != 0] = 1 
 
@@ -125,7 +118,7 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
             sel_len = np.count_nonzero(sub_freq_hist)
             cw_freq[:sel_len, ant, evt] = sel_f[~np.isnan(sel_f)]
             cw_amp[:sel_len, ant, evt] = sel_a[~np.isnan(sel_a)]
-            del raw_t, raw_v, num_sols, sub_freq_evt, sub_freq_idx, sub_freq_hist, sel_f, sel_a, sel_len, num_sols_400, sub_freq_evt_400, sub_freq_evt_tot
+            del raw_t, raw_v, num_sols, sub_freq_evt, sub_freq_idx, sub_freq_hist, sel_f, sel_a, sel_len
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()
         del fft_map_evt, fft_map_evt_max
