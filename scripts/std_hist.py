@@ -30,8 +30,8 @@ run_arr_cut = []
 
 std = []
 std_rf = []
-std_rf_wo_high_cut = []
 std_rf_w_cut = []
+std_bp_rf_w_cut = []
 
 std_range = np.arange(0,100,0.1)
 std_bins = np.linspace(0, 100, 1000 + 1)
@@ -39,8 +39,8 @@ std_bin_center = (std_bins[1:] + std_bins[:-1]) / 2
 
 std_1d = np.full((32, len(std_range)), 0, dtype = int)
 std_rf_1d = np.copy(std_1d)
-std_rf_wo_high_cut_1d = np.copy(std_1d)
 std_rf_w_cut_1d = np.copy(std_1d)
+std_bp_rf_w_cut_1d = np.copy(std_1d)
 
 for r in tqdm(range(len(d_run_tot))):
 
@@ -60,18 +60,18 @@ for r in tqdm(range(len(d_run_tot))):
     std_rf.append(std_rf_run)
 
     if d_run_tot[r] in bad_runs:
-        print('bad run:', d_list[r], d_run_tot[r])
+        #print('bad run:', d_list[r], d_run_tot[r])
         continue
     
     config_arr_cut.append(config)
     run_arr_cut.append(d_run_tot[r])
 
     std_rf_w_cut_run = hf['std_rf_w_cut_hist'][:]
-    std_rf_wo_high_cut_run = hf['std_rf_wo_high_cut_hist'][:]
+    std_bp_rf_w_cut_run = hf['std_bp_rf_w_cut_hist'][:]
     std_rf_w_cut_1d += std_rf_w_cut_run
-    std_rf_wo_high_cut_1d += std_rf_wo_high_cut_run
+    std_bp_rf_w_cut_1d += std_bp_rf_w_cut_run
     std_rf_w_cut.append(std_rf_w_cut_run)
-    std_rf_wo_high_cut.append(std_rf_wo_high_cut_run)
+    std_bp_rf_w_cut.append(std_bp_rf_w_cut_run)
 
     del hf
 
@@ -91,12 +91,12 @@ hf.create_dataset('std_bins', data=std_bins, compression="gzip", compression_opt
 hf.create_dataset('std_bin_center', data=std_bin_center, compression="gzip", compression_opts=9)
 hf.create_dataset('std_1d', data=std_1d, compression="gzip", compression_opts=9)
 hf.create_dataset('std_rf_1d', data=std_rf_1d, compression="gzip", compression_opts=9)
-hf.create_dataset('std_rf_wo_high_cut_1d', data=std_rf_wo_high_cut_1d, compression="gzip", compression_opts=9)
 hf.create_dataset('std_rf_w_cut_1d', data=std_rf_w_cut_1d, compression="gzip", compression_opts=9)
+hf.create_dataset('std_bp_rf_w_cut_1d', data=std_bp_rf_w_cut_1d, compression="gzip", compression_opts=9)
 hf.create_dataset('std', data=np.asarray(std), compression="gzip", compression_opts=9)
 hf.create_dataset('std_rf', data=np.asarray(std_rf), compression="gzip", compression_opts=9)
-hf.create_dataset('std_rf_wo_high_cut', data=np.asarray(std_rf_wo_high_cut), compression="gzip", compression_opts=9)
 hf.create_dataset('std_rf_w_cut', data=np.asarray(std_rf_w_cut), compression="gzip", compression_opts=9)
+hf.create_dataset('std_bp_rf_w_cut', data=np.asarray(std_bp_rf_w_cut), compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name)
 # quick size check
