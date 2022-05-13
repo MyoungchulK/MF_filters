@@ -78,13 +78,13 @@ for r in tqdm(range(len(d_run_tot))):
     run_arr.append(d_run_tot[r])    
 
     pps -= pps[0]
-    dig_r = hf[f'dig_dead'][:]    
+    dig_r = hf[f'dig_dead'][:] /16   
     dig_r = dig_r.astype(float)
     dig_r = np.log10(dig_r)
-    buff_r = hf[f'buff_dead'][:]
+    buff_r = hf[f'buff_dead'][:]/16
     buff_r = buff_r.astype(float)
     buff_r = np.log10(buff_r)
-    tot_r = hf[f'tot_dead'][:]
+    tot_r = hf[f'tot_dead'][:]/16
     tot_r = tot_r.astype(float)
     tot_r = np.log10(tot_r)
 
