@@ -17,7 +17,7 @@ knwon_issue = known_issue_loader(Station)
 bad_runs = knwon_issue.get_knwon_bad_run()
 
 # sort
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_old/*'
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw/*'
 print(d_path)
 d_list, d_run_tot, d_run_range = file_sorter(d_path)
 del d_run_range
@@ -89,13 +89,13 @@ def get_2d_max(dat_2d):
 
 for r in tqdm(range(len(d_run_tot))):
     
-  if r <10:
+  #if r <10:
 
     hf = h5py.File(d_list[r], 'r')
     config = hf['config'][2]
     config_arr.append(config)
     run_arr.append(d_run_tot[r])
-
+    """
     trig = hf['trig_type'][:]
     trig = trig != 0
 
@@ -103,7 +103,7 @@ for r in tqdm(range(len(d_run_tot))):
     cw_freq_r = hf['cw_freq'][:]
     sub_amp_r = hf['sub_amp'][:]
     sub_freq_r = hf['sub_freq'][:]
-
+    """
     fft_map_r = hf['fft_map'][:]
     fft_rf_map_r = hf['fft_rf_map'][:]
     clean_map_r = hf['clean_map'][:]
@@ -127,11 +127,13 @@ for r in tqdm(range(len(d_run_tot))):
             sub_rf_map_r[:,:,mask_ant] = 0
             cw_map_r[:,:,mask_ant] = 0
             cw_rf_map_r[:,:,mask_ant] = 0
+            """
             cw_amp_r[:,mask_ant,:] = np.nan
             cw_freq_r[:,mask_ant,:] = np.nan
             sub_amp_r[:,mask_ant,:] = np.nan
             sub_freq_r[:,mask_ant,:] = np.nan
-
+            """
+    """
     cw_amp_h = np.full((amp_len, 16), 0, dtype = int)
     cw_freq_h = np.full((freq_len, 16), 0, dtype = int)
     sub_amp_h = np.copy(cw_amp_h)
@@ -164,7 +166,7 @@ for r in tqdm(range(len(d_run_tot))):
     cw_rf_freq.append(cw_rf_freq_h)
     sub_rf_amp.append(sub_rf_amp_h)
     sub_rf_freq.append(sub_rf_freq_h)
-
+    """
     fft_map += fft_map_r
     fft_rf_map += fft_rf_map_r
     clean_map += clean_map_r
@@ -198,7 +200,7 @@ for r in tqdm(range(len(d_run_tot))):
 
     config_arr_cut.append(config)
     run_arr_cut.append(d_run_tot[r])
-
+    """
     qual = hf['total_qual_cut'][:]
     qual = np.nansum(qual, axis = 1)
     qual = qual != 0
@@ -221,7 +223,7 @@ for r in tqdm(range(len(d_run_tot))):
     cw_rf_cut_freq.append(cw_rf_cut_freq_h)
     sub_rf_cut_amp.append(sub_rf_cut_amp_h)
     sub_rf_cut_freq.append(sub_rf_cut_freq_h)
-
+    """
     fft_rf_cut_map_r = hf['fft_rf_cut_map'][:]
     clean_rf_cut_map_r = hf['clean_rf_cut_map'][:]
     sub_rf_cut_map_r = hf['sub_rf_cut_map'][:]
@@ -252,14 +254,14 @@ for r in tqdm(range(len(d_run_tot))):
     sub_rf_cut_max.append(sub_rf_cut_max_r)
     cw_rf_cut_max.append(cw_rf_cut_max_r)
     del hf, fft_rf_cut_map_r, clean_rf_cut_map_r, sub_rf_cut_map_r, cw_rf_cut_map_r
-    del trig, qual
+    #del trig, qual
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'CW_A{Station}_v1.h5'
+file_name = f'CW_A{Station}_v3.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('config_arr', data=np.asarray(config_arr), compression="gzip", compression_opts=9)
 hf.create_dataset('config_arr_cut', data=np.asarray(config_arr_cut), compression="gzip", compression_opts=9)

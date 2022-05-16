@@ -59,7 +59,6 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
     num_cw_freq = 60
     sub_freq = np.full((num_cw_freq, num_ants, num_evts), np.nan, dtype = float)
     sub_amp = np.copy(sub_freq)
-    sub_phase = np.copy(sub_freq)
     cw_freq = np.copy(sub_freq)
     cw_amp = np.copy(sub_freq)
     del num_cw_freq
@@ -108,13 +107,11 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
             sub_freq_evt = wf_int.sin_sub.num_freqs
             sub_freq[:num_sols, ant, evt] = sub_freq_evt
             sub_amp[:num_sols, ant, evt] = wf_int.sin_sub.num_amps
-            sub_phase[:num_sols, ant, evt] = wf_int.sin_sub.num_phases
            
             num_sols_400 = wf_int.sin_sub_400.num_sols
             sub_freq_evt_400 = wf_int.sin_sub_400.num_freqs 
             sub_freq[num_sols:num_sols+num_sols_400, ant, evt] = sub_freq_evt_400
             sub_amp[num_sols:num_sols+num_sols_400, ant, evt] = wf_int.sin_sub_400.num_amps
-            sub_phase[num_sols:num_sols+num_sols_400, ant, evt] = wf_int.sin_sub_400.num_phases
 
             sub_freq_evt_tot = np.append(sub_freq_evt, sub_freq_evt_400)
 
@@ -182,7 +179,6 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
             'cw_rf_cut_map':cw_rf_cut_map,
             'sub_freq':sub_freq,
             'sub_amp':sub_amp,
-            'sub_phase':sub_phase,
             'sub_map':sub_map,
             'sub_rf_map':sub_rf_map,
             'sub_rf_cut_map':sub_rf_cut_map}

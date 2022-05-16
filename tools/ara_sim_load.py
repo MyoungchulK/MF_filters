@@ -31,7 +31,7 @@ class ara_root_loader:
         self.evtTree = self.file.Get("eventTree")
 
         # set the tree address to access our raw data type
-        self.realEvt = ROOT.UsefulAtriStationEvent ()
+        self.realEvt = ROOT.UsefulAtriStationEvent()
         self.evtTree.SetBranchAddress("UsefulAtriStationEvent", ROOT.AddressOf(self.realEvt))
 
         # get the number of entries in this file

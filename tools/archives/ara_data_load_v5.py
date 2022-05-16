@@ -354,9 +354,8 @@ class ara_sensorHk_uproot_loader:
     def __init__(self, data):
 
         self.empty_file_error = False
-        empty_unix = np.full((1), np.nan, dtype = float)
         if data is None:
-            self.unix_time = empty_unix
+            self.unix_time = np.full((1), np.nan, dtype = float)
             self.empty_file_error = True
             print('There is no sensorHk file!')
             return
@@ -364,7 +363,7 @@ class ara_sensorHk_uproot_loader:
         try:
             file = uproot.open(data)
         except ValueError:
-            self.unix_time = empty_unix
+            self.unix_time = np.full((1), np.nan, dtype = float)
             self.empty_file_error = True
             print('sensorHk is empty!')
             return
@@ -375,13 +374,11 @@ class ara_sensorHk_uproot_loader:
             st_arr = np.asarray(self.evtTree['sensorHk/RawAraGenericHeader/stationId'],dtype=int)
             self.station_id = st_arr[0]
             self.num_sensors = len(st_arr)
-            self.sensors_entry_num = np.arange(len(st_arr))
+            self.sensor_entry_num = np.arange(len(st_arr))
             run_str = re.findall(r'\d+', data[-11:-5])[0]
             self.run = int(run_str)
             del st_arr, run_str
         except uproot.exceptions.KeyInFileError:
-            self.unix_time = empty_unix
-            self.empty_file_error = True
             self.hasKeyInFileError = True
             print('File is currupted!')
 
@@ -648,11 +645,11 @@ class ara_eventHk_uproot_loader:
 
 class sin_subtract_loader:
 
-    def __init__(self, max_fail_atts = 3, min_power_reduce = 0.05, min_freq = 0.2, max_freq = 0.3, dt = 0.5):
+    def __init__(self, max_fail_atts = 3, min_power_reduc = 0.05, min_freq = 0.2, max_freq = 0.3, dt = 0.5):
 
         self.dt = dt
 
-        self.sin_sub = ROOT.FFTtools.SineSubtract(max_fail_atts, min_power_reduce, False) # no store
+        self.sin_sub = ROOT.FFTtools.SineSubtract(max_fail_atts, min_power_reduc, False) # no store
         self.sin_sub.setVerbose(False)
         self.sin_sub.setFreqLimits(min_freq, max_freq)
         #self.sin_sub.unsetFreqLimits()
@@ -668,8 +665,7 @@ class sin_subtract_loader:
         self.num_sols = self.sin_sub.getNSines()
         self.num_freqs = np.frombuffer(self.sin_sub.getFreqs(), dtype = float, count = self.num_sols)
         self.num_amps = np.frombuffer(self.sin_sub.getAmps(0), dtype = float, count = self.num_sols)
-        self.num_phases = np.frombuffer(self.sin_sub.getPhases(0), dtype = float, count = self.num_sols)   
- 
+    
         return cw_v
 
 class analog_buffer_info_loader:

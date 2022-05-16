@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # load in variables
-key=qual_cut
+key=l1
 station=$1
 run=$2
 blind=1

@@ -3,7 +3,7 @@ from tqdm import tqdm
 
 def cw_sim_collector(Data, Station, Year):
 
-    print('Collecting wf starts!')
+    print('Collecting cw starts!')
 
     from tools.ara_constant import ara_const
     from tools.ara_sim_load import ara_root_loader
@@ -36,11 +36,14 @@ def cw_sim_collector(Data, Station, Year):
     bp_cw_wf_all = np.copy(bp_wf_all)
     freq = np.full((wf_int.pad_fft_len, num_ants, sel_evt_len), np.nan, dtype=float)
     bp_fft = np.copy(freq)
+    bp_phase = np.copy(freq)
     bp_cw_fft = np.copy(freq)
+    bp_cw_phase = np.copy(freq)
 
-    bp_cw_num_sols = np.full((num_ants, sel_evt_len), 0, dtype=int)
-    bp_cw_num_freqs = np.full((20, num_ants, sel_evt_len), np.nan, dtype=float)
-    bp_cw_num_amps = np.full((20, num_ants, sel_evt_len), np.nan, dtype=float)
+    bp_cw_num_sols = np.full((num_ants, sel_evt_len), np.nan, dtype=float)
+    bp_cw_num_freqs = np.full((40, num_ants, sel_evt_len), np.nan, dtype=float)
+    bp_cw_num_amps = np.copy(bp_cw_num_freqs)
+    bp_cw_num_phases = np.copy(bp_cw_num_freqs)
 
     pairs = ara_int.pairs
     lags = ara_int.lags
@@ -75,6 +78,7 @@ def cw_sim_collector(Data, Station, Year):
         
         wf_int.get_fft_wf(use_rfft = True, use_abs = True, use_phase = True)        
         bp_fft[:, :, evt] = wf_int.pad_fft
+        bp_phase[:, :, evt] = wf_int.pad_phase
 
         for ant in range(num_ants):
 
@@ -84,16 +88,28 @@ def cw_sim_collector(Data, Station, Year):
             int_v = int_v[~np.isnan(int_v)]
             ara_root.del_TGraph()
         
-            bp_cw_num_sols[ant, evt] = wf_int.sin_sub.num_sols
+            num_sols = wf_int.sin_sub.num_sols
             num_freqs = wf_int.sin_sub.num_freqs
             num_amps = wf_int.sin_sub.num_amps
+            num_phases = wf_int.sin_sub.num_phases
+            num_sols_400 = wf_int.sin_sub_400.num_sols
+            num_freqs_400 = wf_int.sin_sub_400.num_freqs
+            num_amps_400 = wf_int.sin_sub_400.num_amps
+            num_phases_400 = wf_int.sin_sub_400.num_phases
+ 
+            bp_cw_num_sols[ant, evt] = num_sols + num_sols_400
             bp_cw_num_freqs[:len(num_freqs), ant, evt] = num_freqs
+            bp_cw_num_freqs[len(num_freqs):len(num_freqs)+len(num_freqs_400), ant, evt] = num_freqs_400
             bp_cw_num_amps[:len(num_amps), ant, evt] = num_amps
+            bp_cw_num_freqs[len(num_amps):len(num_amps)+len(num_amps_400), ant, evt] = num_amps_400
+            bp_cw_num_phases[:len(num_phases), ant, evt] = num_phases
+            bp_cw_num_phases[len(num_phases):len(num_phases)+len(num_phases_400), ant, evt] = num_phases_400
         bp_cw_wf_all[:, 0, :, evt] = wf_int.pad_t
         bp_cw_wf_all[:, 1, :, evt] = wf_int.pad_v
 
         wf_int.get_fft_wf(use_rfft = True, use_abs = True, use_phase = True)
         bp_cw_fft[:, :, evt] = wf_int.pad_fft
+        bp_cw_phase[:, :, evt] = wf_int.pad_phase
 
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
@@ -149,10 +165,13 @@ def cw_sim_collector(Data, Station, Year):
             'bp_cw_wf_all':bp_cw_wf_all,
             'freq':freq,
             'bp_fft':bp_fft,
+            'bp_phase':bp_phase,
             'bp_cw_fft':bp_cw_fft,
+            'bp_cw_phase':bp_cw_phase,
             'bp_cw_num_sols':bp_cw_num_sols,
             'bp_cw_num_freqs':bp_cw_num_freqs,
             'bp_cw_num_amps':bp_cw_num_amps,
+            'bp_cw_num_phases':bp_cw_num_phases,
             'pairs':pairs,
             'lags':lags,
             'bp_corr':bp_corr,
