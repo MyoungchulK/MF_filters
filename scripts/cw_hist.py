@@ -90,6 +90,9 @@ def get_2d_max(dat_2d):
 for r in tqdm(range(len(d_run_tot))):
     
   #if r <10:
+    if d_run_tot[r] == 4434 or d_run_tot[r] == 12237:
+        print(d_run_tot[r])
+        continue
 
     hf = h5py.File(d_list[r], 'r')
     config = hf['config'][2]
@@ -261,7 +264,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'CW_A{Station}_v3.h5'
+file_name = f'CW_A{Station}_v3.1.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('config_arr', data=np.asarray(config_arr), compression="gzip", compression_opts=9)
 hf.create_dataset('config_arr_cut', data=np.asarray(config_arr_cut), compression="gzip", compression_opts=9)

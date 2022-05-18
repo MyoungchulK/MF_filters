@@ -35,16 +35,16 @@ class pre_qual_cut_loader:
         self.pps_number = ara_uproot.pps_number
         self.irs_block_number = ara_uproot.irs_block_number
         self.channel_mask = ara_uproot.channel_mask
-        #self.blk_len = ara_uproot.read_win//num_ddas
+        self.blk_len = ara_uproot.read_win//num_ddas
         self.verbose = verbose
 
         self.run_info = run_info_loader(self.st, self.run, analyze_blind_dat = analyze_blind_dat)
-        sub_info_dat = self.run_info.get_result_path(file_type = 'sub_info', verbose = self.verbose, force_blind = True)
-        self.sub_info_hf = h5py.File(sub_info_dat, 'r')
-        self.evt_sort = self.sub_info_hf['evt_num_sort'][:]
-        self.unix_sort = self.sub_info_hf['unix_time_sort'][:]
-        self.pps_num = self.sub_info_hf['pps_number_sort_reset'][:]
-        del sub_info_dat
+        evt_rate_dat = self.run_info.get_result_path(file_type = 'evt_rate', verbose = self.verbose, force_blind = True)
+        self.evt_rate_hf = h5py.File(evt_rate_dat, 'r')
+        self.evt_sort = self.evt_rate_hf['evt_num_sort'][:]
+        self.unix_sort = self.evt_rate_hf['unix_time_sort'][:]
+        self.pps_num = self.evt_rate_hf['pps_number_sort_reset'][:]
+        del evt_rate_dat
 
     def get_daq_structure_errors(self):
 
@@ -108,6 +108,30 @@ class pre_qual_cut_loader:
 
         return daq_st_err
 
+    def get_readout_window_errors(self):
+
+        rf_read_win_len, soft_read_win_len = self.get_read_win_limit()
+
+        read_win_err = np.full((self.num_evts, 4), 0, dtype = int) 
+        # single block
+        # bad rf readout window
+        # bad cal readout window
+        # bad soft readout window
+    
+        read_win_err[:, 0] = (self.blk_len < 2).astype(int)
+        read_win_err[:, 1] = np.logical_and(self.blk_len < rf_read_win_len, self.trig_type == 0).astype(int)
+        read_win_err[:, 2] = np.logical_and(self.blk_len < rf_read_win_len, self.trig_type == 1).astype(int)
+        read_win_err[:, 3] = np.logical_and(self.blk_len < soft_read_win_len, self.trig_type == 2).astype(int)
+        del rf_read_win_len, soft_read_win_len
+
+        if self.verbose:
+            quick_qual_check(read_win_err[:, 0] != 0, self.evt_num, 'single block events')         
+            quick_qual_check(read_win_err[:, 1] != 0, self.evt_num, 'bad rf readout window events')         
+            quick_qual_check(read_win_err[:, 2] != 0, self.evt_num, 'bad cal readout window events')         
+            quick_qual_check(read_win_err[:, 3] != 0, self.evt_num, 'bad soft readout window events')         
+
+        return read_win_err
+
     def get_read_win_limit(self):
 
         if self.st == 2:
@@ -124,7 +148,7 @@ class pre_qual_cut_loader:
                 rf_readout_limit = 26
             elif self.run > 10000:
                 rf_readout_limit = 28
-
+            
         if self.st == 2:
             if self.run < 9505:
                 soft_readout_limit = 8
@@ -137,75 +161,6 @@ class pre_qual_cut_loader:
                 soft_readout_limit = 12
 
         return rf_readout_limit, soft_readout_limit
-
-    def get_time_smearing(self, bad_bools, smear_val = 5, use_pps = False, use_sub_info = False):
-
-        if use_sub_info:
-            if use_pps:
-                time_arr = self.pps_num
-            else:
-                time_arr = self.unix_sort
-        else:
-            if use_pps:
-                time_arr = self.pps_number
-            else:
-                time_arr = self.unix_time
-
-        smear_arr = np.arange(-1* smear_val, smear_val + 1, 1, dtype = int)
-        bad_sec = time_arr[bad_bools]
-        bad_sec = np.tile(bad_sec, (len(smear_arr), 1))
-        bad_sec += smear_arr[:, np.newaxis]
-        bad_sec = bad_sec.flatten()
-        bad_sec = np.sort(np.unique(bad_sec))
-
-        smear_bools = np.in1d(time_arr, bad_sec)
-        del time_arr, smear_arr, bad_sec
-
-        return smear_bools
-
-    def get_readout_window_errors(self, use_smear = False):
-
-        rf_read_win_len, soft_read_win_len = self.get_read_win_limit()
-        blk_len = self.sub_info_hf['blk_len_sort'][:]
-        trig_sort = self.sub_info_hf['trig_type_sort'][:]
-        single_read_bools = blk_len < 2
-        rf_cal_read_bools = blk_len < rf_read_win_len
-        rf_read_bools = np.logical_and(rf_cal_read_bools, trig_sort == 0)
-        cal_read_bools = np.logical_and(rf_cal_read_bools, trig_sort == 1)
-        soft_read_bools = np.logical_and(blk_len < soft_read_win_len, trig_sort == 2)
-        del blk_len, rf_read_win_len, soft_read_win_len, rf_cal_read_bools
-
-        if use_smear:
-            rf_smear_bools = self.get_time_smearing(rf_read_bools, use_pps = True, use_sub_info = True)
-            cal_smear_bools = self.get_time_smearing(cal_read_bools, use_pps = True, use_sub_info = True)
-            soft_smear_bools = self.get_time_smearing(soft_read_bools, use_pps = True, use_sub_info = True)
-            tot_smear_bools = np.any((rf_smear_bools, cal_smear_bools, soft_smear_bools), axis = 0) 
-            rf_read_bools = np.logical_and(tot_smear_bools, trig_sort == 0)
-            cal_read_bools = np.logical_and(tot_smear_bools, trig_sort == 1)
-            soft_read_bools = np.logical_and(tot_smear_bools, trig_sort == 2)
-            del rf_smear_bools, cal_smear_bools, soft_smear_bools, tot_smear_bools
-        del trig_sort
-
-        bad_single_evts = self.evt_sort[single_read_bools]
-        bad_rf_evts = self.evt_sort[rf_read_bools]
-        bad_cal_evts = self.evt_sort[cal_read_bools]
-        bad_soft_evts = self.evt_sort[soft_read_bools]
-        del single_read_bools, rf_read_bools, cal_read_bools, soft_read_bools
-
-        read_win_err = np.full((self.num_evts, 4), 0, dtype = int)
-        read_win_err[:, 0] = np.in1d(self.evt_num, bad_single_evts).astype(int) # single block
-        read_win_err[:, 1] = np.in1d(self.evt_num, bad_rf_evts).astype(int) # bad rf readout window
-        read_win_err[:, 2] = np.in1d(self.evt_num, bad_cal_evts).astype(int) # bad cal readout window
-        read_win_err[:, 3] = np.in1d(self.evt_num, bad_soft_evts).astype(int) # bad soft readout window
-        del bad_single_evts, bad_rf_evts, bad_cal_evts, bad_soft_evts
-
-        if self.verbose:
-            quick_qual_check(read_win_err[:, 0] != 0, self.evt_num, 'single block events')         
-            quick_qual_check(read_win_err[:, 1] != 0, self.evt_num, 'bad rf readout window events')         
-            quick_qual_check(read_win_err[:, 2] != 0, self.evt_num, 'bad cal readout window events')         
-            quick_qual_check(read_win_err[:, 3] != 0, self.evt_num, 'bad soft readout window events')         
-
-        return read_win_err
 
     def get_bad_unix_time_sequence(self):
 
@@ -263,7 +218,7 @@ class pre_qual_cut_loader:
         
     def get_first_minute_events(self, first_evt_limit = 7):
 
-        unix_time_full = self.sub_info_hf['unix_time'][:]
+        unix_time_full = self.evt_rate_hf['unix_time'][:]
         unix_cut = unix_time_full[0] + 60
         first_min_evt_bools = (self.unix_time < unix_cut)
         del unix_cut, unix_time_full
@@ -413,10 +368,10 @@ class pre_qual_cut_loader:
             if self.st == 3 and (self.run > 6001 and self.run < 6678):
                 cal_rate_cut = 0.8 
 
-        self.rate_bins = (self.sub_info_hf[f'pps_{bin_type}_bins'][:-1] + 0.5).astype(int) # bin edge to corresponding minute
-        rf_evt_rate = self.sub_info_hf[f'rf_{bin_type}_rate_pps'][:]
-        cal_evt_rate = self.sub_info_hf[f'cal_{bin_type}_rate_pps'][:]
-        soft_evt_rate = self.sub_info_hf[f'soft_{bin_type}_rate_pps'][:]
+        self.rate_bins = (self.evt_rate_hf[f'pps_{bin_type}_bins'][:-1] + 0.5).astype(int) # bin edge to corresponding minute
+        rf_evt_rate = self.evt_rate_hf[f'rf_{bin_type}_rate_pps'][:]
+        cal_evt_rate = self.evt_rate_hf[f'cal_{bin_type}_rate_pps'][:]
+        soft_evt_rate = self.evt_rate_hf[f'soft_{bin_type}_rate_pps'][:]
 
         bad_rf_sort = self.get_bad_trig_rate_events(rf_evt_rate, lower_cut = rf_rate_cut, use_sec = use_sec)
         bad_cal_sort = self.get_bad_trig_rate_events(cal_evt_rate, lower_cut = cal_rate_cut, upper_cut = cal_upper_cut, use_sec = use_sec)
@@ -439,7 +394,7 @@ class pre_qual_cut_loader:
 
         return bad_rate_evts
 
-    def get_high_rf_rate_events(self, use_smear = False):
+    def get_high_rf_rate_events(self):
 
         if self.st == 2 and self.run < 1756:
             rf_rate_cut = 38.5 
@@ -455,10 +410,10 @@ class pre_qual_cut_loader:
         if self.st == 3 and self.run > 13010:
             rf_rate_cut = 26.5
 
-        self.rate_bins = (self.sub_info_hf[f'pps_sec_bins'][:-1] + 0.5).astype(int) # bin edge to corresponding minute
-        rf_evt_rate = self.sub_info_hf[f'rf_sec_rate_pps'][:]
+        self.rate_bins = (self.evt_rate_hf[f'pps_sec_bins'][:-1] + 0.5).astype(int) # bin edge to corresponding minute
+        rf_evt_rate = self.evt_rate_hf[f'rf_sec_rate_pps'][:]
 
-        bad_rf_sort = self.get_bad_trig_rate_events(rf_evt_rate, upper_cut = rf_rate_cut, use_sec = True, use_smear = use_smear)
+        bad_rf_sort = self.get_bad_trig_rate_events(rf_evt_rate, upper_cut = rf_rate_cut, use_sec = True, use_smear = True)
         del rf_evt_rate
 
         high_rf_rate_evts = np.in1d(self.evt_num, bad_rf_sort).astype(int)
@@ -473,7 +428,7 @@ class pre_qual_cut_loader:
 
         tot_pre_qual_cut = np.full((self.num_evts, 21), 0, dtype = int)
         tot_pre_qual_cut[:, :5] = self.get_daq_structure_errors()
-        tot_pre_qual_cut[:, 5:9] = self.get_readout_window_errors(use_smear =True)
+        tot_pre_qual_cut[:, 5:9] = self.get_readout_window_errors()
         tot_pre_qual_cut[:, 9] = self.get_bad_unix_time_sequence()
         tot_pre_qual_cut[:, 10] = self.get_bad_unix_time_events(add_unchecked_unix_time = True)
         tot_pre_qual_cut[:, 11] = self.get_first_minute_events()
@@ -481,7 +436,7 @@ class pre_qual_cut_loader:
         tot_pre_qual_cut[:, 13] = self.get_no_calpulser_events(apply_bias_volt = tot_pre_qual_cut[:,12])
         tot_pre_qual_cut[:, 14:17] = self.get_bad_rate_events()
         tot_pre_qual_cut[:, 17:20] = self.get_bad_rate_events(use_sec = True)
-        tot_pre_qual_cut[:, 20] = self.get_high_rf_rate_events(use_smear = True)
+        tot_pre_qual_cut[:, 20] = self.get_high_rf_rate_events()
 
         self.daq_qual_cut_sum = np.nansum(tot_pre_qual_cut[:, :6], axis = 1)
         self.pre_qual_cut_sum = np.nansum(tot_pre_qual_cut, axis = 1)

@@ -314,6 +314,24 @@ class ara_uproot_loader:
 
         return pps_reset
 
+    def get_block_length(self):
+    
+        trig_type = self.get_trig_type()
+        blk_len = self.read_win // num_ddas
+
+        rf_blk_len = np.copy(blk_len)
+        rf_blk_len = rf_blk_len.astype(float)
+        rf_blk_len[trig_type != 0] = np.nan
+        cal_blk_len = np.copy(blk_len)
+        cal_blk_len = cal_blk_len.astype(float)
+        cal_blk_len[trig_type != 1] = np.nan
+        soft_blk_len = np.copy(blk_len)
+        soft_blk_len = soft_blk_len.astype(float)
+        soft_blk_len[trig_type != 2] = np.nan
+        del trig_type 
+
+        return blk_len, rf_blk_len, cal_blk_len, soft_blk_len
+
     def get_event_rate(self, use_pps = False, use_sec = False):
 
         evt_sort_idx = np.argsort(self.evt_num)

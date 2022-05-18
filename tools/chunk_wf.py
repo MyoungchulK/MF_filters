@@ -48,7 +48,8 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
 
     Data = run_info.get_data_path(file_type = 'eventHk', return_none = True, verbose = True)
     ara_eventHk_uproot = ara_eventHk_uproot_loader(Data)
-    l1_rate, l1_thres = ara_eventHk_uproot.get_l1_info()
+    l1_rate = ara_eventHk_uproot.get_eventHk_info()[0]
+    l1_thres = ara_eventHk_uproot.get_eventHk_info()[4]
     event_unix_time = ara_eventHk_uproot.unix_time
     event_pps_counter = ara_eventHk_uproot.pps_counter
     del run_info, Data, ara_sensorHk_uproot, ara_eventHk_uproot
