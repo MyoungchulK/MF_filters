@@ -6,10 +6,14 @@ def sub_info_collector(Data, Ped, analyze_blind_dat = False):
     print('Collecting sub info starts!')
 
     from tools.ara_data_load import ara_uproot_loader
+    from tools.ara_data_load import ara_sensorHk_uproot_loader
+    from tools.ara_run_manager import run_info_loader
 
     # data config
     ara_uproot = ara_uproot_loader(Data)
     ara_uproot.get_sub_info()
+    station = ara_uproot.station_id
+    run = ara_uproot.run
     evt_num = ara_uproot.evt_num
     trig_type = ara_uproot.get_trig_type()
     unix_time = ara_uproot.unix_time
@@ -41,6 +45,17 @@ def sub_info_collector(Data, Ped, analyze_blind_dat = False):
     unix_sec_bins, unix_sec_bin_center, unix_sec_counts, evt_sec_rate_unix, rf_sec_rate_unix, cal_sec_rate_unix, soft_sec_rate_unix = ara_uproot.get_event_rate(use_sec = True)
     pps_sec_bins, pps_sec_bin_center, pps_sec_counts, evt_sec_rate_pps, rf_sec_rate_pps, cal_sec_rate_pps, soft_sec_rate_pps = ara_uproot.get_event_rate(use_pps =True, use_sec = True)
     del ara_uproot
+
+    # sensor
+    run_info = run_info_loader(station, run, analyze_blind_dat = analyze_blind_dat)
+    sensor_dat = run_info.get_data_path(file_type = 'sensorHk', return_none = True, verbose = True)
+    del run_info, station, run
+
+    # sensor info
+    ara_sensorHk_uproot = ara_sensorHk_uproot_loader(sensor_dat)
+    atri_volt, atri_curr, dda_volt, dda_curr, dda_temp, tda_volt, tda_curr, tda_temp = ara_sensorHk_uproot.get_daq_sensor_info()
+    sensor_unix_time = ara_sensorHk_uproot.unix_time
+    del sensor_dat, ara_sensorHk_uproot
 
     print('Sub info collecting is done!')
 
@@ -90,7 +105,16 @@ def sub_info_collector(Data, Ped, analyze_blind_dat = False):
             'evt_sec_rate_pps':evt_sec_rate_pps,
             'rf_sec_rate_pps':rf_sec_rate_pps,
             'cal_sec_rate_pps':cal_sec_rate_pps,
-            'soft_sec_rate_pps':soft_sec_rate_pps}
+            'soft_sec_rate_pps':soft_sec_rate_pps,
+            'sensor_unix_time':sensor_unix_time,
+            'atri_volt':atri_volt,
+            'atri_curr':atri_curr,
+            'dda_volt':dda_volt,
+            'dda_curr':dda_curr,
+            'dda_temp':dda_temp,
+            'tda_volt':tda_volt,
+            'tda_curr':tda_curr,
+            'tda_temp':tda_temp}
 
 
 

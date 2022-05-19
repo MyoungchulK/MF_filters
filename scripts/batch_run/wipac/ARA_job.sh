@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # load in variables
-key=qual_cut
+key=cw
 station=$1
 run=$2
 

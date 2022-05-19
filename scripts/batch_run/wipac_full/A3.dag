@@ -19,7 +19,7 @@ VARS job_ARA_S3_R480 station="3" run="480"
 JOB job_ARA_S3_R481 ARA_job_1.sub 
 VARS job_ARA_S3_R481 station="3" run="481"
 
-JOB job_ARA_S3_R482 ARA_job_1.sub 
+JOB job_ARA_S3_R482 ARA_job_2.sub 
 VARS job_ARA_S3_R482 station="3" run="482"
 
 JOB job_ARA_S3_R484 ARA_job_1.sub 

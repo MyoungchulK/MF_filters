@@ -38,13 +38,13 @@ class pre_qual_cut_loader:
         #self.blk_len = ara_uproot.read_win//num_ddas
         self.verbose = verbose
 
-        self.run_info = run_info_loader(self.st, self.run, analyze_blind_dat = analyze_blind_dat)
-        sub_info_dat = self.run_info.get_result_path(file_type = 'sub_info', verbose = self.verbose, force_blind = True)
+        run_info = run_info_loader(self.st, self.run, analyze_blind_dat = analyze_blind_dat)
+        sub_info_dat = run_info.get_result_path(file_type = 'sub_info', verbose = self.verbose, force_blind = True)
         self.sub_info_hf = h5py.File(sub_info_dat, 'r')
         self.evt_sort = self.sub_info_hf['evt_num_sort'][:]
         self.unix_sort = self.sub_info_hf['unix_time_sort'][:]
-        self.pps_num = self.sub_info_hf['pps_number_sort_reset'][:]
-        del sub_info_dat
+        self.pps_sort = self.sub_info_hf['pps_number_sort_reset'][:]
+        del sub_info_dat, run_info
 
     def get_daq_structure_errors(self):
 
@@ -142,7 +142,7 @@ class pre_qual_cut_loader:
 
         if use_sub_info:
             if use_pps:
-                time_arr = self.pps_num
+                time_arr = self.pps_sort
             else:
                 time_arr = self.unix_sort
         else:
@@ -286,9 +286,7 @@ class pre_qual_cut_loader:
         volt_cut = np.asarray(volt_cut, dtype = float)
         bias_volt_evts = np.full((self.num_evts), 0, dtype = int)
 
-        sensor_dat = self.run_info.get_result_path(file_type = 'sensor', verbose = self.verbose, force_blind = True)
-        sensor_hf = h5py.File(sensor_dat, 'r')
-        sensor_unix = sensor_hf['unix_time'][:]
+        sensor_unix = self.sub_info_hf['sensor_unix_time'][:]
         if any(np.isnan(sensor_unix)):
             print('There is empty sensorHk file!')
             return bias_volt_evts
@@ -300,8 +298,7 @@ class pre_qual_cut_loader:
                 quick_qual_check(bias_volt_evts != 0, self.evt_num, f'bias voltage events')
             return bias_volt_evts
 
-        dda_volt = sensor_hf['dda_volt'][:]
-        del sensor_dat, sensor_hf
+        dda_volt = self.sub_info_hf['dda_volt'][:]
         good_dda_bool = np.logical_and(dda_volt > volt_cut[0], dda_volt < volt_cut[1])
         if sensor_unix_len == 1:
             print('There is single sensorHk values!')
@@ -381,7 +378,7 @@ class pre_qual_cut_loader:
         bad_sec = np.sort(np.unique(bad_sec))
         del sec_arr, bad_rate_idx
 
-        bad_pps_idx = np.in1d(self.pps_num, bad_sec)
+        bad_pps_idx = np.in1d(self.pps_sort, bad_sec)
         bad_evt_sort = self.evt_sort[bad_pps_idx]
         del bad_pps_idx, bad_sec
 
@@ -649,7 +646,7 @@ class ped_qual_cut_loader:
                 block_usage[blk_idx_arr, 2] += 1
             del blk_idx_arr
 
-        low_block_usage = np.any(block_usage < self.minimum_usage + 1, axis = 0).astype(int)
+        low_block_usage = np.any(block_usage < self.minimum_usage, axis = 0).astype(int)
         print(f'low_block_usage flag: {low_block_usage}')
 
         return block_usage, low_block_usage
@@ -710,7 +707,7 @@ class ped_qual_cut_loader:
             del ped_count_dat, ped_count_hf, run_info
         zero_ped_counts = ped_counts < 1
         ped_blk_counts = ped_counts == 1
-        low_ped_counts = ped_counts < self.minimum_usage + 1
+        low_ped_counts = ped_counts < self.minimum_usage 
         del ped_counts
 
         ped_qual_cut = np.full((self.num_evts, 3), 0, dtype = int)
