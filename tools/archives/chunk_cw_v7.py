@@ -35,16 +35,16 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
     trig_idx = 0
     ara_qual = qual_cut_loader(analyze_blind_dat = analyze_blind_dat, verbose = True)
     total_qual_cut = ara_qual.load_qual_cut_result(ara_uproot.station_id, ara_uproot.run)
-    rf_evt = ara_qual.rf_evt_num
-    clean_evt = ara_qual.clean_rf_evt_num
-
-    num_rf_evts = len(rf_evt)
-    rf_idx = np.in1d(evt_num, rf_evt)
-    daq_qual_sum = ara_qual.daq_qual_cut_sum[rf_idx]
-    rf_entry = entry_num[rf_idx]
-    clean_rf_evt_idx = ara_qual.total_qual_cut_sum[rf_idx] == 0
+    qual_cut_sum = ara_qual.total_qual_cut_sum
+    daq_qual_sum = ara_qual.daq_qual_cut_sum[trig_type == trig_idx]
+    rf_evt = evt_num[trig_type == trig_idx]
+    rf_entry = entry_num[trig_type == trig_idx]
+    num_rf_evts = len(rf_entry)
+    clean_rf_evt_idx = qual_cut_sum[trig_type == trig_idx]
+    clean_rf_evt_idx = clean_rf_evt_idx == 0
+    clean_evt = evt_num[np.logical_and(qual_cut_sum == 0, trig_type == trig_idx)]
     print(f'Number of clean event is {len(clean_evt)}') 
-    del ara_qual, ara_uproot, entry_num, rf_idx
+    del qual_cut_sum, ara_qual, ara_uproot, entry_num
 
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_rfft = True, use_band_pass = True, use_cw = True)
@@ -62,11 +62,15 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
     fft_rf_map = np.full((freq_bin_len, amp_bin_len, num_ants), 0, dtype = int)
     fft_rf_cut_map = np.copy(fft_rf_map)
     map_dim = fft_rf_map.shape
-    sol_pad = 150
+    sol_pad = 200
     sub_freq = np.full((sol_pad, num_ants, num_rf_evts), np.nan, dtype = float)
+    sub_freq_err = np.copy(sub_freq)
     sub_amp = np.copy(sub_freq)
     sub_amp_err = np.copy(sub_freq)
+    sub_amp_guess = np.copy(sub_freq)
+    sub_phase = np.copy(sub_freq)
     sub_phase_err = np.copy(sub_freq)
+    sub_phase_guess = np.copy(sub_freq)
     sub_power = np.copy(sub_freq)
     sub_ratio = np.copy(sub_freq)
     del sol_pad, freq_bin_len, amp_bin_len
@@ -90,12 +94,25 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
             wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True)
             num_sols = wf_int.sin_sub.num_sols
             sub_freq[:num_sols, ant, evt] = wf_int.sin_sub.sub_freqs
+            sub_freq_err[:num_sols, ant, evt] = wf_int.sin_sub.sub_freq_errs
             sub_amp[:num_sols, ant, evt] = wf_int.sin_sub.sub_amps
             sub_amp_err[:num_sols, ant, evt] = wf_int.sin_sub.sub_amp_errs
+            sub_amp_guess[:num_sols, ant, evt] = wf_int.sin_sub.sub_amp_guesses
+            sub_phase[:num_sols, ant, evt] = wf_int.sin_sub.sub_phases
             sub_phase_err[:num_sols, ant, evt] = wf_int.sin_sub.sub_phase_errs
+            sub_phase_guess[:num_sols, ant, evt] = wf_int.sin_sub.sub_phase_guesses
             sub_power[:num_sols+1, ant, evt] = wf_int.sin_sub.sub_powers
             sub_ratio[:num_sols, ant, evt] = wf_int.sin_sub.sub_ratios
-            del raw_t, raw_v, num_sols 
+            """num_sols_400 = wf_int.sin_sub_400.num_sols
+            sub_freq[num_sols:num_sols+num_sols_400, ant, evt] = wf_int.sin_sub_400.sub_freqs
+            sub_freq_err[num_sols:num_sols+num_sols_400, ant, evt] = wf_int.sin_sub_400.sub_freq_errs
+            sub_amp[num_sols:num_sols+num_sols_400, ant, evt] = wf_int.sin_sub_400.sub_amps
+            sub_amp_err[num_sols:num_sols+num_sols_400, ant, evt] = wf_int.sin_sub_400.sub_amp_errs
+            sub_phase[num_sols:num_sols+num_sols_400, ant, evt] = wf_int.sin_sub_400.sub_phases
+            sub_phase_err[num_sols:num_sols+num_sols_400, ant, evt] = wf_int.sin_sub_400.sub_phase_errs
+            sub_power[num_sols+1:num_sols+1+num_sols_400+1, ant, evt] = wf_int.sin_sub_400.sub_powers
+            sub_ratio[num_sols:num_sols+num_sols_400, ant, evt] = wf_int.sin_sub_400.sub_ratios"""
+            del raw_t, raw_v, num_sols#, num_sols_400 
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()
 
@@ -119,8 +136,8 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
     del ara_hist
 
     print('power')
-    power_range = np.arange(0, 2000, 4)
-    power_bins = np.linspace(0, 2000, 500 + 1)
+    power_range = np.arange(0, 2000, 2)
+    power_bins = np.linspace(0, 2000, 1000 + 1)
     ara_hist = hist_loader(power_bins)
     power_bin_center = ara_hist.bin_x_center
     power_rf_hist = ara_hist.get_1d_hist(sub_power, use_flat = True)
@@ -128,44 +145,25 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
     del ara_hist
 
     print('ratio')
-    ratio_range = np.arange(0, 1, 0.02)
-    ratio_bins = np.linspace(0, 1, 50 + 1)
+    ratio_range = np.arange(0, 1.2, 0.02)
+    ratio_bins = np.linspace(0, 1.2, 60 + 1)
     ara_hist = hist_loader(ratio_bins)
     ratio_bin_center = ara_hist.bin_x_center    
     ratio_rf_hist = ara_hist.get_1d_hist(sub_ratio, use_flat = True)
     ratio_rf_cut_hist = ara_hist.get_1d_hist(sub_ratio, cut = ~clean_rf_evt_idx, use_flat = True)
     del ara_hist
 
-    print('amp error')
-    amp_err_range = np.arange(0, 150, 1) 
-    amp_err_bins = np.linspace(0, 150, 150 + 1)
-    ara_hist = hist_loader(amp_err_bins)
-    amp_err_bin_center = ara_hist.bin_x_center
+    print('error')
+    err_range = np.arange(0, 150, 1) 
+    err_bins = np.linspace(0, 150, 150 + 1)
+    ara_hist = hist_loader(err_bins)
+    err_bin_center = ara_hist.bin_x_center
+    freq_err_rf_hist = ara_hist.get_1d_hist(sub_freq_err, use_flat = True)
+    freq_err_rf_cut_hist = ara_hist.get_1d_hist(sub_freq_err, cut = ~clean_rf_evt_idx, use_flat = True)    
     amp_err_rf_hist = ara_hist.get_1d_hist(sub_amp_err, use_flat = True)
     amp_err_rf_cut_hist = ara_hist.get_1d_hist(sub_amp_err, cut = ~clean_rf_evt_idx, use_flat = True)
-    del ara_hist
-
-    print('phase error')
-    phase_err_range = np.arange(0, 10, 0.1)
-    phase_err_bins = np.linspace(0, 10, 100 + 1)
-    ara_hist = hist_loader(phase_err_bins)
-    phase_err_bin_center = ara_hist.bin_x_center
     phase_err_rf_hist = ara_hist.get_1d_hist(sub_phase_err, use_flat = True)
     phase_err_rf_cut_hist = ara_hist.get_1d_hist(sub_phase_err, cut = ~clean_rf_evt_idx, use_flat = True)
-    del ara_hist 
-
-    print('2d')
-    ara_hist = hist_loader(amp_err_bins, ratio_bins)
-    amp_err_ratio_rf_map = ara_hist.get_2d_hist(sub_amp_err, sub_ratio, use_flat = True)
-    amp_err_ratio_rf_cut_map = ara_hist.get_2d_hist(sub_amp_err, sub_ratio, cut = ~clean_rf_evt_idx, use_flat = True)
-    del ara_hist
-    ara_hist = hist_loader(phase_err_bins, ratio_bins)
-    phase_err_ratio_rf_map = ara_hist.get_2d_hist(sub_phase_err, sub_ratio, use_flat = True)
-    phase_err_ratio_rf_cut_map = ara_hist.get_2d_hist(sub_phase_err, sub_ratio, cut = ~clean_rf_evt_idx, use_flat = True)
-    del ara_hist
-    ara_hist = hist_loader(amp_bins, ratio_bins)
-    amp_ratio_rf_map = ara_hist.get_2d_hist(sub_amp, sub_ratio, use_flat = True)
-    amp_ratio_rf_cut_map = ara_hist.get_2d_hist(sub_amp, sub_ratio, cut = ~clean_rf_evt_idx, use_flat = True)
     del ara_hist, clean_rf_evt_idx
 
     print('cw collecting is done!')
@@ -178,9 +176,13 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
             'pps_number':pps_number,
             'total_qual_cut':total_qual_cut,
             'sub_freq':sub_freq,
+            'sub_freq_err':sub_freq_err,
             'sub_amp':sub_amp,
             'sub_amp_err':sub_amp_err,
+            'sub_amp_guess':sub_amp_guess,
+            'sub_phase':sub_phase,
             'sub_phase_err':sub_phase_err,
+            'sub_phase_guess':sub_phase_guess,
             'sub_power':sub_power,
             'sub_ratio':sub_ratio,
             'freq_range':freq_range,
@@ -195,12 +197,9 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
             'ratio_range':ratio_range,
             'ratio_bins':ratio_bins,
             'ratio_bin_center':ratio_bin_center,
-            'amp_err_range':amp_err_range,
-            'amp_err_bins':amp_err_bins,
-            'amp_err_bin_center':amp_err_bin_center,
-            'phase_err_range':phase_err_range,
-            'phase_err_bins':phase_err_bins,
-            'phase_err_bin_center':phase_err_bin_center,
+            'err_range':err_range,
+            'err_bins':err_bins,
+            'err_bin_center':err_bin_center,
             'fft_rf_map':fft_rf_map,
             'fft_rf_cut_map':fft_rf_cut_map,
             'sub_rf_map':sub_rf_map,
@@ -209,14 +208,13 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
             'power_rf_cut_hist':power_rf_cut_hist,
             'ratio_rf_hist':ratio_rf_hist,
             'ratio_rf_cut_hist':ratio_rf_cut_hist,
+            'freq_err_rf_hist':freq_err_rf_hist,
+            'freq_err_rf_cut_hist':freq_err_rf_cut_hist,
             'amp_err_rf_hist':amp_err_rf_hist,
             'amp_err_rf_cut_hist':amp_err_rf_cut_hist,
             'phase_err_rf_hist':phase_err_rf_hist,
-            'phase_err_rf_cut_hist':phase_err_rf_cut_hist,
-            'amp_err_ratio_rf_map':amp_err_ratio_rf_map,
-            'amp_err_ratio_rf_cut_map':amp_err_ratio_rf_cut_map,
-            'phase_err_ratio_rf_map':phase_err_ratio_rf_map,
-            'phase_err_ratio_rf_cut_map':phase_err_ratio_rf_cut_map,
-            'amp_ratio_rf_map':amp_ratio_rf_map,
-            'amp_ratio_rf_cut_map':amp_ratio_rf_cut_map}
+            'phase_err_rf_cut_hist':phase_err_rf_cut_hist}
+
+
+
 

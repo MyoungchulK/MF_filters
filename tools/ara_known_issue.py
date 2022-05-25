@@ -584,7 +584,7 @@ class known_issue_loader:
 
         return bad_unix_time
 
-    def get_knwon_bad_run(self):
+    def get_knwon_bad_run(self, use_qual = False):
 
         bad_surface_run = self.get_bad_surface_run()
         bad_run = self.get_bad_run()
@@ -595,9 +595,12 @@ class known_issue_loader:
         knwon_bad_run = np.append(knwon_bad_run, ARARunLogDataBase)
         ob_bad_run = self.get_obviously_bad_run()
         knwon_bad_run = np.append(knwon_bad_run, ob_bad_run)
-        qual_bad_run = self.get_qual_bad_run()
-        knwon_bad_run = np.append(knwon_bad_run, qual_bad_run)
+        if use_qual:
+            qual_bad_run = self.get_qual_bad_run()
+            knwon_bad_run = np.append(knwon_bad_run, qual_bad_run)
+            del qual_bad_run
         knwon_bad_run = np.unique(knwon_bad_run)
+        del bad_surface_run, bad_run, L0_to_L1_Processing, ARARunLogDataBase, ob_bad_run
 
         #untagged_calpulser_run = self.get_untagged_calpulser_run()
         #knwon_bad_run = np.append(knwon_bad_run, untagged_calpulser_run) 

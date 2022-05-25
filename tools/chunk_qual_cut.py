@@ -11,7 +11,8 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
     from tools.ara_quality_cut import pre_qual_cut_loader
     from tools.ara_quality_cut import post_qual_cut_loader
     from tools.ara_quality_cut import ped_qual_cut_loader
-    from tools.ara_quality_cut import get_bad_run
+    from tools.ara_quality_cut import run_qual_cut_loader
+    from tools.ara_quality_cut import get_live_time
 
     # data config
     ara_uproot = ara_uproot_loader(Data)
@@ -25,13 +26,17 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
     st = ara_uproot.station_id
     ara_root = ara_root_loader(Data, Ped, st, ara_uproot.year)
 
-    # quality cut config
+    # pre quality cut
     pre_qual = pre_qual_cut_loader(ara_uproot, analyze_blind_dat = analyze_blind_dat, verbose = True)
     pre_qual_cut = pre_qual.run_pre_qual_cut()
     pre_qual_cut_sum = pre_qual.pre_qual_cut_sum
     daq_qual_cut_sum = pre_qual.daq_qual_cut_sum
-    post_qual = post_qual_cut_loader(ara_uproot, ara_root, verbose = True)
+    dig_dead = pre_qual.dig_dead
+    buff_dead = pre_qual.buff_dead
     del pre_qual
+
+    # post quality cut
+    post_qual = post_qual_cut_loader(ara_uproot, ara_root, verbose = True)
 
     # loop over the events
     for evt in tqdm(range(num_evts)):
@@ -41,14 +46,14 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
 
         # post quality cut
         post_qual.run_post_qual_cut(evt)
-    del ara_root, num_evts
+    del ara_root
 
     # post quality cut
     post_qual_cut = post_qual.get_post_qual_cut()
     post_qual_cut_sum = post_qual.post_qual_cut_sum
     del post_qual
 
-    # total quality cut
+    # 1st total quality cut
     total_qual_cut = np.append(pre_qual_cut, post_qual_cut, axis = 1)
     del pre_qual_cut, post_qual_cut
 
@@ -59,21 +64,39 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
     ped_qual_cut_sum = ped_qual.ped_qual_cut_sum
     del ara_uproot, ped_qual
 
-    # final total quality cut
+    # 2nd total quality cut
     total_qual_cut = np.append(total_qual_cut, ped_qual_cut, axis = 1)
-    total_qual_cut_sum = np.nansum(total_qual_cut, axis = 1)
+    total_qual_cut_sum_2nd = np.nansum(total_qual_cut, axis = 1)
     del ped_qual_cut
 
-    # bad run
-    if analyze_blind_dat:
-        bad_run = get_bad_run(st, run, total_qual_cut_sum, ped_qual_cut_sum)
-    else:
-        bad_run = np.full((2), np.nan, dtype = float)
-    del st, run
+    # run quality cut
+    run_qual = run_qual_cut_loader(st, run, num_evts, total_qual_cut_sum_2nd, ped_qual_cut_sum, analyze_blind_dat = analyze_blind_dat, verbose = True)
+    run_qual_cut = run_qual.run_run_qual_cut()
+    run_qual_cut_sum = run_qual.run_qual_cut_sum
+    run_qual.get_bad_run_list()
+    bad_run = run_qual.bad_run
+    del st, run, num_evts, total_qual_cut_sum_2nd, run_qual
+
+    # final total quality cut
+    total_qual_cut = np.append(total_qual_cut, run_qual_cut, axis = 1) 
+    total_qual_cut_sum = np.nansum(total_qual_cut, axis = 1)
+    del run_qual_cut
+
+    # event_number
+    rf_evt_num = evt_num[trig_type == 0]
+    clean_evt_num = evt_num[total_qual_cut_sum == 0]
+    clean_rf_evt_num = evt_num[(total_qual_cut_sum == 0) & (trig_type == 0)]
+
+    # live time
+    live_time, clean_live_time = get_live_time(unix_time, cut = total_qual_cut_sum, dead = dig_dead + buff_dead, verbose = True)
+    del dig_dead, buff_dead
 
     print('Quality cut is done!')
 
     return {'evt_num':evt_num,
+            'rf_evt_num':rf_evt_num,
+            'clean_evt_num':clean_evt_num,
+            'clean_rf_evt_num':clean_rf_evt_num,
             'trig_type':trig_type,
             'unix_time':unix_time,
             'pps_number':pps_number,
@@ -82,6 +105,7 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
             'pre_qual_cut_sum':pre_qual_cut_sum,
             'post_qual_cut_sum':post_qual_cut_sum,
             'ped_qual_cut_sum':ped_qual_cut_sum,
+            'run_qual_cut_sum':run_qual_cut_sum,
             'total_qual_cut_sum':total_qual_cut_sum,
             'bad_run':bad_run,
             'ped_qual_evt_num':ped_qual_evt_num,
@@ -91,7 +115,9 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
             'ped_low_blk_usage':ped_low_blk_usage,
             'ped_qualities':ped_qualities,
             'ped_counts':ped_counts,
-            'ped_final_type':ped_final_type}
+            'ped_final_type':ped_final_type,
+            'live_time':live_time,
+            'clean_live_time':clean_live_time}
 
 
 

@@ -6,6 +6,7 @@ import h5py
 # custom lib
 from tools.ara_constant import ara_const
 from tools.ara_run_manager import run_info_loader
+from tools.ara_known_issue import known_issue_loader
 
 ara_const = ara_const()
 num_ddas = ara_const.DDA_PER_ATRI
@@ -15,12 +16,16 @@ num_eles = ara_const.CHANNELS_PER_ATRI
 num_samps = ara_const.SAMPLES_PER_BLOCK
 num_chs = ara_const.RFCHAN_PER_DDA
 
-def quick_qual_check(dat_bool, dat_idx, ser_val):
+def quick_qual_check(dat_bool, ser_val, dat_idx = None):
 
     bool_len = np.count_nonzero(dat_bool)
+    message = f'Qcut, {ser_val}:'
     if bool_len > 0:
-        print(f'Qcut, {ser_val}:', bool_len, dat_idx[dat_bool])
-    del bool_len
+        if dat_idx is not None:
+            print(message, bool_len, dat_idx[dat_bool])
+        else:
+            print(message, bool_len)
+    del bool_len, message
 
 class pre_qual_cut_loader:
 
@@ -44,6 +49,12 @@ class pre_qual_cut_loader:
         self.evt_sort = self.sub_info_hf['evt_num_sort'][:]
         self.unix_sort = self.sub_info_hf['unix_time_sort'][:]
         self.pps_sort = self.sub_info_hf['pps_number_sort_reset'][:]
+        self.dig_dead = self.sub_info_hf['dig_dead'][:]
+        self.dig_dead = self.dig_dead.astype(float)
+        self.dig_dead *= 1e-6
+        self.buff_dead = self.sub_info_hf['buff_dead'][:]
+        self.buff_dead = self.buff_dead.astype(float)
+        self.buff_dead *= 1e-6
         del sub_info_dat, run_info
 
     def get_daq_structure_errors(self):
@@ -100,11 +111,11 @@ class pre_qual_cut_loader:
         del bi_ch_mask, dda_ch, dda_idx
 
         if self.verbose:
-            quick_qual_check(daq_st_err[:, 0] != 0, self.evt_num, 'bad block length events')
-            quick_qual_check(daq_st_err[:, 1] != 0, self.evt_num, 'bad block index events')
-            quick_qual_check(daq_st_err[:, 2] != 0, self.evt_num, 'block gap events')
-            quick_qual_check(daq_st_err[:, 3] != 0, self.evt_num, 'bad dda index events')
-            quick_qual_check(daq_st_err[:, 4] != 0, self.evt_num, 'bad channel mask events')
+            quick_qual_check(daq_st_err[:, 0] != 0, 'bad block length events', self.evt_num)
+            quick_qual_check(daq_st_err[:, 1] != 0, 'bad block index events', self.evt_num)
+            quick_qual_check(daq_st_err[:, 2] != 0, 'block gap events', self.evt_num)
+            quick_qual_check(daq_st_err[:, 3] != 0, 'bad dda index events', self.evt_num)
+            quick_qual_check(daq_st_err[:, 4] != 0, 'bad channel mask events', self.evt_num)
 
         return daq_st_err
 
@@ -200,10 +211,10 @@ class pre_qual_cut_loader:
         del bad_single_evts, bad_rf_evts, bad_cal_evts, bad_soft_evts
 
         if self.verbose:
-            quick_qual_check(read_win_err[:, 0] != 0, self.evt_num, 'single block events')         
-            quick_qual_check(read_win_err[:, 1] != 0, self.evt_num, 'bad rf readout window events')         
-            quick_qual_check(read_win_err[:, 2] != 0, self.evt_num, 'bad cal readout window events')         
-            quick_qual_check(read_win_err[:, 3] != 0, self.evt_num, 'bad soft readout window events')         
+            quick_qual_check(read_win_err[:, 0] != 0, 'single block events', self.evt_num)         
+            quick_qual_check(read_win_err[:, 1] != 0, 'bad rf readout window events', self.evt_num)         
+            quick_qual_check(read_win_err[:, 2] != 0, 'bad cal readout window events', self.evt_num)         
+            quick_qual_check(read_win_err[:, 3] != 0, 'bad soft readout window events', self.evt_num)         
 
         return read_win_err
 
@@ -214,7 +225,7 @@ class pre_qual_cut_loader:
         if self.st == 3 and self.run == 3461: # condamn this run...
             bad_unix_sequence[:] = 1
             if self.verbose:
-                quick_qual_check(bad_unix_sequence != 0, self.evt_num, 'bad unix sequence')
+                quick_qual_check(bad_unix_sequence != 0, 'bad unix sequence', self.evt_num)
             return bad_unix_sequence
         
         n_idxs = np.where(np.diff(self.unix_sort) < 0)[0]
@@ -237,13 +248,12 @@ class pre_qual_cut_loader:
         del n_idxs
 
         if self.verbose:
-            quick_qual_check(bad_unix_sequence != 0, self.evt_num, 'bad unix sequence')
+            quick_qual_check(bad_unix_sequence != 0, 'bad unix sequence', self.evt_num)
 
         return bad_unix_sequence
 
     def get_bad_unix_time_events(self, add_unchecked_unix_time = False):
 
-        from tools.ara_known_issue import known_issue_loader
         ara_known_issue = known_issue_loader(self.st)
 
         bad_unix_evts = np.full((self.num_evts), 0, dtype = int)
@@ -257,7 +267,7 @@ class pre_qual_cut_loader:
         del ara_known_issue
         
         if self.verbose:
-            quick_qual_check(bad_unix_evts != 0, self.evt_num, 'bad unix time')
+            quick_qual_check(bad_unix_evts != 0, 'bad unix time', self.evt_num)
 
         return bad_unix_evts
         
@@ -277,7 +287,7 @@ class pre_qual_cut_loader:
         del first_min_evt_bools, first_min_evt_sort_bools
 
         if self.verbose:
-            quick_qual_check(first_min_evts != 0, self.evt_num, f'first minute events')
+            quick_qual_check(first_min_evts != 0, 'first minute events', self.evt_num)
 
         return first_min_evts
 
@@ -295,7 +305,7 @@ class pre_qual_cut_loader:
             print('There is empty sensorHk file!')
             bias_volt_evts[:] = 1
             if self.verbose:
-                quick_qual_check(bias_volt_evts != 0, self.evt_num, f'bias voltage events')
+                quick_qual_check(bias_volt_evts != 0, 'bias voltage events', self.evt_num)
             return bias_volt_evts
 
         dda_volt = self.sub_info_hf['dda_volt'][:]
@@ -318,7 +328,7 @@ class pre_qual_cut_loader:
         del volt_cut, sensor_unix, sensor_unix_len, unix_digi, dda_digi_idx, good_digi_bool
 
         if self.verbose:
-            quick_qual_check(bias_volt_evts != 0, self.evt_num, f'bias voltage events')
+            quick_qual_check(bias_volt_evts != 0, 'bias voltage events', self.evt_num)
 
         return bias_volt_evts
    
@@ -344,7 +354,7 @@ class pre_qual_cut_loader:
             no_cal_evts[:] = 1
 
         if self.verbose:
-            quick_qual_check(no_cal_evts != 0, self.evt_num, f'no calpulser events')
+            quick_qual_check(no_cal_evts != 0, 'no calpulser events', self.evt_num)
 
         return no_cal_evts
 
@@ -430,9 +440,9 @@ class pre_qual_cut_loader:
             bad_rate_evts[:, 1] = 0
 
         if self.verbose:
-            quick_qual_check(bad_rate_evts[:, 0] != 0, self.evt_num, f'bad rf {bin_type} rate events')
-            quick_qual_check(bad_rate_evts[:, 1] != 0, self.evt_num, f'bad calpulser {bin_type} rate events')
-            quick_qual_check(bad_rate_evts[:, 2] != 0, self.evt_num, f'bad software {bin_type} rate events')
+            quick_qual_check(bad_rate_evts[:, 0] != 0, f'bad rf {bin_type} rate events', self.evt_num)
+            quick_qual_check(bad_rate_evts[:, 1] != 0, f'bad calpulser {bin_type} rate events', self.evt_num)
+            quick_qual_check(bad_rate_evts[:, 2] != 0, f'bad software {bin_type} rate events', self.evt_num)
 
         return bad_rate_evts
 
@@ -462,7 +472,7 @@ class pre_qual_cut_loader:
         del bad_rf_sort, self.rate_bins
 
         if self.verbose:
-            quick_qual_check(high_rf_rate_evts != 0, self.evt_num, 'high rf sec rate events')
+            quick_qual_check(high_rf_rate_evts != 0, 'high rf sec rate events', self.evt_num)
     
         return high_rf_rate_evts
 
@@ -484,8 +494,8 @@ class pre_qual_cut_loader:
         self.pre_qual_cut_sum = np.nansum(tot_pre_qual_cut, axis = 1)
 
         if self.verbose:
-            quick_qual_check(self.daq_qual_cut_sum != 0, self.evt_num, 'daq error cut!')
-            quick_qual_check(self.pre_qual_cut_sum != 0, self.evt_num, 'total pre qual cut!')
+            quick_qual_check(self.daq_qual_cut_sum != 0, 'daq error cut!', self.evt_num)
+            quick_qual_check(self.pre_qual_cut_sum != 0, 'total pre qual cut!', self.evt_num)
 
         return tot_pre_qual_cut
 
@@ -503,7 +513,6 @@ class post_qual_cut_loader:
         self.ara_root = ara_root
         self.verbose = verbose
  
-        from tools.ara_known_issue import known_issue_loader
         ara_known_issue = known_issue_loader(self.st)
         self.bad_ant = ara_known_issue.get_bad_antenna(self.run)
         del ara_known_issue, ara_uproot#, wf_int
@@ -562,8 +571,8 @@ class post_qual_cut_loader:
         self.post_qual_cut_sum = np.nansum(tot_post_qual_cut, axis = 1)
 
         if self.verbose:
-            quick_qual_check(tot_post_qual_cut[:, 0] != 0, self.evt_num, 'unlocked calpulser events!')
-            quick_qual_check(self.post_qual_cut_sum != 0, self.evt_num, 'total post qual cut!')
+            quick_qual_check(tot_post_qual_cut[:, 0] != 0, 'unlocked calpulser events!', self.evt_num)
+            quick_qual_check(self.post_qual_cut_sum != 0, 'total post qual cut!', self.evt_num)
         
         return tot_post_qual_cut
 
@@ -730,50 +739,143 @@ class ped_qual_cut_loader:
         self.ped_qual_cut_sum = np.nansum(ped_qual_cut, axis = 1)
 
         if self.verbose:
-            quick_qual_check(ped_qual_cut[:, 0] != 0, self.evt_num, f'zero pedestal events')
-            quick_qual_check(ped_qual_cut[:, 1] != 0, self.evt_num, f'pedestal block events')
-            quick_qual_check(ped_qual_cut[:, 2] != 0, self.evt_num, f'low pedestal block events')
-            quick_qual_check(self.ped_qual_cut_sum != 0, self.evt_num, 'total pedestal qual cut!')
+            quick_qual_check(ped_qual_cut[:, 0] != 0, 'zero pedestal events', self.evt_num)
+            quick_qual_check(ped_qual_cut[:, 1] != 0, 'pedestal block events', self.evt_num)
+            quick_qual_check(ped_qual_cut[:, 2] != 0, 'low pedestal block events', self.evt_num)
+            quick_qual_check(self.ped_qual_cut_sum != 0, 'total pedestal qual cut!', self.evt_num)
 
         return ped_qual_cut
 
-def get_bad_run(st, run, qual_cut_sum, ped_cut_sum):
+class run_qual_cut_loader:
 
-    # bad run
-    sum_flag = np.all(qual_cut_sum != 0)
-    ped_flag = np.any(ped_cut_sum != 0)
-    bad_run = np.array([0, 0], dtype = int)
+    def __init__(self, st, run, num_evts, qual_cut_sum, ped_cut_sum, analyze_blind_dat = False, verbose = False):
 
-    if sum_flag or ped_flag:
-        bad_run[0] = int(sum_flag)
-        bad_run[1] = int(ped_flag)
-        print(f'A{st} R{run} is bad!!! Bad type:{bad_run}')
-        bad_path = f'/home/mkim/analysis/MF_filters/data/qual_runs/qual_run_A{st}.txt'
-        bad_run_info = f'{run} {bad_run[0]} {bad_run[1]}\n'
-        if os.path.exists(bad_path):
-            print(f'There is {bad_path}')
-            bad_run_arr = []
-            with open(bad_path, 'r') as f:
-                for lines in f:
-                    run_num = int(lines.split()[0])
-                    bad_run_arr.append(run_num)
-            bad_run_arr = np.asarray(bad_run_arr, dtype = int)
-            if run in bad_run_arr:
-                print(f'Run{run} is already in {bad_path}!')
-            else:
-                print(f'Add run{run} in {bad_path}!')
-                with open(bad_path, 'a') as f:
-                    f.write(bad_run_info)
-            del bad_run_arr
+        self.analyze_blind_dat = analyze_blind_dat
+        self.verbose = verbose
+        self.st = st
+        self.run = run
+        self.num_evts = num_evts       
+ 
+        ara_known_issue = known_issue_loader(self.st)
+        bad_runs = ara_known_issue.get_knwon_bad_run()
+        self.run_flag = int(self.run in bad_runs)
+        if self.run_flag == 1 and self.verbose:
+            print(f'A{self.st} Run{self.run} is known bad run!') 
+        del bad_runs, ara_known_issue
+
+        self.sum_flag = np.all(qual_cut_sum != 0)
+        if self.analyze_blind_dat:
+            self.ped_flag = np.any(ped_cut_sum != 0)
+            dat_type = int
+            fill_val = 0
         else:
-            print(f'There is NO {bad_path}')
-            print(f'Add run{run} in {bad_path}!')
-            with open(bad_path, 'w') as f:
-                f.write(bad_run_info)
-        del bad_path, bad_run_info
-    del sum_flag, ped_flag
+            self.ped_flag = np.nan
+            dat_type = float
+            fill_val = np.nan
+        self.bad_run = np.full((3), fill_val, dtype = dat_type)
+        self.bad_run[0] = int(self.sum_flag)
+        self.bad_run[1] = self.ped_flag
+        self.bad_run[2] = self.run_flag
+        del dat_type
+        if self.verbose:
+            print(f'bad run type: {self.bad_run}')
 
-    return bad_run
+    def get_known_bad_run(self):
+
+        known_run_evetns = np.full((self.num_evts), self.run_flag, dtype = int)
+        if self.verbose:
+            quick_qual_check(known_run_evetns != 0, 'known bad run events')    
+
+        return known_run_evetns
+
+    def get_bad_ped_run(self):
+
+        if self.analyze_blind_dat:
+            bad_ped = int(self.ped_flag)
+        else:
+            run_info = run_info_loader(self.st, self.run, analyze_blind_dat = self.analyze_blind_dat)
+            ped_flag_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = self.verbose, force_blind = True)
+            ped_flag_hf = h5py.File(ped_flag_dat, 'r')
+            bad_ped = ped_flag_hf['bad_run'][1]
+            del run_info, ped_flag_dat, ped_flag_hf
+        known_ped_evetns = np.full((self.num_evts), bad_ped, dtype = int)
+        del bad_ped
+        if self.verbose:
+            quick_qual_check(known_ped_evetns != 0, 'known bad pedestal events')
+    
+        return known_ped_evetns
+
+    def run_run_qual_cut(self):
+
+        tot_run_qual_cut = np.full((self.num_evts, 2), 0, dtype = int)
+        tot_run_qual_cut[:, 0] = self.get_known_bad_run()
+        tot_run_qual_cut[:, 1] = self.get_bad_ped_run()
+
+        self.run_qual_cut_sum = np.nansum(tot_run_qual_cut, axis = 1)
+
+        if self.verbose:
+            quick_qual_check(self.run_qual_cut_sum != 0, 'total run qual cut!')
+
+        return tot_run_qual_cut
+
+    def get_bad_run_list(self):
+
+        if self.analyze_blind_dat:
+            if self.sum_flag or self.ped_flag:
+                if self.verbose:
+                    print(f'A{self.st} R{self.run} is bad!!! Bad type: {self.bad_run[:2]}')
+                bad_path = f'../data/qual_runs/qual_run_A{self.st}.txt'
+                bad_run_info = f'{self.run} {self.bad_run[0]} {self.bad_run[1]}\n'
+                if os.path.exists(bad_path):
+                    if self.verbose:
+                        print(f'There is {bad_path}')
+                    bad_run_arr = []
+                    with open(bad_path, 'r') as f:
+                        for lines in f:
+                            run_num = int(lines.split()[0])
+                            bad_run_arr.append(run_num)
+                    bad_run_arr = np.asarray(bad_run_arr, dtype = int)
+                    if self.run in bad_run_arr:
+                        if self.verbose:
+                            print(f'Run{self.run} is already in {bad_path}!')
+                        else:
+                            pass
+                    else:
+                        if self.verbose:
+                            print(f'Add run{self.run} in {bad_path}!')
+                        with open(bad_path, 'a') as f:
+                            f.write(bad_run_info)
+                    del bad_run_arr
+                else:
+                    if self.verbose:
+                        print(f'There is NO {bad_path}')
+                        print(f'Add run{self.run} in {bad_path}!')
+                    with open(bad_path, 'w') as f:
+                        f.write(bad_run_info)
+                del bad_path, bad_run_info
+
+def get_live_time(unix_time, cut = None, dead = None, verbose = True):
+
+    time = np.abs(unix_time[-1] - unix_time[0])
+    live_time = np.array([time], dtype = float)
+    del time
+
+    if dead is not None:
+        live_time -= np.nansum(dead)    
+
+    if cut is not None:
+        clean_num_evts = np.count_nonzero(cut == 0)
+        num_evts = len(cut)
+        clean_live_time = live_time * (clean_num_evts / num_evts)
+        del clean_num_evts, num_evts
+    else:
+        clean_live_time = np.full((1), np.nan, dtype = float)
+
+    if verbose:
+        print(f'total live time: ~{np.round(live_time[0]/60, 1)} min.')
+        print(f'clean live time: ~{np.round(clean_live_time[0]/60, 1)} min.')
+
+    return live_time, clean_live_time
 
 class qual_cut_loader:
 
@@ -797,14 +899,17 @@ class qual_cut_loader:
             print(f'quality cut path:', d_path)
 
         self.evt_num = qual_file['evt_num'][:]
+        self.rf_evt_num = qual_file['rf_evt_num'][:]
+        self.clean_evt_num = qual_file['clean_evt_num'][:]
+        self.clean_rf_evt_num = qual_file['clean_rf_evt_num'][:]
         self.unix_time = qual_file['unix_time'][:]
         total_qual_cut = qual_file['total_qual_cut'][:]
         self.daq_qual_cut_sum = qual_file['daq_qual_cut_sum'][:]
         self.total_qual_cut_sum = qual_file['total_qual_cut_sum'][:]
 
         if self.verbose:
-            quick_qual_check(self.daq_qual_cut_sum != 0, self.evt_num, 'daq error cut!')
-            quick_qual_check(self.total_qual_cut_sum != 0, self.evt_num, 'total qual cut!')
+            quick_qual_check(self.daq_qual_cut_sum != 0, 'daq error cut!', self.evt_num)
+            quick_qual_check(self.total_qual_cut_sum != 0, 'total qual cut!', self.evt_num)
         del d_key, d_path, qual_file
 
         return total_qual_cut
