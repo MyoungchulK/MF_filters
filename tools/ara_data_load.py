@@ -12,7 +12,7 @@ from tools.ara_constant import ara_const
 
 #link AraRoot
 ROOT.gSystem.Load(os.environ.get('ARA_UTIL_INSTALL_DIR')+"/lib/libAraEvent.so")
-ROOT.gSystem.Load('/cvmfs/ara.opensciencegrid.org/trunk/centos7/misc_build/lib/libRootFftwWrapper.so')
+ROOT.gSystem.Load(os.environ.get('ARA_UTIL_INSTALL_DIR')+"/lib/libRootFftwWrapper.so.3.0.1")
 
 ara_const = ara_const()
 num_useful_chs = ara_const.USEFUL_CHAN_PER_STATION
@@ -671,10 +671,10 @@ class sin_subtract_loader:
         self.dt = dt
 
         self.sin_sub = ROOT.FFTtools.SineSubtract(max_fail_atts, min_power_reduce, False) # no store
-        self.sin_sub.setVerbose(False)
+        #self.sin_sub.setVerbose(True)
         self.sin_sub.setFreqLimits(min_freq, max_freq)
         #self.sin_sub.unsetFreqLimits()
-        
+
     def get_sin_subtract_wf(self, int_v, int_num):
 
         int_v = int_v.astype(np.double)
@@ -685,9 +685,16 @@ class sin_subtract_loader:
 
         self.num_sols = self.sin_sub.getNSines()
         self.sub_freqs = np.frombuffer(self.sin_sub.getFreqs(), dtype = float, count = self.num_sols)
+        self.sub_freq_errs = np.frombuffer(self.sin_sub.getFreqErrs(), dtype = float, count = self.num_sols)
         self.sub_amps = np.frombuffer(self.sin_sub.getAmps(0), dtype = float, count = self.num_sols)
-        #self.sub_phases = np.frombuffer(self.sin_sub.getPhases(0), dtype = float, count = self.num_sols)   
-        #self.sub_powers = np.asarray(self.sin_sub.getPowerSequence(), dtype = float)
+        self.sub_amp_errs = np.frombuffer(self.sin_sub.getAmpErrs(0), dtype = float, count = self.num_sols)
+        self.sub_amp_guesses = np.frombuffer(self.sin_sub.getAmpGuesses(0), dtype = float, count = self.num_sols)
+        self.sub_phases = np.frombuffer(self.sin_sub.getPhases(0), dtype = float, count = self.num_sols)   
+        self.sub_phase_errs = np.frombuffer(self.sin_sub.getPhaseErrs(0), dtype = float, count = self.num_sols)   
+        self.sub_phase_guesses = np.frombuffer(self.sin_sub.getPhaseGuesses(0), dtype = float, count = self.num_sols)   
+        self.sub_powers = np.frombuffer(self.sin_sub.getPowers(), dtype = float, count = self.num_sols + 1)
+        #self.sub_powersequence = np.asarray(self.sin_sub.getPowerSequence(), dtype = float)
+        self.sub_ratios = 1 - self.sub_powers[1:] / self.sub_powers[:-1]
 
         return cw_v
 

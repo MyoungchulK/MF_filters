@@ -33,8 +33,9 @@ class wf_analyzer:
             from tools.ara_data_load import sin_subtract_loader
             #self.sin_sub_150 = sin_subtract_loader(3, 0.05, 0.1, 0.2, self.dt) # strong 150 MHz peak
             #self.sin_sub_250 = sin_subtract_loader(3, 0.05, 0.2, 0.3, self.dt) # strong 250 MHz peak
-            #self.sin_sub_400 = sin_subtract_loader(3, 0.05, 0.35, 0.45, self.dt) # weather balloon
-            #self.sin_sub = sin_subtract_loader(3, 0.1, 0.13, 0.85, self.dt) # for tiny cw
+            #self.sin_sub_400 = sin_subtract_loader(3, 0.01, 0.35, 0.45, self.dt) # weather balloon
+            #self.sin_sub = sin_subtract_loader(3, 0.01, 0.13, 0.85, self.dt) # for tiny cw
+            #self.sin_sub_400 = sin_subtract_loader(3, 0.02, 0.35, 0.45, self.dt) # debug
             self.sin_sub = sin_subtract_loader(3, 0.02, 0.125, 0.85, self.dt) # debug
 
     def get_band_pass_filter(self, low_freq_cut = 0.13, high_freq_cut = 0.85, order = 10, pass_type = 'band'):

@@ -7,7 +7,7 @@ def wf_sim_collector(Data, Station, Year):
 
     from tools.ara_constant import ara_const
     from tools.ara_sim_load import ara_root_loader
-    from tools.ara_wf_analyzer import wf_analyzer
+    from tools.ara_wf_analyzer_temp import wf_analyzer
     from tools.ara_py_interferometers import py_interferometers
 
     # const. info.
@@ -23,7 +23,7 @@ def wf_sim_collector(Data, Station, Year):
     sel_entries = np.arange(sel_evt_len, dtype = int)
  
     # wf analyzer
-    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_band_pass = True, add_double_pad = True, use_rfft = True, use_cw = True, cw_config = (3, 0.05, 0.13, 0.85))
+    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_band_pass = True, add_double_pad = True, use_rfft = True, use_cw = True)
     dt = wf_int.dt
     pad_fft_len = wf_int.pad_fft_len
 
@@ -49,8 +49,8 @@ def wf_sim_collector(Data, Station, Year):
 
     cw_num_sols = np.full((num_ants, sel_evt_len), 0, dtype=int)
     bp_cw_num_sols = np.copy(cw_num_sols)
-    cw_num_freqs = np.full((20, num_ants, sel_evt_len), np.nan, dtype=float)
-    cw_num_amps = np.full((20, num_ants, sel_evt_len), np.nan, dtype=float)
+    cw_num_freqs = np.full((200, num_ants, sel_evt_len), np.nan, dtype=float)
+    cw_num_amps = np.full((200, num_ants, sel_evt_len), np.nan, dtype=float)
     bp_cw_num_freqs = np.copy(cw_num_freqs)
     bp_cw_num_amps = np.copy(cw_num_freqs)
 
@@ -114,8 +114,8 @@ def wf_sim_collector(Data, Station, Year):
             ara_root.del_TGraph()
 
             cw_num_sols[ant, evt] = wf_int.sin_sub.num_sols
-            num_freqs = wf_int.sin_sub.num_freqs
-            num_amps = wf_int.sin_sub.num_amps
+            num_freqs = wf_int.sin_sub.sub_freqs
+            num_amps = wf_int.sin_sub.sub_amps
             cw_num_freqs[:len(num_freqs), ant, evt] = num_freqs
             cw_num_amps[:len(num_amps), ant, evt] = num_amps
         cw_wf_all[:, 0, :, evt] = wf_int.pad_t
@@ -151,8 +151,8 @@ def wf_sim_collector(Data, Station, Year):
             ara_root.del_TGraph()
         
             bp_cw_num_sols[ant, evt] = wf_int.sin_sub.num_sols
-            num_freqs = wf_int.sin_sub.num_freqs
-            num_amps = wf_int.sin_sub.num_amps
+            num_freqs = wf_int.sin_sub.sub_freqs
+            num_amps = wf_int.sin_sub.sub_amps
             bp_cw_num_freqs[:len(num_freqs), ant, evt] = num_freqs
             bp_cw_num_amps[:len(num_amps), ant, evt] = num_amps
         bp_cw_wf_all[:, 0, :, evt] = wf_int.pad_t

@@ -9,7 +9,8 @@ from tqdm import tqdm
 from tools.ara_constant import ara_const
 
 #link AraRoot
-ROOT.gSystem.Load(os.environ.get('ARA_UTIL_INSTALL_DIR')+"/lib/libAra.so")
+ROOT.gSystem.Load(os.environ.get('ARA_UTIL_INSTALL_DIR')+"/../AraSim/libAra.so")
+ROOT.gSystem.Load(os.environ.get('ARA_UTIL_INSTALL_DIR')+"/../AraSim/libSim.so")
 ROOT.gSystem.Load(os.environ.get('ARA_UTIL_INSTALL_DIR')+"/lib/libAraEvent.so")
 
 ara_const = ara_const()
@@ -81,7 +82,7 @@ class ara_root_loader:
             self.view_ang = np.copy(self.rec_ang)
             self.arrival_time = np.copy(self.rec_ang)
             
-            ROOT.gInterpreter.ProcessLine('#include "'+os.environ.get('ARA_UTIL_INSTALL_DIR')+'/../source/AraSim/Report.h"')
+            ROOT.gInterpreter.ProcessLine('#include "'+os.environ.get('ARA_UTIL_INSTALL_DIR')+'/../AraSim/Report.h"')
             AraTree2 = self.file.AraTree2
             for evt in tqdm(range(self.num_evts)):
                 AraTree2.GetEntry(evt)
