@@ -62,7 +62,7 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
     fft_rf_map = np.full((freq_bin_len, amp_bin_len, num_ants), 0, dtype = int)
     fft_rf_cut_map = np.copy(fft_rf_map)
     map_dim = fft_rf_map.shape
-    sol_pad = 150
+    sol_pad = 170
     sub_freq = np.full((sol_pad, num_ants, num_rf_evts), np.nan, dtype = float)
     sub_amp = np.copy(sub_freq)
     sub_amp_err = np.copy(sub_freq)
