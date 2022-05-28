@@ -41,8 +41,11 @@ def cw_add_collector(Station, Run, analyze_blind_dat = False):
     sub_amp_err = np.roll(sub_amp_err, 1, axis = 0)
     sub_phase_err = np.roll(sub_phase_err, 1, axis = 0)
     sub_amp_err[0, bad_ant_idx] = 0
+    sub_amp_err[0, ~bad_ant_idx] = np.nan
     sub_phase_err[0, bad_ant_idx] = 0
+    sub_phase_err[0, ~bad_ant_idx] = np.nan
     sub_ratio[0, bad_ant_idx] = 0
+    sub_ratio[0, ~bad_ant_idx] = np.nan
     del bad_ant_idx
 
     print('hist making')
@@ -114,15 +117,13 @@ def cw_add_collector(Station, Run, analyze_blind_dat = False):
     amp_err_phase_err_rf_cut_map_r = hf['amp_err_phase_err_rf_cut_map'][:]
     amp_err_phase_err_rf_cut_map_r[...] = amp_err_phase_err_rf_cut_map
     hf.close()
-    del sub_freq, sub_ratio, sub_amp_err, sub_phase_err 
-    #del sub_freq, sub_amp, sub_ratio, sub_amp_err, sub_phase_err 
+    del sub_freq, sub_amp, sub_ratio, sub_amp_err, sub_phase_err 
     del hf, ratio_rf_hist, ratio_rf_cut_hist, amp_err_rf_hist, amp_err_rf_cut_hist, phase_err_rf_hist, phase_err_rf_cut_hist
     del amp_err_ratio_rf_map, amp_err_ratio_rf_cut_map, phase_err_ratio_rf_map, phase_err_ratio_rf_cut_map, amp_err_phase_err_rf_map, amp_err_phase_err_rf_cut_map
 
     hf = h5py.File(cw_dat, 'r')
     for f in list(hf):
         print(f)
-    print(np.allclose(hf['sub_amp'].value, sub_amp))
     hf.close()
     del hf, run_info, cw_dat
 
