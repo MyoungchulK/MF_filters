@@ -118,18 +118,18 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     cw_num_sols = np.full((num_ants, sel_evt_len), 0, dtype=int)
     bp_cw_num_sols = np.copy(cw_num_sols)
     cw_num_freqs = np.full((200, num_ants, sel_evt_len), np.nan, dtype=float)
-    cw_num_freq_errs = np.copy(cw_num_freqs)
+    #cw_num_freq_errs = np.copy(cw_num_freqs)
     cw_num_amps = np.copy(cw_num_freqs)
     cw_num_amp_errs = np.copy(cw_num_freqs)
-    cw_num_phases = np.copy(cw_num_freqs)
+    #cw_num_phases = np.copy(cw_num_freqs)
     cw_num_phase_errs = np.copy(cw_num_freqs)
     cw_num_powers = np.copy(cw_num_freqs)
     cw_num_ratios = np.copy(cw_num_freqs)
     bp_cw_num_freqs = np.copy(cw_num_freqs)
-    bp_cw_num_freq_errs = np.copy(cw_num_freqs)
+    #bp_cw_num_freq_errs = np.copy(cw_num_freqs)
     bp_cw_num_amps = np.copy(cw_num_freqs)
     bp_cw_num_amp_errs = np.copy(cw_num_freqs)
-    bp_cw_num_phases = np.copy(cw_num_freqs)
+    #bp_cw_num_phases = np.copy(cw_num_freqs)
     bp_cw_num_phase_errs = np.copy(cw_num_freqs)
     bp_cw_num_powers = np.copy(cw_num_freqs)
     bp_cw_num_ratios = np.copy(cw_num_freqs)
@@ -225,10 +225,10 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             cw_num_sols[ant, evt] = wf_int.sin_sub.num_sols
             num_freqs = wf_int.sin_sub.sub_freqs
             cw_num_freqs[:len(num_freqs), ant, evt] = num_freqs
-            cw_num_freq_errs[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_freq_errs
+            #cw_num_freq_errs[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_freq_errs
             cw_num_amps[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_amps
             cw_num_amp_errs[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_amp_errs
-            cw_num_phases[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_phases
+            #cw_num_phases[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_phases
             cw_num_phase_errs[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_phase_errs
             cw_num_powers[:len(num_freqs)+1, ant, evt] = wf_int.sin_sub.sub_powers
             cw_num_ratios[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_ratios
@@ -267,10 +267,10 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             bp_cw_num_sols[ant, evt] = wf_int.sin_sub.num_sols
             num_freqs = wf_int.sin_sub.sub_freqs
             bp_cw_num_freqs[:len(num_freqs), ant, evt] = num_freqs
-            bp_cw_num_freq_errs[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_freq_errs
+            #bp_cw_num_freq_errs[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_freq_errs
             bp_cw_num_amps[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_amps
             bp_cw_num_amp_errs[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_amp_errs
-            bp_cw_num_phases[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_phases
+            #bp_cw_num_phases[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_phases
             bp_cw_num_phase_errs[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_phase_errs
             bp_cw_num_powers[:len(num_freqs)+1, ant, evt] = wf_int.sin_sub.sub_powers
             bp_cw_num_ratios[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_ratios
@@ -453,18 +453,18 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'cw_num_sols':cw_num_sols,
             'bp_cw_num_sols':bp_cw_num_sols,
             'cw_num_freqs':cw_num_freqs,
-            'cw_num_freq_errs':cw_num_freq_errs,
+            #'cw_num_freq_errs':cw_num_freq_errs,
             'cw_num_amps':cw_num_amps,
             'cw_num_amp_errs':cw_num_amp_errs,
-            'cw_num_phases':cw_num_phases,
+            #'cw_num_phases':cw_num_phases,
             'cw_num_phase_errs':cw_num_phase_errs,
             'cw_num_powers':cw_num_powers,
             'cw_num_ratios':cw_num_ratios,
             'bp_cw_num_freqs':bp_cw_num_freqs,
-            'bp_cw_num_freq_errs':bp_cw_num_freq_errs,
+            #'bp_cw_num_freq_errs':bp_cw_num_freq_errs,
             'bp_cw_num_amps':bp_cw_num_amps,
             'bp_cw_num_amp_errs':bp_cw_num_amp_errs,
-            'bp_cw_num_phases':bp_cw_num_phases,
+            #'bp_cw_num_phases':bp_cw_num_phases,
             'bp_cw_num_phase_errs':bp_cw_num_phase_errs,
             'bp_cw_num_powers':bp_cw_num_powers,
             'bp_cw_num_ratios':bp_cw_num_ratios,

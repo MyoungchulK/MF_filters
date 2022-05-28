@@ -7,7 +7,7 @@ def cw_sim_collector(Data, Station, Year):
 
     from tools.ara_constant import ara_const
     from tools.ara_sim_load import ara_root_loader
-    from tools.ara_wf_analyzer import wf_analyzer
+    from tools.ara_wf_analyzer_temp import wf_analyzer
     from tools.ara_py_interferometers import py_interferometers
 
     # const. info.
@@ -38,10 +38,10 @@ def cw_sim_collector(Data, Station, Year):
     bp_fft = np.copy(freq)
     bp_cw_fft = np.copy(freq)
     bp_cw_num_freqs = np.full((200, num_ants, sel_evt_len), np.nan, dtype=float)
-    bp_cw_num_freq_errs = np.copy(bp_cw_num_freqs)
+    #bp_cw_num_freq_errs = np.copy(bp_cw_num_freqs)
     bp_cw_num_amps = np.copy(bp_cw_num_freqs)
     bp_cw_num_amp_errs = np.copy(bp_cw_num_freqs)
-    bp_cw_num_phases = np.copy(bp_cw_num_freqs)
+    #bp_cw_num_phases = np.copy(bp_cw_num_freqs)
     bp_cw_num_phase_errs = np.copy(bp_cw_num_freqs)
     bp_cw_num_powers = np.copy(bp_cw_num_freqs)
     bp_cw_num_ratios = np.copy(bp_cw_num_freqs)
@@ -97,10 +97,10 @@ def cw_sim_collector(Data, Station, Year):
             wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True)
             num_sols = wf_int.sin_sub.num_sols
             bp_cw_num_freqs[:num_sols, ant, evt] = wf_int.sin_sub.sub_freqs
-            bp_cw_num_freq_errs[:num_sols, ant, evt] = wf_int.sin_sub.sub_freq_errs
+            #bp_cw_num_freq_errs[:num_sols, ant, evt] = wf_int.sin_sub.sub_freq_errs
             bp_cw_num_amps[:num_sols, ant, evt] = wf_int.sin_sub.sub_amps
             bp_cw_num_amp_errs[:num_sols, ant, evt] = wf_int.sin_sub.sub_amp_errs
-            bp_cw_num_phases[:num_sols, ant, evt] = wf_int.sin_sub.sub_phases
+            #bp_cw_num_phases[:num_sols, ant, evt] = wf_int.sin_sub.sub_phases
             bp_cw_num_phase_errs[:num_sols, ant, evt] = wf_int.sin_sub.sub_phase_errs
             bp_cw_num_powers[:num_sols+1, ant, evt] = wf_int.sin_sub.sub_powers
             bp_cw_num_ratios[:num_sols, ant, evt] = wf_int.sin_sub.sub_ratios
@@ -139,11 +139,11 @@ def cw_sim_collector(Data, Station, Year):
             'bp_fft':bp_fft,
             'bp_cw_fft':bp_cw_fft,
             'bp_cw_num_freqs':bp_cw_num_freqs,
-            'bp_cw_num_freq_errs':bp_cw_num_freq_errs,
+            #'bp_cw_num_freq_errs':bp_cw_num_freq_errs,
             'bp_cw_num_amps':bp_cw_num_amps,
             'bp_cw_num_amp_errs':bp_cw_num_amp_errs,
-            'bp_cw_num_phases':bp_cw_num_phases,
-            'bp_cw_num_pahse_errs':bp_cw_num_phase_errs,
+            #'bp_cw_num_phases':bp_cw_num_phases,
+            'bp_cw_num_phase_errs':bp_cw_num_phase_errs,
             'bp_cw_num_powers':bp_cw_num_powers,
             'bp_cw_num_ratios':bp_cw_num_ratios,
             'pairs':pairs,
