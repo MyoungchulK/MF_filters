@@ -67,6 +67,8 @@ amp_err_ratio_rf_map = np.full((amp_err_len, ratio_len, 16), 0, dtype = int)
 amp_err_ratio_rf_cut_map = np.copy(amp_err_ratio_rf_map)
 phase_err_ratio_rf_map = np.full((phase_err_len, ratio_len, 16), 0, dtype = int)
 phase_err_ratio_rf_cut_map = np.copy(phase_err_ratio_rf_map)
+amp_err_phase_err_rf_map = np.full((amp_err_len, phase_err_len, 16), 0, dtype = int)
+amp_err_phase_err_rf_cut_map = np.copy(amp_err_phase_err_rf_map)
 
 power_rf_hist = []
 power_rf_cut_hist = []
@@ -94,6 +96,7 @@ for r in tqdm(range(len(d_run_tot))):
     amp_ratio_rf_map += hf['amp_ratio_rf_map'][:]
     amp_err_ratio_rf_map += hf['amp_err_ratio_rf_map'][:]
     phase_err_ratio_rf_map += hf['phase_err_ratio_rf_map'][:]
+    amp_err_phase_err_rf_map += hf['amp_err_phase_err_rf_map'][:]
 
     power = hf['power_rf_hist'][:]
     ratio = hf['ratio_rf_hist'][:]
@@ -116,6 +119,7 @@ for r in tqdm(range(len(d_run_tot))):
     amp_ratio_rf_cut_map += hf['amp_ratio_rf_cut_map'][:]
     amp_err_ratio_rf_cut_map += hf['amp_err_ratio_rf_cut_map'][:]
     phase_err_ratio_rf_cut_map += hf['phase_err_ratio_rf_cut_map'][:]
+    amp_err_phase_err_rf_cut_map += hf['amp_err_phase_err_rf_cut_map'][:]
 
     power_cut = hf['power_rf_cut_hist'][:]
     ratio_cut = hf['ratio_rf_cut_hist'][:]
@@ -125,10 +129,8 @@ for r in tqdm(range(len(d_run_tot))):
     ratio_rf_cut_hist.append(ratio_cut)
     amp_err_rf_cut_hist.append(amp_err_cut)
     phase_err_rf_cut_hist.append(phase_err_cut)
-
-
-
     del hf
+del ara_hist
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
 if not os.path.exists(path):
@@ -169,6 +171,8 @@ hf.create_dataset('amp_err_ratio_rf_map', data=amp_err_ratio_rf_map, compression
 hf.create_dataset('amp_err_ratio_rf_cut_map', data=amp_err_ratio_rf_cut_map, compression="gzip", compression_opts=9)
 hf.create_dataset('phase_err_ratio_rf_map', data=phase_err_ratio_rf_map, compression="gzip", compression_opts=9)
 hf.create_dataset('phase_err_ratio_rf_cut_map', data=phase_err_ratio_rf_cut_map, compression="gzip", compression_opts=9)
+hf.create_dataset('amp_err_phase_err_rf_map', data=amp_err_phase_err_rf_map, compression="gzip", compression_opts=9)
+hf.create_dataset('amp_err_phase_err_rf_cut_map', data=amp_err_phase_err_rf_cut_map, compression="gzip", compression_opts=9)
 hf.create_dataset('power_rf_hist', data=np.asarray(power_rf_hist), compression="gzip", compression_opts=9)
 hf.create_dataset('power_rf_cut_hist', data=np.asarray(power_rf_cut_hist), compression="gzip", compression_opts=9)
 hf.create_dataset('ratio_rf_hist', data=np.asarray(ratio_rf_hist), compression="gzip", compression_opts=9)
