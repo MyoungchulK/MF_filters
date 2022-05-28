@@ -130,7 +130,6 @@ for r in tqdm(range(len(d_run_tot))):
     amp_err_rf_cut_hist.append(amp_err_cut)
     phase_err_rf_cut_hist.append(phase_err_cut)
     del hf
-del ara_hist
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
 if not os.path.exists(path):

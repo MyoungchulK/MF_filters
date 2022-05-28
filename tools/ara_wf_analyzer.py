@@ -203,21 +203,6 @@ class hist_loader():
 
         return dat_1d_hist
 
-    def get_2d_hist(self, dat_x_ori, dat_y_ori, fill_val = np.nan, cut = None):
-
-        dat_x = np.copy(dat_x_ori) 
-        dat_y = np.copy(dat_y_ori) 
-        if cut is not None:
-            dat_x[:, cut] = fill_val 
-            dat_y[:, cut] = fill_val 
-
-        dat_2d_hist = np.full((dat_x.shape[0], len(self.bin_x_center), len(self.bin_y_center)), 0, dtype = int)
-        for ant in range(dat_x.shape[0]):
-            dat_2d_hist[ant] = np.histogram2d(dat_x, dat_y, bins = (self.bins_x, self.bins_y))[0].astype(int)
-        del dat_x, dat_y
-
-        return dat_2d_hist
-
     def get_sub_off_2d_hist(self, dat_x_ori, dat_y_ori, fill_val = np.nan, cut = None):
 
         dat_x = np.copy(dat_x_ori)
