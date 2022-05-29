@@ -19,6 +19,7 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
     ara_uproot.get_sub_info()
     num_evts = ara_uproot.num_evts
     evt_num = ara_uproot.evt_num
+    entry_num = ara_uproot.entry_num
     trig_type = ara_uproot.get_trig_type()
     pps_number = ara_uproot.pps_number
     unix_time = ara_uproot.unix_time
@@ -86,6 +87,9 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
     rf_evt_num = evt_num[trig_type == 0]
     clean_evt_num = evt_num[total_qual_cut_sum == 0]
     clean_rf_evt_num = evt_num[(total_qual_cut_sum == 0) & (trig_type == 0)]
+    rf_entry_num = entry_num[trig_type == 0]
+    clean_entry_num = entry_num[total_qual_cut_sum == 0]
+    clean_rf_entry_num = entry_num[(total_qual_cut_sum == 0) & (trig_type == 0)]
 
     # live time
     live_time, clean_live_time = get_live_time(unix_time, cut = total_qual_cut_sum, dead = dig_dead + buff_dead, verbose = True)
@@ -97,6 +101,10 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
             'rf_evt_num':rf_evt_num,
             'clean_evt_num':clean_evt_num,
             'clean_rf_evt_num':clean_rf_evt_num,
+            'entry_num':entry_num,
+            'rf_entry_num':rf_entry_num,
+            'clean_entry_num':clean_entry_num,
+            'clean_rf_entry_num':clean_rf_entry_num,
             'trig_type':trig_type,
             'unix_time':unix_time,
             'pps_number':pps_number,
