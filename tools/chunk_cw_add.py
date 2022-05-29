@@ -90,7 +90,7 @@ def cw_add_collector(Station, Run, analyze_blind_dat = False):
     amp_err_phase_err_rf_cut_map_w = ara_hist.get_2d_hist(sub_amp_err, sub_phase_err, cut = ~clean_idx, weight = sub_weight, use_flat = True)
     del ara_hist, cw_hf, clean_idx, freq_bins, amp_bins, power_bins, ratio_bins, amp_err_bins, phase_err_bins
     del sub_freq, sub_amp, sub_power, sub_ratio, sub_amp_err, sub_phase_err
-    """
+    
     print('saving')
     hf = h5py.File(cw_dat, 'a')  
     hf.create_dataset('sub_weight', data=sub_weight, compression="gzip", compression_opts=9) 
@@ -116,7 +116,7 @@ def cw_add_collector(Station, Run, analyze_blind_dat = False):
     del hf, sub_rf_map_w, sub_rf_cut_map_w, power_rf_hist_w, power_rf_cut_hist_w, ratio_rf_hist_w, ratio_rf_cut_hist_w, amp_err_rf_hist_w, amp_err_rf_cut_hist_w, phase_err_rf_hist_w, phase_err_rf_cut_hist_w
     del amp_err_ratio_rf_map_w, amp_err_ratio_rf_cut_map_w, phase_err_ratio_rf_map_w, phase_err_ratio_rf_cut_map_w, amp_err_phase_err_rf_map_w, amp_err_phase_err_rf_cut_map_w
     del amp_ratio_rf_map_w, amp_ratio_rf_cut_map_w
-    """
+    
     hf = h5py.File(cw_dat, 'r')
     for f in list(hf):
         print(f)
