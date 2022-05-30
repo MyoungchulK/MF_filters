@@ -26,7 +26,7 @@ def script_loader(Key = None, Station = None, Run = None, Act_Evt = None, analyz
         file_type = 'eventHk'
         return_none = True
         return_dat_only = True
-    elif Key == 'blk_len' or Key == 'evt_rate' or Key == 'run_time' or Key == 'ped' or Key == 'qual_cut' or Key == 'sub_info' or Key == 'cw_add':
+    elif Key == 'blk_len' or Key == 'evt_rate' or Key == 'run_time' or Key == 'ped' or Key == 'qual_cut' or Key == 'sub_info' or Key == 'cw_add' or Key == 'cw_replace':
         return_dat_only = True
     Data, Ped = run_info.get_data_ped_path(file_type = file_type, return_none = return_none, verbose = verbose, return_dat_only = return_dat_only)
     Station, Run, Config, Year, Month, Date = run_info.get_data_info()
@@ -39,7 +39,7 @@ def script_loader(Key = None, Station = None, Run = None, Act_Evt = None, analyz
         results = method(Data, Ped, analyze_blind_dat = analyze_blind_dat, sel_evts = Act_Evt)
     elif Key == 'l1':
         results = method(Data, Ped, Station, Run, Year, analyze_blind_dat = analyze_blind_dat)
-    elif Key == 'cw_add':
+    elif Key == 'cw_add' or Key == 'cw_replace':
         results = method(Station, Run, analyze_blind_dat = analyze_blind_dat)
         return
     else:

@@ -197,7 +197,7 @@ class hist_loader():
                 if weight is not None:
                     wei[:, cut] = fill_val
 
-        dat_1d_hist = np.full((len(self.bin_x_center), ch_dim), 0, dtype = int)
+        dat_1d_hist = np.full((len(self.bin_x_center), ch_dim), 0, dtype =float)
         ch_wei = None
         for ant in range(ch_dim):
             if use_flat:
@@ -208,7 +208,7 @@ class hist_loader():
                 ch_dat = dat[ant]
                 if weight is not None:
                     ch_wei = wei[ant] 
-            dat_1d_hist[:, ant] = np.histogram(ch_dat, bins = self.bins_x, weights = ch_wei)[0].astype(int)
+            dat_1d_hist[:, ant] = np.histogram(ch_dat, bins = self.bins_x, weights = ch_wei)[0]
             del ch_dat
         del dat, ch_dim, ch_wei
 
@@ -235,7 +235,7 @@ class hist_loader():
                 if weight is not None:
                     wei[:, cut] = fill_val
 
-        dat_2d_hist = np.full((len(self.bin_x_center), len(self.bin_y_center), ch_dim), 0, dtype = int)
+        dat_2d_hist = np.full((len(self.bin_x_center), len(self.bin_y_center), ch_dim), 0, dtype = float)
         ch_wei = None
         for ant in range(ch_dim):
             if use_flat:
@@ -248,7 +248,7 @@ class hist_loader():
                 ch_dat_y = dat_y[ant]
                 if weight is not None:
                     ch_wei = wei[ant]
-            dat_2d_hist[:, :, ant] = np.histogram2d(ch_dat_x, ch_dat_y, bins = (self.bins_x, self.bins_y), weights = ch_wei)[0].astype(int)
+            dat_2d_hist[:, :, ant] = np.histogram2d(ch_dat_x, ch_dat_y, bins = (self.bins_x, self.bins_y), weights = ch_wei)[0]
             del ch_dat_x, ch_dat_y
         del dat_x, dat_y, ch_dim, ch_wei
 

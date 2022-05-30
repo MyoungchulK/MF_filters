@@ -108,10 +108,16 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
         del fft_evt, fft_map_evt
     del ara_root, num_rf_evts, rf_entry, bad_ant, num_ants, wf_int, map_dim 
 
+    sub_sum = np.nansum(sub_power, axis = 0)
+    sub_weight = sub_power / sub_sum[np.newaxis, :, :]
+    del sub_sum
+
     print('sub amp')
     sub_amp = np.log10(sub_amp)
     sub_rf_map = ara_hist.get_2d_hist(sub_freq, sub_amp, use_flat = True)
     sub_rf_cut_map = ara_hist.get_2d_hist(sub_freq, sub_amp, cut = ~clean_rf_evt_idx, use_flat = True)
+    sub_rf_map_w = ara_hist.get_2d_hist(sub_freq, sub_amp, weight = sub_weight, use_flat = True)
+    sub_rf_cut_map_w = ara_hist.get_2d_hist(sub_freq, sub_amp, cut = ~clean_rf_evt_idx, weight = sub_weight, use_flat = True) 
     del ara_hist
 
     print('power')
@@ -121,6 +127,8 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
     power_bin_center = ara_hist.bin_x_center
     power_rf_hist = ara_hist.get_1d_hist(sub_power, use_flat = True)
     power_rf_cut_hist = ara_hist.get_1d_hist(sub_power, cut = ~clean_rf_evt_idx, use_flat = True)
+    power_rf_hist_w = ara_hist.get_1d_hist(sub_power, weight = sub_weight, use_flat = True)
+    power_rf_cut_hist_w = ara_hist.get_1d_hist(sub_power, cut = ~clean_rf_evt_idx, weight = sub_weight, use_flat = True)    
     del ara_hist
 
     print('ratio')
@@ -130,6 +138,8 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
     ratio_bin_center = ara_hist.bin_x_center    
     ratio_rf_hist = ara_hist.get_1d_hist(sub_ratio, use_flat = True)
     ratio_rf_cut_hist = ara_hist.get_1d_hist(sub_ratio, cut = ~clean_rf_evt_idx, use_flat = True)
+    ratio_rf_hist_w = ara_hist.get_1d_hist(sub_ratio, weight = sub_weight, use_flat = True)
+    ratio_rf_cut_hist_w = ara_hist.get_1d_hist(sub_ratio, cut = ~clean_rf_evt_idx, weight = sub_weight, use_flat = True)
     del ara_hist
 
     print('amp error')
@@ -139,6 +149,8 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
     amp_err_bin_center = ara_hist.bin_x_center
     amp_err_rf_hist = ara_hist.get_1d_hist(sub_amp_err, use_flat = True)
     amp_err_rf_cut_hist = ara_hist.get_1d_hist(sub_amp_err, cut = ~clean_rf_evt_idx, use_flat = True)
+    amp_err_rf_hist_w = ara_hist.get_1d_hist(sub_amp_err, weight = sub_weight, use_flat = True)
+    amp_err_rf_cut_hist_w = ara_hist.get_1d_hist(sub_amp_err, cut = ~clean_rf_evt_idx, weight = sub_weight, use_flat = True)
     del ara_hist
 
     print('phase error')
@@ -148,24 +160,34 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
     phase_err_bin_center = ara_hist.bin_x_center
     phase_err_rf_hist = ara_hist.get_1d_hist(sub_phase_err, use_flat = True)
     phase_err_rf_cut_hist = ara_hist.get_1d_hist(sub_phase_err, cut = ~clean_rf_evt_idx, use_flat = True)
+    phase_err_rf_hist_w = ara_hist.get_1d_hist(sub_phase_err, weight = sub_weight, use_flat = True)
+    phase_err_rf_cut_hist_w = ara_hist.get_1d_hist(sub_phase_err, cut = ~clean_rf_evt_idx, weight = sub_weight, use_flat = True)
     del ara_hist 
 
     print('2d')
     ara_hist = hist_loader(amp_err_bins, ratio_bins)
     amp_err_ratio_rf_map = ara_hist.get_2d_hist(sub_amp_err, sub_ratio, use_flat = True)
     amp_err_ratio_rf_cut_map = ara_hist.get_2d_hist(sub_amp_err, sub_ratio, cut = ~clean_rf_evt_idx, use_flat = True)
+    amp_err_phase_err_rf_map = ara_hist.get_2d_hist(sub_amp_err, sub_phase_err, use_flat = True)
+    amp_err_phase_err_rf_cut_map = ara_hist.get_2d_hist(sub_amp_err, sub_phase_err, cut = ~clean_rf_evt_idx, use_flat = True)
     del ara_hist
     ara_hist = hist_loader(phase_err_bins, ratio_bins)
     phase_err_ratio_rf_map = ara_hist.get_2d_hist(sub_phase_err, sub_ratio, use_flat = True)
     phase_err_ratio_rf_cut_map = ara_hist.get_2d_hist(sub_phase_err, sub_ratio, cut = ~clean_rf_evt_idx, use_flat = True)
+    phase_err_ratio_rf_map_w = ara_hist.get_2d_hist(sub_phase_err, sub_ratio, weight = sub_weight, use_flat = True)
+    phase_err_ratio_rf_cut_map_w = ara_hist.get_2d_hist(sub_phase_err, sub_ratio, cut = ~clean_rf_evt_idx, weight = sub_weight, use_flat = True)
     del ara_hist
     ara_hist = hist_loader(amp_bins, ratio_bins)
     amp_ratio_rf_map = ara_hist.get_2d_hist(sub_amp, sub_ratio, use_flat = True)
     amp_ratio_rf_cut_map = ara_hist.get_2d_hist(sub_amp, sub_ratio, cut = ~clean_rf_evt_idx, use_flat = True)
+    amp_ratio_rf_map_w = ara_hist.get_2d_hist(sub_amp, sub_ratio, weight = sub_weight, use_flat = True)
+    amp_ratio_rf_cut_map_w = ara_hist.get_2d_hist(sub_amp, sub_ratio, cut = ~clean_rf_evt_idx, weight = sub_weight, use_flat = True)
     del ara_hist
     ara_hist = hist_loader(amp_err_bins, phase_err_bins)
     amp_err_phase_err_rf_map = ara_hist.get_2d_hist(sub_amp_err, sub_phase_err, use_flat = True)
     amp_err_phase_err_rf_cut_map = ara_hist.get_2d_hist(sub_amp_err, sub_phase_err, cut = ~clean_rf_evt_idx, use_flat = True)
+    amp_err_phase_err_rf_map_w = ara_hist.get_2d_hist(sub_amp_err, sub_phase_err, weight = sub_weight, use_flat = True)
+    amp_err_phase_err_rf_cut_map_w = ara_hist.get_2d_hist(sub_amp_err, sub_phase_err, cut = ~clean_rf_evt_idx, weight = sub_weight, use_flat = True)    
     del ara_hist, clean_rf_evt_idx
 
     print('cw collecting is done!')
@@ -183,6 +205,7 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
             'sub_phase_err':sub_phase_err,
             'sub_power':sub_power,
             'sub_ratio':sub_ratio,
+            'sub_weight':sub_weight,
             'freq_range':freq_range,
             'freq_bins':freq_bins,
             'freq_bin_center':freq_bin_center,
@@ -220,4 +243,24 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
             'amp_ratio_rf_map':amp_ratio_rf_map,
             'amp_ratio_rf_cut_map':amp_ratio_rf_cut_map,
             'amp_err_phase_err_rf_map':amp_err_phase_err_rf_map,
-            'amp_err_phase_err_rf_cut_map':amp_err_phase_err_rf_cut_map}
+            'amp_err_phase_err_rf_cut_map':amp_err_phase_err_rf_cut_map,
+            'fft_rf_map_w':fft_rf_map_w,
+            'fft_rf_cut_map_w':fft_rf_cut_map_w,
+            'sub_rf_map_w':sub_rf_map_w,
+            'sub_rf_cut_map_w':sub_rf_cut_map_w,
+            'power_rf_hist_w':power_rf_hist_w,
+            'power_rf_cut_hist_w':power_rf_cut_hist_w,
+            'ratio_rf_hist_w':ratio_rf_hist_w,
+            'ratio_rf_cut_hist_w':ratio_rf_cut_hist_w,
+            'amp_err_rf_hist_w':amp_err_rf_hist_w,
+            'amp_err_rf_cut_hist_w':amp_err_rf_cut_hist_w,
+            'phase_err_rf_hist_w':phase_err_rf_hist_w,
+            'phase_err_rf_cut_hist_w':phase_err_rf_cut_hist_w,
+            'amp_err_ratio_rf_map_w':amp_err_ratio_rf_map_w,
+            'amp_err_ratio_rf_cut_map_w':amp_err_ratio_rf_cut_map_w,
+            'phase_err_ratio_rf_map_w':phase_err_ratio_rf_map_w,
+            'phase_err_ratio_rf_cut_map_w':phase_err_ratio_rf_cut_map_w,
+            'amp_ratio_rf_map_w':amp_ratio_rf_map_w,
+            'amp_ratio_rf_cut_map_w':amp_ratio_rf_cut_map_w,
+            'amp_err_phase_err_rf_map_w':amp_err_phase_err_rf_map_w,
+            'amp_err_phase_err_rf_cut_map_w':amp_err_phase_err_rf_cut_map_w}
