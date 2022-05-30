@@ -244,8 +244,6 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
             'amp_ratio_rf_cut_map':amp_ratio_rf_cut_map,
             'amp_err_phase_err_rf_map':amp_err_phase_err_rf_map,
             'amp_err_phase_err_rf_cut_map':amp_err_phase_err_rf_cut_map,
-            'fft_rf_map_w':fft_rf_map_w,
-            'fft_rf_cut_map_w':fft_rf_cut_map_w,
             'sub_rf_map_w':sub_rf_map_w,
             'sub_rf_cut_map_w':sub_rf_cut_map_w,
             'power_rf_hist_w':power_rf_hist_w,
