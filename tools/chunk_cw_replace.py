@@ -89,25 +89,44 @@ def cw_replace_collector(Station, Run, analyze_blind_dat = False):
     
     print('saving')
     hf = h5py.File(cw_dat, 'r+')
-    hf['sub_weight'][...] = sub_weight
-    hf['sub_rf_map_w'][...] = sub_rf_map_w
-    hf['sub_rf_cut_map_w'][...] = sub_rf_cut_map_w
-    hf['power_rf_hist_w'][...] = power_rf_hist_w
-    hf['power_rf_cut_hist_w'][...] = power_rf_cut_hist_w
-    hf['ratio_rf_hist_w'][...] = ratio_rf_hist_w
-    hf['ratio_rf_cut_hist_w'][...] = ratio_rf_cut_hist_w
-    hf['amp_err_rf_hist_w'][...] = amp_err_rf_hist_w
-    hf['amp_err_rf_cut_hist_w'][...] = amp_err_rf_cut_hist_w
-    hf['phase_err_rf_hist_w'][...] = phase_err_rf_hist_w
-    hf['phase_err_rf_cut_hist_w'][...] = phase_err_rf_cut_hist_w
-    hf['amp_err_ratio_rf_map_w'][...] = amp_err_ratio_rf_map_w
-    hf['amp_err_ratio_rf_cut_map_w'][...] = amp_err_ratio_rf_cut_map_w
-    hf['phase_err_ratio_rf_map_w'][...] = phase_err_ratio_rf_map_w
-    hf['phase_err_ratio_rf_cut_map_w'][...] = phase_err_ratio_rf_cut_map_w
-    hf['amp_ratio_rf_map_w'][...] = amp_ratio_rf_map_w
-    hf['amp_ratio_rf_cut_map_w'][...] = amp_ratio_rf_cut_map_w
-    hf['amp_err_phase_err_rf_map_w'][...] = amp_err_phase_err_rf_map_w
-    hf['amp_err_phase_err_rf_cut_map_w'][...] = amp_err_phase_err_rf_cut_map_w
+    del hf['sub_weight']
+    del hf['sub_rf_map_w']
+    del hf['sub_rf_cut_map_w']
+    del hf['power_rf_hist_w']
+    del hf['power_rf_cut_hist_w']
+    del hf['ratio_rf_hist_w']
+    del hf['ratio_rf_cut_hist_w']
+    del hf['amp_err_rf_hist_w']
+    del hf['amp_err_rf_cut_hist_w']
+    del hf['phase_err_rf_hist_w']
+    del hf['phase_err_rf_cut_hist_w']
+    del hf['amp_err_ratio_rf_map_w']
+    del hf['amp_err_ratio_rf_cut_map_w']
+    del hf['phase_err_ratio_rf_map_w']
+    del hf['phase_err_ratio_rf_cut_map_w']
+    del hf['amp_ratio_rf_map_w']
+    del hf['amp_ratio_rf_cut_map_w']
+    del hf['amp_err_phase_err_rf_map_w']
+    del hf['amp_err_phase_err_rf_cut_map_w']
+    hf.create_dataset('sub_weight', data=sub_weight, compression="gzip", compression_opts=9)
+    hf.create_dataset('sub_rf_map_w', data=sub_rf_map_w, compression="gzip", compression_opts=9)
+    hf.create_dataset('sub_rf_cut_map_w', data=sub_rf_cut_map_w, compression="gzip", compression_opts=9)
+    hf.create_dataset('power_rf_hist_w', data=power_rf_hist_w, compression="gzip", compression_opts=9)
+    hf.create_dataset('power_rf_cut_hist_w', data=power_rf_cut_hist_w, compression="gzip", compression_opts=9)
+    hf.create_dataset('ratio_rf_hist_w', data=ratio_rf_hist_w, compression="gzip", compression_opts=9)
+    hf.create_dataset('ratio_rf_cut_hist_w', data=ratio_rf_cut_hist_w, compression="gzip", compression_opts=9)
+    hf.create_dataset('amp_err_rf_hist_w', data=amp_err_rf_hist_w, compression="gzip", compression_opts=9)
+    hf.create_dataset('amp_err_rf_cut_hist_w', data=amp_err_rf_cut_hist_w, compression="gzip", compression_opts=9)
+    hf.create_dataset('phase_err_rf_hist_w', data=phase_err_rf_hist_w, compression="gzip", compression_opts=9)
+    hf.create_dataset('phase_err_rf_cut_hist_w', data=phase_err_rf_cut_hist_w, compression="gzip", compression_opts=9)
+    hf.create_dataset('amp_err_ratio_rf_map_w', data=amp_err_ratio_rf_map_w, compression="gzip", compression_opts=9)
+    hf.create_dataset('amp_err_ratio_rf_cut_map_w', data=amp_err_ratio_rf_cut_map_w, compression="gzip", compression_opts=9)
+    hf.create_dataset('phase_err_ratio_rf_map_w', data=phase_err_ratio_rf_map_w, compression="gzip", compression_opts=9)
+    hf.create_dataset('phase_err_ratio_rf_cut_map_w', data=phase_err_ratio_rf_cut_map_w, compression="gzip", compression_opts=9)
+    hf.create_dataset('amp_ratio_rf_map_w', data=amp_ratio_rf_map_w, compression="gzip", compression_opts=9)
+    hf.create_dataset('amp_ratio_rf_cut_map_w', data=amp_ratio_rf_cut_map_w, compression="gzip", compression_opts=9)
+    hf.create_dataset('amp_err_phase_err_rf_map_w', data=amp_err_phase_err_rf_map_w, compression="gzip", compression_opts=9)
+    hf.create_dataset('amp_err_phase_err_rf_cut_map_w', data=amp_err_phase_err_rf_cut_map_w, compression="gzip", compression_opts=9)
     hf.close()
     del hf, sub_rf_map_w, sub_rf_cut_map_w, power_rf_hist_w, power_rf_cut_hist_w, ratio_rf_hist_w, ratio_rf_cut_hist_w, amp_err_rf_hist_w, amp_err_rf_cut_hist_w, phase_err_rf_hist_w, phase_err_rf_cut_hist_w
     del amp_err_ratio_rf_map_w, amp_err_ratio_rf_cut_map_w, phase_err_ratio_rf_map_w, phase_err_ratio_rf_cut_map_w, amp_err_phase_err_rf_map_w, amp_err_phase_err_rf_cut_map_w
