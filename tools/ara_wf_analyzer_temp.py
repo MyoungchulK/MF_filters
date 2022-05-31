@@ -254,37 +254,6 @@ class hist_loader():
 
         return dat_2d_hist
 
-    def get_sub_off_2d_hist(self, dat_x_ori, dat_y_ori, fill_val = np.nan, cut = None):
-
-        dat_x = np.copy(dat_x_ori)
-        dat_y = np.copy(dat_y_ori)
-        if cut is not None:
-            dat_x[cut] = fill_val
-            dat_y[:, cut] = fill_val
-
-        dat_2d_hist = np.full((dat_y.shape[0], len(self.bin_x_center), len(self.bin_y_center)), 0, dtype = int)
-        for ant in range(dat_y.shape[0]):
-            dat_2d_hist[ant] = np.histogram2d(dat_x, dat_y[ant], bins = (self.bins_x, self.bins_y))[0].astype(int)
-        del dat_x, dat_y
-
-        return dat_2d_hist
-
-    def get_mean_blk_2d_hist(self, dat_x_ori, dat_y_ori, fill_val = np.nan, cut = None):
-
-        dat_x = np.copy(dat_x_ori)
-        dat_y = np.copy(dat_y_ori)
-        if cut is not None:
-            dat_x[:, cut] = fill_val
-            dat_y[:, :, cut] = fill_val
-        dat_x = dat_x.flatten()
-
-        dat_2d_hist = np.full((dat_y.shape[1], len(self.bin_x_center), len(self.bin_y_center)), 0, dtype = int)
-        for ant in range(dat_y.shape[1]):
-            dat_2d_hist[ant] = np.histogram2d(dat_x, dat_y[:, ant].flatten(), bins = (self.bins_x, self.bins_y))[0].astype(int)
-        del dat_x, dat_y
-
-        return dat_2d_hist
-
 class sample_map_loader:
 
     def __init__(self, x_len = num_Buffers, y_len = num_Bits, chs = num_ants, y_sym_range = False):
@@ -346,10 +315,3 @@ class sample_map_loader:
     def del_hist_map(self):
 
         del self.hist_map
-
-def bin_range_maker(data, data_width):
-
-    data_bins = np.linspace(data[0], data[-1], data_width + 1)
-    data_bin_center = (data_bins[1:] + data_bins[:-1]) * 0.5
-
-    return data_bins, data_bin_center

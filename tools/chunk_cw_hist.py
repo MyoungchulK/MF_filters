@@ -7,7 +7,7 @@ def cw_hist_collector(Station, Run, analyze_blind_dat = False):
     print('Collecting cw starts!')
 
     from tools.ara_run_manager import run_info_loader
-    from tools.ara_wf_analyzer_temp import hist_loader
+    from tools.ara_wf_analyzer import hist_loader
     from tools.ara_known_issue import known_issue_loader
 
     knwon_issue = known_issue_loader(Station)

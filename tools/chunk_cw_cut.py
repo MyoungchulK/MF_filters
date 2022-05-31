@@ -87,7 +87,7 @@ def cw_cut_collector(Data, Ped, analyze_blind_dat = False):
             sub_amp[1:num_sols+, ant, evt] = wf_int.sin_sub.sub_amps
             sub_amp_err[1:num_sols, ant, evt] = wf_int.sin_sub.sub_amp_errs
             sub_phase_err[1:num_sols, ant, evt] = wf_int.sin_sub.sub_phase_errs
-            sub_power[:num_sols-1, ant, evt] = wf_int.sin_sub.sub_powers
+            sub_power[:num_sols, ant, evt] = wf_int.sin_sub.sub_powers
             sub_ratio[1:num_sols, ant, evt] = wf_int.sin_sub.sub_ratios
             del raw_t, raw_v, num_sols 
             ara_root.del_TGraph()

@@ -7,7 +7,7 @@ def cw_sim_collector(Data, Station, Year):
 
     from tools.ara_constant import ara_const
     from tools.ara_sim_load import ara_root_loader
-    from tools.ara_wf_analyzer_temp import wf_analyzer
+    from tools.ara_wf_analyzer import wf_analyzer
     from tools.ara_py_interferometers import py_interferometers
 
     # const. info.

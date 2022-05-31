@@ -8,8 +8,8 @@ def daq_cut_collector(Data, Ped, analyze_blind_dat = False):
 
     from tools.ara_data_load import ara_uproot_loader
     from tools.ara_data_load import ara_root_loader
-    from tools.ara_quality_cut_temp import pre_qual_cut_loader
-    from tools.ara_quality_cut_temp import post_qual_cut_loader
+    from tools.ara_quality_cut import pre_qual_cut_loader
+    from tools.ara_quality_cut import post_qual_cut_loader
 
     # data config
     ara_uproot = ara_uproot_loader(Data)
