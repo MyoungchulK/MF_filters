@@ -17,7 +17,7 @@ num_Bits = ara_const.BUFFER_BIT_RANGE
 class wf_analyzer:
 
     def __init__(self, dt = 0.5, use_time_pad = False, use_freq_pad = False, use_band_pass = False,
-                    add_double_pad = False, use_rfft = False, use_ele_ch = False, use_cw = False):
+                    add_double_pad = False, use_rfft = False, use_ele_ch = False, use_cw = False, cw_params = None):
 
         self.dt = dt
         self.num_chs = num_ants
@@ -35,8 +35,8 @@ class wf_analyzer:
             #self.sin_sub_250 = sin_subtract_loader(3, 0.05, 0.2, 0.3, self.dt) # strong 250 MHz peak
             #self.sin_sub_400 = sin_subtract_loader(3, 0.01, 0.35, 0.45, self.dt) # weather balloon
             #self.sin_sub = sin_subtract_loader(3, 0.01, 0.13, 0.85, self.dt) # for tiny cw
-            #self.sin_sub_400 = sin_subtract_loader(3, 0.02, 0.35, 0.45, self.dt) # debug
-            self.sin_sub = sin_subtract_loader(3, 0.02, 0.125, 0.85, self.dt) # debug
+            self.sin_sub_400 = sin_subtract_loader(3, 0.38, 0.42, self.dt, cw_params[::2]) # debug
+            self.sin_sub = sin_subtract_loader(3, 0.125, 0.85, self.dt, cw_params[1::2]) # debug
 
     def get_band_pass_filter(self, low_freq_cut = 0.13, high_freq_cut = 0.85, order = 10, pass_type = 'band'):
 
@@ -111,8 +111,8 @@ class wf_analyzer:
         if use_cw:
             #int_v = self.sin_sub_150.get_sin_subtract_wf(int_v, int_num)
             #int_v = self.sin_sub_250.get_sin_subtract_wf(int_v, int_num)
-            #int_v = self.sin_sub_400.get_sin_subtract_wf(int_v, int_num)
-            int_v = self.sin_sub.get_sin_subtract_wf(int_v, int_num)
+            int_v = self.sin_sub_400.get_sin_subtract_wf(int_v, int_num)
+            int_v = self.sin_sub.get_sin_subtract_wf(int_v, int_num, ant)
             if use_power:
                 self.int_cw_power = np.nanmean(int_v**2)
 

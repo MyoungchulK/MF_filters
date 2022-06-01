@@ -40,7 +40,6 @@ class pre_qual_cut_loader:
         self.pps_number = ara_uproot.pps_number
         self.irs_block_number = ara_uproot.irs_block_number
         self.channel_mask = ara_uproot.channel_mask
-        #self.blk_len = ara_uproot.read_win//num_ddas
         self.verbose = verbose
 
         run_info = run_info_loader(self.st, self.run, analyze_blind_dat = analyze_blind_dat)
@@ -49,12 +48,6 @@ class pre_qual_cut_loader:
         self.evt_sort = self.sub_info_hf['evt_num_sort'][:]
         self.unix_sort = self.sub_info_hf['unix_time_sort'][:]
         self.pps_sort = self.sub_info_hf['pps_number_sort_reset'][:]
-        """self.dig_dead = self.sub_info_hf['dig_dead'][:]
-        self.dig_dead = self.dig_dead.astype(float)
-        self.dig_dead *= 1e-6
-        self.buff_dead = self.sub_info_hf['buff_dead'][:]
-        self.buff_dead = self.buff_dead.astype(float)
-        self.buff_dead *= 1e-6"""
         del sub_info_dat, run_info
 
         self.ara_known_issue = known_issue_loader(self.st)
@@ -586,6 +579,91 @@ class post_qual_cut_loader:
             quick_qual_check(self.post_qual_cut_sum != 0, 'total post qual cut!', self.evt_num)
         
         return tot_post_qual_cut
+
+class cw_qual_cut_loader:
+
+    def __init__(self, st, run, evt_num, verbose = False):
+
+        self.verbose = verbose
+        self.st = st
+        self.run = run
+        self.evt_num = evt_num
+        self.num_evts = len(self.evt_num)
+        self.rp_evts = np.full((self.num_evts), 0, dtype = int)
+        self.cw_evts = np.copy(self.rp_evts)
+
+    def get_cut_parameters(self):
+   
+        self.ratio_min = np.full((2, num_ants), 0.05, dtype = float)
+        self.ratio_cut = np.full(2, num_ants), np.nan, dtype = float)
+        self.ratio_cut[0] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06], dtype = float)
+        self.ratio_cut[1] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06], dtype = float)
+        self.ratio_cut_thres = 3
+ 
+        self.amp_err_cut = np.full(2, num_ants), np.nan, dtype = float)
+        self.phase_err_cut = np.copy(self.amp_err_cut)
+
+        if self.st == 2:
+            self.amp_err_cut[0] = np.array([20, 20, 30, 22, 30, 20, 30, 30, 30, 18, 20, 20, 20, 15, 20, 2000], dtype = float)
+            #self.amp_err_cut[1] = np.array([20, 20, 30, 22, 30, 20, 30, 30, 30, 18, 20, 20, 20, 15, 20, 2000], dtype = float)
+
+            self.phase_err_cut[0] = np.array([4, 4, 2, 2, 2, 3, 2, 3, 2, 3, 3, 3, 3, 3, 3, 2000], dtype = float)
+            #self.phase_err_cut[1] = np.array([4, 4, 2, 2, 2, 3, 2, 3, 2, 3, 3, 3, 3, 3, 3, 2000], dtype = float)
+
+        if self.st == 3:
+            self.amp_err_cut[0] = np.array([30, 50, 23, 20, 22, 15, 50, 18, 17, 13, 15, 30, 13, 15, 13, 11], dtype = float)
+            #self.amp_err_cut[1] = np.array([30, 50, 23, 20, 22, 15, 50, 18, 17, 13, 15, 30, 13, 15, 13, 11], dtype = float)
+
+            self.phase_err_cut[0] = np.array([2, 4, 3, 3, 3, 3, 6, 2.5, 3, 4, 3, 6, 3, 3, 3, 3], dtype = float) 
+            #self.phase_err_cut[1] = np.array([2, 4, 3, 3, 3, 3, 6, 2.5, 3, 4, 3, 6, 3, 3, 3, 3], dtype = float) 
+
+            if self.run > 13081:
+                self.amp_err_cut[0, 6] = 17
+                self.phase_err_cut[0, 2] = 6
+                self.phase_err_cut[0, 6] = 2
+            if self.run > 10000:
+                self.amp_err_cut[0, 11] = 9
+                self.phase_err_cut[0, 3] = 6
+                self.phase_err_cut[0, 11] = 3
+
+        if self.verbose:
+            print(f'min config: {self.ratio_min}')
+            print(f'cut config: {self.ratio_cut}')
+            print(f'amp err config: {self.amp_err_cut}')
+            print(f'phase err config: {self.phase_err_cut}')
+
+        tot_params = np.full(6, num_ants), np.nan, dtype = float)
+        tot_params[:2] = self.ratio_min
+        tot_params[2:4] = self.amp_err_cut
+        tot_params[4:] = self.phase_err_cut
+
+        return tot_params
+
+    def run_cw_qual_cut(self, evt, ratio):
+        
+        ratio_max = np.nanmax(ratio, axis = 0)       
+        ratio_max = np.nanmax(ratio_max, axis = 0)       
+        ratio_bool = np.count_nonzero(ratio_max > self.ratio_cut)
+        del ratio_max
+    
+        if ratio_bool > self.ratio_cut_thres:
+            self.cw_evts[evt] = 1
+            return False
+        else:
+            self.rp_evts[evt] = 1
+            return True
+       
+    def get_cw_qual_cut(self):
+
+        tot_cw_qual_cut = np.full((self.num_evts, 1), 0, dtype = int)
+        tot_cw_qual_cut[:, 0] = self.cw_evts        
+
+        self.cw_qual_cut_sum = np.nansum(tot_cw_qual_cut, axis = 1)
+
+        if self.verbose:
+            quick_qual_check(self.cw_qual_cut_sum != 0, 'total cw qual cut!', self.evt_num)
+
+        return tot_cw_qual_cut
 
 class ped_qual_cut_loader:
 
