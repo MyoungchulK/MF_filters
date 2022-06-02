@@ -9,7 +9,7 @@ sys.path.append(curr_path+'/../')
 from tools.ara_run_manager_lite import run_info_loader
 from tools.ara_utility import size_checker
 
-def script_loader(Key = None, Station = None, Run = None, analyze_blind_dat = False):
+def script_loader(Key = None, Station = None, Run = None, use_araroot_cut = False, use_mf_qual_cut = False, analyze_blind_dat = False):
 
     # get run info
     run_info = run_info_loader(Station, Run, analyze_blind_dat = analyze_blind_dat)
@@ -25,7 +25,7 @@ def script_loader(Key = None, Station = None, Run = None, analyze_blind_dat = Fa
     # run the chunk code
     module = import_module(f'tools.chunk_{Key}')
     method = getattr(module, f'{Key}_collector')
-    results = method(Data, Ped, Station, Year, analyze_blind_dat = analyze_blind_dat)
+    results = method(Data, Ped, Station, Run, Year, use_araroot_cut = use_araroot_cut, use_mf_qual_cut = use_mf_qual_cut, analyze_blind_dat = analyze_blind_dat)
     del module, method
 
     # create output dir
@@ -61,13 +61,15 @@ if __name__ == "__main__":
     If it is data,
     Usage = python3 %s
 
-    <Srtipt Key ex)qual_cut>    
-    <Station ex)2>
+    <Srtipt Key ex)rayl_lite>    
+    <Station ex)3>
     <Run ex)11650>
+    if you want quality cuts ...
+    <AraRoot ex)0 (not use) or 1 (use)>
+    <MF ex)0 (not use) or 1 (use)>
     if you want blinded data ...
     <blind_type ex)1>
-    
-
+  
         """ %(sys.argv[0])
         print(Usage)
         sys.exit(1)
@@ -76,11 +78,22 @@ if __name__ == "__main__":
     key=str(sys.argv[1])
     station=int(sys.argv[2])
     run=int(sys.argv[3])
+    
+    # bit messy...
+    araroot=False
+    mf=False
     blind_type = False
     if len(sys.argv) == 5:
+        araroot = bool(int(sys.argv[4]))
+    if len(sys.argv) == 6:
+        araroot = bool(int(sys.argv[4]))
+        mf = bool(int(sys.argv[5]))
+    if len(sys.argv) == 7:
+        araroot = bool(int(sys.argv[4]))
+        mf = bool(int(sys.argv[5]))
         blind_type = bool(int(sys.argv[4]))
 
-    script_loader(Key = key, Station = station, Run = run, analyze_blind_dat = blind_type)
+    script_loader(Key = key, Station = station, Run = run, use_araroot_cut = araroot, use_mf_qual_cut = mf, analyze_blind_dat = blind_type)
 
 
 
