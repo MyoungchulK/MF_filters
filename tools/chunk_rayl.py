@@ -31,12 +31,14 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
     ara_qual = qual_cut_loader(analyze_blind_dat = analyze_blind_dat, verbose = True)
     total_qual_cut = ara_qual.load_qual_cut_result(ara_uproot.station_id, ara_uproot.run)
     qual_cut_sum = ara_qual.total_qual_cut_sum
-    clean_evt_idx = np.logical_and(qual_cut_sum == 0, trig_type == 0)
-    clean_evt = evt_num[clean_evt_idx]
-    clean_entry = entry_num[clean_evt_idx]
-    num_clean_evts = np.count_nonzero(clean_evt_idx)
+    clean_idx = np.logical_and(qual_cut_sum == 0, trig_type == 0)
+    clean_entry = entry_num[clean_idx]
+    clean_evt = evt_num[clean_idx]
+    #clean_entry = ara_qual.get_useful_events(use_entry = True, use_qual = True, trig_idx = 0)
+    #clean_evt = ara_qual.get_useful_events(use_qual = True, trig_idx = 0)
+    num_clean_evts = len(clean_evt)
     print(f'Number of clean event is {num_clean_evts}') 
-    del qual_cut_sum, ara_qual, ara_uproot, clean_evt_idx, entry_num
+    del ara_qual, ara_uproot, entry_num
 
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_rfft = True, use_band_pass = True)#, use_cw = True, cw_config = (3, 0.05, 0.13, 0.85))
@@ -74,7 +76,7 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
     rayl_params = np.full((2, fft_len, num_ants), np.nan, dtype = float)    
     for freq in tqdm(range(fft_len)):
         for ant in range(num_ants):
-            amp_bins = np.linspace(bin_edges[0, freq, ant], bin_edges[0, freq, ant], binning + 1)
+            amp_bins = np.linspace(bin_edges[0, freq, ant], bin_edges[1, freq, ant], binning + 1)
             amp_bins_center = (amp_bins[1:] + amp_bins[:-1]) / 2
             amp_hist = np.histogram(clean_rffts[freq, ant], bins = amp_bins)[0]
             mu_init_idx = np.nanargmax(amp_hist)

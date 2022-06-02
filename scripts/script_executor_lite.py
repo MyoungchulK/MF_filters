@@ -6,10 +6,10 @@ from importlib import import_module
 # custom lib
 curr_path = os.getcwd()
 sys.path.append(curr_path+'/../')
-from tools.ara_run_manager import run_info_loader
+from tools.ara_run_manager_lite import run_info_loader
 from tools.ara_utility import size_checker
 
-def script_loader(Key = None, Station = None, Run = None, Act_Evt = None, analyze_blind_dat = False):
+def script_loader(Key = None, Station = None, Run = None, analyze_blind_dat = False):
 
     # get run info
     run_info = run_info_loader(Station, Run, analyze_blind_dat = analyze_blind_dat)
@@ -18,16 +18,6 @@ def script_loader(Key = None, Station = None, Run = None, Act_Evt = None, analyz
     verbose = True    
     return_none = False
     return_dat_only = False
-    if Key == 'sensor':
-        file_type = 'sensorHk'
-        return_none = True
-        return_dat_only = True
-    elif Key == 'l1':
-        file_type = 'eventHk'
-        return_none = True
-        return_dat_only = True
-    elif Key == 'blk_len' or Key == 'evt_rate' or Key == 'run_time' or Key == 'ped' or Key == 'qual_cut' or Key == 'daq_cut' or Key == 'ped_cut' or Key == 'sub_info' or Key == 'cw_hist' or Key == 'cw_time':
-        return_dat_only = True
     Data, Ped = run_info.get_data_ped_path(file_type = file_type, return_none = return_none, verbose = verbose, return_dat_only = return_dat_only)
     Station, Run, Config, Year, Month, Date = run_info.get_data_info()
     del run_info   
@@ -35,19 +25,7 @@ def script_loader(Key = None, Station = None, Run = None, Act_Evt = None, analyz
     # run the chunk code
     module = import_module(f'tools.chunk_{Key}')
     method = getattr(module, f'{Key}_collector')
-    if Key == 'wf':
-        results = method(Data, Ped, analyze_blind_dat = analyze_blind_dat, sel_evts = Act_Evt)
-    elif Key == 'rayl_lite':
-        results = method(Data, Ped, Station, Year, analyze_blind_dat = analyze_blind_dat)
-    elif Key == 'l1':
-        results = method(Data, Ped, Station, Run, Year, analyze_blind_dat = analyze_blind_dat)
-    elif Key == 'cw_add' or Key == 'cw_replace' or Key == 'cw_hist':
-        results = method(Station, Run, analyze_blind_dat = analyze_blind_dat)
-        return
-    elif Key == 'cw_time':
-        results = method(Station, Run, analyze_blind_dat = analyze_blind_dat)
-    else:
-        results = method(Data, Ped, analyze_blind_dat = analyze_blind_dat)
+    results = method(Data, Ped, Station, Year, analyze_blind_dat = analyze_blind_dat)
     del module, method
 
     # create output dir
@@ -59,11 +37,6 @@ def script_loader(Key = None, Station = None, Run = None, Act_Evt = None, analyz
     if not os.path.exists(Output):
         os.makedirs(Output)
     h5_file_name = f'{Output}{Key}{blind_type}_A{Station}_R{Run}'
-    if Key == 'wf' and Act_Evt is not None:
-        if len(Act_Evt) == 1:
-            h5_file_name += f'_E{Act_Evt[0]}'
-        else:
-            h5_file_name += f'_E{Act_Evt[0]}_to_E{Act_Evt[-1]}'
     h5_file_name += f'.h5'
     hf = h5py.File(h5_file_name, 'w')
     
@@ -91,8 +64,6 @@ if __name__ == "__main__":
     <Srtipt Key ex)qual_cut>    
     <Station ex)2>
     <Run ex)11650>
-    if Key is wf and want more...
-    <Event # ex)75030>
     if you want blinded data ...
     <blind_type ex)1>
     
@@ -105,16 +76,11 @@ if __name__ == "__main__":
     key=str(sys.argv[1])
     station=int(sys.argv[2])
     run=int(sys.argv[3])
-    act_evt = None
     blind_type = False
     if len(sys.argv) == 5:
         blind_type = bool(int(sys.argv[4]))
-    act_evt = None
-    if len(sys.argv) > 5:
-        blind_type = bool(int(sys.argv[4]))
-        act_evt = np.asarray(sys.argv[5].split(','), dtype = int)
 
-    script_loader(Key = key, Station = station, Run = run, Act_Evt = act_evt, analyze_blind_dat = blind_type)
+    script_loader(Key = key, Station = station, Run = run, analyze_blind_dat = blind_type)
 
 
 

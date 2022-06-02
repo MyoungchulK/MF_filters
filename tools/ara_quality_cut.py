@@ -40,7 +40,6 @@ class pre_qual_cut_loader:
         self.pps_number = ara_uproot.pps_number
         self.irs_block_number = ara_uproot.irs_block_number
         self.channel_mask = ara_uproot.channel_mask
-        #self.blk_len = ara_uproot.read_win//num_ddas
         self.verbose = verbose
 
         run_info = run_info_loader(self.st, self.run, analyze_blind_dat = analyze_blind_dat)
@@ -49,13 +48,9 @@ class pre_qual_cut_loader:
         self.evt_sort = self.sub_info_hf['evt_num_sort'][:]
         self.unix_sort = self.sub_info_hf['unix_time_sort'][:]
         self.pps_sort = self.sub_info_hf['pps_number_sort_reset'][:]
-        self.dig_dead = self.sub_info_hf['dig_dead'][:]
-        self.dig_dead = self.dig_dead.astype(float)
-        self.dig_dead *= 1e-6
-        self.buff_dead = self.sub_info_hf['buff_dead'][:]
-        self.buff_dead = self.buff_dead.astype(float)
-        self.buff_dead *= 1e-6
         del sub_info_dat, run_info
+
+        self.ara_known_issue = known_issue_loader(self.st)
 
     def get_daq_structure_errors(self):
 
@@ -254,17 +249,14 @@ class pre_qual_cut_loader:
 
     def get_bad_unix_time_events(self, add_unchecked_unix_time = False):
 
-        ara_known_issue = known_issue_loader(self.st)
-
         bad_unix_evts = np.full((self.num_evts), 0, dtype = int)
         for evt in range(self.num_evts):
-            bad_unix_evts[evt] = ara_known_issue.get_bad_unixtime(self.unix_time[evt])
+            bad_unix_evts[evt] = self.ara_known_issue.get_bad_unixtime(self.unix_time[evt])
         
         if add_unchecked_unix_time == True:
             for evt in range(self.num_evts):
-                if ara_known_issue.get_unchecked_unixtime(self.unix_time[evt]):
+                if self.ara_known_issue.get_unchecked_unixtime(self.unix_time[evt]):
                    bad_unix_evts[evt] = 1 
-        del ara_known_issue
         
         if self.verbose:
             quick_qual_check(bad_unix_evts != 0, 'bad unix time', self.evt_num)
@@ -476,9 +468,21 @@ class pre_qual_cut_loader:
     
         return high_rf_rate_evts
 
+    def get_known_bad_run_events(self):
+    
+        bad_runs = self.ara_known_issue.get_knwon_bad_run()
+        run_flag = int(self.run in bad_runs)
+
+        known_bad_run_evetns = np.full((self.num_evts), run_flag, dtype = int)
+        del bad_runs, run_flag
+        if self.verbose:
+            quick_qual_check(known_bad_run_evetns != 0, 'known bad run events', self.evt_num)
+    
+        return known_bad_run_evetns
+
     def run_pre_qual_cut(self):
 
-        tot_pre_qual_cut = np.full((self.num_evts, 21), 0, dtype = int)
+        tot_pre_qual_cut = np.full((self.num_evts, 22), 0, dtype = int)
         tot_pre_qual_cut[:, :5] = self.get_daq_structure_errors()
         tot_pre_qual_cut[:, 5:9] = self.get_readout_window_errors(use_smear =True)
         tot_pre_qual_cut[:, 9] = self.get_bad_unix_time_sequence()
@@ -489,6 +493,7 @@ class pre_qual_cut_loader:
         tot_pre_qual_cut[:, 14:17] = self.get_bad_rate_events()
         tot_pre_qual_cut[:, 17:20] = self.get_bad_rate_events(use_sec = True)
         tot_pre_qual_cut[:, 20] = self.get_high_rf_rate_events(use_smear = True)
+        tot_pre_qual_cut[:, 21] = self.get_known_bad_run_events()
 
         self.daq_qual_cut_sum = np.nansum(tot_pre_qual_cut[:, :6], axis = 1)
         self.pre_qual_cut_sum = np.nansum(tot_pre_qual_cut, axis = 1)
@@ -518,7 +523,6 @@ class post_qual_cut_loader:
         del ara_known_issue, ara_uproot#, wf_int
 
         # spare
-        # cw (testbad, phase, anita)
         # spikey 
      
         self.unlock_cal_evts = np.full((self.num_evts), 0, dtype = int)
@@ -576,6 +580,91 @@ class post_qual_cut_loader:
         
         return tot_post_qual_cut
 
+class cw_qual_cut_loader:
+
+    def __init__(self, st, run, evt_num, verbose = False):
+
+        self.verbose = verbose
+        self.st = st
+        self.run = run
+        self.evt_num = evt_num
+        self.num_evts = len(self.evt_num)
+        self.rp_evts = np.full((self.num_evts), 0, dtype = int)
+        self.cw_evts = np.copy(self.rp_evts)
+
+    def get_cut_parameters(self):
+   
+        self.ratio_min = np.full((2, num_ants), 0.05, dtype = float)
+        self.ratio_cut = np.full((2, num_ants), np.nan, dtype = float)
+        self.ratio_cut[0] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06], dtype = float)
+        self.ratio_cut[1] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06], dtype = float)
+        self.ratio_cut_thres = 3
+ 
+        self.amp_err_cut = np.full((2, num_ants), np.nan, dtype = float)
+        self.phase_err_cut = np.copy(self.amp_err_cut)
+
+        if self.st == 2:
+            self.amp_err_cut[0] = np.array([20, 20, 30, 22, 30, 20, 30, 30, 30, 18, 20, 20, 20, 15, 20, 2000], dtype = float)
+            #self.amp_err_cut[1] = np.array([20, 20, 30, 22, 30, 20, 30, 30, 30, 18, 20, 20, 20, 15, 20, 2000], dtype = float)
+
+            self.phase_err_cut[0] = np.array([4, 4, 2, 2, 2, 3, 2, 3, 2, 3, 3, 3, 3, 3, 3, 2000], dtype = float)
+            #self.phase_err_cut[1] = np.array([4, 4, 2, 2, 2, 3, 2, 3, 2, 3, 3, 3, 3, 3, 3, 2000], dtype = float)
+
+        if self.st == 3:
+            self.amp_err_cut[0] = np.array([30, 50, 23, 20, 22, 15, 50, 18, 17, 13, 15, 30, 13, 15, 13, 11], dtype = float)
+            #self.amp_err_cut[1] = np.array([30, 50, 23, 20, 22, 15, 50, 18, 17, 13, 15, 30, 13, 15, 13, 11], dtype = float)
+
+            self.phase_err_cut[0] = np.array([2, 4, 3, 3, 3, 3, 6, 2.5, 3, 4, 3, 6, 3, 3, 3, 3], dtype = float) 
+            #self.phase_err_cut[1] = np.array([2, 4, 3, 3, 3, 3, 6, 2.5, 3, 4, 3, 6, 3, 3, 3, 3], dtype = float) 
+
+            if self.run > 13081:
+                self.amp_err_cut[0, 6] = 17
+                self.phase_err_cut[0, 2] = 6
+                self.phase_err_cut[0, 6] = 2
+            if self.run > 10000:
+                self.amp_err_cut[0, 11] = 9
+                self.phase_err_cut[0, 3] = 6
+                self.phase_err_cut[0, 11] = 3
+
+        if self.verbose:
+            print(f'min config: {self.ratio_min}')
+            print(f'cut config: {self.ratio_cut}')
+            print(f'amp err config: {self.amp_err_cut}')
+            print(f'phase err config: {self.phase_err_cut}')
+
+        tot_params = np.full((6, num_ants), np.nan, dtype = float)
+        tot_params[:2] = self.ratio_min
+        tot_params[2:4] = self.amp_err_cut
+        tot_params[4:] = self.phase_err_cut
+
+        return tot_params
+
+    def run_cw_qual_cut(self, evt, ratio):
+        
+        ratio_max = np.nanmax(ratio, axis = 0)       
+        ratio_max = np.nanmax(ratio_max, axis = 0)       
+        ratio_bool = np.count_nonzero(ratio_max > self.ratio_cut)
+        del ratio_max
+    
+        if ratio_bool > self.ratio_cut_thres:
+            self.cw_evts[evt] = 1
+            return False
+        else:
+            self.rp_evts[evt] = 1
+            return True
+       
+    def get_cw_qual_cut(self):
+
+        tot_cw_qual_cut = np.full((self.num_evts, 1), 0, dtype = int)
+        tot_cw_qual_cut[:, 0] = self.cw_evts        
+
+        self.cw_qual_cut_sum = np.nansum(tot_cw_qual_cut, axis = 1)
+
+        if self.verbose:
+            quick_qual_check(self.cw_qual_cut_sum != 0, 'total cw qual cut!', self.evt_num)
+
+        return tot_cw_qual_cut
+
 class ped_qual_cut_loader:
 
     def __init__(self, ara_uproot, total_qual_cut, daq_cut_sum, analyze_blind_dat = False, verbose = False):
@@ -590,7 +679,7 @@ class ped_qual_cut_loader:
         self.run = self.ara_uproot.run
         self.total_qual_cut = total_qual_cut
         self.daq_cut_sum = daq_cut_sum
-        self.num_qual_type = 3
+        self.num_qual_type = 4
         self.minimum_usage = 20 # from pedestalSamples#I1=
 
     def get_clean_events(self):
@@ -613,22 +702,30 @@ class ped_qual_cut_loader:
         # 18 bad cal sec rate
         # 19 bad soft sec rate
         # 20 high rf sec rate
-        # 21 unlock calpulser
+        # 21 bad run
+        # 22 unlock calpulser
+        # 23 cw cut
 
         # turn on all cuts
         clean_evts_qual_type[:, 0] = 1
         clean_evts[:, 0] = np.logical_and(np.nansum(self.total_qual_cut, axis = 1) == 0, self.trig_type != 1).astype(int)
 
-        # hardware error only. not use 1) 10 bad unix time, 3) 13 bad cal ratio, and 4) 14 bad rf rate
-        qual_type = np.array([0,1,2,3,4,5,6,7,8,9,11,12,15,16,17,18,19,20,21], dtype = int)
+        # not use 1) 10 bad unix time, 2) 21 bad run
+        qual_type = np.array([0,1,2,3,4,5,6,7,8,9,11,12,13,14,15,16,17,18,19,20,22,23], dtype = int)
         clean_evts_qual_type[qual_type, 1] = 1
         clean_evts[:, 1] = np.logical_and(np.nansum(self.total_qual_cut[:, qual_type], axis = 1) == 0, self.trig_type != 1).astype(int)
         del qual_type
 
-        # only rf/software
-        qual_type = np.array([0,1,2,3,4,5], dtype = int)
+        # hardware error only. not use 1) 10 bad unix time, 3) 13 bad cal ratio, and 4) 14 bad rf rate 5) 21 bad run 6) 23 cw cut
+        qual_type = np.array([0,1,2,3,4,5,6,7,8,9,11,12,15,16,17,18,19,20,22], dtype = int)
         clean_evts_qual_type[qual_type, 2] = 1
         clean_evts[:, 2] = np.logical_and(np.nansum(self.total_qual_cut[:, qual_type], axis = 1) == 0, self.trig_type != 1).astype(int)
+        del qual_type
+
+        # only rf/software
+        qual_type = np.array([0,1,2,3,4,5], dtype = int)
+        clean_evts_qual_type[qual_type, 3] = 1
+        clean_evts[:, 3] = np.logical_and(np.nansum(self.total_qual_cut[:, qual_type], axis = 1) == 0, self.trig_type != 1).astype(int)
         del qual_type
     
         # clean evts for repeder
@@ -653,6 +750,8 @@ class ped_qual_cut_loader:
                 block_usage[blk_idx_arr, 1] += 1
             if clean_evts[evt, 2] == 1:
                 block_usage[blk_idx_arr, 2] += 1
+            if clean_evts[evt, 3] == 1:
+                block_usage[blk_idx_arr, 3] += 1
             del blk_idx_arr
 
         low_block_usage = np.any(block_usage < self.minimum_usage, axis = 0).astype(int)
@@ -710,16 +809,17 @@ class ped_qual_cut_loader:
             ped_counts = np.copy(self.ped_counts)    
         else:
             run_info = run_info_loader(self.st, self.run, analyze_blind_dat = self.analyze_blind_dat)
-            ped_count_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = self.verbose, force_blind = True)
-            ped_count_hf = h5py.File(ped_count_dat, 'r')
-            ped_counts = ped_count_hf['ped_counts'][:]
+            ped_dat = run_info.get_result_path(file_type = 'ped_cut', verbose = self.verbose, force_blind = True)
+            ped_hf = h5py.File(ped_dat, 'r')
+            ped_counts = ped_hf['ped_counts'][:]
+            known_bad_ped_evts = ped_hf['total_ped_cut'][:,-1]
             del ped_count_dat, ped_count_hf, run_info
         zero_ped_counts = ped_counts < 1
         ped_blk_counts = ped_counts == 1
         low_ped_counts = ped_counts < self.minimum_usage 
         del ped_counts
 
-        ped_qual_cut = np.full((self.num_evts, 3), 0, dtype = int)
+        ped_qual_cut = np.full((self.num_evts, 4), 0, dtype = int)
         for evt in range(self.num_evts):
 
             if self.daq_cut_sum[evt] != 0:
@@ -735,6 +835,12 @@ class ped_qual_cut_loader:
             ped_qual_cut[evt, 1] = np.nansum(ped_blk_counts[blk_idx_arr])
             del blk_idx_arr
         del ped_blk_counts, zero_ped_counts, low_ped_counts
+            
+        if self.analyze_blind_dat:
+            ped_flag = int(np.any(np.nansum(ped_qual_cut[:, :3], axis = 1) != 0))
+            ped_qual_cut[:,3] = ped_flag
+        else:
+            ped_qual_cut[:,3] = known_bad_ped_evts
 
         self.ped_qual_cut_sum = np.nansum(ped_qual_cut, axis = 1)
 
@@ -742,90 +848,46 @@ class ped_qual_cut_loader:
             quick_qual_check(ped_qual_cut[:, 0] != 0, 'zero pedestal events', self.evt_num)
             quick_qual_check(ped_qual_cut[:, 1] != 0, 'pedestal block events', self.evt_num)
             quick_qual_check(ped_qual_cut[:, 2] != 0, 'low pedestal block events', self.evt_num)
+            quick_qual_check(ped_qual_cut[:, 3] != 0, 'known bad pedestal events', self.evt_num)
             quick_qual_check(self.ped_qual_cut_sum != 0, 'total pedestal qual cut!', self.evt_num)
 
         return ped_qual_cut
 
 class run_qual_cut_loader:
 
-    def __init__(self, st, run, num_evts, qual_cut_sum, ped_cut_sum, analyze_blind_dat = False, verbose = False):
+    def __init__(self, st, run, tot_cut, analyze_blind_dat = False, verbose = False):
 
         self.analyze_blind_dat = analyze_blind_dat
         self.verbose = verbose
         self.st = st
         self.run = run
-        self.num_evts = num_evts       
- 
-        ara_known_issue = known_issue_loader(self.st)
-        bad_runs = ara_known_issue.get_knwon_bad_run()
-        self.run_flag = int(self.run in bad_runs)
-        if self.run_flag == 1 and self.verbose:
-            print(f'A{self.st} Run{self.run} is known bad run!') 
-        del bad_runs, ara_known_issue
 
-        self.sum_flag = np.all(qual_cut_sum != 0)
-        if self.analyze_blind_dat:
-            self.ped_flag = np.any(ped_cut_sum != 0)
-            dat_type = int
-            fill_val = 0
-        else:
-            self.ped_flag = np.nan
-            dat_type = float
-            fill_val = np.nan
-        self.bad_run = np.full((3), fill_val, dtype = dat_type)
-        self.bad_run[0] = int(self.sum_flag)
-        self.bad_run[1] = self.ped_flag
-        self.bad_run[2] = self.run_flag
-        del dat_type
+        self.known_flag = np.all(tot_cut[:, 21] != 0)
+        self.ped_flag = np.all(tot_cut[:, -1] != 0)       
+        cut_copy = np.copy(tot_cut)
+        cut_copy[:,21] = 0
+        cut_copy[:,-1] = 0
+        cut_copy = np.nansum(cut_copy, axis = 1)
+        self.qual_flag = np.all(cut_copy != 0)
+        del cut_copy
+
+    def get_bad_run_type(self):
+
+        bad_run = np.full((3), 0, dtype = int)
+        bad_run[0] = int(self.qual_flag)
+        bad_run[1] = int(self.ped_flag)
+        bad_run[2] = int(self.known_flag)
         if self.verbose:
-            print(f'bad run type: {self.bad_run}')
-
-    def get_known_bad_run(self):
-
-        known_run_evetns = np.full((self.num_evts), self.run_flag, dtype = int)
-        if self.verbose:
-            quick_qual_check(known_run_evetns != 0, 'known bad run events')    
-
-        return known_run_evetns
-
-    def get_bad_ped_run(self):
-
-        if self.analyze_blind_dat:
-            bad_ped = int(self.ped_flag)
-        else:
-            run_info = run_info_loader(self.st, self.run, analyze_blind_dat = self.analyze_blind_dat)
-            ped_flag_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = self.verbose, force_blind = True)
-            ped_flag_hf = h5py.File(ped_flag_dat, 'r')
-            bad_ped = ped_flag_hf['bad_run'][1]
-            del run_info, ped_flag_dat, ped_flag_hf
-        known_ped_evetns = np.full((self.num_evts), bad_ped, dtype = int)
-        del bad_ped
-        if self.verbose:
-            quick_qual_check(known_ped_evetns != 0, 'known bad pedestal events')
-    
-        return known_ped_evetns
-
-    def run_run_qual_cut(self):
-
-        tot_run_qual_cut = np.full((self.num_evts, 2), 0, dtype = int)
-        tot_run_qual_cut[:, 0] = self.get_known_bad_run()
-        tot_run_qual_cut[:, 1] = self.get_bad_ped_run()
-
-        self.run_qual_cut_sum = np.nansum(tot_run_qual_cut, axis = 1)
-
-        if self.verbose:
-            quick_qual_check(self.run_qual_cut_sum != 0, 'total run qual cut!')
-
-        return tot_run_qual_cut
+            print(f'bad run type: 1) qual: {self.bad_run[0]}, 2) ped: {self.bad_run[1]}, 3) known: {self.bad_run[2]}')
 
     def get_bad_run_list(self):
 
         if self.analyze_blind_dat:
-            if self.sum_flag or self.ped_flag:
+            if self.qual_flag or self.ped_flag:
                 if self.verbose:
-                    print(f'A{self.st} R{self.run} is bad!!! Bad type: {self.bad_run[:2]}')
+                    print(f'A{self.st} R{self.run} is bad!!! Bad type: {int(self.qual_flag)}, {int(self.ped_flag)}')
                 bad_path = f'../data/qual_runs/qual_run_A{self.st}.txt'
-                bad_run_info = f'{self.run} {self.bad_run[0]} {self.bad_run[1]}\n'
+                bad_run_info = f'{self.run} {int(self.qual_flag)} {int(self.ped_flag)}\n'
                 if os.path.exists(bad_path):
                     if self.verbose:
                         print(f'There is {bad_path}')
@@ -854,14 +916,25 @@ class run_qual_cut_loader:
                         f.write(bad_run_info)
                 del bad_path, bad_run_info
 
-def get_live_time(unix_time, cut = None, dead = None, verbose = True):
+def get_live_time(st, run, unix_time, cut = None, use_dead = False, verbose = False):
 
     time = np.abs(unix_time[-1] - unix_time[0])
     live_time = np.array([time], dtype = float)
     del time
 
-    if dead is not None:
-        live_time -= np.nansum(dead)    
+    if use_dead:
+        run_info = run_info_loader(st, run, analyze_blind_dat = True)
+        sub_info_dat = run_info.get_result_path(file_type = 'sub_info', verbose = verbose)
+        sub_info_hf = h5py.File(sub_info_dat, 'r')
+        dig_dead = sub_info_hf['dig_dead'][:]
+        dig_dead = dig_dead.astype(float)
+        dig_dead *= 1e-6
+        buff_dead = sub_info_hf['buff_dead'][:]
+        buff_dead = buff_dead.astype(float)
+        buff_dead *= 1e-6
+        dead = np.nansum(dig_dead + buff_dead)
+        live_time -= dead    
+        del run_info, sub_info_dat, sub_info_hf, dig_dead, buff_dead, dead
 
     if cut is not None:
         clean_num_evts = np.count_nonzero(cut == 0)
@@ -899,9 +972,8 @@ class qual_cut_loader:
             print(f'quality cut path:', d_path)
 
         self.evt_num = qual_file['evt_num'][:]
-        self.rf_evt_num = qual_file['rf_evt_num'][:]
-        self.clean_evt_num = qual_file['clean_evt_num'][:]
-        self.clean_rf_evt_num = qual_file['clean_rf_evt_num'][:]
+        #self.entry_num = qual_file['entry_num'][:]
+        self.trig_type = qual_file['trig_type'][:]
         self.unix_time = qual_file['unix_time'][:]
         total_qual_cut = qual_file['total_qual_cut'][:]
         self.daq_qual_cut_sum = qual_file['daq_qual_cut_sum'][:]
@@ -913,6 +985,27 @@ class qual_cut_loader:
         del d_key, d_path, qual_file
 
         return total_qual_cut
+
+    def get_useful_events(self, use_entry = False, use_qual = False, trig_idx = None):
+
+        if use_entry:
+            evt_idx = self.entry_num
+        else:
+            evt_idx = self.evt_num
+
+        if trig_idx is not None:
+            if use_qual:
+                clean_idx = np.logical_and(self.trig_type == trig_idx, self.total_qual_cut_sum == 0)
+            else:
+                clean_idx = np.logical_and(self.trig_type == trig_idx, self.daq_qual_cut_sum == 0)
+        else:
+            if use_qual:
+                clean_idx = self.total_qual_cut_sum == 0
+            else:
+                clean_idx = self.daq_qual_cut_sum == 0
+        evt_idx = evt_idx[clean_idx]
+
+        return evt_idx
 
     """
     def get_qual_cut_class(self, ara_root, ara_uproot, dt = 0.5):
