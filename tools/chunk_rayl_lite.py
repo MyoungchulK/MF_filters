@@ -2,7 +2,7 @@ import numpy as np
 from scipy.stats import rayleigh
 from tqdm import tqdm
 
-def rayl_lite_collector(Data, Ped, Station, Year, analyze_blind_dat = False):
+def rayl_lite_collector(Data, Ped, Station, Run, Year, use_araroot_cut = False, use_mf_qual_cut = False, analyze_blind_dat = False):
 
     print('Collecting rayl. starts!')
 
@@ -19,6 +19,20 @@ def rayl_lite_collector(Data, Ped, Station, Year, analyze_blind_dat = False):
     ara_root = ara_root_loader(Data, Ped, Station, Year)
     num_evts = ara_root.num_evts
 
+    # quality cuts
+    if use_araroot_cut:
+        print('AraRoot quality cut class!')
+        ara_root.get_qual_cut()
+    if use_mf_qual_cut:
+        import h5py
+        from tools.ara_run_manager_lite import run_info_loader
+        run_info = run_info_loader(Station, Run, analyze_blind_dat = analyze_blind_dat)
+        qual_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True)
+        qual_hf = h5py.File(qual_dat, 'r')
+        bad_evt = qual_hf['total_qual_cut_sum'][:]
+        del run_info, qual_dat, qual_hf
+        print(f'Number of clean event: {np.count_nonzero(bad_evt == 0)}')
+
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_rfft = True)
     fft_len = wf_int.pad_fft_len
@@ -32,11 +46,21 @@ def rayl_lite_collector(Data, Ped, Station, Year, analyze_blind_dat = False):
     for evt in tqdm(range(num_evts)):
       #if evt <100:        
 
+        # mf quality cut
+        if use_mf_qual_cut and bad_evt[evt] != 0:
+            continue
+
         # get entry and wf
         ara_root.get_entry(evt)
+
+        # trigger filtering
         if ara_root.get_trig_type() != 0: # only rf. trust issue with software...
             continue
         ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
+        
+        # araroot quality cuts
+        if use_araroot_cut and ara_root.get_qual_cut_result() != 0:
+            continue
 
         # loop over the antennas
         for ant in range(num_ants):
@@ -49,7 +73,7 @@ def rayl_lite_collector(Data, Ped, Station, Year, analyze_blind_dat = False):
             wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True)
             del raw_t, raw_v 
             ara_root.del_TGraph()
-        ara_root.del_usefulEvt()
+        ara_root.del_usefulEvt(use_araroot_cut)
 
         # rfft
         wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_abs = True)

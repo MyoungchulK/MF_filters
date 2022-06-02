@@ -14,6 +14,28 @@ class run_info_loader:
         self.run = run
         self.analyze_blind_dat = analyze_blind_dat
 
+    def get_result_path(self, file_type = 'qual_cut', file_format = 'h5', verbose = False, return_none = False, force_blind = False):
+
+        blind_type = ''
+        if self.analyze_blind_dat:
+            blind_type = '_full'
+        if force_blind:
+            blind_type = '_full'
+
+        result_path = f'/data/user/mkim/OMF_filter/ARA0{self.st}/{file_type}{blind_type}/{file_type}{blind_type}_A{self.st}_R{self.run}.{file_format}'
+
+        if os.path.exists(result_path):
+            if verbose:
+                print(f'{file_type}{blind_type}_path:{result_path}')
+        else:
+            print(f'There is no desired {result_path}')
+            if return_none == True:
+                return None
+            else:
+                sys.exit(1)
+
+        return result_path
+
     def get_ped_path(self, file_type = 'values', verbose = False, return_none = False):
 
         ped_path = f'/data/user/mkim/OMF_filter/ARA0{self.st}/ped_full/ped_full_{file_type}_A{self.st}_R{self.run}.dat'

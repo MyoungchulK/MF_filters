@@ -126,9 +126,10 @@ class ara_root_loader:
         self.gr.Delete()
         del self.gr
 
-    def del_usefulEvt(self):
+    def del_usefulEvt(self, use_araroot_cut = False):
 
-        #self.usefulEvt.Delete()
+        if use_araroot_cut:
+            self.usefulEvt.Delete()
         del self.usefulEvt
 
     def get_sub_info(self):
