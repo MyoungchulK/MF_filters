@@ -685,16 +685,22 @@ class sin_subtract_loader:
 
         self.num_sols = self.sin_sub.getNSines()
         self.sub_freqs = np.frombuffer(self.sin_sub.getFreqs(), dtype = float, count = self.num_sols)
-        #self.sub_freq_errs = np.frombuffer(self.sin_sub.getFreqErrs(), dtype = float, count = self.num_sols)
+        self.sub_freq_inits = np.frombuffer(self.sin_sub.getFreqInits(), dtype = float, count = self.num_sols)
         self.sub_amps = np.frombuffer(self.sin_sub.getAmps(0), dtype = float, count = self.num_sols)
         self.sub_amp_errs = np.frombuffer(self.sin_sub.getAmpErrs(0), dtype = float, count = self.num_sols)
-        #self.sub_amp_guesses = np.frombuffer(self.sin_sub.getAmpGuesses(0), dtype = float, count = self.num_sols)
-        #self.sub_phases = np.frombuffer(self.sin_sub.getPhases(0), dtype = float, count = self.num_sols)   
+        self.sub_amp_inits = np.frombuffer(self.sin_sub.getAmpInits(0), dtype = float, count = self.num_sols)
+        self.sub_phases = np.frombuffer(self.sin_sub.getPhases(0), dtype = float, count = self.num_sols)   
         self.sub_phase_errs = np.frombuffer(self.sin_sub.getPhaseErrs(0), dtype = float, count = self.num_sols)   
-        #self.sub_phase_guesses = np.frombuffer(self.sin_sub.getPhaseGuesses(0), dtype = float, count = self.num_sols)   
+        self.sub_phase_inits = np.frombuffer(self.sin_sub.getPhaseInits(0), dtype = float, count = self.num_sols)   
         self.sub_powers = np.frombuffer(self.sin_sub.getPowers(), dtype = float, count = self.num_sols + 1)
-        #self.sub_powersequence = np.asarray(self.sin_sub.getPowerSequence(), dtype = float)
         self.sub_ratios = 1 - self.sub_powers[1:] / self.sub_powers[:-1]
+        self.sub_tot_ratios = 1 - self.sub_powers[-1]/self.sub_powers[0]
+
+        #self.sub_freq_errs = np.frombuffer(self.sin_sub.getFreqErrs(), dtype = float, count = self.num_sols)
+        #self.sub_amp_guesses = np.frombuffer(self.sin_sub.getAmpGuesses(0), dtype = float, count = self.num_sols)
+        #self.sub_phases = np.frombuffer(self.sin_sub.getPhases(0), dtype = float, count = self.num_sols)\
+        #self.sub_phase_guesses = np.frombuffer(self.sin_sub.getPhaseGuesses(0), dtype = float, count = self.num_sols)
+        #self.sub_powersequence = np.asarray(self.sin_sub.getPowerSequence(), dtype = float)
 
         return cw_v
 

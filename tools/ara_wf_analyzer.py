@@ -17,7 +17,7 @@ num_Bits = ara_const.BUFFER_BIT_RANGE
 class wf_analyzer:
 
     def __init__(self, dt = 0.5, use_time_pad = False, use_freq_pad = False, use_band_pass = False,
-                    add_double_pad = False, use_rfft = False, use_ele_ch = False, use_cw = False):
+                    add_double_pad = False, use_rfft = False, use_ele_ch = False, use_cw = False):#, cw_params = None):
 
         self.dt = dt
         self.num_chs = num_ants
@@ -35,7 +35,8 @@ class wf_analyzer:
             #self.sin_sub_250 = sin_subtract_loader(3, 0.05, 0.2, 0.3, self.dt) # strong 250 MHz peak
             #self.sin_sub_400 = sin_subtract_loader(3, 0.01, 0.35, 0.45, self.dt) # weather balloon
             #self.sin_sub = sin_subtract_loader(3, 0.01, 0.13, 0.85, self.dt) # for tiny cw
-            #self.sin_sub_400 = sin_subtract_loader(3, 0.02, 0.35, 0.45, self.dt) # debug
+            #self.sin_sub_400 = sin_subtract_loader(3, 0.38, 0.42, self.dt, cw_params[::2]) # debug
+            #self.sin_sub = sin_subtract_loader(3, 0.125, 0.85, self.dt, cw_params[1::2]) # debug
             self.sin_sub = sin_subtract_loader(3, 0.02, 0.125, 0.85, self.dt) # debug
 
     def get_band_pass_filter(self, low_freq_cut = 0.13, high_freq_cut = 0.85, order = 10, pass_type = 'band'):
@@ -112,7 +113,7 @@ class wf_analyzer:
             #int_v = self.sin_sub_150.get_sin_subtract_wf(int_v, int_num)
             #int_v = self.sin_sub_250.get_sin_subtract_wf(int_v, int_num)
             #int_v = self.sin_sub_400.get_sin_subtract_wf(int_v, int_num)
-            int_v = self.sin_sub.get_sin_subtract_wf(int_v, int_num)
+            int_v = self.sin_sub.get_sin_subtract_wf(int_v, int_num)#, ant)
             if use_power:
                 self.int_cw_power = np.nanmean(int_v**2)
 
@@ -179,87 +180,78 @@ class hist_loader():
             self.bins_y = bins_y
             self.bin_y_center = (self.bins_y[1:] + self.bins_y[:-1]) / 2
 
-    def get_1d_hist(self, dat_ori, fill_val = np.nan, use_flat = False, cut = None):
+    def get_1d_hist(self, dat_ori, fill_val = np.nan, use_flat = False, cut = None, weight = None):
 
         dat = np.copy(dat_ori)
+        if weight is not None:
+            wei = np.copy(weight)
         if use_flat:
             ch_dim = dat.shape[1]
             if cut is not None:
                 dat[:, :, cut] = fill_val
+                if weight is not None:
+                    wei[:, :, cut] = fill_val
         else:
             ch_dim = dat.shape[0]
             if cut is not None:
                 dat[:, cut] = fill_val
+                if weight is not None:
+                    wei[:, cut] = fill_val
 
-        dat_1d_hist = np.full((len(self.bin_x_center), ch_dim), 0, dtype = int)
+        dat_1d_hist = np.full((len(self.bin_x_center), ch_dim), 0, dtype =float)
+        ch_wei = None
         for ant in range(ch_dim):
             if use_flat:
                 ch_dat = dat[:, ant].flatten()
+                if weight is not None:
+                    ch_wei = wei[:, ant].flatten()
             else:
-                ch_dat = dat[ant] 
-            dat_1d_hist[:, ant] = np.histogram(ch_dat, bins = self.bins_x)[0].astype(int)
-            del ch_dat    
-        del dat, ch_dim
+                ch_dat = dat[ant]
+                if weight is not None:
+                    ch_wei = wei[ant] 
+            dat_1d_hist[:, ant] = np.histogram(ch_dat, bins = self.bins_x, weights = ch_wei)[0]
+            del ch_dat
+        del dat, ch_dim, ch_wei
 
         return dat_1d_hist
 
-    def get_sub_off_2d_hist(self, dat_x_ori, dat_y_ori, fill_val = np.nan, cut = None):
+    def get_2d_hist(self, dat_x_ori, dat_y_ori, fill_val = np.nan, use_flat = False, cut = None, weight = None):
 
         dat_x = np.copy(dat_x_ori)
         dat_y = np.copy(dat_y_ori)
-        if cut is not None:
-            dat_x[cut] = fill_val
-            dat_y[:, cut] = fill_val
-
-        dat_2d_hist = np.full((dat_y.shape[0], len(self.bin_x_center), len(self.bin_y_center)), 0, dtype = int)
-        for ant in range(dat_y.shape[0]):
-            dat_2d_hist[ant] = np.histogram2d(dat_x, dat_y[ant], bins = (self.bins_x, self.bins_y))[0].astype(int)
-        del dat_x, dat_y
-
-        return dat_2d_hist
-
-    def get_mean_blk_2d_hist(self, dat_x_ori, dat_y_ori, fill_val = np.nan, cut = None):
-
-        dat_x = np.copy(dat_x_ori)
-        dat_y = np.copy(dat_y_ori)
-        if cut is not None:
-            dat_x[:, cut] = fill_val
-            dat_y[:, :, cut] = fill_val
-        dat_x = dat_x.flatten()
-
-        dat_2d_hist = np.full((dat_y.shape[1], len(self.bin_x_center), len(self.bin_y_center)), 0, dtype = int)
-        for ant in range(dat_y.shape[1]):
-            dat_2d_hist[ant] = np.histogram2d(dat_x, dat_y[:, ant].flatten(), bins = (self.bins_x, self.bins_y))[0].astype(int)
-        del dat_x, dat_y
-
-        return dat_2d_hist
-
-    def get_2d_hist(self, dat_x_ori, dat_y_ori, fill_val = np.nan, use_flat = False, cut = None):
-
-        dat_x = np.copy(dat_x_ori)
-        dat_y = np.copy(dat_y_ori)
+        if weight is not None:
+            wei = np.copy(weight)
         if use_flat:
             ch_dim = dat_y.shape[1]
             if cut is not None:
                 dat_x[:, :, cut] = fill_val
                 dat_y[:, :, cut] = fill_val
+                if weight is not None:
+                    wei[:, :, cut] = fill_val
         else:
             ch_dim = dat_y.shape[0]
             if cut is not None:
-                dat_x[:, cut] = fill_val    
-                dat_y[:, cut] = fill_val    
+                dat_x[:, cut] = fill_val
+                dat_y[:, cut] = fill_val
+                if weight is not None:
+                    wei[:, cut] = fill_val
 
-        dat_2d_hist = np.full((len(self.bin_x_center), len(self.bin_y_center), ch_dim), 0, dtype = int)
+        dat_2d_hist = np.full((len(self.bin_x_center), len(self.bin_y_center), ch_dim), 0, dtype = float)
+        ch_wei = None
         for ant in range(ch_dim):
             if use_flat:
                 ch_dat_x = dat_x[:, ant].flatten()
                 ch_dat_y = dat_y[:, ant].flatten()
+                if weight is not None:
+                    ch_wei = wei[:, ant].flatten()
             else:
                 ch_dat_x = dat_x[ant]
                 ch_dat_y = dat_y[ant]
-            dat_2d_hist[:, :, ant] = np.histogram2d(ch_dat_x, ch_dat_y, bins = (self.bins_x, self.bins_y))[0].astype(int)
+                if weight is not None:
+                    ch_wei = wei[ant]
+            dat_2d_hist[:, :, ant] = np.histogram2d(ch_dat_x, ch_dat_y, bins = (self.bins_x, self.bins_y), weights = ch_wei)[0]
             del ch_dat_x, ch_dat_y
-        del dat_x, dat_y, ch_dim
+        del dat_x, dat_y, ch_dim, ch_wei
 
         return dat_2d_hist
 
@@ -324,10 +316,3 @@ class sample_map_loader:
     def del_hist_map(self):
 
         del self.hist_map
-
-def bin_range_maker(data, data_width):
-
-    data_bins = np.linspace(data[0], data[-1], data_width + 1)
-    data_bin_center = (data_bins[1:] + data_bins[:-1]) * 0.5
-
-    return data_bins, data_bin_center

@@ -108,14 +108,18 @@ def get_day_init(unix_time):
 
 for r in tqdm(range(len(d_run_tot))):
     
-  if r <10:
+  #if r <10:
 
     hf = h5py.File(d_list[r], 'r')
+    unix_time = hf['unix_bins'][:-1]
+    if len(unix_time) == 0:
+        print(d_run_tot[r])
+        continue
+
     config = hf['config'][2]
     config_arr.append(config)
     run_arr.append(d_run_tot[r])
-   
-    unix_time = hf['unix_bins'][:-1]
+
     unix_idx = (unix_time - unix_init)//60   
     day_init = get_day_init(unix_time[0])
     min_idx = (unix_time - day_init)//60
@@ -128,11 +132,11 @@ for r in tqdm(range(len(d_run_tot))):
     amp_err_map[unix_idx] = hf['unix_amp_err_map_max'][:]
     phase_err_map[unix_idx] = hf['unix_phase_err_map_max'][:]
    
-    unix_ratio_map[min_idx] += hf['unix_ratio_map'][:]
-    unix_amp_map[min_idx] += hf['unix_amp_map'][:]
-    unix_freq_map[min_idx] += hf['unix_freq_map'][:]
-    unix_amp_err_map[min_idx] += hf['unix_amp_err_map'][:]
-    unix_phase_err_map[min_idx] += hf['unix_phase_err_map'][:]
+    unix_ratio_map[min_idx] += hf['unix_ratio_map'][:].astype(int)
+    unix_amp_map[min_idx] += hf['unix_amp_map'][:].astype(int)
+    unix_freq_map[min_idx] += hf['unix_freq_map'][:].astype(int)
+    unix_amp_err_map[min_idx] += hf['unix_amp_err_map'][:].astype(int)
+    unix_phase_err_map[min_idx] += hf['unix_phase_err_map'][:].astype(int)
 
     if d_run_tot[r] in bad_runs:
         #print('bad run:', d_list[r], d_run_tot[r])
@@ -147,11 +151,11 @@ for r in tqdm(range(len(d_run_tot))):
     amp_err_rf_map[unix_idx] = hf['unix_amp_err_rf_map_max'][:]
     phase_err_rf_map[unix_idx] = hf['unix_phase_err_rf_map_max'][:]
 
-    unix_ratio_rf_map[min_idx] += hf['unix_ratio_rf_map'][:]
-    unix_amp_rf_map[min_idx] += hf['unix_amp_rf_map'][:]
-    unix_freq_rf_map[min_idx] += hf['unix_freq_rf_map'][:]
-    unix_amp_err_rf_map[min_idx] += hf['unix_amp_err_rf_map'][:]
-    unix_phase_err_rf_map[min_idx] += hf['unix_phase_err_rf_map'][:]
+    unix_ratio_rf_map[min_idx] += hf['unix_ratio_rf_map'][:].astype(int)
+    unix_amp_rf_map[min_idx] += hf['unix_amp_rf_map'][:].astype(int)
+    unix_freq_rf_map[min_idx] += hf['unix_freq_rf_map'][:].astype(int)
+    unix_amp_err_rf_map[min_idx] += hf['unix_amp_err_rf_map'][:].astype(int)
+    unix_phase_err_rf_map[min_idx] += hf['unix_phase_err_rf_map'][:].astype(int)
  
     del hf, unix_idx, min_idx
     
