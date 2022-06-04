@@ -16,7 +16,7 @@ def cw_time_collector(Station, Run, analyze_blind_dat = False):
     print('Collecting cw starts!')
 
     from tools.ara_run_manager import run_info_loader
-    from tools.ara_wf_analyzer_temp import hist_loader
+    from tools.ara_wf_analyzer import hist_loader
 
     run_info = run_info_loader(Station, Run, analyze_blind_dat = analyze_blind_dat)
     cw_dat = run_info.get_result_path(file_type = 'cw', verbose = True)
@@ -39,7 +39,18 @@ def cw_time_collector(Station, Run, analyze_blind_dat = False):
     date_min = np.floor(date_min/100) * 100
     date_min = date_min.astype(int)   
     date_min_str = str(date_min)
-    date_min = datetime(int(date_min_str[:4]), int(date_min_str[4:6]), int(date_min_str[6:8]), int(date_min_str[8:10]), int(date_min_str[10:12])) 
+    print(date_min_str)
+    try:
+        date_min = datetime(int(date_min_str[:4]), int(date_min_str[4:6]), int(date_min_str[6:8]), int(date_min_str[8:10]), int(date_min_str[10:12])) 
+    except ValueError:
+        mm = 0
+        hh = int(date_min_str[8:10]) + 1
+        try:
+            date_min = datetime(int(date_min_str[:4]), int(date_min_str[4:6]), int(date_min_str[6:8]), hh, mm)
+        except ValueError:
+            hh = 0
+            dd = int(date_min_str[6:8]) + 1
+            date_max = datetime(int(date_min_str[:4]), int(date_min_str[4:6]), dd, hh)
     unix_min = int(datetime.timestamp(date_min))
     print(date_min)
     print(unix_min)
@@ -50,7 +61,18 @@ def cw_time_collector(Station, Run, analyze_blind_dat = False):
     date_max = np.ceil(date_max/100) * 100
     date_max = date_max.astype(int)
     date_max_str = str(date_max)
-    date_max = datetime(int(date_max_str[:4]), int(date_max_str[4:6]), int(date_max_str[6:8]), int(date_max_str[8:10]), int(date_max_str[10:12]))
+    print(date_max_str)
+    try:
+        date_max = datetime(int(date_max_str[:4]), int(date_max_str[4:6]), int(date_max_str[6:8]), int(date_max_str[8:10]), int(date_max_str[10:12]))
+    except ValueError:
+        mm = 0
+        hh = int(date_max_str[8:10]) + 1        
+        try:
+            date_max = datetime(int(date_max_str[:4]), int(date_max_str[4:6]), int(date_max_str[6:8]), hh, mm)
+        except ValueError:
+            hh = 0
+            dd = int(date_max_str[6:8]) + 1
+            date_max = datetime(int(date_max_str[:4]), int(date_max_str[4:6]), dd, hh)
     unix_max = int(datetime.timestamp(date_max))
     print(date_max)
     print(unix_max)

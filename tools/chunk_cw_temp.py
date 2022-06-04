@@ -113,10 +113,13 @@ def cw_temp_collector(Data, Ped, analyze_blind_dat = False):
 
     sub_sum = np.nansum(sub_power, axis = 0)
     sub_weight = sub_power / sub_sum[np.newaxis, :, :]
+    sub_amp_bound = sub_amp/sub_amp_init
+    sub_phase_bound = sub_phase/sub_phase_init
     del sub_sum
 
     print('sub amp')
     sub_amp = np.log10(sub_amp)
+    sub_amp_init = np.log10(sub_amp_init)
     sub_rf_cut_map = ara_hist.get_2d_hist(sub_freq, sub_amp, weight = sub_weight, use_flat = True) 
     sub_init_rf_cut_map = ara_hist.get_2d_hist(sub_freq_init, sub_amp_init, weight = sub_weight, use_flat = True) 
     del ara_hist
@@ -155,8 +158,6 @@ def cw_temp_collector(Data, Ped, analyze_blind_dat = False):
     del ara_hist
 
     print('bound check')
-    sub_amp_bound = sub_amp/sub_amp_init
-    sub_phase_bound = sub_phase/sub_phase_init
     bound_range = np.arange(0, 1.5, 0.003)
     bound_bins = np.linspace(0, 1.5, 500 + 1)
     ara_hist = hist_loader(bound_bins)

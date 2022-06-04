@@ -58,17 +58,17 @@ ratio_len = len(ratio_bins) - 1
 amp_err_len = len(amp_err_bins) - 1
 phase_err_len = len(phase_err_bins) - 1
 
-fft_rf_map = np.full((freq_len, amp_len, 16), 0, dtype = int)
+fft_rf_map = np.full((freq_len, amp_len, 16), 0, dtype = float)
 fft_rf_cut_map = np.copy(fft_rf_map)
 sub_rf_map = np.copy(fft_rf_map)
 sub_rf_cut_map = np.copy(fft_rf_map)
-amp_ratio_rf_map = np.full((amp_len, ratio_len, 16), 0, dtype = int)
+amp_ratio_rf_map = np.full((amp_len, ratio_len, 16), 0, dtype = float)
 amp_ratio_rf_cut_map = np.copy(amp_ratio_rf_map)
-amp_err_ratio_rf_map = np.full((amp_err_len, ratio_len, 16), 0, dtype = int)
+amp_err_ratio_rf_map = np.full((amp_err_len, ratio_len, 16), 0, dtype = float)
 amp_err_ratio_rf_cut_map = np.copy(amp_err_ratio_rf_map)
-phase_err_ratio_rf_map = np.full((phase_err_len, ratio_len, 16), 0, dtype = int)
+phase_err_ratio_rf_map = np.full((phase_err_len, ratio_len, 16), 0, dtype = float)
 phase_err_ratio_rf_cut_map = np.copy(phase_err_ratio_rf_map)
-amp_err_phase_err_rf_map = np.full((amp_err_len, phase_err_len, 16), 0, dtype = int)
+amp_err_phase_err_rf_map = np.full((amp_err_len, phase_err_len, 16), 0, dtype = float)
 amp_err_phase_err_rf_cut_map = np.copy(amp_err_phase_err_rf_map)
 sub_rf_map_w = np.full((freq_len, amp_len, 16), 0, dtype = float)
 sub_rf_cut_map_w = np.copy(sub_rf_map_w)
@@ -106,75 +106,79 @@ for r in tqdm(range(len(d_run_tot))):
     #    continue
 
     hf = h5py.File(d_list[r], 'r')
-    config = hf['config'][2]
-    config_arr.append(config)
-    run_arr.append(d_run_tot[r])
-    
-    fft_rf_map += hf['fft_rf_map'][:]
-    sub_rf_map += hf['sub_rf_map'][:]
-    amp_ratio_rf_map += hf['amp_ratio_rf_map'][:]
-    amp_err_ratio_rf_map += hf['amp_err_ratio_rf_map'][:]
-    phase_err_ratio_rf_map += hf['phase_err_ratio_rf_map'][:]
-    amp_err_phase_err_rf_map += hf['amp_err_phase_err_rf_map'][:]
-    sub_rf_map_w += hf['sub_rf_map_w'][:]
-    amp_ratio_rf_map_w += hf['amp_ratio_rf_map_w'][:]
-    amp_err_ratio_rf_map_w += hf['amp_err_ratio_rf_map_w'][:]
-    phase_err_ratio_rf_map_w += hf['phase_err_ratio_rf_map_w'][:]
-    amp_err_phase_err_rf_map_w += hf['amp_err_phase_err_rf_map_w'][:]
 
-    power = hf['power_rf_hist'][:]
-    ratio = hf['ratio_rf_hist'][:]
-    amp_err = hf['amp_err_rf_hist'][:]
-    phase_err = hf['phase_err_rf_hist'][:]
-    power_rf_hist.append(power)
-    ratio_rf_hist.append(ratio)
-    amp_err_rf_hist.append(amp_err)
-    phase_err_rf_hist.append(phase_err)
-    power_w = hf['power_rf_hist_w'][:]
-    ratio_w = hf['ratio_rf_hist_w'][:]
-    amp_err_w = hf['amp_err_rf_hist_w'][:]
-    phase_err_w = hf['phase_err_rf_hist_w'][:]
-    power_rf_hist_w.append(power_w)
-    ratio_rf_hist_w.append(ratio_w)
-    amp_err_rf_hist_w.append(amp_err_w)
-    phase_err_rf_hist_w.append(phase_err_w)
+    try:    
+        config = hf['config'][2]
+        config_arr.append(config)
+        run_arr.append(d_run_tot[r])
+        
+        fft_rf_map += hf['fft_rf_map'][:]
+        sub_rf_map += hf['sub_rf_map'][:]
+        amp_ratio_rf_map += hf['amp_ratio_rf_map'][:]
+        amp_err_ratio_rf_map += hf['amp_err_ratio_rf_map'][:]
+        phase_err_ratio_rf_map += hf['phase_err_ratio_rf_map'][:]
+        amp_err_phase_err_rf_map += hf['amp_err_phase_err_rf_map'][:]
+        sub_rf_map_w += hf['sub_rf_map_w'][:]
+        amp_ratio_rf_map_w += hf['amp_ratio_rf_map_w'][:]
+        amp_err_ratio_rf_map_w += hf['amp_err_ratio_rf_map_w'][:]
+        phase_err_ratio_rf_map_w += hf['phase_err_ratio_rf_map_w'][:]
+        amp_err_phase_err_rf_map_w += hf['amp_err_phase_err_rf_map_w'][:]
 
-    if d_run_tot[r] in bad_runs:
-        #print('bad run:', d_list[r], d_run_tot[r])
+        power = hf['power_rf_hist'][:]
+        ratio = hf['ratio_rf_hist'][:]
+        amp_err = hf['amp_err_rf_hist'][:]
+        phase_err = hf['phase_err_rf_hist'][:]
+        power_rf_hist.append(power)
+        ratio_rf_hist.append(ratio)
+        amp_err_rf_hist.append(amp_err)
+        phase_err_rf_hist.append(phase_err)
+        power_w = hf['power_rf_hist_w'][:]
+        ratio_w = hf['ratio_rf_hist_w'][:]
+        amp_err_w = hf['amp_err_rf_hist_w'][:]
+        phase_err_w = hf['phase_err_rf_hist_w'][:]
+        power_rf_hist_w.append(power_w)
+        ratio_rf_hist_w.append(ratio_w)
+        amp_err_rf_hist_w.append(amp_err_w)
+        phase_err_rf_hist_w.append(phase_err_w)
+
+        if d_run_tot[r] in bad_runs:
+            #print('bad run:', d_list[r], d_run_tot[r])
+            continue
+
+        config_arr_cut.append(config)
+        run_arr_cut.append(d_run_tot[r])
+        
+        fft_rf_cut_map += hf['fft_rf_cut_map'][:]
+        sub_rf_cut_map += hf['sub_rf_cut_map'][:]
+        amp_ratio_rf_cut_map += hf['amp_ratio_rf_cut_map'][:]
+        amp_err_ratio_rf_cut_map += hf['amp_err_ratio_rf_cut_map'][:]
+        phase_err_ratio_rf_cut_map += hf['phase_err_ratio_rf_cut_map'][:]
+        amp_err_phase_err_rf_cut_map += hf['amp_err_phase_err_rf_cut_map'][:]
+        sub_rf_cut_map_w += hf['sub_rf_cut_map_w'][:]
+        amp_ratio_rf_cut_map_w += hf['amp_ratio_rf_cut_map_w'][:]
+        amp_err_ratio_rf_cut_map_w += hf['amp_err_ratio_rf_cut_map_w'][:]
+        phase_err_ratio_rf_cut_map_w += hf['phase_err_ratio_rf_cut_map_w'][:]
+        amp_err_phase_err_rf_cut_map_w += hf['amp_err_phase_err_rf_cut_map_w'][:]
+
+        power_cut = hf['power_rf_cut_hist'][:]
+        ratio_cut = hf['ratio_rf_cut_hist'][:]
+        amp_err_cut = hf['amp_err_rf_cut_hist'][:]
+        phase_err_cut = hf['phase_err_rf_cut_hist'][:]
+        power_rf_cut_hist.append(power_cut)
+        ratio_rf_cut_hist.append(ratio_cut)
+        amp_err_rf_cut_hist.append(amp_err_cut)
+        phase_err_rf_cut_hist.append(phase_err_cut)
+        power_cut_w = hf['power_rf_cut_hist_w'][:]
+        ratio_cut_w = hf['ratio_rf_cut_hist_w'][:]
+        amp_err_cut_w = hf['amp_err_rf_cut_hist_w'][:]
+        phase_err_cut_w = hf['phase_err_rf_cut_hist_w'][:]
+        power_rf_cut_hist_w.append(power_cut_w)
+        ratio_rf_cut_hist_w.append(ratio_cut_w)
+        amp_err_rf_cut_hist_w.append(amp_err_cut_w)
+        phase_err_rf_cut_hist_w.append(phase_err_cut_w)
+        del hf
+    except KeyError:
         continue
-
-    config_arr_cut.append(config)
-    run_arr_cut.append(d_run_tot[r])
-    
-    fft_rf_cut_map += hf['fft_rf_cut_map'][:]
-    sub_rf_cut_map += hf['sub_rf_cut_map'][:]
-    amp_ratio_rf_cut_map += hf['amp_ratio_rf_cut_map'][:]
-    amp_err_ratio_rf_cut_map += hf['amp_err_ratio_rf_cut_map'][:]
-    phase_err_ratio_rf_cut_map += hf['phase_err_ratio_rf_cut_map'][:]
-    amp_err_phase_err_rf_cut_map += hf['amp_err_phase_err_rf_cut_map'][:]
-    sub_rf_cut_map_w += hf['sub_rf_cut_map_w'][:]
-    amp_ratio_rf_cut_map_w += hf['amp_ratio_rf_cut_map_w'][:]
-    amp_err_ratio_rf_cut_map_w += hf['amp_err_ratio_rf_cut_map_w'][:]
-    phase_err_ratio_rf_cut_map_w += hf['phase_err_ratio_rf_cut_map_w'][:]
-    amp_err_phase_err_rf_cut_map_w += hf['amp_err_phase_err_rf_cut_map_w'][:]
-
-    power_cut = hf['power_rf_cut_hist'][:]
-    ratio_cut = hf['ratio_rf_cut_hist'][:]
-    amp_err_cut = hf['amp_err_rf_cut_hist'][:]
-    phase_err_cut = hf['phase_err_rf_cut_hist'][:]
-    power_rf_cut_hist.append(power_cut)
-    ratio_rf_cut_hist.append(ratio_cut)
-    amp_err_rf_cut_hist.append(amp_err_cut)
-    phase_err_rf_cut_hist.append(phase_err_cut)
-    power_cut_w = hf['power_rf_cut_hist_w'][:]
-    ratio_cut_w = hf['ratio_rf_cut_hist_w'][:]
-    amp_err_cut_w = hf['amp_err_rf_cut_hist_w'][:]
-    phase_err_cut_w = hf['phase_err_rf_cut_hist_w'][:]
-    power_rf_cut_hist_w.append(power_cut_w)
-    ratio_rf_cut_hist_w.append(ratio_cut_w)
-    amp_err_rf_cut_hist_w.append(amp_err_cut_w)
-    phase_err_rf_cut_hist_w.append(phase_err_cut_w)
-    del hf
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
 if not os.path.exists(path):

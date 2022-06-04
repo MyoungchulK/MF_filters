@@ -13,8 +13,8 @@ from tools.ara_utility import size_checker
 from tools.ara_known_issue import known_issue_loader
 
 Station = int(sys.argv[1])
-#dtype = '_all_002'
-dtype = '_wb_002'
+dtype = '_all_002'
+#dtype = '_wb_002'
 
 knwon_issue = known_issue_loader(Station)
 bad_runs = knwon_issue.get_knwon_bad_run(use_qual = True)
