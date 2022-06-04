@@ -973,6 +973,7 @@ class qual_cut_loader:
 
         self.evt_num = qual_file['evt_num'][:]
         #self.entry_num = qual_file['entry_num'][:]
+        self.entry_num = np.arange(len(self.evt_num), dtype = int)
         self.trig_type = qual_file['trig_type'][:]
         self.unix_time = qual_file['unix_time'][:]
         total_qual_cut = qual_file['total_qual_cut'][:]
@@ -1004,6 +1005,8 @@ class qual_cut_loader:
             else:
                 clean_idx = self.daq_qual_cut_sum == 0
         evt_idx = evt_idx[clean_idx]
+
+        self.num_useful_evts = len(evt_idx)
 
         return evt_idx
 

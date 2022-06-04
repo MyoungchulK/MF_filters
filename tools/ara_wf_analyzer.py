@@ -31,13 +31,14 @@ class wf_analyzer:
             self.get_band_pass_filter()
         if use_cw:
             from tools.ara_data_load import sin_subtract_loader
+            self.sin_sub = sin_subtract_loader(3, 0.02, 0.125, 0.85, self.dt) # debug
+
             #self.sin_sub_150 = sin_subtract_loader(3, 0.05, 0.1, 0.2, self.dt) # strong 150 MHz peak
             #self.sin_sub_250 = sin_subtract_loader(3, 0.05, 0.2, 0.3, self.dt) # strong 250 MHz peak
             #self.sin_sub_400 = sin_subtract_loader(3, 0.01, 0.35, 0.45, self.dt) # weather balloon
             #self.sin_sub = sin_subtract_loader(3, 0.01, 0.13, 0.85, self.dt) # for tiny cw
             #self.sin_sub_400 = sin_subtract_loader(3, 0.38, 0.42, self.dt, cw_params[::2]) # debug
             #self.sin_sub = sin_subtract_loader(3, 0.125, 0.85, self.dt, cw_params[1::2]) # debug
-            self.sin_sub = sin_subtract_loader(3, 0.02, 0.125, 0.85, self.dt) # debug
 
     def get_band_pass_filter(self, low_freq_cut = 0.13, high_freq_cut = 0.85, order = 10, pass_type = 'band'):
 
@@ -95,7 +96,7 @@ class wf_analyzer:
 
         return int_t
 
-    def get_int_wf(self, raw_t, raw_v, ant, use_zero_pad = False, use_band_pass = False, use_cw = False, use_power = False):
+    def get_int_wf(self, raw_t, raw_v, ant, use_zero_pad = False, use_band_pass = False, use_cw = False):
 
         # akima interpolation!
         akima = Akima1DInterpolator(raw_t, raw_v)
@@ -106,16 +107,12 @@ class wf_analyzer:
 
         if use_band_pass:
             int_v = self.get_band_passed_wf(int_v)
-            if use_power:
-                self.int_bp_power = np.nanmean(int_v**2)
 
         if use_cw:
             #int_v = self.sin_sub_150.get_sin_subtract_wf(int_v, int_num)
             #int_v = self.sin_sub_250.get_sin_subtract_wf(int_v, int_num)
             #int_v = self.sin_sub_400.get_sin_subtract_wf(int_v, int_num)
             int_v = self.sin_sub.get_sin_subtract_wf(int_v, int_num)#, ant)
-            if use_power:
-                self.int_cw_power = np.nanmean(int_v**2)
 
         if use_zero_pad:
             self.pad_v[:, ant] = 0
@@ -134,7 +131,7 @@ class wf_analyzer:
 
         if use_zero_pad:
             if use_rfft:
-                self.pad_fft = np.fft.rfft(self.pad_v, axis = 0)
+                self.pad_fft = 2 * np.fft.rfft(self.pad_v, axis = 0)
             else:
                 self.pad_fft = np.fft.fft(self.pad_v, axis = 0)
         else:
@@ -146,6 +143,7 @@ class wf_analyzer:
                     self.pad_freq[:rfft_len[ant], ant] = np.fft.rfftfreq(self.pad_num[ant], self.dt)
                     self.pad_fft[:rfft_len[ant], ant] = np.fft.rfft(self.pad_v[:self.pad_num[ant], ant])
                 del rfft_len
+                self.pad_fft *= 2
             else:
                 for ant in range(self.num_chs):
                     self.pad_freq[:self.pad_num[ant], ant] = np.fft.fftfreq(self.pad_num[ant], self.dt)
@@ -254,6 +252,19 @@ class hist_loader():
         del dat_x, dat_y, ch_dim, ch_wei
 
         return dat_2d_hist
+
+    def get_2d_hist_max(self, dat_map, fill_val = np.nan, use_min = False):
+
+        temp_map = np.full(dat_map.shape, fill_val, dtype = float)        
+        temp_map[dat_map > 0] = 1
+        temp_map *= self.bin_y_center[np.newaxis, :, np.newaxis]
+        
+        if use_min:
+            temp_map = np.nanmin(temp_map, axis = 1)
+        else:
+            temp_map = np.nanmax(temp_map, axis = 1)
+
+        return temp_map
 
 class sample_map_loader:
 
