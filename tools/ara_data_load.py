@@ -237,10 +237,8 @@ class ara_uproot_loader:
     def get_year(self):
 
         first_unix_time = np.asarray(self.evtTree['event/unixTime'],dtype=int)[0]
-        yyyymmdd_str = datetime.fromtimestamp(first_unix_time)
-        yyyymmdd = yyyymmdd_str.strftime('%Y%m%d%H%M%S')
-        year = int(yyyymmdd[:4])
-        del yyyymmdd_str, yyyymmdd, first_unix_time
+        year = int(datetime.utcfromtimestamp(first_unix_time).strftime('%Y%m%d%H%M%S')[:4])
+        del first_unix_time
 
         return year
 
@@ -367,56 +365,14 @@ class ara_uproot_loader:
 
         return time_bins, time_bin_center, num_secs, evt_rate, rf_evt_rate, cal_evt_rate, soft_evt_rate
 
-    def get_minute_edge_in_unixtime(self, use_min_end = False, use_date = False):
-
-        if use_min_end:
-            unix_edge = np.nanmax(self.unix_time)
-        else:
-            unix_edge = np.nanmin(self.unix_time)
-
-        date = datetime.fromtimestamp(unix_edge) 
-        date = int(date.strftime('%Y%m%d%H%M%S'))
-
-        sec_scale = 100
-        if use_min_end:
-            date = np.ceil(date / sec_scale) * sec_scale
-        else:
-            date = np.floor(date / sec_scale) * sec_scale
-
-        date = str(date.astype(int))
-        yyyy = int(date[:4])
-        mo = int(date[4:6])
-        dd = int(date[6:8]) 
-        hh = int(date[8:10])
-        mm = int(date[10:12])
-        #ss = int(date[12:14])
-        try:
-            date = datetime(yyyy, mo, dd, hh, mm, 0)
-        except ValueError:
-            mm = 0
-            hh += 1
-            try:
-                date = datetime(yyyy, mo, dd, hh, mm, 0)
-            except ValueError:
-                hh = 0
-                dd += 1
-                date = datetime(yyyy, mo, dd, hh, 0, 0)
-        del sec_scale, unix_edge, yyyy, mo, dd, hh, mm#, ss
-
-        if use_date:
-            date = int(date.strftime('%Y%m%d%H%M%S'))
-        else:
-            date = int(datetime.timestamp(date))                         
-
-        return date
-
     def get_minute_bins_in_unixtime(self):
 
-        unix_min_i = self.get_minute_edge_in_unixtime()
-        unix_min_f = self.get_minute_edge_in_unixtime(use_min_end = True)
+        sec_to_min = 60
+        unix_min_i = int(np.floor(np.nanmin(self.unix_time) / sec_to_min) * sec_to_min)
+        unix_min_f = int(np.ceil(np.nanmax(self.unix_time) / sec_to_min) * sec_to_min)
 
         unix_min_bins = np.linspace(unix_min_i, unix_min_f, (unix_min_f - unix_min_i)//60 + 1, dtype = int)
-        del unix_min_i, unix_min_f
+        del unix_min_i, unix_min_f, sec_to_min
 
         return unix_min_bins
 
@@ -471,10 +427,7 @@ class ara_sensorHk_uproot_loader:
         self.softVerMajor = np.asarray(self.evtTree['sensorHk/RawAraGenericHeader/softVerMajor'],dtype=int)
         self.softVerMinor = np.asarray(self.evtTree['sensorHk/RawAraGenericHeader/softVerMinor'],dtype=int)
 
-        yyyymmdd_str = datetime.fromtimestamp(self.unix_time[0])
-        yyyymmdd = yyyymmdd_str.strftime('%Y%m%d%H%M%S')
-        self.year = int(yyyymmdd[:4])
-        del yyyymmdd_str, yyyymmdd
+        self.year = int(datetime.utcfromtimestamp(self.unix_time[0]).strftime('%Y%m%d%H%M%S')[:4])
 
     def get_voltage(self, volt_curr):
 
@@ -669,10 +622,7 @@ class ara_eventHk_uproot_loader:
         self.buff_dead_time = np.asarray(self.evtTree['eventHk/buffDeadTime'],dtype=int)
         self.tot_dead_time = np.asarray(self.evtTree['eventHk/totalDeadTime'],dtype=int)
 
-        yyyymmdd_str = datetime.fromtimestamp(self.unix_time[0])
-        yyyymmdd = yyyymmdd_str.strftime('%Y%m%d%H%M%S')
-        self.year = int(yyyymmdd[:4])
-        del yyyymmdd_str, yyyymmdd
+        self.year = int(datetime.utcfromtimestamp(self.unix_time[0]).strftime('%Y%m%d%H%M%S')[:4])
 
     def get_eventHk_info(self, use_prescale = False):
 

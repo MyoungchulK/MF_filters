@@ -196,57 +196,47 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
     del ara_hist
 
     print('time')
-    unix_min_range = unix_min_bins[:-1]
+    unix_min_range = np.arange(unix_min_bins[0], np.nanmax(unix_time), 60)
     ara_hist = hist_loader(unix_min_bins, ratio_bins)
     unix_min_bin_center = ara_hist.bin_x_center
 
     clean_unix = unix_time[np.in1d(evt_num, clean_evt)]
     if len(clean_unix) == 0:
-        unix_ratio_rf_cut_map = np.array([])
-        unix_tot_ratio_rf_cut_map = np.copy(unix_ratio_rf_cut_map)
-        unix_ratio_rf_cut_map_max = np.copy(unix_ratio_rf_cut_map)
-        unix_tot_ratio_rf_cut_map_max = np.copy(unix_ratio_rf_cut_map)
-        unix_power_rf_cut_map = np.copy(unix_ratio_rf_cut_map)
-        unix_power_rf_cut_map_max = np.copy(unix_ratio_rf_cut_map)
-        unix_amp_err_rf_cut_map = np.copy(unix_ratio_rf_cut_map)
-        unix_phase_err_rf_cut_map = np.copy(unix_ratio_rf_cut_map)
-        unix_amp_bound_rf_cut_map = np.copy(unix_ratio_rf_cut_map)
-        unix_phase_bound_rf_cut_map = np.copy(unix_ratio_rf_cut_map)
-        unix_freq_rf_cut_map = np.copy(unix_ratio_rf_cut_map)
-        unix_freq_rf_cut_map_max = np.copy(unix_ratio_rf_cut_map)
+        clean_unix_ant = np.full((num_ants, clean_unix), np.nan, dtype = float)
+        clean_unix_all = np.full((sol_pad, num_ants, clean_unix), np.nan, dtype = float)
     else:
         clean_unix_ant = np.repeat(clean_unix[np.newaxis, :], num_ants, axis = 0)
         clean_unix_all = np.repeat(clean_unix_ant[np.newaxis, :, :], sol_pad, axis = 0)
 
-        unix_ratio_rf_cut_map = ara_hist.get_2d_hist(clean_unix_all, sub_ratio, weight = sub_weight, use_flat = True)
-        unix_tot_ratio_rf_cut_map = ara_hist.get_2d_hist(clean_unix_ant, sub_tot_ratio)
-        unix_ratio_rf_cut_map_max = ara_hist.get_2d_hist_max(unix_ratio_rf_cut_map)
-        unix_tot_ratio_rf_cut_map_max = ara_hist.get_2d_hist_max(unix_tot_ratio_rf_cut_map)
-        del ara_hist, sol_pad
+    unix_ratio_rf_cut_map = ara_hist.get_2d_hist(clean_unix_all, sub_ratio, weight = sub_weight, use_flat = True)
+    unix_tot_ratio_rf_cut_map = ara_hist.get_2d_hist(clean_unix_ant, sub_tot_ratio)
+    unix_ratio_rf_cut_map_max = ara_hist.get_2d_hist_max(unix_ratio_rf_cut_map)
+    unix_tot_ratio_rf_cut_map_max = ara_hist.get_2d_hist_max(unix_tot_ratio_rf_cut_map)
+    del ara_hist, sol_pad
 
-        ara_hist = hist_loader(unix_min_bins, power_bins)   
-        unix_power_rf_cut_map = ara_hist.get_2d_hist(clean_unix_all, sub_power, weight = sub_weight, use_flat = True)
-        unix_power_rf_cut_map_max = ara_hist.get_2d_hist_max(unix_power_rf_cut_map)
-        del ara_hist
+    ara_hist = hist_loader(unix_min_bins, power_bins)   
+    unix_power_rf_cut_map = ara_hist.get_2d_hist(clean_unix_all, sub_power, weight = sub_weight, use_flat = True)
+    unix_power_rf_cut_map_max = ara_hist.get_2d_hist_max(unix_power_rf_cut_map)
+    del ara_hist
 
-        ara_hist = hist_loader(unix_min_bins, amp_err_bins)
-        unix_amp_err_rf_cut_map = ara_hist.get_2d_hist(clean_unix_all, sub_amp_err, weight = sub_weight, use_flat = True)
-        del ara_hist
+    ara_hist = hist_loader(unix_min_bins, amp_err_bins)
+    unix_amp_err_rf_cut_map = ara_hist.get_2d_hist(clean_unix_all, sub_amp_err, weight = sub_weight, use_flat = True)
+    del ara_hist
 
-        ara_hist = hist_loader(unix_min_bins, phase_err_bins)
-        unix_phase_err_rf_cut_map = ara_hist.get_2d_hist(clean_unix_all, sub_phase_err, weight = sub_weight, use_flat = True)
-        del ara_hist
+    ara_hist = hist_loader(unix_min_bins, phase_err_bins)
+    unix_phase_err_rf_cut_map = ara_hist.get_2d_hist(clean_unix_all, sub_phase_err, weight = sub_weight, use_flat = True)
+    del ara_hist
 
-        ara_hist = hist_loader(unix_min_bins, bound_bins)
-        unix_amp_bound_rf_cut_map = ara_hist.get_2d_hist(clean_unix_all, sub_amp_bound, weight = sub_weight, use_flat = True)
-        unix_phase_bound_rf_cut_map = ara_hist.get_2d_hist(clean_unix_all, sub_phase_bound, weight = sub_weight, use_flat = True)
-        del ara_hist
+    ara_hist = hist_loader(unix_min_bins, bound_bins)
+    unix_amp_bound_rf_cut_map = ara_hist.get_2d_hist(clean_unix_all, sub_amp_bound, weight = sub_weight, use_flat = True)
+    unix_phase_bound_rf_cut_map = ara_hist.get_2d_hist(clean_unix_all, sub_phase_bound, weight = sub_weight, use_flat = True)
+    del ara_hist
 
-        ara_hist = hist_loader(unix_min_bins, freq_bins)
-        unix_freq_rf_cut_map = ara_hist.get_2d_hist(clean_unix_all, sub_freq, weight = sub_weight, use_flat = True)
-        temp_max_idx = np.nanargmax(unix_freq_rf_cut_map, axis = 1)
-        unix_freq_rf_cut_map_max = freq_bin_center[temp_max_idx]
-        del ara_hist, clean_unix_ant, clean_unix_all, num_ants, temp_max_idx
+    ara_hist = hist_loader(unix_min_bins, freq_bins)
+    unix_freq_rf_cut_map = ara_hist.get_2d_hist(clean_unix_all, sub_freq, weight = sub_weight, use_flat = True)
+    temp_max_idx = np.nanargmax(unix_freq_rf_cut_map, axis = 1)
+    unix_freq_rf_cut_map_max = freq_bin_center[temp_max_idx]
+    del ara_hist, clean_unix_ant, clean_unix_all, num_ants, temp_max_idx
 
     print('cw collecting is done!')
 

@@ -61,13 +61,9 @@ def cw_cut_collector(Data, Ped, analyze_blind_dat = False):
     # output
     sol_pad = 100
     sub_freq = np.full((sol_pad, 2, num_ants, num_clean_evts), np.nan, dtype = float)
-    sub_amp = np.copy(sub_freq)
     sub_amp_err = np.copy(sub_freq)
-    sub_phase_err = np.copy(sub_freq)
-    sub_power = np.copy(sub_freq)
     sub_ratio = np.copy(sub_freq)
     sub_amp_err[0, :, ~bad_ant] = 0
-    sub_phase_err[0, :, ~bad_ant] = 0
     sub_ratio[0, :, ~bad_ant] = 0
     rp_evt_num = []
     rp_entry_num = []
@@ -89,34 +85,17 @@ def cw_cut_collector(Data, Ped, analyze_blind_dat = False):
                 continue                
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
             wf_int.get_int_wf(raw_t, raw_v, ant, use_band_pass = True, use_cw = True)
-            sols_400 = wf_int.sin_sub_400.num_sols
-            sols = wf_int.sin_sub.num_sols
-            evt_sol += sols_400 + sols
-            if sols_400 == 0 and sols == 0:
-                del raw_t, raw_v, sols, sols_400
+            num_sols = wf_int.sin_sub.num_sols + 1
+            evt_sol += num_sols
+            if num_sols < 2:
+                del raw_t, raw_v, num_sols
                 ara_root.del_TGraph()
                 continue    
             
-            if sols_400 > 0:
-                num_sols = sols_400 + 1
-                sub_freq[1:num_sols, 0, ant, evt] = wf_int.sin_sub_400.sub_freqs
-                sub_amp[1:num_sols, 0, ant, evt] = wf_int.sin_sub_400.sub_amps
-                sub_amp_err[1:num_sols, 0, ant, evt] = wf_int.sin_sub_400.sub_amp_errs
-                sub_phase_err[1:num_sols, 0, ant, evt] = wf_int.sin_sub_400.sub_phase_errs
-                sub_power[:num_sols, 0, ant, evt] = wf_int.sin_sub_400.sub_powers
-                sub_ratio[1:num_sols, 0, ant, evt] = wf_int.sin_sub_400.sub_ratios
-                del num_sols            
-
-            if sols > 0:
-                num_sols = sols + 1
-                sub_freq[1:num_sols, 1, ant, evt] = wf_int.sin_sub.sub_freqs
-                sub_amp[1:num_sols, 1, ant, evt] = wf_int.sin_sub.sub_amps
-                sub_amp_err[1:num_sols, 1, ant, evt] = wf_int.sin_sub.sub_amp_errs
-                sub_phase_err[1:num_sols, 1, ant, evt] = wf_int.sin_sub.sub_phase_errs
-                sub_power[:num_sols, 1, ant, evt] = wf_int.sin_sub.sub_powers
-                sub_ratio[1:num_sols, 1, ant, evt] = wf_int.sin_sub.sub_ratios
-                del num_sols
-            del raw_t, raw_v, sols, sols_400
+            sub_freq[1:num_sols, 1, ant, evt] = wf_int.sin_sub.sub_freqs
+            sub_amp_err[1:num_sols, 1, ant, evt] = wf_int.sin_sub.sub_amp_errs
+            sub_ratio[1:num_sols, 1, ant, evt] = wf_int.sin_sub.sub_ratios
+            del raw_t, raw_v, num_sols
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()
 
@@ -137,7 +116,7 @@ def cw_cut_collector(Data, Ped, analyze_blind_dat = False):
     # quality output
     total_cw_cut = cw_qual.get_cw_qual_cut()
     total_cw_cut_sum = cw_qual.cw_qual_cut_sum
-    rp_evt_num = cw_qual.rp_evts
+    rp_evts = cw_qual.rp_evts
     del cw_qual
 
     # to numpy array
@@ -159,12 +138,9 @@ def cw_cut_collector(Data, Ped, analyze_blind_dat = False):
             'total_cw_cut':total_cw_cut,
             'total_cw_cut_sum':total_cw_cut_sum,
             'sub_freq':sub_freq,
-            'sub_amp':sub_amp,
             'sub_amp_err':sub_amp_err,
-            'sub_phase_err':sub_phase_err,
-            'sub_power':sub_power,
             'sub_ratio':sub_ratio,
-            'rp_evt_num':rp_evt_num,
+            'rp_evts':rp_evts,
             'rp_evt':rp_evt,
             'rp_entry':rp_entry,
             'rp_wf':rp_wf}

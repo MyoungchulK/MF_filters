@@ -458,9 +458,7 @@ class config_info_loader:
             if not np.isfinite(unix_start):
                 date_start = np.nan
             else:
-                date_start = datetime.fromtimestamp(unix_start)
-                date_start = date_start.strftime('%Y%m%d%H%M%S')
-                date_start = int(date_start)
+                date_start = int(datetime.utcfromtimestamp(unix_start)strftime('%Y%m%d%H%M%S'))
     
         return unix_start, date_start
 
