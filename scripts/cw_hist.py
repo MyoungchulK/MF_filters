@@ -116,10 +116,6 @@ for r in tqdm(range(len(d_run_tot))):
     hf = h5py.File(d_list[r], 'r')
 
     unix_time = hf['unix_min_bins'][:-1]
-    if len(unix_time) == 0:
-        print(d_run_tot[r])
-        continue
-
     config = hf['config'][2]
     config_arr_cut.append(config)
     run_arr_cut.append(d_run_tot[r])
