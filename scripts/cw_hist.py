@@ -62,11 +62,10 @@ unix_ratio_rf_cut_map = np.full((min_in_day, ratio_len, 16), 0, dtype = float)
 unix_tot_ratio_rf_cut_map = np.copy(unix_ratio_rf_cut_map)
 unix_power_rf_cut_map = np.full((min_in_day, power_len, 16), 0, dtype = float)
 unix_amp_err_rf_cut_map = np.full((min_in_day, amp_err_len, 16), 0, dtype = float)
-unix_phase_err_rf_cut_map = np.full((min_in_day, amp_phase_len, 16), 0, dtype = float)
-unix_amp_bound_rf_cut_map = np.full((min_in_day, amp_bound_len, 16), 0, dtype = float)
-unix_phase_bound_rf_cut_map = np.full((min_in_day, phase_bound_len, 16), 0, dtype = float)
+unix_phase_err_rf_cut_map = np.full((min_in_day, phase_err_len, 16), 0, dtype = float)
+unix_amp_bound_rf_cut_map = np.full((min_in_day, bound_len, 16), 0, dtype = float)
+unix_phase_bound_rf_cut_map = np.full((min_in_day, bound_len, 16), 0, dtype = float)
 unix_freq_rf_cut_map = np.full((min_in_day, freq_len, 16), 0, dtype = float)
-del ratio_len, power_len, amp_err_len, phase_err_len, bound_len, freq_len
 
 md_2013 = datetime(2013, 1, 1, 0, 0)
 unix_2013= int(datetime.timestamp(md_2013))
@@ -108,7 +107,7 @@ phase_bound_rf_cut_hist = []
 
 for r in tqdm(range(len(d_run_tot))):
     
-  #if r <10:
+  if r <10:
 
     if d_run_tot[r] in bad_runs:
         #print('bad run:', d_list[r], d_run_tot[r])
@@ -210,7 +209,7 @@ hf.create_dataset('bound_bin_center', data=bound_bin_center, compression="gzip",
 hf.create_dataset('unix_min_bins', data=unix_min_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('unix_min_map', data=unix_min_map, compression="gzip", compression_opts=9)
 hf.create_dataset('days_range', data=days_range, compression="gzip", compression_opts=9)
-hf.create_dataset('mins_range', data=, compression="gzip", compression_opts=9)
+hf.create_dataset('mins_range', data=mins_range, compression="gzip", compression_opts=9)
 hf.create_dataset('ratio_map', data=ratio_map, compression="gzip", compression_opts=9)
 hf.create_dataset('ratio_tot_map', data=ratio_tot_map, compression="gzip", compression_opts=9)
 hf.create_dataset('power_map', data=power_map, compression="gzip", compression_opts=9)

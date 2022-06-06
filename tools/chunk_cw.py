@@ -202,8 +202,8 @@ def cw_collector(Data, Ped, analyze_blind_dat = False):
 
     clean_unix = unix_time[np.in1d(evt_num, clean_evt)]
     if len(clean_unix) == 0:
-        clean_unix_ant = np.full((num_ants, clean_unix), np.nan, dtype = float)
-        clean_unix_all = np.full((sol_pad, num_ants, clean_unix), np.nan, dtype = float)
+        clean_unix_ant = np.full((num_ants, len(clean_unix)), np.nan, dtype = float)
+        clean_unix_all = np.full((sol_pad, num_ants, len(clean_unix)), np.nan, dtype = float)
     else:
         clean_unix_ant = np.repeat(clean_unix[np.newaxis, :], num_ants, axis = 0)
         clean_unix_all = np.repeat(clean_unix_ant[np.newaxis, :, :], sol_pad, axis = 0)

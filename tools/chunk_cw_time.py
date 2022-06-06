@@ -29,6 +29,8 @@ def cw_time_collector(Station, Run, analyze_blind_dat = False):
     phase_err_bins = cw_hf['phase_err_bins'][:]
     bound_bins = cw_hf['bound_bins'][:]
     freq_bins = cw_hf['freq_bins'][:]
+    freq_bin_center = cw_hf['freq_bin_center'][:]
+    ratio_bins = cw_hf['ratio_bins'][:]
     unix_time = cw_hf['unix_time'][:]
     clean_unix = cw_hf['clean_unix'][:]
 
@@ -44,8 +46,8 @@ def cw_time_collector(Station, Run, analyze_blind_dat = False):
     sol_pad = 200
     num_ants = 16
     if len(clean_unix) == 0:
-        clean_unix_ant = np.full((num_ants, clean_unix), np.nan, dtype = float)
-        clean_unix_all = np.full((sol_pad, num_ants, clean_unix), np.nan, dtype = float)
+        clean_unix_ant = np.full((num_ants, len(clean_unix)), np.nan, dtype = float)
+        clean_unix_all = np.full((sol_pad, num_ants, len(clean_unix)), np.nan, dtype = float)
     else:
         clean_unix_ant = np.repeat(clean_unix[np.newaxis, :], num_ants, axis = 0)
         clean_unix_all = np.repeat(clean_unix_ant[np.newaxis, :, :], sol_pad, axis = 0)
