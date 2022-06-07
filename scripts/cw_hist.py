@@ -107,7 +107,7 @@ phase_bound_rf_cut_hist = []
 
 for r in tqdm(range(len(d_run_tot))):
     
-  if r <10:
+  #if r <10:
 
     if d_run_tot[r] in bad_runs:
         #print('bad run:', d_list[r], d_run_tot[r])
