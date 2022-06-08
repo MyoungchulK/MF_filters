@@ -5,6 +5,7 @@ from glob import glob
 import h5py
 from tqdm import tqdm
 from datetime import datetime
+from datetime import timezone
 
 curr_path = os.getcwd()
 sys.path.append(curr_path+'/../')
@@ -68,21 +69,25 @@ unix_phase_bound_rf_cut_map = np.full((min_in_day, bound_len, 16), 0, dtype = fl
 unix_freq_rf_cut_map = np.full((min_in_day, freq_len, 16), 0, dtype = float)
 
 md_2013 = datetime(2013, 1, 1, 0, 0)
-unix_2013= int(datetime.timestamp(md_2013))
+md_2013_r = md_2013.replace(tzinfo=timezone.utc)
+unix_2013= int(md_2013_r.timestamp())
 md_2020 = datetime(2020, 1, 1, 0, 0)
-unix_2020= int(datetime.timestamp(md_2020))
+md_2020_r = md_2020.replace(tzinfo=timezone.utc)
+unix_2020= int(md_2020_r.timestamp())
+
 unix_init = np.copy(unix_2013)
 unix_min_bins = np.linspace(unix_2013, unix_2020, (unix_2020 - unix_2013) // 60 + 1, dtype = int)
 unix_min_map = np.reshape(unix_min_bins[:-1], (-1, min_in_day))
 days = len(unix_min_bins[:-1]) // min_in_day
 days_range = np.arange(days).astype(int)
 mins_range = np.arange(min_in_day).astype(int)
-del md_2013, unix_2013, md_2020, unix_2020, days
+del md_2013, unix_2013, md_2020, unix_2020, days, md_2013_r, md_2020_r
 
 ratio_map = np.full((len(unix_min_bins[:-1]), 16), 0, dtype = float)
 ratio_tot_map = np.copy(ratio_map)
 power_map = np.copy(ratio_map)
 freq_map = np.copy(ratio_map)
+run_map = np.full((len(unix_min_bins[:-1]), 16), 0, dtype = int)
 
 fft_rf_cut_map = np.full((freq_len, amp_len, 16), 0, dtype = float)
 sub_rf_cut_map = np.copy(fft_rf_cut_map)
@@ -125,7 +130,8 @@ for r in tqdm(range(len(d_run_tot))):
     ratio_tot_map[unix_idx] = hf['unix_tot_ratio_rf_cut_map_max'][:]    
     power_map[unix_idx] = hf['unix_power_rf_cut_map_max'][:]    
     freq_map[unix_idx] = hf['unix_freq_rf_cut_map_max'][:]    
-    
+    run_map[unix_idx] = d_run_tot[r]   
+ 
     day_init = int(np.floor(unix_time[0] / sec_in_day) * sec_in_day)
     min_idx = (unix_time - day_init)//60
     min_idx = min_idx % min_in_day
@@ -177,6 +183,7 @@ ratio_map = np.reshape(ratio_map, (days_len, mins_len, 16))
 ratio_tot_map = np.reshape(ratio_tot_map, (days_len, mins_len, 16))
 power_map = np.reshape(power_map, (days_len, mins_len, 16))
 freq_map = np.reshape(freq_map, (days_len, mins_len, 16))
+run_map = np.reshape(run_map, (days_len, mins_len, 16))
 del days_len, mins_len
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
@@ -210,6 +217,7 @@ hf.create_dataset('ratio_map', data=ratio_map, compression="gzip", compression_o
 hf.create_dataset('ratio_tot_map', data=ratio_tot_map, compression="gzip", compression_opts=9)
 hf.create_dataset('power_map', data=power_map, compression="gzip", compression_opts=9)
 hf.create_dataset('freq_map', data=freq_map, compression="gzip", compression_opts=9)
+hf.create_dataset('run_map', data=run_map, compression="gzip", compression_opts=9)
 hf.create_dataset('unix_ratio_rf_cut_map', data=unix_ratio_rf_cut_map, compression="gzip", compression_opts=9)
 hf.create_dataset('unix_tot_ratio_rf_cut_map', data=unix_tot_ratio_rf_cut_map, compression="gzip", compression_opts=9)
 hf.create_dataset('unix_power_rf_cut_map', data=unix_power_rf_cut_map, compression="gzip", compression_opts=9)
@@ -230,13 +238,13 @@ hf.create_dataset('amp_err_amp_bound_rf_cut_map', data=amp_err_amp_bound_rf_cut_
 hf.create_dataset('phase_err_phase_bound_rf_cut_map', data=phase_err_phase_bound_rf_cut_map, compression="gzip", compression_opts=9)
 hf.create_dataset('amp_bound_ratio_rf_cut_map', data=amp_bound_ratio_rf_cut_map, compression="gzip", compression_opts=9)
 hf.create_dataset('phase_bound_ratio_rf_cut_map', data=phase_bound_ratio_rf_cut_map, compression="gzip", compression_opts=9)
-hf.create_dataset('power_rf_cut_hist', data=power_rf_cut_hist, compression="gzip", compression_opts=9)
-hf.create_dataset('ratio_rf_cut_hist', data=ratio_rf_cut_hist, compression="gzip", compression_opts=9)
-hf.create_dataset('tot_ratio_rf_cut_hist', data=tot_ratio_rf_cut_hist, compression="gzip", compression_opts=9)
-hf.create_dataset('amp_err_rf_cut_hist', data=amp_err_rf_cut_hist, compression="gzip", compression_opts=9)
-hf.create_dataset('phase_err_rf_cut_hist', data=phase_err_rf_cut_hist, compression="gzip", compression_opts=9)
-hf.create_dataset('amp_bound_rf_cut_hist', data=amp_bound_rf_cut_hist, compression="gzip", compression_opts=9)
-hf.create_dataset('phase_bound_rf_cut_hist', data=phase_bound_rf_cut_hist, compression="gzip", compression_opts=9)
+hf.create_dataset('power_rf_cut_hist', data=np.asarray(power_rf_cut_hist), compression="gzip", compression_opts=9)
+hf.create_dataset('ratio_rf_cut_hist', data=np.asarray(ratio_rf_cut_hist), compression="gzip", compression_opts=9)
+hf.create_dataset('tot_ratio_rf_cut_hist', data=np.asarray(tot_ratio_rf_cut_hist), compression="gzip", compression_opts=9)
+hf.create_dataset('amp_err_rf_cut_hist', data=np.asarray(amp_err_rf_cut_hist), compression="gzip", compression_opts=9)
+hf.create_dataset('phase_err_rf_cut_hist', data=np.asarray(phase_err_rf_cut_hist), compression="gzip", compression_opts=9)
+hf.create_dataset('amp_bound_rf_cut_hist', data=np.asarray(amp_bound_rf_cut_hist), compression="gzip", compression_opts=9)
+hf.create_dataset('phase_bound_rf_cut_hist', data=np.asarray(phase_bound_rf_cut_hist), compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name)
 # quick size check
