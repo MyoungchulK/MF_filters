@@ -582,75 +582,81 @@ class post_qual_cut_loader:
 
 class cw_qual_cut_loader:
 
-    def __init__(self, st, run, evt_num, time_arr, verbose = False):
+    def __init__(self, st, run, evt_num, verbose = False):
 
         self.verbose = verbose
+        self.st = st
+        self.run = run
         self.evt_num = evt_num
         self.num_evts = len(self.evt_num)
-        self.cw_evts = np.full((self.num_evts), 0, dtype = int)
-        self.rp_evts = np.copy(self.cw_evts)
-        self.time_arr = time_arr
-        self.min_ants = 3
-        self.ratio_cut = self.get_cut_parameters(st, run)
+        self.rp_evts = np.full((self.num_evts), 0, dtype = int)
+        self.cw_evts = np.copy(self.rp_evts)
 
-    def get_cut_parameters(self, st, run):
+    def get_cut_parameters(self):
+   
+        self.ratio_min = np.full((2, num_ants), 0.05, dtype = float)
+        self.ratio_cut = np.full((2, num_ants), np.nan, dtype = float)
+        self.ratio_cut[0] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06], dtype = float)
+        self.ratio_cut[1] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06], dtype = float)
+        self.ratio_cut_thres = 3
+ 
+        self.amp_err_cut = np.full((2, num_ants), np.nan, dtype = float)
+        self.phase_err_cut = np.copy(self.amp_err_cut)
 
-        ratio_cut = np.full((num_ants), 0.05, dtype = float)
+        if self.st == 2:
+            self.amp_err_cut[0] = np.array([20, 20, 30, 22, 30, 20, 30, 30, 30, 18, 20, 20, 20, 15, 20, 2000], dtype = float)
+            #self.amp_err_cut[1] = np.array([20, 20, 30, 22, 30, 20, 30, 30, 30, 18, 20, 20, 20, 15, 20, 2000], dtype = float)
 
-        if st == 3:
-            if run < 785:
-                ratio_cut = np.array([0.14, 0.1, 0.1, 0.1, 0.12, 0.12, 0.34, 0.14, 0.16, 0.12, 0.18, 0.16, 0.14, 0.14, 0.14, 0.14], dtype = float)
-            elif run > 784 and run < 3104:
-                ratio_cut = np.array([0.12, 0.1, 0.1, 0.1, 0.12, 0.12, 0.24, 0.14, 0.16, 0.12, 0.16, 0.14, 0.14, 0.14, 0.14, 0.14], dtype = float)
-            elif run > 3103 and run < 10001:
-                ratio_cut = np.array([0.1, 0.14, 0.1, 0.05, 0.1, 0.1, 0.2, 0.05, 0.16, 0.1, 0.12, 0.05, 0.12, 0.12, 0.14, 0.05], dtype = float)
-            elif run > 10000 and run < 13085 :
-                ratio_cut = np.array([0.1, 0.16, 0.1, 0.28, 0.1, 0.1, 0.2, 0.12, 0.16, 0.1, 0.1, 0.12, 0.1, 0.1, 0.12, 0.12], dtype = float)
-            elif run > 13084:
-                ratio_cut = np.array([0.1, 0.16, 0.1, 0.28, 0.1, 0.1, 0.2, 0.12, 0.16, 0.1, 0.1, 0.12, 0.1, 0.1, 0.12, 0.12], dtype = float)
-            else:
-                print(f'run number is weired! A{st} R{run}')
-                sys.exit(1)
+            self.phase_err_cut[0] = np.array([4, 4, 2, 2, 2, 3, 2, 3, 2, 3, 3, 3, 3, 3, 3, 2000], dtype = float)
+            #self.phase_err_cut[1] = np.array([4, 4, 2, 2, 2, 3, 2, 3, 2, 3, 3, 3, 3, 3, 3, 2000], dtype = float)
+
+        if self.st == 3:
+            self.amp_err_cut[0] = np.array([30, 50, 23, 20, 22, 15, 50, 18, 17, 13, 15, 30, 13, 15, 13, 11], dtype = float)
+            #self.amp_err_cut[1] = np.array([30, 50, 23, 20, 22, 15, 50, 18, 17, 13, 15, 30, 13, 15, 13, 11], dtype = float)
+
+            self.phase_err_cut[0] = np.array([2, 4, 3, 3, 3, 3, 6, 2.5, 3, 4, 3, 6, 3, 3, 3, 3], dtype = float) 
+            #self.phase_err_cut[1] = np.array([2, 4, 3, 3, 3, 3, 6, 2.5, 3, 4, 3, 6, 3, 3, 3, 3], dtype = float) 
+
+            if self.run > 13081:
+                self.amp_err_cut[0, 6] = 17
+                self.phase_err_cut[0, 2] = 6
+                self.phase_err_cut[0, 6] = 2
+            if self.run > 10000:
+                self.amp_err_cut[0, 11] = 9
+                self.phase_err_cut[0, 3] = 6
+                self.phase_err_cut[0, 11] = 3
 
         if self.verbose:
-            print(f'ratio cut config: {ratio_cut}')
+            print(f'min config: {self.ratio_min}')
+            print(f'cut config: {self.ratio_cut}')
+            print(f'amp err config: {self.amp_err_cut}')
+            print(f'phase err config: {self.phase_err_cut}')
 
-        return ratio_cut
+        tot_params = np.full((6, num_ants), np.nan, dtype = float)
+        tot_params[:2] = self.ratio_min
+        tot_params[2:4] = self.amp_err_cut
+        tot_params[4:] = self.phase_err_cut
 
-    def run_cw_qual_cut(self, evt, counts):
+        return tot_params
+
+    def run_cw_qual_cut(self, evt, ratio):
+        
+        ratio_max = np.nanmax(ratio, axis = 0)       
+        ratio_max = np.nanmax(ratio_max, axis = 0)       
+        ratio_bool = np.count_nonzero(ratio_max > self.ratio_cut)
+        del ratio_max
     
-        if counts == 0:
-            return False     
-        elif counts < self.min_ants and counts > 0:
+        if ratio_bool > self.ratio_cut_thres:
+            self.cw_evts[evt] = 1
+            return False
+        else:
             self.rp_evts[evt] = 1
             return True
-        else:
-            self.cw_evts[evt] = 1
-            return False       
-
-    def get_cw_time_smearing(self, smear_val = 5, use_smear = False):
-
-        if use_smear == False:
-            return self.cw_evts
-
-        bad_bools = self.cw_evts.astype(bool)
-
-        smear_arr = np.arange(-1* smear_val, smear_val + 1, 1, dtype = int)
-        bad_sec = self.time_arr[bad_bools]
-        bad_sec = np.tile(bad_sec, (len(smear_arr), 1))
-        bad_sec += smear_arr[:, np.newaxis]
-        bad_sec = bad_sec.flatten()
-        bad_sec = np.sort(np.unique(bad_sec))
-
-        cw_smear_evts = np.in1d(self.time_arr, bad_sec).astype(int)
-        del bad_bools, smear_arr, bad_sec
-
-        return cw_smear_evts
-
+       
     def get_cw_qual_cut(self):
 
         tot_cw_qual_cut = np.full((self.num_evts, 1), 0, dtype = int)
-        tot_cw_qual_cut[:, 0] = self.get_cw_time_smearing(use_smear = True)
+        tot_cw_qual_cut[:, 0] = self.cw_evts        
 
         self.cw_qual_cut_sum = np.nansum(tot_cw_qual_cut, axis = 1)
 
