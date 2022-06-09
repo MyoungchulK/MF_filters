@@ -37,8 +37,9 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
 
     cw_dat = run_info.get_result_path(file_type = 'cw_cut', verbose = True)
     cw_hf = h5py.File(cw_dat, 'r')
-    cw_cut = daq_hf['total_cw_cut'][:]
-    total_cw_cut_sum = daq_hf['total_cw_cut_sum'][:]
+    cw_cut = cw_hf['total_cw_cut'][:]
+    total_cw_cut_sum = cw_hf['total_cw_cut_sum'][:]
+    rp_ants = cw_hf['rp_ants'][:]
     del cw_dat, cw_hf
 
     ped_dat = run_info.get_result_path(file_type = 'ped_cut', verbose = True)
@@ -94,5 +95,6 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
             'post_qual_cut_sum':post_qual_cut_sum,
             'bad_run':bad_run,
             'live_time':live_time,
-            'clean_live_time':clean_live_time}
+            'clean_live_time':clean_live_time,
+            'rp_ants':rp_ants}
 
