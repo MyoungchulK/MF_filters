@@ -105,7 +105,6 @@ def cw_cut_collector(Data, Ped, analyze_blind_dat = False):
     rp_evts = cw_qual.rp_evts
     rp_ants = cw_qual.rp_ants
     del cw_qual
-    print(np.nansum(rp_evts))
 
     print('cw collecting is done!')
 
