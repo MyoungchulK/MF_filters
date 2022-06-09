@@ -60,9 +60,8 @@ def cw_cut_collector(Data, Ped, analyze_blind_dat = False):
     sol_pad = 50
     sub_freq = np.full((sol_pad, num_ants, num_clean_evts), np.nan, dtype = float)
     sub_amp_err = np.copy(sub_freq)
-    sub_ratio = np.copy(sub_freq)
     sub_amp_err[0, ~bad_ant] = 0
-    sub_ratio[0, ~bad_ant] = 0
+    sub_ratio = np.copy(sub_freq)
     rp_evt_num = []
     rp_entry_num = []
     rp_wf = []
@@ -89,7 +88,7 @@ def cw_cut_collector(Data, Ped, analyze_blind_dat = False):
                 num_sols += 1
                 sub_freq[1:num_sols, ant, evt] = wf_int.sin_sub.sub_freqs
                 sub_amp_err[1:num_sols, ant, evt] = wf_int.sin_sub.sub_amp_errs
-                sub_ratio[1:num_sols, ant, evt] = wf_int.sin_sub.sub_ratios
+                sub_ratio[:num_sols, ant, evt] = wf_int.sin_sub.sub_ratios
             del raw_t, raw_v, num_sols
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()

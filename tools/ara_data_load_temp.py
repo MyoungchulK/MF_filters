@@ -690,9 +690,7 @@ class sin_subtract_loader:
         self.num_sols = self.sin_sub.getNSines()
         self.sub_freqs = np.frombuffer(self.sin_sub.getFreqs(), dtype = float, count = self.num_sols)
         self.sub_amp_errs = np.frombuffer(self.sin_sub.getAmpErrs(0), dtype = float, count = self.num_sols)
-        sub_powers = np.frombuffer(self.sin_sub.getPowers(), dtype = float, count = self.num_sols + 1)
-        self.sub_ratios = 1 - sub_powers[1:] / sub_powers[:-1]
-        del sub_powers
+        self.sub_ratios = np.frombuffer(self.sin_sub.getRatios(), dtype = float, count = self.num_sols + 1)
 
         return cw_v
 
