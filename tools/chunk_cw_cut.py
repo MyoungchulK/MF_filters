@@ -1,5 +1,6 @@
 import numpy as np
 from tqdm import tqdm
+import h5py
 
 def cw_cut_collector(Data, Ped, analyze_blind_dat = False):
 
@@ -41,12 +42,12 @@ def cw_cut_collector(Data, Ped, analyze_blind_dat = False):
     daq_cut[:, 10] = 0 # disable bad unix time
     daq_cut[:, 21] = 0 # disable known bad run
     daq_cut_sum = np.nansum(daq_cut, axis = 1)
-    clean_evt_idx = np.logical(trig_type == 0, daq_cut_sum == 0)
+    clean_evt_idx = np.logical_and(trig_type == 0, daq_cut_sum == 0)
     clean_entry = entry_num[clean_evt_idx]
     clean_evt = evt_num[clean_evt_idx]
     num_clean_evts = len(clean_evt)
     print(f'Number of clean event is {num_clean_evts}') 
-    del clean_evt_idx run_info, daq_cut_dat, daq_cut_hf, daq_cut
+    del clean_evt_idx, run_info, daq_cut_dat, daq_cut_hf, daq_cut
 
     # cw quality cut
     cw_qual = cw_qual_cut_loader(st, run, evt_num, pps_number, verbose = True)
@@ -57,14 +58,12 @@ def cw_cut_collector(Data, Ped, analyze_blind_dat = False):
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, cw_params = cw_params)
 
     # output
-    sol_pad = 50
+    sol_pad = 10
     sub_freq = np.full((sol_pad, num_ants, num_clean_evts), np.nan, dtype = float)
     sub_amp_err = np.copy(sub_freq)
     sub_amp_err[0, ~bad_ant] = 0
     sub_ratio = np.copy(sub_freq)
-    rp_evt_num = []
-    rp_entry_num = []
-    rp_wf = []
+    sub_ratio[0, ~bad_ant] = 0
     del sol_pad
 
     # loop over the events
@@ -77,6 +76,7 @@ def cw_cut_collector(Data, Ped, analyze_blind_dat = False):
         
         # loop over the antennas
         sub_ant_counts = 0
+        sub_ants = []
         for ant in range(num_ants):
             if bad_ant[ant]:
                 continue                
@@ -85,6 +85,7 @@ def cw_cut_collector(Data, Ped, analyze_blind_dat = False):
             num_sols = wf_int.sin_sub.num_sols
             if num_sols:
                 sub_ant_counts += 1 
+                sub_ants.append(ant)
                 num_sols += 1
                 sub_freq[1:num_sols, ant, evt] = wf_int.sin_sub.sub_freqs
                 sub_amp_err[1:num_sols, ant, evt] = wf_int.sin_sub.sub_amp_errs
@@ -94,30 +95,17 @@ def cw_cut_collector(Data, Ped, analyze_blind_dat = False):
         ara_root.del_usefulEvt()
 
         # cw check
-        if cw_qual.run_cw_qual_cut(clean_entry[evt], sub_ant_counts):
-            rp_evt_num.append(clean_evt[evt])
-            rp_entry_num.append(clean_entry[evt])
-            rp_wfs = wf_int.pad_v
-            rp_wfs[:, bad_ant] = np.nan
-            rp_wf.append(rp_wfs)
-        del sub_ant_counts
+        cw_qual.run_cw_qual_cut(clean_entry[evt], sub_ants, sub_ant_counts)
+        del sub_ant_counts, sub_ants
     del ara_root, num_clean_evts, num_ants, wf_int
 
     # quality output
     total_cw_cut = cw_qual.get_cw_qual_cut()
     total_cw_cut_sum = cw_qual.cw_qual_cut_sum
-    rp_evt_idx = cw_qual.rp_evts
+    rp_evts = cw_qual.rp_evts
+    rp_ants = cw_qual.rp_ants
     del cw_qual
-
-    # to numpy array
-    rp_evt_num = np.asarray(rp_evt_num).astype(int)
-    rp_entry_num = np.asarray(rp_entry_num).astype(int)
-    rp_wf = np.asarray(rp_wf)
-    rp_cw_idx = ~np.in1d(rp_evt_num, evt_num[total_cw_cut_sum != 0])
-    rp_evt_num = rp_evt_num[rp_cw_idx]
-    rp_entry_num = rp_entry_num[rp_cw_idx]
-    rp_wf = rp_wf[rp_cw_idx]
-    del rp_cw_idx
+    print(np.nansum(rp_evts))
 
     print('cw collecting is done!')
 
@@ -136,7 +124,5 @@ def cw_cut_collector(Data, Ped, analyze_blind_dat = False):
             'sub_freq':sub_freq,
             'sub_amp_err':sub_amp_err,
             'sub_ratio':sub_ratio,
-            'rp_evt_idx':rp_evt_idx,
-            'rp_evt_num':rp_evt_num,
-            'rp_entry_num':rp_entry_num,
-            'rp_wf':rp_wf}
+            'rp_evts':rp_evts,
+            'rp_ants':rp_ants}

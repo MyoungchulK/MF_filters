@@ -589,6 +589,7 @@ class cw_qual_cut_loader:
         self.num_evts = len(self.evt_num)
         self.cw_evts = np.full((self.num_evts), 0, dtype = int)
         self.rp_evts = np.copy(self.cw_evts)
+        self.rp_ants = np.full((num_ants, self.num_evts), 0, dtype = int)
         self.time_arr = time_arr
         self.min_ants = 3
         self.ratio_cut = self.get_cut_parameters(st, run)
@@ -596,6 +597,21 @@ class cw_qual_cut_loader:
     def get_cut_parameters(self, st, run):
 
         ratio_cut = np.full((num_ants), 0.05, dtype = float)
+
+        if st == 2:
+            if run < 1730:
+                ratio_cut = np.array([0.12, 0.32, 0.1, 0.16, 0.32, 0.1, 0.16, 0.1, 0.2, 0.14, 0.14, 0.2, 0.12, 0.14, 0.12, 0.05], dtype = float)
+            elif run > 1729 and run < 4028:
+                ratio_cut = np.array([0.12, 0.22, 0.1, 0.14, 0.16, 0.1, 0.14, 0.1, 0.14, 0.14, 0.14, 0.22, 0.12, 0.16, 0.12, 0.05], dtype = float)
+            elif run > 4027 and run < 8098:
+                ratio_cut = np.array([0.16, 0.16, 0.1, 0.1, 0.32, 0.1, 0.12, 0.1, 0.12, 0.12, 0.12, 0.22, 0.1, 0.14, 0.1, 0.05], dtype = float)
+            elif run > 8097 and run < 9402:
+                ratio_cut = np.array([0.1, 0.12, 0.1, 0.1, 0.4, 0.12, 0.14, 0.1, 0.14, 0.12, 0.12, 0.26, 0.1, 0.1, 0.1, 0.05], dtype = float)
+            elif run > 9401:
+                ratio_cut = np.array([0.22, 0.12, 0.08, 0.1, 0.28, 0.1, 0.08, 0.08, 0.14, 0.1, 0.1, 0.2, 0.1, 0.1, 0.1, 0.05], dtype = float)
+            else:
+                print(f'run number is weired! A{st} R{run}')
+                sys.exit(1)
 
         if st == 3:
             if run < 785:
@@ -617,16 +633,19 @@ class cw_qual_cut_loader:
 
         return ratio_cut
 
-    def run_cw_qual_cut(self, evt, counts):
+    def run_cw_qual_cut(self, evt, ant, counts):
     
         if counts == 0:
-            return False     
+            return 
         elif counts < self.min_ants and counts > 0:
             self.rp_evts[evt] = 1
-            return True
+            rp_idx = np.asarray(ant, dtype = int)
+            self.rp_ants[rp_idx, evt] = 1
+            del rp_idx
+            return
         else:
             self.cw_evts[evt] = 1
-            return False       
+            return       
 
     def get_cw_time_smearing(self, smear_val = 5, use_smear = False):
 
@@ -644,6 +663,9 @@ class cw_qual_cut_loader:
 
         cw_smear_evts = np.in1d(self.time_arr, bad_sec).astype(int)
         del bad_bools, smear_arr, bad_sec
+
+        self.rp_evts[cw_smear_evts != 0] = 0
+        self.rp_ants[:, cw_smear_evts != 0] = 0
 
         return cw_smear_evts
 

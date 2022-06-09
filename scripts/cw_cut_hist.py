@@ -41,8 +41,7 @@ del hf
 ratio_len = len(ratio_bin_center)
 amp_err_len = len(amp_err_bin_center)
 
-if Station == 3:
-    g_dim = 5
+g_dim = 5
 
 min_in_day = 24 * 60
 sec_in_day = 24 * 60 * 60
@@ -73,6 +72,19 @@ for r in tqdm(range(len(d_run_tot))):
     if d_run_tot[r] in bad_runs:
         #print('bad run:', d_list[r], d_run_tot[r])
         continue
+
+    if Station == 2:
+        if d_run_tot[r] < 1730:
+            g_idx = 0
+        if d_run_tot[r] > 1729 and d_run_tot[r] < 4028:
+            g_idx = 1
+        if d_run_tot[r] > 4027 and d_run_tot[r] < 8098:
+            g_idx = 2
+        if d_run_tot[r] > 8097 and d_run_tot[r] < 9402:
+            g_idx = 3
+        if d_run_tot[r] > 9401:
+            g_idx = 4
+
     if Station == 3:
         if d_run_tot[r] < 785:
             g_idx = 0

@@ -669,7 +669,7 @@ class ara_eventHk_uproot_loader:
 
 class sin_subtract_loader:
 
-    def __init__(self, max_fail_atts = 3, min_freq = 0.2, max_freq = 0.3, dt = 0.5, cw_params):
+    def __init__(self, max_fail_atts = 3, min_freq = 0.2, max_freq = 0.3, dt = 0.5, cw_params = None):
 
         self.dt = dt
 
