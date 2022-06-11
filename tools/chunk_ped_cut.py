@@ -1,6 +1,7 @@
 import os
 import numpy as np
 from tqdm import tqdm
+import h5py
 
 def ped_cut_collector(Data, Ped, analyze_blind_dat = False):
 
@@ -39,9 +40,8 @@ def ped_cut_collector(Data, Ped, analyze_blind_dat = False):
         cw_evt_num = cw_hf['evt_num'][:]
         cw_evts = cw_evt_num[cw_cut_sum]
         cw_cut = np.in1d(evt_num, cw_evts).astype(int)
-        cw_cut np.repeat(cw_cut[:, np.newaxis], 1, axis = 1)
+        cw_cut = np.repeat(cw_cut[:, np.newaxis], 1, axis = 1)
         del cw_cut_sum, cw_evt_num, cw_evts
-
     daq_cw_cut = np.append(daq_cut, cw_cut, axis = 1)
     daq_cw_cut_sum = np.nansum(daq_cw_cut, axis = 1)
     del run_info, daq_dat, daq_hf, daq_cut, cw_dat, cw_hf, cw_cut, rp_evts
