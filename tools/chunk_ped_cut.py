@@ -9,6 +9,7 @@ def ped_cut_collector(Data, Ped, analyze_blind_dat = False):
 
     from tools.ara_data_load import ara_uproot_loader
     from tools.ara_quality_cut import ped_qual_cut_loader
+    from tools.ara_quality_cut import get_time_smearing
     from tools.ara_run_manager import run_info_loader
 
     # data config
@@ -35,13 +36,15 @@ def ped_cut_collector(Data, Ped, analyze_blind_dat = False):
     rp_evts = cw_hf['rp_evts'][:]
     rp_evts = np.repeat(rp_evts[:, np.newaxis], 1, axis = 1)
     cw_cut += rp_evts
+    print(np.sum(cw_cut))
     if force_unblind:
-        cw_cut_sum = np.nansum(cw_cut, axis = 1) != 0
-        cw_evt_num = cw_hf['evt_num'][:]
-        cw_evts = cw_evt_num[cw_cut_sum]
-        cw_cut = np.in1d(evt_num, cw_evts).astype(int)
+        cw_cut = np.nansum(cw_cut, axis = 1)
+        cw_pps = cw_hf['pps_number'][:]
+        cw_smear_time = get_time_smearing(cw_pps[cw_cut != 0]) 
+        cw_cut = np.in1d(pps_number, cw_smear_time).astype(int)
         cw_cut = np.repeat(cw_cut[:, np.newaxis], 1, axis = 1)
-        del cw_cut_sum, cw_evt_num, cw_evts
+        print(np.sum(cw_cut))
+        del cw_pps, cw_smear_time
     daq_cw_cut = np.append(daq_cut, cw_cut, axis = 1)
     daq_cw_cut_sum = np.nansum(daq_cw_cut, axis = 1)
     del run_info, daq_dat, daq_hf, daq_cut, cw_dat, cw_hf, cw_cut, rp_evts
