@@ -26,12 +26,25 @@ def ped_cut_collector(Data, Ped, analyze_blind_dat = False):
     daq_hf = h5py.File(daq_dat, 'r')
     daq_cut = daq_hf['total_daq_cut'][:]
     daq_qual_cut_sum = daq_hf['daq_qual_cut_sum'][:]
-    cw_dat = run_info.get_result_path(file_type = 'cw_cut', verbose = True)
+
+    force_unblind = True
+    cw_dat = run_info.get_result_path(file_type = 'cw_cut', verbose = True, force_unblind = force_unblind)
     cw_hf = h5py.File(cw_dat, 'r')
-    cw_cut = daq_hf['total_cw_cut'][:]
+    cw_cut = cw_hf['total_cw_cut'][:]
+    rp_evts = cw_hf['rp_evts'][:]
+    rp_evts = np.repeat(rp_evts[:, np.newaxis], 1, axis = 1)
+    cw_cut += rp_evts
+    if force_unblind:
+        cw_cut_sum = np.nansum(cw_cut, axis = 1) != 0
+        cw_evt_num = cw_hf['evt_num'][:]
+        cw_evts = cw_evt_num[cw_cut_sum]
+        cw_cut = np.in1d(evt_num, cw_evts).astype(int)
+        cw_cut np.repeat(cw_cut[:, np.newaxis], 1, axis = 1)
+        del cw_cut_sum, cw_evt_num, cw_evts
+
     daq_cw_cut = np.append(daq_cut, cw_cut, axis = 1)
     daq_cw_cut_sum = np.nansum(daq_cw_cut, axis = 1)
-    del run_info, daq_dat, daq_hf, daq_cut, cw_dat, cw_hf, cw_cut
+    del run_info, daq_dat, daq_hf, daq_cut, cw_dat, cw_hf, cw_cut, rp_evts
 
     # ped quailty cut
     ped_qual = ped_qual_cut_loader(ara_uproot, daq_cw_cut, daq_qual_cut_sum, analyze_blind_dat = analyze_blind_dat, verbose = True)
