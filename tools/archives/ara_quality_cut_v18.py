@@ -27,24 +27,6 @@ def quick_qual_check(dat_bool, ser_val, dat_idx = None):
             print(message, bool_len)
     del bool_len, message
 
-def get_time_smearing(dat_t, smear_arr = None, smear_arr_2nd = None):
-
-    if smear_arr is None:
-        smear_val = 5
-        smear_arr = np.arange(-1* smear_val, smear_val + 1, 1, dtype = int)
-
-    if smear_arr_2nd is not None:
-        smear_time = np.tile(dat_t, (len(smear_arr_2nd), len(smear_arr), 1))
-        smear_time += smear_arr_2nd[:, np.newaxis, np.newaxis]
-        smear_time += smear_arr[np.newaxis, :, np.newaxis]
-    else:
-        smear_time = np.tile(dat_t, (len(smear_arr), 1))
-        smear_time += smear_arr[:, np.newaxis]
-    smear_time = smear_time.flatten()
-    smear_time = np.sort(np.unique(smear_time))
-
-    return smear_time
-
 class pre_qual_cut_loader:
 
     def __init__(self, ara_uproot, analyze_blind_dat = False, verbose = False):
@@ -162,6 +144,31 @@ class pre_qual_cut_loader:
 
         return rf_readout_limit, soft_readout_limit
 
+    def get_time_smearing(self, bad_bools, smear_val = 5, use_pps = False, use_sub_info = False):
+
+        if use_sub_info:
+            if use_pps:
+                time_arr = self.pps_sort
+            else:
+                time_arr = self.unix_sort
+        else:
+            if use_pps:
+                time_arr = self.pps_number
+            else:
+                time_arr = self.unix_time
+
+        smear_arr = np.arange(-1* smear_val, smear_val + 1, 1, dtype = int)
+        bad_sec = time_arr[bad_bools]
+        bad_sec = np.tile(bad_sec, (len(smear_arr), 1))
+        bad_sec += smear_arr[:, np.newaxis]
+        bad_sec = bad_sec.flatten()
+        bad_sec = np.sort(np.unique(bad_sec))
+
+        smear_bools = np.in1d(time_arr, bad_sec)
+        del time_arr, smear_arr, bad_sec
+
+        return smear_bools
+
     def get_readout_window_errors(self, use_smear = False):
 
         rf_read_win_len, soft_read_win_len = self.get_read_win_limit()
@@ -175,9 +182,9 @@ class pre_qual_cut_loader:
         del blk_len, rf_read_win_len, soft_read_win_len, rf_cal_read_bools
 
         if use_smear:
-            rf_smear_bools = get_time_smearing(self.pps_sort[rf_read_bools])
-            cal_smear_bools = get_time_smearing(self.pps_sort[cal_read_bools])
-            soft_smear_bools = get_time_smearing(self.pps_sort[soft_read_bools])
+            rf_smear_bools = self.get_time_smearing(rf_read_bools, use_pps = True, use_sub_info = True)
+            cal_smear_bools = self.get_time_smearing(cal_read_bools, use_pps = True, use_sub_info = True)
+            soft_smear_bools = self.get_time_smearing(soft_read_bools, use_pps = True, use_sub_info = True)
             tot_smear_bools = np.any((rf_smear_bools, cal_smear_bools, soft_smear_bools), axis = 0) 
             rf_read_bools = np.logical_and(tot_smear_bools, trig_sort == 0)
             cal_read_bools = np.logical_and(tot_smear_bools, trig_sort == 1)
@@ -364,9 +371,14 @@ class pre_qual_cut_loader:
             smear_arr = np.arange(-1* smear_val * len(sec_arr), (smear_val + 1) * len(sec_arr), 1, dtype = int)
         else:
             smear_arr = np.arange(1, dtype = int)
-
-        bad_sec = get_time_smearing(self.rate_bins[bad_rate_idx], smear_arr = smear_arr, smear_arr_2nd = sec_arr) 
-        del smear_arr, sec_arr, bad_rate_idx
+ 
+        bad_sec = self.rate_bins[bad_rate_idx]
+        bad_sec = np.tile(bad_sec, (len(sec_arr), len(smear_arr), 1))
+        bad_sec += sec_arr[:, np.newaxis, np.newaxis]
+        bad_sec += smear_arr[np.newaxis, :, np.newaxis]
+        bad_sec = bad_sec.flatten()
+        bad_sec = np.sort(np.unique(bad_sec))
+        del sec_arr, bad_rate_idx
 
         bad_pps_idx = np.in1d(self.pps_sort, bad_sec)
         bad_evt_sort = self.evt_sort[bad_pps_idx]
@@ -641,10 +653,16 @@ class cw_qual_cut_loader:
             return self.cw_evts
 
         bad_bools = self.cw_evts.astype(bool)
-        cw_smear_time = get_time_smearing(self.time_arr[bad_bools])
 
-        cw_smear_evts = np.in1d(self.time_arr, cw_smear_time).astype(int)
-        del bad_bools, cw_smear_time
+        smear_arr = np.arange(-1* smear_val, smear_val + 1, 1, dtype = int)
+        bad_sec = self.time_arr[bad_bools]
+        bad_sec = np.tile(bad_sec, (len(smear_arr), 1))
+        bad_sec += smear_arr[:, np.newaxis]
+        bad_sec = bad_sec.flatten()
+        bad_sec = np.sort(np.unique(bad_sec))
+
+        cw_smear_evts = np.in1d(self.time_arr, bad_sec).astype(int)
+        del bad_bools, smear_arr, bad_sec
 
         self.rp_evts[cw_smear_evts != 0] = 0
         self.rp_ants[:, cw_smear_evts != 0] = 0
@@ -970,14 +988,13 @@ class qual_cut_loader:
             print(f'quality cut path:', d_path)
 
         self.evt_num = qual_file['evt_num'][:]
-        self.entry_num = qual_file['entry_num'][:]
-        #self.entry_num = np.arange(len(self.evt_num), dtype = int)
+        #self.entry_num = qual_file['entry_num'][:]
+        self.entry_num = np.arange(len(self.evt_num), dtype = int)
         self.trig_type = qual_file['trig_type'][:]
         self.unix_time = qual_file['unix_time'][:]
         total_qual_cut = qual_file['total_qual_cut'][:]
         self.daq_qual_cut_sum = qual_file['daq_qual_cut_sum'][:]
         self.total_qual_cut_sum = qual_file['total_qual_cut_sum'][:]
-        self.rp_ants = qual_file['rp_ants'][:]
 
         if self.verbose:
             quick_qual_check(self.daq_qual_cut_sum != 0, 'daq error cut!', self.evt_num)
@@ -986,7 +1003,7 @@ class qual_cut_loader:
 
         return total_qual_cut
 
-    def get_useful_events(self, use_entry = False, use_qual = False, use_rp_ants = False, trig_idx = None):
+    def get_useful_events(self, use_entry = False, use_qual = False, trig_idx = None):
 
         if use_entry:
             evt_idx = self.entry_num
@@ -1006,8 +1023,6 @@ class qual_cut_loader:
         evt_idx = evt_idx[clean_idx]
 
         self.num_useful_evts = len(evt_idx)
-        if use_rp_wfs:
-            self.clean_rp_ants = self.rp_ants[:, clean_idx]
 
         return evt_idx
 
