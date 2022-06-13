@@ -7,15 +7,22 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
 
     print('Quality cut starts!')
 
+    from tools.ara_constant import ara_const
     from tools.ara_data_load import ara_uproot_loader
     from tools.ara_run_manager import run_info_loader
     from tools.ara_quality_cut import run_qual_cut_loader
     from tools.ara_quality_cut import get_time_smearing
     from tools.ara_quality_cut import get_live_time
 
+    # geom. info.
+    ara_const = ara_const()
+    num_ants = ara_const.USEFUL_CHAN_PER_STATION
+    del ara_const
+
     # data config
     ara_uproot = ara_uproot_loader(Data)
     ara_uproot.get_sub_info()
+    num_evts = ara_uproot.num_evts
     evt_num = ara_uproot.evt_num
     entry_num = ara_uproot.entry_num
     trig_type = ara_uproot.get_trig_type()
@@ -38,19 +45,26 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
     del daq_dat, daq_hf    
 
     force_unblind = True
-    cw_dat = run_info.get_result_path(file_type = 'cw_cut', verbose = True, force_unblind = force_unblind)
-    cw_hf = h5py.File(cw_dat, 'r')
-    cw_cut = cw_hf['total_cw_cut'][:]
-    total_cw_cut_sum = cw_hf['total_cw_cut_sum'][:]
-    rp_ants = cw_hf['rp_ants'][:]
-    if force_unblind and analyze_blind_dat:
-        cw_cut = np.nansum(cw_cut, axis = 1)
-        cw_pps = cw_hf['pps_number'][:]
-        cw_smear_time = get_time_smearing(cw_pps[cw_cut != 0])
-        cw_cut = np.in1d(pps_number, cw_smear_time).astype(int)
-        cw_cut = np.repeat(cw_cut[:, np.newaxis], 1, axis = 1)
-        del cw_pps, cw_smear_time
-    del cw_dat, cw_hf
+    return_none = True
+    cw_dat = run_info.get_result_path(file_type = 'cw_cut', verbose = True, return_none = return_none, force_unblind = force_unblind)
+    if cw_dat is None:
+        cw_cut = np.full((num_evts, 1), 0, dtype = int)
+        rp_ants = np.full((num_ants, num_evts), 0, dtype = int)
+        total_cw_cut_sum = np.full((num_evts), 0, dtype = int)
+    else:
+        cw_hf = h5py.File(cw_dat, 'r')
+        cw_cut = cw_hf['total_cw_cut'][:]
+        total_cw_cut_sum = cw_hf['total_cw_cut_sum'][:]
+        rp_ants = cw_hf['rp_ants'][:]
+        if force_unblind and analyze_blind_dat:
+            cw_cut = np.nansum(cw_cut, axis = 1)
+            cw_pps = cw_hf['pps_number'][:]
+            cw_smear_time = get_time_smearing(cw_pps[cw_cut != 0])
+            cw_cut = np.in1d(pps_number, cw_smear_time).astype(int)
+            cw_cut = np.repeat(cw_cut[:, np.newaxis], 1, axis = 1)
+            del cw_pps, cw_smear_time
+        del cw_hf
+    del cw_dat, num_ants, num_evts
 
     ped_dat = run_info.get_result_path(file_type = 'ped_cut', verbose = True)
     ped_hf = h5py.File(ped_dat, 'r')

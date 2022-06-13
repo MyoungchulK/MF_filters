@@ -30,22 +30,27 @@ def ped_cut_collector(Data, Ped, analyze_blind_dat = False):
     daq_qual_cut_sum = daq_hf['daq_qual_cut_sum'][:]
 
     force_unblind = True
-    cw_dat = run_info.get_result_path(file_type = 'cw_cut', verbose = True, force_unblind = force_unblind)
-    cw_hf = h5py.File(cw_dat, 'r')
-    cw_cut = cw_hf['total_cw_cut'][:]
-    rp_evts = cw_hf['rp_evts'][:]
-    rp_evts = np.repeat(rp_evts[:, np.newaxis], 1, axis = 1)
-    cw_cut += rp_evts
-    if force_unblind and analyze_blind_dat:
-        cw_cut = np.nansum(cw_cut, axis = 1)
-        cw_pps = cw_hf['pps_number'][:]
-        cw_smear_time = get_time_smearing(cw_pps[cw_cut != 0]) 
-        cw_cut = np.in1d(pps_number, cw_smear_time).astype(int)
-        cw_cut = np.repeat(cw_cut[:, np.newaxis], 1, axis = 1)
-        del cw_pps, cw_smear_time
+    return_none = True
+    cw_dat = run_info.get_result_path(file_type = 'cw_cut', verbose = True, return_none = return_none, force_unblind = force_unblind)
+    if cw_dat is None:
+        cw_cut = np.full((num_evts, 1), 0, dtype = int)                
+    else: 
+        cw_hf = h5py.File(cw_dat, 'r')
+        cw_cut = cw_hf['total_cw_cut'][:]
+        rp_evts = cw_hf['rp_evts'][:]
+        rp_evts = np.repeat(rp_evts[:, np.newaxis], 1, axis = 1)
+        cw_cut += rp_evts
+        if force_unblind and analyze_blind_dat:
+            cw_cut = np.nansum(cw_cut, axis = 1)
+            cw_pps = cw_hf['pps_number'][:]
+            cw_smear_time = get_time_smearing(cw_pps[cw_cut != 0]) 
+            cw_cut = np.in1d(pps_number, cw_smear_time).astype(int)
+            cw_cut = np.repeat(cw_cut[:, np.newaxis], 1, axis = 1)
+            del cw_pps, cw_smear_time
+        del cw_hf, rp_evts
     daq_cw_cut = np.append(daq_cut, cw_cut, axis = 1)
     daq_cw_cut_sum = np.nansum(daq_cw_cut, axis = 1)
-    del run_info, daq_dat, daq_hf, daq_cut, cw_dat, cw_hf, cw_cut, rp_evts
+    del run_info, daq_dat, daq_hf, daq_cut, cw_dat, cw_cut, num_evts
 
     # ped quailty cut
     ped_qual = ped_qual_cut_loader(ara_uproot, daq_cw_cut, daq_qual_cut_sum, analyze_blind_dat = analyze_blind_dat, verbose = True)
