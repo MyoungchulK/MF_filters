@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.stats import rayleigh
 from tqdm import tqdm
 
 def rayl_collector(Data, Ped, analyze_blind_dat = False):
@@ -12,7 +11,7 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
     from tools.ara_quality_cut import qual_cut_loader
     from tools.ara_quality_cut import cw_qual_cut_loader
     from tools.ara_wf_analyzer import wf_analyzer
-    from tools.ara_wf_analyzer import hist_loader
+    from tools.ara_wf_analyzer import get_rayl_distribution
 
     # geom. info.
     ara_const = ara_const()
@@ -55,109 +54,50 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
     wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_rfft = True, use_band_pass = True, use_cw = True, cw_params = cw_params)
     fft_len = wf_int.pad_fft_len
     freq_range = wf_int.pad_zero_freq 
-    freq_bins = np.fft.rfftfreq(200, wf_int.dt)
-    amp_range = np.arange(-5, 5, 0.05)
-    amp_bins = np.linspace(-5, 5, 200 + 1)
-    ara_hist = hist_loader(freq_bins, amp_bins)
-    freq_bin_center = ara_hist.bin_x_center
-    amp_bin_center = ara_hist.bin_y_center
-    del cw_params, ara_hist
+    del cw_params
 
     # output 
     clean_rf_rffts = np.full((fft_len, num_ants, num_clean_rf_evts), np.nan, dtype = float)
     clean_soft_rffts = np.full((fft_len, num_ants, num_clean_soft_evts), np.nan, dtype = float)
     print(f'fft array dim.: {clean_rf_rffts.shape}, {clean_soft_rffts.shape}')
     print(f'fft array size: ~{np.round(clean_rf_rffts.nbytes/1024/1024)} MB, ~{np.round(clean_soft_rffts.nbytes/1024/1024)} MB')
-    clean_rfft_2d = np.full((len(freq_bin_center), len(amp_bin_center), num_ants, 2), 0, dtype = int)    
+    del fft_len
 
     # loop over the events
     c_evts = [num_clean_rf_evts, num_clean_soft_evts]
     c_entry = [clean_rf_entry, clean_soft_entry]
     r_ant = [clean_rf_rp_ants, clean_soft_rp_ants]
     for trig in range(2): # uhhhhh.....
-      num_clean_evts = c_evts[trig]
-      clean_entry = c_entry[trig]
-      rp_ant = r_ant[trig].astype(bool)
-      for evt in tqdm(range(num_clean_evts)):
-       #if evt <100:        
+        num_clean_evts = c_evts[trig]
+        clean_entry = c_entry[trig]
+        rp_ant = r_ant[trig].astype(bool)
+        for evt in tqdm(range(num_clean_evts)):
+           #if evt <100:        
 
-        # get entry and wf
-        ara_root.get_entry(clean_entry[evt])
-        ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
+            # get entry and wf
+            ara_root.get_entry(clean_entry[evt])
+            ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
         
-        # loop over the antennas
-        for ant in range(num_ants):
-            raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = rp_ant[ant, evt])
-            del raw_t, raw_v 
-            ara_root.del_TGraph()
-        ara_root.del_usefulEvt()
+            # loop over the antennas
+            for ant in range(num_ants):
+                raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
+                wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = rp_ant[ant, evt])
+                del raw_t, raw_v 
+                ara_root.del_TGraph()
+            ara_root.del_usefulEvt()
 
-        wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_abs = True)
-        fft_evt = wf_int.pad_fft
-        fft_evt_log = np.log10(fft_evt)
-        for ant in range(num_ants):
-            clean_rfft_2d[:, :, ant, trig] += np.histogram2d(freq_range, fft_evt_log[:, ant], bins = (freq_bins, amp_bins))[0].astype(int)
-        if trig == 0:
-            clean_rf_rffts[:, :, evt] = fft_evt
-        else:
-            clean_soft_rffts[:, :, evt] = fft_evt
-        del fft_evt, fft_evt_log
-      del num_clean_evts, clean_entry, rp_ant  
-    del ara_root, wf_int, c_evts, c_entry, r_ant, clean_rf_entry, clean_soft_entry
+            wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_abs = True)
+            if trig == 0:
+                clean_rf_rffts[:, :, evt] = wf_int.pad_fft
+            else:
+                clean_soft_rffts[:, :, evt] = wf_int.pad_fft
+        del num_clean_evts, clean_entry, rp_ant  
+    del num_ants, ara_root, wf_int, c_evts, c_entry, r_ant, clean_rf_entry, clean_soft_entry, num_clean_rf_evts, num_clean_soft_evts
    
-def get_rayl_distribution(dat, binning = 1000):
-
-    # rayl fit
-    fft_len = dat.shape[0]
-    bin_edges = np.asarray([np.nanmin(dat, axis = 2), np.nanmax(dat, axis = 2)])
-    rayl_params = np.full((2, fft_len, num_ants), np.nan, dtype = float)    
-    for freq in tqdm(range(fft_len)):
-        for ant in range(num_ants):
-            amp_bins = np.linspace(bin_edges[0, freq, ant], bin_edges[1, freq, ant], binning + 1)
-            amp_bins_center = (amp_bins[1:] + amp_bins[:-1]) / 2
-            amp_hist = np.histogram(dat[freq, ant], bins = amp_bins)[0]
-            mu_init_idx = np.nanargmax(amp_hist)
-            if np.isnan(mu_init_idx):
-                continue
-            mu_init = amp_bins_center[mu_init_idx]
-            del amp_bins, amp_bins_center, amp_hist, mu_init_idx
-
-            try:
-                rayl_params[:, freq, ant] = rayleigh.fit(dat[freq, ant], loc = bin_edges[0, freq, ant], scale = mu_init)
-            except RuntimeError:
-                print(f'Runtime Issue in {f} GHz!')
-                pass
-            del mu_init
-    del fft_len, bin_edges
-
-    return rayl_params
-
-    del binning, bin_edges
-    del num_ants, fft_len, num_clean_rf_evts, num_clean_soft_evts, clean_rf_rffts, clean_soft_rffts
-
-    """
-    clean_rf_rffts = np.log10(clean_rf_rffts)
-    clean_soft_rffts = np.log10(clean_soft_rffts)
-    freq_range_ant = np.repeat(freq_range[:, np.newaxis], num_ants, axis = 1)
-    if num_clean_rf_evts == 0:
-        freq_range_rf = np.full((fft_len, num_ants, 0), np.nan, dtype = float)
-    else:
-        freq_range_rf = np.repeat(freq_range_ant[:, :, np.newaxis], num_clean_rf_evts, axis = 2)
-    if num_clean_soft_evts == 0:
-        freq_range_soft = np.full((fft_len, num_ants, 0), np.nan, dtype = float)
-    else:
-        freq_range_soft = np.repeat(freq_range_ant[:, :, np.newaxis], num_clean_soft_evts, axis = 2)
-    freq_bins = np.fft.rfftfreq(200, dt)
-    amp_range = np.arange(-5, 5, 0.05)
-    amp_bins = np.linspace(-5, 5, 200 + 1)
-    ara_hist = hist_loader(freq_bins, amp_bins)
-    freq_bin_center = ara_hist.bin_x_center
-    amp_bin_center = ara_hist.bin_y_center
-    clean_rf_rfft_2d = ara_hist.get_2d_hist(freq_range_rf, clean_rf_rffts, use_flat = True)
-    clean_soft_rfft_2d = ara_hist.get_2d_hist(freq_range_soft, clean_soft_rffts, use_flat = True)
-    del num_clean_rf_evts, num_clean_soft_evts, freq_range_ant, freq_range_rf, freq_range_soft, clean_rf_rffts, clean_soft_rffts
-    """
+    # rayl fit 
+    rf_rayl, clean_rf_rfft_2d, clean_rf_bin_center = get_rayl_distribution(clean_rf_rffts)
+    soft_rayl, clean_soft_rfft_2d, clean_soft_bin_center = get_rayl_distribution(clean_soft_rffts)
+    del clean_rf_rffts, clean_soft_rffts
 
     print('Rayl. collecting is done!')
 
@@ -171,14 +111,12 @@ def get_rayl_distribution(dat, binning = 1000):
             'pps_number':pps_number,
             'total_qual_cut':total_qual_cut,
             'freq_range':freq_range,
-            'freq_bins':freq_bins,
-            'freq_bin_cener':freq_bin_center,
-            'amp_range':amp_range,
-            'amp_bins':amp_bins,
-            'amp_bin_center':amp_bin_center,
-            'clean_rfft_2d':clean_rfft_2d,
-            'rayl_params':rayl_params}
-    
+            'clean_rf_bin_center':clean_rf_bin_center,
+            'clean_soft_bin_center':clean_soft_bin_center,
+            'clean_rf_rfft_2d':clean_rf_rfft_2d,
+            'clean_soft_rfft_2d':clean_soft_rfft_2d,
+            'rf_rayl':rf_rayl,
+            'soft_rayl':soft_rayl}
 
 
 

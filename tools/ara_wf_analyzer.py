@@ -3,6 +3,7 @@ import numpy as np
 from scipy.interpolate import Akima1DInterpolator
 #from scipy.signal import hilbert
 from scipy.signal import butter, filtfilt
+from scipy.stats import rayleigh
 from tqdm import tqdm
 
 # custom lib
@@ -320,3 +321,37 @@ class sample_map_loader:
     def del_hist_map(self):
 
         del self.hist_map
+
+def get_rayl_distribution(dat, binning = 500):
+
+    dat_min = np.nanmin(dat, axis = 2)
+    dat_max = np.nanmax(dat, axis = 2)
+    dat_bins = np.linspace(dat_min, dat_max, binning + 1, axis = 0)
+    dat_bin_center = (dat_bins[1:] + dat_bins[:-1]) / 2
+    del dat_max
+
+    fft_len = dat.shape[0]
+    rfft_2d = np.full((fft_len, binning, num_ants), 0, dtype = int)
+    rayl_params = np.full((2, fft_len, num_ants), np.nan, dtype = float)
+
+    for freq in tqdm(range(fft_len)):
+        for ant in range(num_ants):
+
+            fft_hist = np.histogram(dat[freq, ant], bins = dat_bins[:, freq, ant])[0].astype(int)
+            rfft_2d[freq, :, ant] = fft_hist
+
+            mu_init_idx = np.nanargmax(fft_hist)
+            if np.isnan(mu_init_idx):
+                continue
+            mu_init = dat_bin_center[mu_init_idx, freq, ant]
+            del fft_hist, mu_init_idx
+
+            try:
+                rayl_params[:, freq, ant] = rayleigh.fit(dat[freq, ant], loc = dat_min[freq, ant], scale = mu_init)
+            except RuntimeError:
+                print(f'Runtime Issue in Freq. {freq} index!')
+                pass
+            del mu_init
+    del dat_min, dat_bins, fft_len
+
+    return rayl_params, rfft_2d, dat_bin_center
