@@ -322,13 +322,11 @@ class sample_map_loader:
 
         del self.hist_map
 
-def get_rayl_distribution(dat, binning = 500):
+def get_rayl_distribution(dat, binning = 1000):
 
-    dat_min = np.nanmin(dat, axis = 2)
-    dat_max = np.nanmax(dat, axis = 2)
-    dat_bins = np.linspace(dat_min, dat_max, binning + 1, axis = 0)
-    dat_bin_center = (dat_bins[1:] + dat_bins[:-1]) / 2
-    del dat_max
+    dat_bin_edges = np.array([np.nanmin(dat, axis = 2), np.nanmax(dat, axis = 2)], dtype = float)
+    dat_bins = np.linspace(dat_bin_edges[0], dat_bin_edges[1], binning + 1, axis = 0)
+    dat_half_bin_width = np.abs(dat_bins[1] - dat_bins[0]) / 2
 
     fft_len = dat.shape[0]
     rfft_2d = np.full((fft_len, binning, num_ants), 0, dtype = int)
@@ -343,15 +341,15 @@ def get_rayl_distribution(dat, binning = 500):
             mu_init_idx = np.nanargmax(fft_hist)
             if np.isnan(mu_init_idx):
                 continue
-            mu_init = dat_bin_center[mu_init_idx, freq, ant]
+            mu_init = dat_bins[mu_init_idx, freq, ant] + dat_half_bin_width[freq, ant]
             del fft_hist, mu_init_idx
 
             try:
-                rayl_params[:, freq, ant] = rayleigh.fit(dat[freq, ant], loc = dat_min[freq, ant], scale = mu_init)
+                rayl_params[:, freq, ant] = rayleigh.fit(dat[freq, ant], loc = dat_bin_edges[0, freq, ant], scale = mu_init)
             except RuntimeError:
                 print(f'Runtime Issue in Freq. {freq} index!')
                 pass
             del mu_init
-    del dat_min, dat_bins, fft_len
+    del dat_bins, dat_half_bin_width, fft_len
 
-    return rayl_params, rfft_2d, dat_bin_center
+    return rayl_params, rfft_2d, dat_bin_edges
