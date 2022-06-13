@@ -175,9 +175,9 @@ class pre_qual_cut_loader:
         del blk_len, rf_read_win_len, soft_read_win_len, rf_cal_read_bools
 
         if use_smear:
-            rf_smear_bools = get_time_smearing(self.pps_sort[rf_read_bools])
-            cal_smear_bools = get_time_smearing(self.pps_sort[cal_read_bools])
-            soft_smear_bools = get_time_smearing(self.pps_sort[soft_read_bools])
+            rf_smear_bools = np.in1d(self.pps_sort, get_time_smearing(self.pps_sort[rf_read_bools]))
+            cal_smear_bools = np.in1d(self.pps_sort, get_time_smearing(self.pps_sort[cal_read_bools]))
+            soft_smear_bools = np.in1d(self.pps_sort, get_time_smearing(self.pps_sort[soft_read_bools]))
             tot_smear_bools = np.any((rf_smear_bools, cal_smear_bools, soft_smear_bools), axis = 0) 
             rf_read_bools = np.logical_and(tot_smear_bools, trig_sort == 0)
             cal_read_bools = np.logical_and(tot_smear_bools, trig_sort == 1)
@@ -810,8 +810,8 @@ class ped_qual_cut_loader:
             ped_dat = run_info.get_result_path(file_type = 'ped_cut', verbose = self.verbose, force_blind = True)
             ped_hf = h5py.File(ped_dat, 'r')
             ped_counts = ped_hf['ped_counts'][:]
-            known_bad_ped_evts = ped_hf['total_ped_cut'][:,-1]
-            del ped_count_dat, ped_count_hf, run_info
+            known_bad_ped_evts = ped_hf['total_ped_cut'][0,-1]
+            del ped_dat, ped_hf, run_info
         zero_ped_counts = ped_counts < 1
         ped_blk_counts = ped_counts == 1
         low_ped_counts = ped_counts < self.minimum_usage 
@@ -876,7 +876,9 @@ class run_qual_cut_loader:
         bad_run[1] = int(self.ped_flag)
         bad_run[2] = int(self.known_flag)
         if self.verbose:
-            print(f'bad run type: 1) qual: {self.bad_run[0]}, 2) ped: {self.bad_run[1]}, 3) known: {self.bad_run[2]}')
+            print(f'bad run type: 1) qual: {bad_run[0]}, 2) ped: {bad_run[1]}, 3) known: {bad_run[2]}')
+
+        return bad_run
 
     def get_bad_run_list(self):
 
@@ -971,7 +973,6 @@ class qual_cut_loader:
 
         self.evt_num = qual_file['evt_num'][:]
         self.entry_num = qual_file['entry_num'][:]
-        #self.entry_num = np.arange(len(self.evt_num), dtype = int)
         self.trig_type = qual_file['trig_type'][:]
         self.unix_time = qual_file['unix_time'][:]
         total_qual_cut = qual_file['total_qual_cut'][:]
@@ -1006,7 +1007,7 @@ class qual_cut_loader:
         evt_idx = evt_idx[clean_idx]
 
         self.num_useful_evts = len(evt_idx)
-        if use_rp_wfs:
+        if use_rp_ants:
             self.clean_rp_ants = self.rp_ants[:, clean_idx]
 
         return evt_idx

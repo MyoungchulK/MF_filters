@@ -1,6 +1,7 @@
 import os
 import numpy as np
 from tqdm import tqdm
+import h5py
 
 def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
 
@@ -9,6 +10,7 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
     from tools.ara_data_load import ara_uproot_loader
     from tools.ara_run_manager import run_info_loader
     from tools.ara_quality_cut import run_qual_cut_loader
+    from tools.ara_quality_cut import get_time_smearing
     from tools.ara_quality_cut import get_live_time
 
     # data config
@@ -21,10 +23,10 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
     unix_time = ara_uproot.unix_time
     st = ara_uproot.station_id
     run = ara_uproot.run
+    del ara_uproot
 
     # all quality cuts
     run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
-    del ara_uproot    
 
     daq_dat = run_info.get_result_path(file_type = 'daq_cut', verbose = True)
     daq_hf = h5py.File(daq_dat, 'r')
@@ -35,11 +37,19 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
     post_qual_cut_sum = daq_hf['post_qual_cut_sum'][:]
     del daq_dat, daq_hf    
 
-    cw_dat = run_info.get_result_path(file_type = 'cw_cut', verbose = True)
+    force_unblind = True
+    cw_dat = run_info.get_result_path(file_type = 'cw_cut', verbose = True, force_unblind = force_unblind)
     cw_hf = h5py.File(cw_dat, 'r')
     cw_cut = cw_hf['total_cw_cut'][:]
     total_cw_cut_sum = cw_hf['total_cw_cut_sum'][:]
     rp_ants = cw_hf['rp_ants'][:]
+    if force_unblind and analyze_blind_dat:
+        cw_cut = np.nansum(cw_cut, axis = 1)
+        cw_pps = cw_hf['pps_number'][:]
+        cw_smear_time = get_time_smearing(cw_pps[cw_cut != 0])
+        cw_cut = np.in1d(pps_number, cw_smear_time).astype(int)
+        cw_cut = np.repeat(cw_cut[:, np.newaxis], 1, axis = 1)
+        del cw_pps, cw_smear_time
     del cw_dat, cw_hf
 
     ped_dat = run_info.get_result_path(file_type = 'ped_cut', verbose = True)
@@ -62,14 +72,14 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
 
     # event_number
     rf_evt_num = evt_num[trig_type == 0]
-    clean_evt_num = evt_num[tot_cut_sum == 0]
-    clean_rf_evt_num = evt_num[(tot_cut_sum == 0) & (trig_type == 0)]
+    clean_evt_num = evt_num[total_qual_cut_sum == 0]
+    clean_rf_evt_num = evt_num[(total_qual_cut_sum == 0) & (trig_type == 0)]
     rf_entry_num = entry_num[trig_type == 0]
-    clean_entry_num = entry_num[tot_cut_sum == 0]
-    clean_rf_entry_num = entry_num[(tot_cut_sum == 0) & (trig_type == 0)]
+    clean_entry_num = entry_num[total_qual_cut_sum == 0]
+    clean_rf_entry_num = entry_num[(total_qual_cut_sum == 0) & (trig_type == 0)]
 
     # live time
-    live_time, clean_live_time = get_live_time(st, run, unix_time, cut = tot_cut_sum, use_dead = True, verbose = True)
+    live_time, clean_live_time = get_live_time(st, run, unix_time, cut = total_qual_cut_sum, use_dead = True, verbose = True)
     del st, run
 
     print('Quality cut is done!')

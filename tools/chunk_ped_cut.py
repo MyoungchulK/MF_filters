@@ -36,14 +36,12 @@ def ped_cut_collector(Data, Ped, analyze_blind_dat = False):
     rp_evts = cw_hf['rp_evts'][:]
     rp_evts = np.repeat(rp_evts[:, np.newaxis], 1, axis = 1)
     cw_cut += rp_evts
-    print(np.sum(cw_cut))
-    if force_unblind:
+    if force_unblind and analyze_blind_dat:
         cw_cut = np.nansum(cw_cut, axis = 1)
         cw_pps = cw_hf['pps_number'][:]
         cw_smear_time = get_time_smearing(cw_pps[cw_cut != 0]) 
         cw_cut = np.in1d(pps_number, cw_smear_time).astype(int)
         cw_cut = np.repeat(cw_cut[:, np.newaxis], 1, axis = 1)
-        print(np.sum(cw_cut))
         del cw_pps, cw_smear_time
     daq_cw_cut = np.append(daq_cut, cw_cut, axis = 1)
     daq_cw_cut_sum = np.nansum(daq_cw_cut, axis = 1)
