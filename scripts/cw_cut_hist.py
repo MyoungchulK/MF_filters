@@ -70,7 +70,7 @@ for r in tqdm(range(len(d_run_tot))):
     unix_min_i = int(np.floor(np.nanmin(unix) / sec_to_min) * sec_to_min)
     unix_min_f = int(np.ceil(np.nanmax(unix) / sec_to_min) * sec_to_min)
     unix_time = np.linspace(unix_min_i, unix_min_f, (unix_min_f - unix_min_i)//60 + 1, dtype = int)
-    del unix, unix_min_i, unix_min_f
+    del unix_min_i, unix_min_f
 
     if len(unix_time) - 1 == 0:
         print(d_run_tot[r])
@@ -81,9 +81,9 @@ for r in tqdm(range(len(d_run_tot))):
 
     cw_sum = hf['total_cw_cut_sum'][:]
     rp_sum = hf['rp_evts'][:]
-    cw_hist = np.histogram(cw_sum, bins = unix_time)[0].astype(int)
-    rp_hist = np.histogram(rp_sum, bins = unix_time)[0].astype(int)
-    del cw_sum, rp_sum
+    cw_hist = np.histogram(unix, bins = unix_time, weights = cw_sum)[0].astype(int)
+    rp_hist = np.histogram(unix, bins = unix_time, weights = rp_sum)[0].astype(int)
+    del cw_sum, rp_sum, unix
 
     unix_idx = (unix_time[:-1] - unix_init)//60
     cw_map[unix_idx] = cw_hist
@@ -127,8 +127,10 @@ hf.create_dataset('days_range', data=days_range, compression="gzip", compression
 hf.create_dataset('mins_range', data=mins_range, compression="gzip", compression_opts=9)
 hf.create_dataset('cw_map', data=cw_map, compression="gzip", compression_opts=9)
 hf.create_dataset('rp_map', data=rp_map, compression="gzip", compression_opts=9)
+hf.create_dataset('tot_map', data=tot_map, compression="gzip", compression_opts=9)
 hf.create_dataset('cw_map_day', data=cw_map_day, compression="gzip", compression_opts=9)
 hf.create_dataset('rp_map_day', data=rp_map_day, compression="gzip", compression_opts=9)
+hf.create_dataset('tot_map_day', data=tot_map_day, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name)
 # quick size check
