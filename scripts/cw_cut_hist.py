@@ -58,7 +58,7 @@ rp_map_day = np.copy(cw_map_day)
 
 for r in tqdm(range(len(d_run_tot))):
     
-  if r <10:
+  #if r <10:
 
     if d_run_tot[r] in bad_runs:
         #print('bad run:', d_list[r], d_run_tot[r])
@@ -66,15 +66,18 @@ for r in tqdm(range(len(d_run_tot))):
 
     hf = h5py.File(d_list[r], 'r')
 
+    unix = hf['unix_time'][:]
+    unix_min_i = int(np.floor(np.nanmin(unix) / sec_to_min) * sec_to_min)
+    unix_min_f = int(np.ceil(np.nanmax(unix) / sec_to_min) * sec_to_min)
+    unix_time = np.linspace(unix_min_i, unix_min_f, (unix_min_f - unix_min_i)//60 + 1, dtype = int)
+    del unix, unix_min_i, unix_min_f
+
+    if len(unix_time) - 1 == 0:
+        print(d_run_tot[r])
+
     config = hf['config'][2]
     config_arr_cut.append(config)
     run_arr_cut.append(d_run_tot[r])
-
-    unix = hf['unix_time'][:]
-    unix_min_i = int(np.floor(np.nanmin(self.unix_time) / sec_to_min) * sec_to_min)
-    unix_min_f = int(np.ceil(np.nanmax(self.unix_time) / sec_to_min) * sec_to_min)
-    unix_time = np.linspace(unix_min_i, unix_min_f, (unix_min_f - unix_min_i)//60 + 1, dtype = int)
-    del unix, unix_min_i, unix_min_f
 
     cw_sum = hf['total_cw_cut_sum'][:]
     rp_sum = hf['rp_evts'][:]
@@ -82,13 +85,13 @@ for r in tqdm(range(len(d_run_tot))):
     rp_hist = np.histogram(rp_sum, bins = unix_time)[0].astype(int)
     del cw_sum, rp_sum
 
-    unix_idx = (unix_time - unix_init)//60
+    unix_idx = (unix_time[:-1] - unix_init)//60
     cw_map[unix_idx] = cw_hist
     rp_map[unix_idx] = rp_hist
     del unix_idx
 
     day_init = int(np.floor(unix_time[0] / sec_in_day) * sec_in_day)
-    min_idx = (unix_time - day_init)//60
+    min_idx = (unix_time[:-1] - day_init)//60
     min_idx = min_idx % min_in_day
     del day_init, unix_time
     
