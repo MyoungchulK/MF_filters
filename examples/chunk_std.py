@@ -62,11 +62,27 @@ def std_collector(Data, Ped, Station, Year):
     std_cal = np.asarray(std_cal)
     std_soft = np.asarray(std_soft)
 
+    # 1d histogram
+    std_range = np.arange(0, 100, 0.1)
+    std_bins = np.linspace(0, 100, 1000 + 1)
+    ara_hist = hist_loader(std_bins)
+    std_bin_center = ara_hist.bin_x_center
+    std_rf_hist = ara_hist.get_1d_hist(np.transpose(std_rf, (1,0)))
+    std_cal_hist = ara_hist.get_1d_hist(np.transpose(std_cal, (1,0)))
+    std_soft_hist = ara_hist.get_1d_hist(np.transpose(std_soft, (1,0)))
+    del ara_hist
+    
     print('WF collecting is done!')
 
     return {'std_rf':std_rf,
             'std_cal':std_cal,
-            'std_soft':std_soft}
+            'std_soft':std_soft,
+            'std_range':std_range,
+            'std_bins':std_bins,
+            'std_bin_center':std_bin_center,
+            'std_rf_hist':std_rf_hist,
+            'std_cal_hist':std_cal_hist,
+            'std_soft_hist':std_soft_hist}
 
 def script_loader(Data, Ped, Station, Run, Year):
 
