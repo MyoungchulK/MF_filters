@@ -16,6 +16,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     from tools.ara_quality_cut import qual_cut_loader
     from tools.ara_wf_analyzer import wf_analyzer
     from tools.ara_py_interferometers import py_interferometers
+    from tools.ara_quality_cut import cw_qual_cut_loader
 
     # const. info.
     ara_const = ara_const()
@@ -48,8 +49,8 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
 
     Data = run_info.get_data_path(file_type = 'eventHk', return_none = True, verbose = True)
     ara_eventHk_uproot = ara_eventHk_uproot_loader(Data)
-    l1_rate = ara_eventHk_uproot.get_eventHk_info()[0]
-    l1_thres = ara_eventHk_uproot.get_eventHk_info()[4]
+    l1_rate = ara_eventHk_uproot.get_eventHk_info(use_prescale = True)[0]
+    l1_thres = ara_eventHk_uproot.get_eventHk_info(use_prescale = True)[4]
     event_unix_time = ara_eventHk_uproot.unix_time
     event_pps_counter = ara_eventHk_uproot.pps_counter
     del run_info, Data, ara_sensorHk_uproot, ara_eventHk_uproot
@@ -62,6 +63,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     # qulity cut
     ara_qual = qual_cut_loader(analyze_blind_dat = analyze_blind_dat, verbose = True)
     tot_qual_cut = ara_qual.load_qual_cut_result(ara_uproot.station_id, ara_uproot.run)    
+    rp_ants = ara_qual.rp_ants
     del ara_qual
 
     print(f'Example event number: {evt_num[:20]}')
@@ -81,7 +83,9 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     sel_evt_len = len(sel_entries)
 
     # wf analyzer
-    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_band_pass = True, add_double_pad = True, use_rfft = True, use_cw = True)
+    cw_qual = cw_qual_cut_loader(ara_uproot.station_id, ara_uproot.run, evt_num, pps_number, verbose = True)
+    cw_params = cw_qual.ratio_cut
+    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_band_pass = True, add_double_pad = True, use_rfft = True, use_cw = True, cw_params = cw_params)
     dt = wf_int.dt
     pad_fft_len = wf_int.pad_fft_len
 
@@ -119,19 +123,19 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     bp_cw_num_sols = np.copy(cw_num_sols)
     cw_num_freqs = np.full((200, num_ants, sel_evt_len), np.nan, dtype=float)
     #cw_num_freq_errs = np.copy(cw_num_freqs)
-    cw_num_amps = np.copy(cw_num_freqs)
+    #cw_num_amps = np.copy(cw_num_freqs)
     cw_num_amp_errs = np.copy(cw_num_freqs)
     #cw_num_phases = np.copy(cw_num_freqs)
-    cw_num_phase_errs = np.copy(cw_num_freqs)
-    cw_num_powers = np.copy(cw_num_freqs)
+    #cw_num_phase_errs = np.copy(cw_num_freqs)
+    #cw_num_powers = np.copy(cw_num_freqs)
     cw_num_ratios = np.copy(cw_num_freqs)
     bp_cw_num_freqs = np.copy(cw_num_freqs)
     #bp_cw_num_freq_errs = np.copy(cw_num_freqs)
-    bp_cw_num_amps = np.copy(cw_num_freqs)
+    #bp_cw_num_amps = np.copy(cw_num_freqs)
     bp_cw_num_amp_errs = np.copy(cw_num_freqs)
     #bp_cw_num_phases = np.copy(cw_num_freqs)
-    bp_cw_num_phase_errs = np.copy(cw_num_freqs)
-    bp_cw_num_powers = np.copy(cw_num_freqs)
+    #bp_cw_num_phase_errs = np.copy(cw_num_freqs)
+    #bp_cw_num_powers = np.copy(cw_num_freqs)
     bp_cw_num_ratios = np.copy(cw_num_freqs)
 
     blk_est_range = 50
@@ -224,14 +228,14 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
 
             cw_num_sols[ant, evt] = wf_int.sin_sub.num_sols
             num_freqs = wf_int.sin_sub.sub_freqs
-            cw_num_freqs[:len(num_freqs), ant, evt] = num_freqs
+            cw_num_freqs[1:len(num_freqs)+1, ant, evt] = num_freqs
             #cw_num_freq_errs[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_freq_errs
-            cw_num_amps[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_amps
-            cw_num_amp_errs[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_amp_errs
+            #cw_num_amps[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_amps
+            cw_num_amp_errs[1:len(num_freqs)+1, ant, evt] = wf_int.sin_sub.sub_amp_errs
             #cw_num_phases[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_phases
-            cw_num_phase_errs[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_phase_errs
-            cw_num_powers[:len(num_freqs)+1, ant, evt] = wf_int.sin_sub.sub_powers
-            cw_num_ratios[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_ratios
+            #cw_num_phase_errs[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_phase_errs
+            #cw_num_powers[:len(num_freqs)+1, ant, evt] = wf_int.sin_sub.sub_powers
+            cw_num_ratios[:len(num_freqs)+1, ant, evt] = wf_int.sin_sub.sub_ratios
         cw_wf_all[:, 0, :, evt] = wf_int.pad_t
         cw_wf_all[:, 1, :, evt] = wf_int.pad_v
  
@@ -266,14 +270,14 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         
             bp_cw_num_sols[ant, evt] = wf_int.sin_sub.num_sols
             num_freqs = wf_int.sin_sub.sub_freqs
-            bp_cw_num_freqs[:len(num_freqs), ant, evt] = num_freqs
+            bp_cw_num_freqs[1:len(num_freqs)+1, ant, evt] = num_freqs
             #bp_cw_num_freq_errs[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_freq_errs
-            bp_cw_num_amps[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_amps
-            bp_cw_num_amp_errs[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_amp_errs
+            #bp_cw_num_amps[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_amps
+            bp_cw_num_amp_errs[1:len(num_freqs)+1, ant, evt] = wf_int.sin_sub.sub_amp_errs
             #bp_cw_num_phases[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_phases
-            bp_cw_num_phase_errs[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_phase_errs
-            bp_cw_num_powers[:len(num_freqs)+1, ant, evt] = wf_int.sin_sub.sub_powers
-            bp_cw_num_ratios[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_ratios
+            #bp_cw_num_phase_errs[:len(num_freqs), ant, evt] = wf_int.sin_sub.sub_phase_errs
+            #bp_cw_num_powers[:len(num_freqs)+1, ant, evt] = wf_int.sin_sub.sub_powers
+            bp_cw_num_ratios[:len(num_freqs)+1, ant, evt] = wf_int.sin_sub.sub_ratios
             #print(bp_cw_num_freqs[:len(num_freqs), ant, evt])
             #print(bp_cw_num_freq_errs[:len(num_freqs), ant, evt])
             #print(bp_cw_num_amps[:len(num_freqs), ant, evt])
@@ -454,19 +458,19 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'bp_cw_num_sols':bp_cw_num_sols,
             'cw_num_freqs':cw_num_freqs,
             #'cw_num_freq_errs':cw_num_freq_errs,
-            'cw_num_amps':cw_num_amps,
+            #'cw_num_amps':cw_num_amps,
             'cw_num_amp_errs':cw_num_amp_errs,
             #'cw_num_phases':cw_num_phases,
-            'cw_num_phase_errs':cw_num_phase_errs,
-            'cw_num_powers':cw_num_powers,
+            #'cw_num_phase_errs':cw_num_phase_errs,
+            #'cw_num_powers':cw_num_powers,
             'cw_num_ratios':cw_num_ratios,
             'bp_cw_num_freqs':bp_cw_num_freqs,
             #'bp_cw_num_freq_errs':bp_cw_num_freq_errs,
-            'bp_cw_num_amps':bp_cw_num_amps,
+            #'bp_cw_num_amps':bp_cw_num_amps,
             'bp_cw_num_amp_errs':bp_cw_num_amp_errs,
             #'bp_cw_num_phases':bp_cw_num_phases,
-            'bp_cw_num_phase_errs':bp_cw_num_phase_errs,
-            'bp_cw_num_powers':bp_cw_num_powers,
+            #'bp_cw_num_phase_errs':bp_cw_num_phase_errs,
+            #'bp_cw_num_powers':bp_cw_num_powers,
             'bp_cw_num_ratios':bp_cw_num_ratios,
             'blk_idx':blk_idx,
             'samp_idx':samp_idx,
