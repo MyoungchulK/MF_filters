@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # load in variables
-key=cw
+key=rayl
 station=$1
 run=$2
 
