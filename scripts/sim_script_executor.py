@@ -34,7 +34,7 @@ def script_loader(Key = None, Station = None, Year = None, Data = None, Evt_Rang
     if Key == 'mf_noise' or Key == 'mf_noise_debug':
         h5_file_name = f'{Output}{Key}_sim_A{Station}_Evt{Evt_Range[0]}_{Evt_Range[1]}_{data_name}'
     else:
-        h5_file_name = f'{Output}{data_name}'
+        h5_file_name = f'{Output}{Key}_{data_name}'
     h5_file_name_out = h5_file_name + '.h5'
     hf = h5py.File(h5_file_name_out, 'w')
 
