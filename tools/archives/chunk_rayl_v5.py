@@ -10,8 +10,7 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
     from tools.ara_constant import ara_const
     from tools.ara_quality_cut import qual_cut_loader
     from tools.ara_wf_analyzer import wf_analyzer
-    from tools.ara_detector_response import get_rayl_distribution
-    from tools.ara_detector_response import signal_chain_loader
+    from tools.ara_wf_analyzer import get_rayl_distribution
 
     # geom. info.
     ara_const = ara_const()
@@ -54,7 +53,7 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
 
     print(f'Number of clean rf event is {num_clean_rf_evts}') 
     print(f'Number of clean soft event is {num_clean_soft_evts}') 
-    del ara_qual, run
+    del ara_qual, st, run
 
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_rfft = True, use_band_pass = True)
@@ -92,7 +91,7 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
             ara_root.del_usefulEvt()
 
             wf_len[:, evt] = wf_int.pad_num
-            wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_abs = True, use_norm = True)
+            wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_abs = True)
             if trig == 0:
                 clean_rf_rffts[:, :, evt] = wf_int.pad_fft
             else:
@@ -105,12 +104,6 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
     rf_rayl, clean_rf_rfft_2d, clean_rf_bin_edges = get_rayl_distribution(clean_rf_rffts, binning = binning[0])
     soft_rayl, clean_soft_rfft_2d, clean_soft_bin_edges = get_rayl_distribution(clean_soft_rffts, binning = binning[0])
     del clean_rf_rffts, clean_soft_rffts
-
-    # signal chain
-    ara_sc = signal_chain_loader(st, freq_range)
-    rf_sc = ara_sc.get_signal_chain(rf_rayl, use_linear = True)
-    soft_sc = ara_sc.get_signal_chain(soft_rayl, use_linear = True)
-    del st, ara_sc    
 
     print('Rayl. collecting is done!')
 
@@ -130,9 +123,7 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
             'wf_len':wf_len,
             'dt':dt,
             'rf_rayl':rf_rayl,
-            'soft_rayl':soft_rayl,
-            'rf_sc':rf_sc,
-            'soft_sc':soft_sc}
+            'soft_rayl':soft_rayl}
 
 
 

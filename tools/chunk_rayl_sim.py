@@ -22,10 +22,12 @@ def rayl_sim_collector(Data, Station, Year):
 
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_rfft = True, use_band_pass = True)
+    dt = np.array([wf_int.dt], dtype = int)
     fft_len = wf_int.pad_fft_len
     freq_range = wf_int.pad_zero_freq 
 
     # output 
+    wf_len = np.full((num_ants, num_evts), np.nan, dtype = float)
     rffts = np.full((fft_len, num_ants, num_evts), np.nan, dtype = float)
     print(f'fft array dim.: {rffts.shape}')
     print(f'fft array size: ~{np.round(rffts.nbytes/1024/1024)} MB')
@@ -45,6 +47,7 @@ def rayl_sim_collector(Data, Station, Year):
             del raw_t, raw_v 
             ara_root.del_TGraph()
 
+        wf_len[:, evt] = wf_int.pad_num
         wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_abs = True)
         rffts[:, :, evt] = wf_int.pad_fft
     del num_ants, ara_root, wf_int, num_evts
@@ -62,7 +65,9 @@ def rayl_sim_collector(Data, Station, Year):
             'rayl':rayl,
             'rfft_2d':rfft_2d,
             'bin_edges':bin_edges,
-            'rffts':rffts}
+            'rffts':rffts,
+            'dt':dt,
+            'wf_len':wf_len}
 
 
 

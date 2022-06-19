@@ -1,9 +1,7 @@
 import sys
 import numpy as np
 from scipy.interpolate import Akima1DInterpolator
-#from scipy.signal import hilbert
 from scipy.signal import butter, filtfilt
-from scipy.stats import rayleigh
 from tqdm import tqdm
 
 # custom lib
@@ -80,6 +78,7 @@ class wf_analyzer:
             self.pad_zero_freq = np.fft.fftfreq(self.pad_len, self.dt)
         self.pad_fft_len = len(self.pad_zero_freq)
         self.df = 1 / (self.pad_len *  self.dt) 
+        self.dt_sq = np.sqrt(self.dt)        
 
     def get_int_time(self, raw_ti, raw_tf):
 
@@ -121,7 +120,7 @@ class wf_analyzer:
         self.pad_num[ant] = int_num
         del akima, int_idx, int_v, int_num      
 
-    def get_fft_wf(self, use_zero_pad = False, use_rfft = False, use_abs = False, use_dmbHz = False, use_phase = False):
+    def get_fft_wf(self, use_zero_pad = False, use_rfft = False, use_abs = False, use_norm = False, use_dbmHz = False, use_phase = False):
 
         if use_zero_pad:
             if use_rfft:
@@ -145,13 +144,17 @@ class wf_analyzer:
         
         if use_phase:
             self.pad_phase = np.angle(self.pad_fft)
-        self.pad_fft /= np.sqrt(self.pad_num)[np.newaxis, :]
+
+        if use_norm:
+            # mv to mv/sqrt(GHz)
+            self.pad_fft /= np.sqrt(self.pad_num)[np.newaxis, :]
+            self.pad_fft *= self.dt_sq
         
         if use_abs:
             self.pad_fft = np.abs(self.pad_fft)
         
-        if use_dmbHz:
-            self.pad_fft = 10 * np.log10(self.pad_fft**2 / (50 * self.dt)) + 30
+        if use_dbmHz:
+            self.pad_fft = 10 * np.log10((self.pad_fft)**2 * (self.dt * 1e-9) / 50 / 1e3)
            
     def get_peak(self, x, y):
 
@@ -322,39 +325,4 @@ class sample_map_loader:
 
         del self.hist_map
 
-def get_rayl_distribution(dat, binning = 1000):
 
-    fft_len = dat.shape[0]
-    rfft_2d = np.full((fft_len, binning, num_ants), 0, dtype = int)
-    rayl_params = np.full((2, fft_len, num_ants), np.nan, dtype = float)
-
-    if dat.shape[2] == 0:
-        rfft_2d = np.full((fft_len, binning, num_ants), np.nan, dtype =float)         
-        dat_bin_edges = np.full((2, fft_len, 16), np.nan, dtype = float)
-        return rayl_params, rfft_2d, dat_bin_edges
-
-    dat_bin_edges = np.array([np.nanmin(dat, axis = 2), np.nanmax(dat, axis = 2)], dtype = float)
-    dat_bins = np.linspace(dat_bin_edges[0], dat_bin_edges[1], binning + 1, axis = 0)
-    dat_half_bin_width = np.abs(dat_bins[1] - dat_bins[0]) / 2
-
-    for freq in tqdm(range(fft_len)):
-        for ant in range(num_ants):
-
-            fft_hist = np.histogram(dat[freq, ant], bins = dat_bins[:, freq, ant])[0].astype(int)
-            rfft_2d[freq, :, ant] = fft_hist
-
-            mu_init_idx = np.nanargmax(fft_hist)
-            if np.isnan(mu_init_idx):
-                continue
-            mu_init = dat_bins[mu_init_idx, freq, ant] + dat_half_bin_width[freq, ant]
-            del fft_hist, mu_init_idx
-
-            try:
-                rayl_params[:, freq, ant] = rayleigh.fit(dat[freq, ant], loc = dat_bin_edges[0, freq, ant], scale = mu_init)
-            except RuntimeError:
-                print(f'Runtime Issue in Freq. {freq} index!')
-                pass
-            del mu_init
-    del dat_bins, dat_half_bin_width, fft_len
-
-    return rayl_params, rfft_2d, dat_bin_edges

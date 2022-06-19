@@ -8,7 +8,6 @@ from tqdm import tqdm
 curr_path = os.getcwd()
 sys.path.append(curr_path+'/../')
 from tools.ara_run_manager import file_sorter
-from tools.ara_run_manager import run_info_loader
 from tools.ara_utility import size_checker
 from tools.ara_known_issue import known_issue_loader
 
@@ -47,7 +46,7 @@ amp_lin_bins = np.linspace(0, 320, 640 + 1)
 amp_lin_bin_center = (amp_lin_bins[1:] + amp_lin_bins[:-1]) / 2
 
 if Station == 2:
-    g_dim = 6
+    g_dim = 12
 if Station == 3:
     g_dim = 7
 rayl_rf_2d = np.full((len(freq_bin_center), len(amp_bin_center), 16, g_dim), 0, dtype = int)
@@ -63,9 +62,47 @@ for r in tqdm(range(len(d_run_tot))):
         #print('bad run:', d_list[r], d_run_tot[r])
         continue
 
-    ara_run = run_info_loader(Station, d_run_tot[r])
-    g_idx = ara_run.get_config_number() - 1 
-    del ara_run
+    if Station == 2:
+        if d_run_tot[r] < 1730:
+            g_idx = 0
+        if d_run_tot[r] > 1729 and d_run_tot[r] < 2275:
+            g_idx = 1
+        if d_run_tot[r] > 2274 and d_run_tot[r] < 3464:
+            g_idx = 2
+        if d_run_tot[r] > 3463 and d_run_tot[r] < 4028:
+            g_idx = 3
+        if d_run_tot[r] > 4027 and d_run_tot[r] < 4818:
+            g_idx = 4
+        if d_run_tot[r] > 4817 and d_run_tot[r] < 5877:
+            g_idx = 5
+        if d_run_tot[r] > 5876 and d_run_tot[r] < 6272:
+            g_idx = 6
+        if d_run_tot[r] > 6271 and d_run_tot[r] < 6500:
+            g_idx = 7
+        if d_run_tot[r] > 6499 and d_run_tot[r] < 7000:
+            g_idx = 8
+        if d_run_tot[r] > 6999 and d_run_tot[r] < 8098:
+            g_idx = 9
+        if d_run_tot[r] > 8097 and d_run_tot[r] < 9749:
+            g_idx = 10
+        if d_run_tot[r] > 9748:
+            g_idx = 11
+
+    if Station == 3:
+        if d_run_tot[r] < 785: # config 2
+            g_idx = 0
+        if d_run_tot[r] > 784 and d_run_tot[r] < 1902: # 
+            g_idx = 1
+        if d_run_tot[r] > 1901 and d_run_tot[r] < 3105: # config 1,5
+            g_idx = 2
+        if d_run_tot[r] > 3104 and d_run_tot[r] < 6005: # config 3
+            g_idx = 3
+        if d_run_tot[r] > 6004 and d_run_tot[r] < 10001: # config 3,4
+            g_idx = 4
+        if d_run_tot[r] > 10000 and d_run_tot[r] < 13085: #2018
+            g_idx = 5
+        if d_run_tot[r] > 13084: # 2019
+            g_idx = 6
 
     hf = h5py.File(d_list[r], 'r')
 
