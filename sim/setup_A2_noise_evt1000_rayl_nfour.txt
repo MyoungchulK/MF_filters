@@ -5,7 +5,6 @@ DETECTOR_STATION=2                   //ARA02
 DETECTOR_STATION_LIVETIME_CONFIG=5  //emulate config 1
 number_of_stations=1
 TIMESTEP=5E-10
-#TIMESTEP=5.5E-10
 core_x=10000
 core_y=10000
 READGEOM=1
@@ -47,7 +46,6 @@ NOISE_WAVEFORM_GENERATE_MODE=0  //generate new noise waveforms for each event
 NOISE_EVENTS=1                  //number of pure noise waveforms
 NOISE=2                         //flat thermal noise
 NOISE_CHANNEL_MODE=1            //using different noise temperature for each channel
-//APPLY_NOISE_FIGURE=1            //apply TM signal chain calibrated results
 TRIG_ANALYSIS_MODE=2            //0 = signal + noise, 1 = signal only, 2 = noise only
 CUSTOM_ELECTRONICS=2            // using custom SC model
 
@@ -70,5 +68,5 @@ FILL_TREE_MODE=2        //fill tree for all events
 
 //---REPRODUCIBILITY---
 EVENT_GENERATION_MODE=0
-RANDOM_MODE=0
+RANDOM_MODE=1
 

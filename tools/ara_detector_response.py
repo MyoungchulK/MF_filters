@@ -19,7 +19,7 @@ class signal_chain_loader:
 
     def get_mVperGHz_to_dBmperHz(self, dat, use_int = False):
 
-        dBmperHz = 10 * np.log10(dat**2 * 1e-9) / self.ohms / 1e3)
+        dBmperHz = 10 * np.log10(dat**2 * 1e-9 / self.ohms / 1e3)
     
         if use_int:
             f = interp1d(ntot_freq, dBmperHz, axis = 0)
@@ -29,7 +29,7 @@ class signal_chain_loader:
 
     def get_in_ice_noise_table(self, use_int = False):
 
-        ntot_name = f'../data/A{self.st}_Ntot_Lab.txt'
+        ntot_name = f'../data/in_ice_noise_est/A{self.st}_Ntot_Lab.txt'
         print(f'Ntot_path: {ntot_name}')
         ntot_file = np.loadtxt(ntot_name)
 
@@ -37,8 +37,9 @@ class signal_chain_loader:
         ntot_dBmperHz = ntot_file[:, 1:]        
 
         if use_int:
-            f = interp1d(ntot_freq, ntot_dBmperHz, axis = 0)
-            ntot_dBmperHz = f(self.freq_range)                 
+            f = interp1d(self.ntot_freq, ntot_dBmperHz, axis = 0, fill_value = "extrapolate")
+            ntot_dBmperHz = f(self.freq_range)
+            self.ntot_freq = np.copy(self.freq_range)                 
             del f
         del ntot_name, ntot_file
 

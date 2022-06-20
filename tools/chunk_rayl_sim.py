@@ -9,7 +9,7 @@ def rayl_sim_collector(Data, Station, Year):
     from tools.ara_constant import ara_const
     from tools.ara_wf_analyzer import wf_analyzer
     from tools.ara_detector_response import get_rayl_distribution
-    from tools.ara_detector-response import signal_chain_loader
+    from tools.ara_detector_response import signal_chain_loader
 
     # geom. info.
     ara_const = ara_const()

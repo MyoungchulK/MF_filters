@@ -154,7 +154,7 @@ class wf_analyzer:
             self.pad_fft = np.abs(self.pad_fft)
         
         if use_dbmHz:
-            self.pad_fft = 10 * np.log10((self.pad_fft)**2 * (self.dt * 1e-9) / 50 / 1e3)
+            self.pad_fft = 10 * np.log10(self.pad_fft**2 * 1e-9 / 50 / 1e3)
            
     def get_peak(self, x, y):
 
