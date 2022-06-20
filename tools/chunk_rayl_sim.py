@@ -8,7 +8,8 @@ def rayl_sim_collector(Data, Station, Year):
     from tools.ara_sim_load import ara_root_loader
     from tools.ara_constant import ara_const
     from tools.ara_wf_analyzer import wf_analyzer
-    from tools.ara_wf_analyzer import get_rayl_distribution
+    from tools.ara_detector_response import get_rayl_distribution
+    from tools.ara_detector-response import signal_chain_loader
 
     # geom. info.
     ara_const = ara_const()
@@ -21,7 +22,7 @@ def rayl_sim_collector(Data, Station, Year):
     evt_num = np.arange(num_evts, dtype = int)
 
     # wf analyzer
-    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_rfft = True, use_band_pass = True)
+    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_rfft = True)
     dt = np.array([wf_int.dt], dtype = int)
     fft_len = wf_int.pad_fft_len
     freq_range = wf_int.pad_zero_freq 
@@ -43,12 +44,12 @@ def rayl_sim_collector(Data, Station, Year):
         # loop over the antennas
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True)
             del raw_t, raw_v 
             ara_root.del_TGraph()
 
         wf_len[:, evt] = wf_int.pad_num
-        wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_abs = True)
+        wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_abs = True, use_norm = True)
         rffts[:, :, evt] = wf_int.pad_fft
     del num_ants, ara_root, wf_int, num_evts
    
@@ -56,6 +57,11 @@ def rayl_sim_collector(Data, Station, Year):
     binning = np.array([1000], dtype = int)
     rayl, rfft_2d, bin_edges = get_rayl_distribution(rffts, binning = binning[0])
     #del rffts
+
+    # signal chain
+    ara_sc = signal_chain_loader(Station, freq_range)
+    sc = ara_sc.get_signal_chain(rayl, use_linear = True)
+    del ara_sc
 
     print('Rayl. collecting is done!')
 
@@ -67,7 +73,8 @@ def rayl_sim_collector(Data, Station, Year):
             'bin_edges':bin_edges,
             'rffts':rffts,
             'dt':dt,
-            'wf_len':wf_len}
+            'wf_len':wf_len,
+            'sc':sc}
 
 
 
