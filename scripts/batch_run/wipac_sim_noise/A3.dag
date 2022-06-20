@@ -1,0 +1,210 @@
+JOB job_ARA_S3_C1_R0 ARA_job.sub 
+VARS job_ARA_S3_C1_R0 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C1_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="1" run="0"
+
+JOB job_ARA_S3_C1_R1 ARA_job.sub 
+VARS job_ARA_S3_C1_R1 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C1_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="1" run="1"
+
+JOB job_ARA_S3_C1_R2 ARA_job.sub 
+VARS job_ARA_S3_C1_R2 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C1_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="1" run="2"
+
+JOB job_ARA_S3_C1_R3 ARA_job.sub 
+VARS job_ARA_S3_C1_R3 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C1_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="1" run="3"
+
+JOB job_ARA_S3_C1_R4 ARA_job.sub 
+VARS job_ARA_S3_C1_R4 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C1_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="1" run="4"
+
+JOB job_ARA_S3_C1_R5 ARA_job.sub 
+VARS job_ARA_S3_C1_R5 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C1_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="1" run="5"
+
+JOB job_ARA_S3_C1_R6 ARA_job.sub 
+VARS job_ARA_S3_C1_R6 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C1_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="1" run="6"
+
+JOB job_ARA_S3_C1_R7 ARA_job.sub 
+VARS job_ARA_S3_C1_R7 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C1_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="1" run="7"
+
+JOB job_ARA_S3_C1_R8 ARA_job.sub 
+VARS job_ARA_S3_C1_R8 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C1_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="1" run="8"
+
+JOB job_ARA_S3_C1_R9 ARA_job.sub 
+VARS job_ARA_S3_C1_R9 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C1_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="1" run="9"
+
+JOB job_ARA_S3_C2_R0 ARA_job.sub 
+VARS job_ARA_S3_C2_R0 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C2_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="2" run="0"
+
+JOB job_ARA_S3_C2_R1 ARA_job.sub 
+VARS job_ARA_S3_C2_R1 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C2_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="2" run="1"
+
+JOB job_ARA_S3_C2_R2 ARA_job.sub 
+VARS job_ARA_S3_C2_R2 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C2_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="2" run="2"
+
+JOB job_ARA_S3_C2_R3 ARA_job.sub 
+VARS job_ARA_S3_C2_R3 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C2_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="2" run="3"
+
+JOB job_ARA_S3_C2_R4 ARA_job.sub 
+VARS job_ARA_S3_C2_R4 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C2_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="2" run="4"
+
+JOB job_ARA_S3_C2_R5 ARA_job.sub 
+VARS job_ARA_S3_C2_R5 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C2_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="2" run="5"
+
+JOB job_ARA_S3_C2_R6 ARA_job.sub 
+VARS job_ARA_S3_C2_R6 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C2_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="2" run="6"
+
+JOB job_ARA_S3_C2_R7 ARA_job.sub 
+VARS job_ARA_S3_C2_R7 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C2_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="2" run="7"
+
+JOB job_ARA_S3_C2_R8 ARA_job.sub 
+VARS job_ARA_S3_C2_R8 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C2_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="2" run="8"
+
+JOB job_ARA_S3_C2_R9 ARA_job.sub 
+VARS job_ARA_S3_C2_R9 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C2_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="2" run="9"
+
+JOB job_ARA_S3_C3_R0 ARA_job.sub 
+VARS job_ARA_S3_C3_R0 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C3_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="3" run="0"
+
+JOB job_ARA_S3_C3_R1 ARA_job.sub 
+VARS job_ARA_S3_C3_R1 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C3_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="3" run="1"
+
+JOB job_ARA_S3_C3_R2 ARA_job.sub 
+VARS job_ARA_S3_C3_R2 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C3_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="3" run="2"
+
+JOB job_ARA_S3_C3_R3 ARA_job.sub 
+VARS job_ARA_S3_C3_R3 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C3_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="3" run="3"
+
+JOB job_ARA_S3_C3_R4 ARA_job.sub 
+VARS job_ARA_S3_C3_R4 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C3_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="3" run="4"
+
+JOB job_ARA_S3_C3_R5 ARA_job.sub 
+VARS job_ARA_S3_C3_R5 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C3_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="3" run="5"
+
+JOB job_ARA_S3_C3_R6 ARA_job.sub 
+VARS job_ARA_S3_C3_R6 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C3_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="3" run="6"
+
+JOB job_ARA_S3_C3_R7 ARA_job.sub 
+VARS job_ARA_S3_C3_R7 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C3_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="3" run="7"
+
+JOB job_ARA_S3_C3_R8 ARA_job.sub 
+VARS job_ARA_S3_C3_R8 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C3_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="3" run="8"
+
+JOB job_ARA_S3_C3_R9 ARA_job.sub 
+VARS job_ARA_S3_C3_R9 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C3_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="3" run="9"
+
+JOB job_ARA_S3_C4_R0 ARA_job.sub 
+VARS job_ARA_S3_C4_R0 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C4_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="4" run="0"
+
+JOB job_ARA_S3_C4_R1 ARA_job.sub 
+VARS job_ARA_S3_C4_R1 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C4_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="4" run="1"
+
+JOB job_ARA_S3_C4_R2 ARA_job.sub 
+VARS job_ARA_S3_C4_R2 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C4_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="4" run="2"
+
+JOB job_ARA_S3_C4_R3 ARA_job.sub 
+VARS job_ARA_S3_C4_R3 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C4_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="4" run="3"
+
+JOB job_ARA_S3_C4_R4 ARA_job.sub 
+VARS job_ARA_S3_C4_R4 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C4_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="4" run="4"
+
+JOB job_ARA_S3_C4_R5 ARA_job.sub 
+VARS job_ARA_S3_C4_R5 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C4_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="4" run="5"
+
+JOB job_ARA_S3_C4_R6 ARA_job.sub 
+VARS job_ARA_S3_C4_R6 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C4_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="4" run="6"
+
+JOB job_ARA_S3_C4_R7 ARA_job.sub 
+VARS job_ARA_S3_C4_R7 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C4_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="4" run="7"
+
+JOB job_ARA_S3_C4_R8 ARA_job.sub 
+VARS job_ARA_S3_C4_R8 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C4_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="4" run="8"
+
+JOB job_ARA_S3_C4_R9 ARA_job.sub 
+VARS job_ARA_S3_C4_R9 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C4_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="4" run="9"
+
+JOB job_ARA_S3_C5_R0 ARA_job.sub 
+VARS job_ARA_S3_C5_R0 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C5_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="5" run="0"
+
+JOB job_ARA_S3_C5_R1 ARA_job.sub 
+VARS job_ARA_S3_C5_R1 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C5_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="5" run="1"
+
+JOB job_ARA_S3_C5_R2 ARA_job.sub 
+VARS job_ARA_S3_C5_R2 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C5_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="5" run="2"
+
+JOB job_ARA_S3_C5_R3 ARA_job.sub 
+VARS job_ARA_S3_C5_R3 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C5_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="5" run="3"
+
+JOB job_ARA_S3_C5_R4 ARA_job.sub 
+VARS job_ARA_S3_C5_R4 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C5_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="5" run="4"
+
+JOB job_ARA_S3_C5_R5 ARA_job.sub 
+VARS job_ARA_S3_C5_R5 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C5_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="5" run="5"
+
+JOB job_ARA_S3_C5_R6 ARA_job.sub 
+VARS job_ARA_S3_C5_R6 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C5_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="5" run="6"
+
+JOB job_ARA_S3_C5_R7 ARA_job.sub 
+VARS job_ARA_S3_C5_R7 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C5_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="5" run="7"
+
+JOB job_ARA_S3_C5_R8 ARA_job.sub 
+VARS job_ARA_S3_C5_R8 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C5_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="5" run="8"
+
+JOB job_ARA_S3_C5_R9 ARA_job.sub 
+VARS job_ARA_S3_C5_R9 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C5_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="5" run="9"
+
+JOB job_ARA_S3_C6_R0 ARA_job.sub 
+VARS job_ARA_S3_C6_R0 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C6_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="6" run="0"
+
+JOB job_ARA_S3_C6_R1 ARA_job.sub 
+VARS job_ARA_S3_C6_R1 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C6_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="6" run="1"
+
+JOB job_ARA_S3_C6_R2 ARA_job.sub 
+VARS job_ARA_S3_C6_R2 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C6_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="6" run="2"
+
+JOB job_ARA_S3_C6_R3 ARA_job.sub 
+VARS job_ARA_S3_C6_R3 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C6_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="6" run="3"
+
+JOB job_ARA_S3_C6_R4 ARA_job.sub 
+VARS job_ARA_S3_C6_R4 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C6_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="6" run="4"
+
+JOB job_ARA_S3_C6_R5 ARA_job.sub 
+VARS job_ARA_S3_C6_R5 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C6_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="6" run="5"
+
+JOB job_ARA_S3_C6_R6 ARA_job.sub 
+VARS job_ARA_S3_C6_R6 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C6_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="6" run="6"
+
+JOB job_ARA_S3_C6_R7 ARA_job.sub 
+VARS job_ARA_S3_C6_R7 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C6_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="6" run="7"
+
+JOB job_ARA_S3_C6_R8 ARA_job.sub 
+VARS job_ARA_S3_C6_R8 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C6_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="6" run="8"
+
+JOB job_ARA_S3_C6_R9 ARA_job.sub 
+VARS job_ARA_S3_C6_R9 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C6_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="6" run="9"
+
+JOB job_ARA_S3_C7_R0 ARA_job.sub 
+VARS job_ARA_S3_C7_R0 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C7_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="7" run="0"
+
+JOB job_ARA_S3_C7_R1 ARA_job.sub 
+VARS job_ARA_S3_C7_R1 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C7_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="7" run="1"
+
+JOB job_ARA_S3_C7_R2 ARA_job.sub 
+VARS job_ARA_S3_C7_R2 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C7_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="7" run="2"
+
+JOB job_ARA_S3_C7_R3 ARA_job.sub 
+VARS job_ARA_S3_C7_R3 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C7_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="7" run="3"
+
+JOB job_ARA_S3_C7_R4 ARA_job.sub 
+VARS job_ARA_S3_C7_R4 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C7_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="7" run="4"
+
+JOB job_ARA_S3_C7_R5 ARA_job.sub 
+VARS job_ARA_S3_C7_R5 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C7_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="7" run="5"
+
+JOB job_ARA_S3_C7_R6 ARA_job.sub 
+VARS job_ARA_S3_C7_R6 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C7_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="7" run="6"
+
+JOB job_ARA_S3_C7_R7 ARA_job.sub 
+VARS job_ARA_S3_C7_R7 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C7_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="7" run="7"
+
+JOB job_ARA_S3_C7_R8 ARA_job.sub 
+VARS job_ARA_S3_C7_R8 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C7_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="7" run="8"
+
+JOB job_ARA_S3_C7_R9 ARA_job.sub 
+VARS job_ARA_S3_C7_R9 setup="/home/mkim/analysis/MF_filters/sim/sim_noise/A3_C7_E10000_noise_rayl.txt" result="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_noise" st="3" config="7" run="9"
+
