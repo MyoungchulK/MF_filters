@@ -58,9 +58,10 @@ N_TRIG_V=3
 N_TRIG_H=3
 
 //---READOUT---
-NFOUR=640
+//NFOUR=640
+//NFOUR=2080
 V_SATURATION=5.5        //readout voltage saturation 1.5V
-WAVEFORM_LENGTH=1024    //number of samples in final waveform (normally ~1280)
+WAVEFORM_LENGTH=1040    //number of samples in final waveform (normally ~1280)
 V_MIMIC_MODE=0          //0 : global trig is located center of readout windows
 DATA_SAVE_MODE=0        //save final waveforms + physics data
 DATA_LIKE_OUTPUT=1      //do data like output for all events (even untriggered)

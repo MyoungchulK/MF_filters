@@ -20,9 +20,11 @@ def rayl_sim_collector(Data, Station, Year):
     ara_root = ara_root_loader(Data, Station, Year)
     num_evts = ara_root.num_evts
     evt_num = np.arange(num_evts, dtype = int)
+    ara_root.get_sub_info(Data)
+    wf_time = ara_root.wf_time
 
     # wf analyzer
-    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_rfft = True)
+    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_rfft = True, new_wf_time = wf_time)
     dt = np.array([wf_int.dt], dtype = int)
     fft_len = wf_int.pad_fft_len
     freq_range = wf_int.pad_zero_freq 

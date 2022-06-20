@@ -16,14 +16,15 @@ num_Bits = ara_const.BUFFER_BIT_RANGE
 class wf_analyzer:
 
     def __init__(self, dt = 0.5, use_time_pad = False, use_freq_pad = False, use_band_pass = False,
-                    add_double_pad = False, use_rfft = False, use_ele_ch = False, use_cw = False, cw_params = None):
+                    add_double_pad = False, use_rfft = False, use_ele_ch = False, use_cw = False, 
+                    cw_params = None, new_wf_time = None):
 
         self.dt = dt
         self.num_chs = num_ants
         if use_ele_ch:
             self.num_chs = num_eles        
         if use_time_pad:
-            self.get_time_pad(add_double_pad = add_double_pad)
+            self.get_time_pad(add_double_pad = add_double_pad, new_wf_time = new_wf_time)
         if use_freq_pad:
             self.get_freq_pad(use_rfft = use_rfft)
         if use_band_pass:
@@ -49,12 +50,24 @@ class wf_analyzer:
 
         return bp_wf
 
-    def get_time_pad(self, add_double_pad = False):
+    def get_time_pad(self, add_double_pad = False, new_wf_time = None):
 
         # from a2/3 length
         pad_i = -186.5
         pad_f = 953
         pad_w = int((pad_f - pad_i) / self.dt) + 1
+
+        if new_wf_time is not None:
+            new_wf_len = len(new_wf_time)
+            pad_diff = pad_w - new_wf_len
+            pad_front = pad_diff // 2
+            pad_end = pad_diff - pad_front           
+
+            pad_i = -pad_front * self.dt + new_wf_time[0]
+            pad_f = pad_end * self.dt + new_wf_time[-1]
+            pad_w = np.copy(int((pad_f - pad_i) / self.dt) + 1)
+            del new_wf_len, pad_diff, pad_front, pad_end
+
         if add_double_pad:
             half_pad_t = pad_w * self.dt / 2
             pad_i -= half_pad_t
