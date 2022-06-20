@@ -229,9 +229,11 @@ class run_info_loader:
                 config=4
             elif self.run>=7658 and self.run<=7808:
                 config=3
-            elif (self.run>=10001 and self.run<=12863) or (self.run>=12873 and self.run<=13084):
+            #elif (self.run>=10001 and self.run<=12863) or (self.run>=12873 and self.run<=13084):
+            elif self.run>=10001 and self.run<=12878:
                 config=6
-            elif (self.run>=12864 and self.run<=12871) or self.run>=13085:
+            #elif (self.run>=12864 and self.run<=12871) or self.run>=13085:
+            elif self.run>=12879:
                 config=7
             else:
                 pass
