@@ -26,7 +26,7 @@ num_chs = ara_const.RFCHAN_PER_DDA
 class ara_geom_loader:
 
     def __init__(self, st, yrs, verbose = False):
-
+     
         # create a geomtool
         self.geomTool = ROOT.AraGeomTool.Instance()
         self.st_info = self.geomTool.getStationInfo(st, yrs)
@@ -234,11 +234,12 @@ class ara_uproot_loader:
             self.hasKeyInFileError = True
             print('File is currupted!')
 
-    def get_year(self):
+    def get_year(self, use_year = False):
 
-        first_unix_time = np.asarray(self.evtTree['event/unixTime'],dtype=int)[0]
-        year = int(datetime.utcfromtimestamp(first_unix_time).strftime('%Y%m%d%H%M%S')[:4])
-        del first_unix_time
+        year = np.asarray(self.evtTree['event/unixTime'],dtype=int)[0]
+        if use_year:
+            year = int(datetime.utcfromtimestamp(year).strftime('%Y%m%d%H%M%S')[:4])
+        year = int(year)
 
         return year
 
@@ -691,7 +692,7 @@ class sin_subtract_loader:
         self.sub_freqs = np.frombuffer(self.sin_sub.getFreqs(), dtype = float, count = self.num_sols)
         self.sub_amp_errs = np.frombuffer(self.sin_sub.getAmpErrs(0), dtype = float, count = self.num_sols)
         self.sub_ratios = np.frombuffer(self.sin_sub.getRatios(), dtype = float, count = self.num_sols + 1)
-        #self.sub_powers = np.frombuffer(self.sin_sub.getPowers(), dtype = float, count = self.num_sols + 1)
+        self.sub_powers = np.frombuffer(self.sin_sub.getPowers(), dtype = float, count = self.num_sols + 1)
 
         return cw_v
 

@@ -427,6 +427,19 @@ def file_sorter(d_path):
 
     return d_list, run_tot, run_range
 
+def get_path_info(dat_path, mask_key, end_key):
+
+    mask_idx = dat_path.find(mask_key)
+    if mask_idx == -1:
+        print('Cannot scrap the info from path!')
+        sys.exit(1)
+    mask_len = len(mask_key)
+    end_idx = dat_path.find(end_key, mask_idx + mask_len)
+    val = dat_path[mask_idx + mask_len:end_idx]
+    del mask_idx, mask_len, end_idx
+
+    return val
+
 class config_info_loader:
 
     def __init__(self, verbose = False):
