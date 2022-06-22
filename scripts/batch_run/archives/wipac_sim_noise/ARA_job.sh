@@ -3,8 +3,7 @@
 # load in variables
 setup=$1
 run=$2
-st=$3
-result=/misc/disk19/users/mkim/OMF_filter/ARA0${st}/sim_noise
+result=$3
 
 # run the reconstruction script
 export HDF5_USE_FILE_LOCKING='FALSE'

@@ -2,7 +2,7 @@ log    = /scratch/mkim/wipac_sim_noise/logs/A$(st).C$(config).R$(run).log
 output = /scratch/mkim/wipac_sim_noise/logs/A$(st).C$(config).R$(run).out
 error  = /scratch/mkim/wipac_sim_noise/logs/A$(st).C$(config).R$(run).err
 
-request_memory = 1GB
+request_memory = 4GB
 
 Universe = vanilla
 getenv = true
@@ -12,6 +12,6 @@ when_to_transfer_output = ON_EXIT
 nice_user = false
 
 executable = ARA_job.sh
-arguments = $(setup) $(run) $(st)
+arguments = $(setup) $(run) $(result)
 
 queue

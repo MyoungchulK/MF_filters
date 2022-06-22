@@ -159,7 +159,7 @@ class wf_analyzer:
             self.pad_phase = np.angle(self.pad_fft)
 
         if use_norm:
-            # mv to mv/sqrt(GHz)
+            # mv*N to mv/sqrt(GHz)
             self.pad_fft /= np.sqrt(self.pad_num)[np.newaxis, :]
             self.pad_fft *= self.dt_sq
         

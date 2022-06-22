@@ -1,0 +1,1170 @@
+JOB job_ARA_S2_C5_R0_Mu ARA_job.sub 
+VARS job_ARA_S2_C5_R0_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuMu_signal_rayl.txt" st="2" config="5" run="0" flavor="Mu"
+
+JOB job_ARA_S2_C5_R1_Mu ARA_job.sub 
+VARS job_ARA_S2_C5_R1_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuMu_signal_rayl.txt" st="2" config="5" run="1" flavor="Mu"
+
+JOB job_ARA_S2_C5_R2_Mu ARA_job.sub 
+VARS job_ARA_S2_C5_R2_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuMu_signal_rayl.txt" st="2" config="5" run="2" flavor="Mu"
+
+JOB job_ARA_S2_C5_R3_Mu ARA_job.sub 
+VARS job_ARA_S2_C5_R3_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuMu_signal_rayl.txt" st="2" config="5" run="3" flavor="Mu"
+
+JOB job_ARA_S2_C5_R4_Mu ARA_job.sub 
+VARS job_ARA_S2_C5_R4_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuMu_signal_rayl.txt" st="2" config="5" run="4" flavor="Mu"
+
+JOB job_ARA_S2_C5_R5_Mu ARA_job.sub 
+VARS job_ARA_S2_C5_R5_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuMu_signal_rayl.txt" st="2" config="5" run="5" flavor="Mu"
+
+JOB job_ARA_S2_C5_R6_Mu ARA_job.sub 
+VARS job_ARA_S2_C5_R6_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuMu_signal_rayl.txt" st="2" config="5" run="6" flavor="Mu"
+
+JOB job_ARA_S2_C5_R7_Mu ARA_job.sub 
+VARS job_ARA_S2_C5_R7_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuMu_signal_rayl.txt" st="2" config="5" run="7" flavor="Mu"
+
+JOB job_ARA_S2_C5_R8_Mu ARA_job.sub 
+VARS job_ARA_S2_C5_R8_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuMu_signal_rayl.txt" st="2" config="5" run="8" flavor="Mu"
+
+JOB job_ARA_S2_C5_R9_Mu ARA_job.sub 
+VARS job_ARA_S2_C5_R9_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuMu_signal_rayl.txt" st="2" config="5" run="9" flavor="Mu"
+
+JOB job_ARA_S3_C3_R0_Tau ARA_job.sub 
+VARS job_ARA_S3_C3_R0_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuTau_signal_rayl.txt" st="3" config="3" run="0" flavor="Tau"
+
+JOB job_ARA_S3_C3_R1_Tau ARA_job.sub 
+VARS job_ARA_S3_C3_R1_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuTau_signal_rayl.txt" st="3" config="3" run="1" flavor="Tau"
+
+JOB job_ARA_S3_C3_R2_Tau ARA_job.sub 
+VARS job_ARA_S3_C3_R2_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuTau_signal_rayl.txt" st="3" config="3" run="2" flavor="Tau"
+
+JOB job_ARA_S3_C3_R3_Tau ARA_job.sub 
+VARS job_ARA_S3_C3_R3_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuTau_signal_rayl.txt" st="3" config="3" run="3" flavor="Tau"
+
+JOB job_ARA_S3_C3_R4_Tau ARA_job.sub 
+VARS job_ARA_S3_C3_R4_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuTau_signal_rayl.txt" st="3" config="3" run="4" flavor="Tau"
+
+JOB job_ARA_S3_C3_R5_Tau ARA_job.sub 
+VARS job_ARA_S3_C3_R5_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuTau_signal_rayl.txt" st="3" config="3" run="5" flavor="Tau"
+
+JOB job_ARA_S3_C3_R6_Tau ARA_job.sub 
+VARS job_ARA_S3_C3_R6_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuTau_signal_rayl.txt" st="3" config="3" run="6" flavor="Tau"
+
+JOB job_ARA_S3_C3_R7_Tau ARA_job.sub 
+VARS job_ARA_S3_C3_R7_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuTau_signal_rayl.txt" st="3" config="3" run="7" flavor="Tau"
+
+JOB job_ARA_S3_C3_R8_Tau ARA_job.sub 
+VARS job_ARA_S3_C3_R8_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuTau_signal_rayl.txt" st="3" config="3" run="8" flavor="Tau"
+
+JOB job_ARA_S3_C3_R9_Tau ARA_job.sub 
+VARS job_ARA_S3_C3_R9_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuTau_signal_rayl.txt" st="3" config="3" run="9" flavor="Tau"
+
+JOB job_ARA_S2_C6_R0_Tau ARA_job.sub 
+VARS job_ARA_S2_C6_R0_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuTau_signal_rayl.txt" st="2" config="6" run="0" flavor="Tau"
+
+JOB job_ARA_S2_C6_R1_Tau ARA_job.sub 
+VARS job_ARA_S2_C6_R1_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuTau_signal_rayl.txt" st="2" config="6" run="1" flavor="Tau"
+
+JOB job_ARA_S2_C6_R2_Tau ARA_job.sub 
+VARS job_ARA_S2_C6_R2_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuTau_signal_rayl.txt" st="2" config="6" run="2" flavor="Tau"
+
+JOB job_ARA_S2_C6_R3_Tau ARA_job.sub 
+VARS job_ARA_S2_C6_R3_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuTau_signal_rayl.txt" st="2" config="6" run="3" flavor="Tau"
+
+JOB job_ARA_S2_C6_R4_Tau ARA_job.sub 
+VARS job_ARA_S2_C6_R4_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuTau_signal_rayl.txt" st="2" config="6" run="4" flavor="Tau"
+
+JOB job_ARA_S2_C6_R5_Tau ARA_job.sub 
+VARS job_ARA_S2_C6_R5_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuTau_signal_rayl.txt" st="2" config="6" run="5" flavor="Tau"
+
+JOB job_ARA_S2_C6_R6_Tau ARA_job.sub 
+VARS job_ARA_S2_C6_R6_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuTau_signal_rayl.txt" st="2" config="6" run="6" flavor="Tau"
+
+JOB job_ARA_S2_C6_R7_Tau ARA_job.sub 
+VARS job_ARA_S2_C6_R7_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuTau_signal_rayl.txt" st="2" config="6" run="7" flavor="Tau"
+
+JOB job_ARA_S2_C6_R8_Tau ARA_job.sub 
+VARS job_ARA_S2_C6_R8_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuTau_signal_rayl.txt" st="2" config="6" run="8" flavor="Tau"
+
+JOB job_ARA_S2_C6_R9_Tau ARA_job.sub 
+VARS job_ARA_S2_C6_R9_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuTau_signal_rayl.txt" st="2" config="6" run="9" flavor="Tau"
+
+JOB job_ARA_S3_C1_R0_E ARA_job.sub 
+VARS job_ARA_S3_C1_R0_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuE_signal_rayl.txt" st="3" config="1" run="0" flavor="E"
+
+JOB job_ARA_S3_C1_R1_E ARA_job.sub 
+VARS job_ARA_S3_C1_R1_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuE_signal_rayl.txt" st="3" config="1" run="1" flavor="E"
+
+JOB job_ARA_S3_C1_R2_E ARA_job.sub 
+VARS job_ARA_S3_C1_R2_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuE_signal_rayl.txt" st="3" config="1" run="2" flavor="E"
+
+JOB job_ARA_S3_C1_R3_E ARA_job.sub 
+VARS job_ARA_S3_C1_R3_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuE_signal_rayl.txt" st="3" config="1" run="3" flavor="E"
+
+JOB job_ARA_S3_C1_R4_E ARA_job.sub 
+VARS job_ARA_S3_C1_R4_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuE_signal_rayl.txt" st="3" config="1" run="4" flavor="E"
+
+JOB job_ARA_S3_C1_R5_E ARA_job.sub 
+VARS job_ARA_S3_C1_R5_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuE_signal_rayl.txt" st="3" config="1" run="5" flavor="E"
+
+JOB job_ARA_S3_C1_R6_E ARA_job.sub 
+VARS job_ARA_S3_C1_R6_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuE_signal_rayl.txt" st="3" config="1" run="6" flavor="E"
+
+JOB job_ARA_S3_C1_R7_E ARA_job.sub 
+VARS job_ARA_S3_C1_R7_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuE_signal_rayl.txt" st="3" config="1" run="7" flavor="E"
+
+JOB job_ARA_S3_C1_R8_E ARA_job.sub 
+VARS job_ARA_S3_C1_R8_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuE_signal_rayl.txt" st="3" config="1" run="8" flavor="E"
+
+JOB job_ARA_S3_C1_R9_E ARA_job.sub 
+VARS job_ARA_S3_C1_R9_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuE_signal_rayl.txt" st="3" config="1" run="9" flavor="E"
+
+JOB job_ARA_S3_C5_R0_Tau ARA_job.sub 
+VARS job_ARA_S3_C5_R0_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuTau_signal_rayl.txt" st="3" config="5" run="0" flavor="Tau"
+
+JOB job_ARA_S3_C5_R1_Tau ARA_job.sub 
+VARS job_ARA_S3_C5_R1_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuTau_signal_rayl.txt" st="3" config="5" run="1" flavor="Tau"
+
+JOB job_ARA_S3_C5_R2_Tau ARA_job.sub 
+VARS job_ARA_S3_C5_R2_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuTau_signal_rayl.txt" st="3" config="5" run="2" flavor="Tau"
+
+JOB job_ARA_S3_C5_R3_Tau ARA_job.sub 
+VARS job_ARA_S3_C5_R3_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuTau_signal_rayl.txt" st="3" config="5" run="3" flavor="Tau"
+
+JOB job_ARA_S3_C5_R4_Tau ARA_job.sub 
+VARS job_ARA_S3_C5_R4_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuTau_signal_rayl.txt" st="3" config="5" run="4" flavor="Tau"
+
+JOB job_ARA_S3_C5_R5_Tau ARA_job.sub 
+VARS job_ARA_S3_C5_R5_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuTau_signal_rayl.txt" st="3" config="5" run="5" flavor="Tau"
+
+JOB job_ARA_S3_C5_R6_Tau ARA_job.sub 
+VARS job_ARA_S3_C5_R6_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuTau_signal_rayl.txt" st="3" config="5" run="6" flavor="Tau"
+
+JOB job_ARA_S3_C5_R7_Tau ARA_job.sub 
+VARS job_ARA_S3_C5_R7_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuTau_signal_rayl.txt" st="3" config="5" run="7" flavor="Tau"
+
+JOB job_ARA_S3_C5_R8_Tau ARA_job.sub 
+VARS job_ARA_S3_C5_R8_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuTau_signal_rayl.txt" st="3" config="5" run="8" flavor="Tau"
+
+JOB job_ARA_S3_C5_R9_Tau ARA_job.sub 
+VARS job_ARA_S3_C5_R9_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuTau_signal_rayl.txt" st="3" config="5" run="9" flavor="Tau"
+
+JOB job_ARA_S3_C3_R0_E ARA_job.sub 
+VARS job_ARA_S3_C3_R0_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuE_signal_rayl.txt" st="3" config="3" run="0" flavor="E"
+
+JOB job_ARA_S3_C3_R1_E ARA_job.sub 
+VARS job_ARA_S3_C3_R1_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuE_signal_rayl.txt" st="3" config="3" run="1" flavor="E"
+
+JOB job_ARA_S3_C3_R2_E ARA_job.sub 
+VARS job_ARA_S3_C3_R2_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuE_signal_rayl.txt" st="3" config="3" run="2" flavor="E"
+
+JOB job_ARA_S3_C3_R3_E ARA_job.sub 
+VARS job_ARA_S3_C3_R3_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuE_signal_rayl.txt" st="3" config="3" run="3" flavor="E"
+
+JOB job_ARA_S3_C3_R4_E ARA_job.sub 
+VARS job_ARA_S3_C3_R4_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuE_signal_rayl.txt" st="3" config="3" run="4" flavor="E"
+
+JOB job_ARA_S3_C3_R5_E ARA_job.sub 
+VARS job_ARA_S3_C3_R5_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuE_signal_rayl.txt" st="3" config="3" run="5" flavor="E"
+
+JOB job_ARA_S3_C3_R6_E ARA_job.sub 
+VARS job_ARA_S3_C3_R6_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuE_signal_rayl.txt" st="3" config="3" run="6" flavor="E"
+
+JOB job_ARA_S3_C3_R7_E ARA_job.sub 
+VARS job_ARA_S3_C3_R7_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuE_signal_rayl.txt" st="3" config="3" run="7" flavor="E"
+
+JOB job_ARA_S3_C3_R8_E ARA_job.sub 
+VARS job_ARA_S3_C3_R8_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuE_signal_rayl.txt" st="3" config="3" run="8" flavor="E"
+
+JOB job_ARA_S3_C3_R9_E ARA_job.sub 
+VARS job_ARA_S3_C3_R9_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuE_signal_rayl.txt" st="3" config="3" run="9" flavor="E"
+
+JOB job_ARA_S2_C2_R0_E ARA_job.sub 
+VARS job_ARA_S2_C2_R0_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuE_signal_rayl.txt" st="2" config="2" run="0" flavor="E"
+
+JOB job_ARA_S2_C2_R1_E ARA_job.sub 
+VARS job_ARA_S2_C2_R1_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuE_signal_rayl.txt" st="2" config="2" run="1" flavor="E"
+
+JOB job_ARA_S2_C2_R2_E ARA_job.sub 
+VARS job_ARA_S2_C2_R2_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuE_signal_rayl.txt" st="2" config="2" run="2" flavor="E"
+
+JOB job_ARA_S2_C2_R3_E ARA_job.sub 
+VARS job_ARA_S2_C2_R3_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuE_signal_rayl.txt" st="2" config="2" run="3" flavor="E"
+
+JOB job_ARA_S2_C2_R4_E ARA_job.sub 
+VARS job_ARA_S2_C2_R4_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuE_signal_rayl.txt" st="2" config="2" run="4" flavor="E"
+
+JOB job_ARA_S2_C2_R5_E ARA_job.sub 
+VARS job_ARA_S2_C2_R5_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuE_signal_rayl.txt" st="2" config="2" run="5" flavor="E"
+
+JOB job_ARA_S2_C2_R6_E ARA_job.sub 
+VARS job_ARA_S2_C2_R6_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuE_signal_rayl.txt" st="2" config="2" run="6" flavor="E"
+
+JOB job_ARA_S2_C2_R7_E ARA_job.sub 
+VARS job_ARA_S2_C2_R7_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuE_signal_rayl.txt" st="2" config="2" run="7" flavor="E"
+
+JOB job_ARA_S2_C2_R8_E ARA_job.sub 
+VARS job_ARA_S2_C2_R8_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuE_signal_rayl.txt" st="2" config="2" run="8" flavor="E"
+
+JOB job_ARA_S2_C2_R9_E ARA_job.sub 
+VARS job_ARA_S2_C2_R9_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuE_signal_rayl.txt" st="2" config="2" run="9" flavor="E"
+
+JOB job_ARA_S2_C1_R0_Tau ARA_job.sub 
+VARS job_ARA_S2_C1_R0_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuTau_signal_rayl.txt" st="2" config="1" run="0" flavor="Tau"
+
+JOB job_ARA_S2_C1_R1_Tau ARA_job.sub 
+VARS job_ARA_S2_C1_R1_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuTau_signal_rayl.txt" st="2" config="1" run="1" flavor="Tau"
+
+JOB job_ARA_S2_C1_R2_Tau ARA_job.sub 
+VARS job_ARA_S2_C1_R2_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuTau_signal_rayl.txt" st="2" config="1" run="2" flavor="Tau"
+
+JOB job_ARA_S2_C1_R3_Tau ARA_job.sub 
+VARS job_ARA_S2_C1_R3_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuTau_signal_rayl.txt" st="2" config="1" run="3" flavor="Tau"
+
+JOB job_ARA_S2_C1_R4_Tau ARA_job.sub 
+VARS job_ARA_S2_C1_R4_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuTau_signal_rayl.txt" st="2" config="1" run="4" flavor="Tau"
+
+JOB job_ARA_S2_C1_R5_Tau ARA_job.sub 
+VARS job_ARA_S2_C1_R5_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuTau_signal_rayl.txt" st="2" config="1" run="5" flavor="Tau"
+
+JOB job_ARA_S2_C1_R6_Tau ARA_job.sub 
+VARS job_ARA_S2_C1_R6_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuTau_signal_rayl.txt" st="2" config="1" run="6" flavor="Tau"
+
+JOB job_ARA_S2_C1_R7_Tau ARA_job.sub 
+VARS job_ARA_S2_C1_R7_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuTau_signal_rayl.txt" st="2" config="1" run="7" flavor="Tau"
+
+JOB job_ARA_S2_C1_R8_Tau ARA_job.sub 
+VARS job_ARA_S2_C1_R8_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuTau_signal_rayl.txt" st="2" config="1" run="8" flavor="Tau"
+
+JOB job_ARA_S2_C1_R9_Tau ARA_job.sub 
+VARS job_ARA_S2_C1_R9_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuTau_signal_rayl.txt" st="2" config="1" run="9" flavor="Tau"
+
+JOB job_ARA_S3_C4_R0_E ARA_job.sub 
+VARS job_ARA_S3_C4_R0_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuE_signal_rayl.txt" st="3" config="4" run="0" flavor="E"
+
+JOB job_ARA_S3_C4_R1_E ARA_job.sub 
+VARS job_ARA_S3_C4_R1_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuE_signal_rayl.txt" st="3" config="4" run="1" flavor="E"
+
+JOB job_ARA_S3_C4_R2_E ARA_job.sub 
+VARS job_ARA_S3_C4_R2_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuE_signal_rayl.txt" st="3" config="4" run="2" flavor="E"
+
+JOB job_ARA_S3_C4_R3_E ARA_job.sub 
+VARS job_ARA_S3_C4_R3_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuE_signal_rayl.txt" st="3" config="4" run="3" flavor="E"
+
+JOB job_ARA_S3_C4_R4_E ARA_job.sub 
+VARS job_ARA_S3_C4_R4_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuE_signal_rayl.txt" st="3" config="4" run="4" flavor="E"
+
+JOB job_ARA_S3_C4_R5_E ARA_job.sub 
+VARS job_ARA_S3_C4_R5_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuE_signal_rayl.txt" st="3" config="4" run="5" flavor="E"
+
+JOB job_ARA_S3_C4_R6_E ARA_job.sub 
+VARS job_ARA_S3_C4_R6_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuE_signal_rayl.txt" st="3" config="4" run="6" flavor="E"
+
+JOB job_ARA_S3_C4_R7_E ARA_job.sub 
+VARS job_ARA_S3_C4_R7_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuE_signal_rayl.txt" st="3" config="4" run="7" flavor="E"
+
+JOB job_ARA_S3_C4_R8_E ARA_job.sub 
+VARS job_ARA_S3_C4_R8_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuE_signal_rayl.txt" st="3" config="4" run="8" flavor="E"
+
+JOB job_ARA_S3_C4_R9_E ARA_job.sub 
+VARS job_ARA_S3_C4_R9_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuE_signal_rayl.txt" st="3" config="4" run="9" flavor="E"
+
+JOB job_ARA_S3_C7_R0_E ARA_job.sub 
+VARS job_ARA_S3_C7_R0_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuE_signal_rayl.txt" st="3" config="7" run="0" flavor="E"
+
+JOB job_ARA_S3_C7_R1_E ARA_job.sub 
+VARS job_ARA_S3_C7_R1_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuE_signal_rayl.txt" st="3" config="7" run="1" flavor="E"
+
+JOB job_ARA_S3_C7_R2_E ARA_job.sub 
+VARS job_ARA_S3_C7_R2_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuE_signal_rayl.txt" st="3" config="7" run="2" flavor="E"
+
+JOB job_ARA_S3_C7_R3_E ARA_job.sub 
+VARS job_ARA_S3_C7_R3_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuE_signal_rayl.txt" st="3" config="7" run="3" flavor="E"
+
+JOB job_ARA_S3_C7_R4_E ARA_job.sub 
+VARS job_ARA_S3_C7_R4_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuE_signal_rayl.txt" st="3" config="7" run="4" flavor="E"
+
+JOB job_ARA_S3_C7_R5_E ARA_job.sub 
+VARS job_ARA_S3_C7_R5_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuE_signal_rayl.txt" st="3" config="7" run="5" flavor="E"
+
+JOB job_ARA_S3_C7_R6_E ARA_job.sub 
+VARS job_ARA_S3_C7_R6_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuE_signal_rayl.txt" st="3" config="7" run="6" flavor="E"
+
+JOB job_ARA_S3_C7_R7_E ARA_job.sub 
+VARS job_ARA_S3_C7_R7_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuE_signal_rayl.txt" st="3" config="7" run="7" flavor="E"
+
+JOB job_ARA_S3_C7_R8_E ARA_job.sub 
+VARS job_ARA_S3_C7_R8_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuE_signal_rayl.txt" st="3" config="7" run="8" flavor="E"
+
+JOB job_ARA_S3_C7_R9_E ARA_job.sub 
+VARS job_ARA_S3_C7_R9_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuE_signal_rayl.txt" st="3" config="7" run="9" flavor="E"
+
+JOB job_ARA_S2_C1_R0_Mu ARA_job.sub 
+VARS job_ARA_S2_C1_R0_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuMu_signal_rayl.txt" st="2" config="1" run="0" flavor="Mu"
+
+JOB job_ARA_S2_C1_R1_Mu ARA_job.sub 
+VARS job_ARA_S2_C1_R1_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuMu_signal_rayl.txt" st="2" config="1" run="1" flavor="Mu"
+
+JOB job_ARA_S2_C1_R2_Mu ARA_job.sub 
+VARS job_ARA_S2_C1_R2_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuMu_signal_rayl.txt" st="2" config="1" run="2" flavor="Mu"
+
+JOB job_ARA_S2_C1_R3_Mu ARA_job.sub 
+VARS job_ARA_S2_C1_R3_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuMu_signal_rayl.txt" st="2" config="1" run="3" flavor="Mu"
+
+JOB job_ARA_S2_C1_R4_Mu ARA_job.sub 
+VARS job_ARA_S2_C1_R4_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuMu_signal_rayl.txt" st="2" config="1" run="4" flavor="Mu"
+
+JOB job_ARA_S2_C1_R5_Mu ARA_job.sub 
+VARS job_ARA_S2_C1_R5_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuMu_signal_rayl.txt" st="2" config="1" run="5" flavor="Mu"
+
+JOB job_ARA_S2_C1_R6_Mu ARA_job.sub 
+VARS job_ARA_S2_C1_R6_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuMu_signal_rayl.txt" st="2" config="1" run="6" flavor="Mu"
+
+JOB job_ARA_S2_C1_R7_Mu ARA_job.sub 
+VARS job_ARA_S2_C1_R7_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuMu_signal_rayl.txt" st="2" config="1" run="7" flavor="Mu"
+
+JOB job_ARA_S2_C1_R8_Mu ARA_job.sub 
+VARS job_ARA_S2_C1_R8_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuMu_signal_rayl.txt" st="2" config="1" run="8" flavor="Mu"
+
+JOB job_ARA_S2_C1_R9_Mu ARA_job.sub 
+VARS job_ARA_S2_C1_R9_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuMu_signal_rayl.txt" st="2" config="1" run="9" flavor="Mu"
+
+JOB job_ARA_S2_C3_R0_E ARA_job.sub 
+VARS job_ARA_S2_C3_R0_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuE_signal_rayl.txt" st="2" config="3" run="0" flavor="E"
+
+JOB job_ARA_S2_C3_R1_E ARA_job.sub 
+VARS job_ARA_S2_C3_R1_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuE_signal_rayl.txt" st="2" config="3" run="1" flavor="E"
+
+JOB job_ARA_S2_C3_R2_E ARA_job.sub 
+VARS job_ARA_S2_C3_R2_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuE_signal_rayl.txt" st="2" config="3" run="2" flavor="E"
+
+JOB job_ARA_S2_C3_R3_E ARA_job.sub 
+VARS job_ARA_S2_C3_R3_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuE_signal_rayl.txt" st="2" config="3" run="3" flavor="E"
+
+JOB job_ARA_S2_C3_R4_E ARA_job.sub 
+VARS job_ARA_S2_C3_R4_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuE_signal_rayl.txt" st="2" config="3" run="4" flavor="E"
+
+JOB job_ARA_S2_C3_R5_E ARA_job.sub 
+VARS job_ARA_S2_C3_R5_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuE_signal_rayl.txt" st="2" config="3" run="5" flavor="E"
+
+JOB job_ARA_S2_C3_R6_E ARA_job.sub 
+VARS job_ARA_S2_C3_R6_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuE_signal_rayl.txt" st="2" config="3" run="6" flavor="E"
+
+JOB job_ARA_S2_C3_R7_E ARA_job.sub 
+VARS job_ARA_S2_C3_R7_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuE_signal_rayl.txt" st="2" config="3" run="7" flavor="E"
+
+JOB job_ARA_S2_C3_R8_E ARA_job.sub 
+VARS job_ARA_S2_C3_R8_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuE_signal_rayl.txt" st="2" config="3" run="8" flavor="E"
+
+JOB job_ARA_S2_C3_R9_E ARA_job.sub 
+VARS job_ARA_S2_C3_R9_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuE_signal_rayl.txt" st="2" config="3" run="9" flavor="E"
+
+JOB job_ARA_S2_C5_R0_E ARA_job.sub 
+VARS job_ARA_S2_C5_R0_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuE_signal_rayl.txt" st="2" config="5" run="0" flavor="E"
+
+JOB job_ARA_S2_C5_R1_E ARA_job.sub 
+VARS job_ARA_S2_C5_R1_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuE_signal_rayl.txt" st="2" config="5" run="1" flavor="E"
+
+JOB job_ARA_S2_C5_R2_E ARA_job.sub 
+VARS job_ARA_S2_C5_R2_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuE_signal_rayl.txt" st="2" config="5" run="2" flavor="E"
+
+JOB job_ARA_S2_C5_R3_E ARA_job.sub 
+VARS job_ARA_S2_C5_R3_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuE_signal_rayl.txt" st="2" config="5" run="3" flavor="E"
+
+JOB job_ARA_S2_C5_R4_E ARA_job.sub 
+VARS job_ARA_S2_C5_R4_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuE_signal_rayl.txt" st="2" config="5" run="4" flavor="E"
+
+JOB job_ARA_S2_C5_R5_E ARA_job.sub 
+VARS job_ARA_S2_C5_R5_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuE_signal_rayl.txt" st="2" config="5" run="5" flavor="E"
+
+JOB job_ARA_S2_C5_R6_E ARA_job.sub 
+VARS job_ARA_S2_C5_R6_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuE_signal_rayl.txt" st="2" config="5" run="6" flavor="E"
+
+JOB job_ARA_S2_C5_R7_E ARA_job.sub 
+VARS job_ARA_S2_C5_R7_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuE_signal_rayl.txt" st="2" config="5" run="7" flavor="E"
+
+JOB job_ARA_S2_C5_R8_E ARA_job.sub 
+VARS job_ARA_S2_C5_R8_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuE_signal_rayl.txt" st="2" config="5" run="8" flavor="E"
+
+JOB job_ARA_S2_C5_R9_E ARA_job.sub 
+VARS job_ARA_S2_C5_R9_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuE_signal_rayl.txt" st="2" config="5" run="9" flavor="E"
+
+JOB job_ARA_S2_C4_R0_Tau ARA_job.sub 
+VARS job_ARA_S2_C4_R0_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuTau_signal_rayl.txt" st="2" config="4" run="0" flavor="Tau"
+
+JOB job_ARA_S2_C4_R1_Tau ARA_job.sub 
+VARS job_ARA_S2_C4_R1_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuTau_signal_rayl.txt" st="2" config="4" run="1" flavor="Tau"
+
+JOB job_ARA_S2_C4_R2_Tau ARA_job.sub 
+VARS job_ARA_S2_C4_R2_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuTau_signal_rayl.txt" st="2" config="4" run="2" flavor="Tau"
+
+JOB job_ARA_S2_C4_R3_Tau ARA_job.sub 
+VARS job_ARA_S2_C4_R3_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuTau_signal_rayl.txt" st="2" config="4" run="3" flavor="Tau"
+
+JOB job_ARA_S2_C4_R4_Tau ARA_job.sub 
+VARS job_ARA_S2_C4_R4_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuTau_signal_rayl.txt" st="2" config="4" run="4" flavor="Tau"
+
+JOB job_ARA_S2_C4_R5_Tau ARA_job.sub 
+VARS job_ARA_S2_C4_R5_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuTau_signal_rayl.txt" st="2" config="4" run="5" flavor="Tau"
+
+JOB job_ARA_S2_C4_R6_Tau ARA_job.sub 
+VARS job_ARA_S2_C4_R6_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuTau_signal_rayl.txt" st="2" config="4" run="6" flavor="Tau"
+
+JOB job_ARA_S2_C4_R7_Tau ARA_job.sub 
+VARS job_ARA_S2_C4_R7_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuTau_signal_rayl.txt" st="2" config="4" run="7" flavor="Tau"
+
+JOB job_ARA_S2_C4_R8_Tau ARA_job.sub 
+VARS job_ARA_S2_C4_R8_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuTau_signal_rayl.txt" st="2" config="4" run="8" flavor="Tau"
+
+JOB job_ARA_S2_C4_R9_Tau ARA_job.sub 
+VARS job_ARA_S2_C4_R9_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuTau_signal_rayl.txt" st="2" config="4" run="9" flavor="Tau"
+
+JOB job_ARA_S3_C7_R0_Mu ARA_job.sub 
+VARS job_ARA_S3_C7_R0_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuMu_signal_rayl.txt" st="3" config="7" run="0" flavor="Mu"
+
+JOB job_ARA_S3_C7_R1_Mu ARA_job.sub 
+VARS job_ARA_S3_C7_R1_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuMu_signal_rayl.txt" st="3" config="7" run="1" flavor="Mu"
+
+JOB job_ARA_S3_C7_R2_Mu ARA_job.sub 
+VARS job_ARA_S3_C7_R2_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuMu_signal_rayl.txt" st="3" config="7" run="2" flavor="Mu"
+
+JOB job_ARA_S3_C7_R3_Mu ARA_job.sub 
+VARS job_ARA_S3_C7_R3_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuMu_signal_rayl.txt" st="3" config="7" run="3" flavor="Mu"
+
+JOB job_ARA_S3_C7_R4_Mu ARA_job.sub 
+VARS job_ARA_S3_C7_R4_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuMu_signal_rayl.txt" st="3" config="7" run="4" flavor="Mu"
+
+JOB job_ARA_S3_C7_R5_Mu ARA_job.sub 
+VARS job_ARA_S3_C7_R5_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuMu_signal_rayl.txt" st="3" config="7" run="5" flavor="Mu"
+
+JOB job_ARA_S3_C7_R6_Mu ARA_job.sub 
+VARS job_ARA_S3_C7_R6_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuMu_signal_rayl.txt" st="3" config="7" run="6" flavor="Mu"
+
+JOB job_ARA_S3_C7_R7_Mu ARA_job.sub 
+VARS job_ARA_S3_C7_R7_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuMu_signal_rayl.txt" st="3" config="7" run="7" flavor="Mu"
+
+JOB job_ARA_S3_C7_R8_Mu ARA_job.sub 
+VARS job_ARA_S3_C7_R8_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuMu_signal_rayl.txt" st="3" config="7" run="8" flavor="Mu"
+
+JOB job_ARA_S3_C7_R9_Mu ARA_job.sub 
+VARS job_ARA_S3_C7_R9_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuMu_signal_rayl.txt" st="3" config="7" run="9" flavor="Mu"
+
+JOB job_ARA_S3_C5_R0_E ARA_job.sub 
+VARS job_ARA_S3_C5_R0_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuE_signal_rayl.txt" st="3" config="5" run="0" flavor="E"
+
+JOB job_ARA_S3_C5_R1_E ARA_job.sub 
+VARS job_ARA_S3_C5_R1_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuE_signal_rayl.txt" st="3" config="5" run="1" flavor="E"
+
+JOB job_ARA_S3_C5_R2_E ARA_job.sub 
+VARS job_ARA_S3_C5_R2_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuE_signal_rayl.txt" st="3" config="5" run="2" flavor="E"
+
+JOB job_ARA_S3_C5_R3_E ARA_job.sub 
+VARS job_ARA_S3_C5_R3_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuE_signal_rayl.txt" st="3" config="5" run="3" flavor="E"
+
+JOB job_ARA_S3_C5_R4_E ARA_job.sub 
+VARS job_ARA_S3_C5_R4_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuE_signal_rayl.txt" st="3" config="5" run="4" flavor="E"
+
+JOB job_ARA_S3_C5_R5_E ARA_job.sub 
+VARS job_ARA_S3_C5_R5_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuE_signal_rayl.txt" st="3" config="5" run="5" flavor="E"
+
+JOB job_ARA_S3_C5_R6_E ARA_job.sub 
+VARS job_ARA_S3_C5_R6_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuE_signal_rayl.txt" st="3" config="5" run="6" flavor="E"
+
+JOB job_ARA_S3_C5_R7_E ARA_job.sub 
+VARS job_ARA_S3_C5_R7_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuE_signal_rayl.txt" st="3" config="5" run="7" flavor="E"
+
+JOB job_ARA_S3_C5_R8_E ARA_job.sub 
+VARS job_ARA_S3_C5_R8_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuE_signal_rayl.txt" st="3" config="5" run="8" flavor="E"
+
+JOB job_ARA_S3_C5_R9_E ARA_job.sub 
+VARS job_ARA_S3_C5_R9_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuE_signal_rayl.txt" st="3" config="5" run="9" flavor="E"
+
+JOB job_ARA_S2_C4_R0_E ARA_job.sub 
+VARS job_ARA_S2_C4_R0_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuE_signal_rayl.txt" st="2" config="4" run="0" flavor="E"
+
+JOB job_ARA_S2_C4_R1_E ARA_job.sub 
+VARS job_ARA_S2_C4_R1_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuE_signal_rayl.txt" st="2" config="4" run="1" flavor="E"
+
+JOB job_ARA_S2_C4_R2_E ARA_job.sub 
+VARS job_ARA_S2_C4_R2_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuE_signal_rayl.txt" st="2" config="4" run="2" flavor="E"
+
+JOB job_ARA_S2_C4_R3_E ARA_job.sub 
+VARS job_ARA_S2_C4_R3_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuE_signal_rayl.txt" st="2" config="4" run="3" flavor="E"
+
+JOB job_ARA_S2_C4_R4_E ARA_job.sub 
+VARS job_ARA_S2_C4_R4_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuE_signal_rayl.txt" st="2" config="4" run="4" flavor="E"
+
+JOB job_ARA_S2_C4_R5_E ARA_job.sub 
+VARS job_ARA_S2_C4_R5_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuE_signal_rayl.txt" st="2" config="4" run="5" flavor="E"
+
+JOB job_ARA_S2_C4_R6_E ARA_job.sub 
+VARS job_ARA_S2_C4_R6_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuE_signal_rayl.txt" st="2" config="4" run="6" flavor="E"
+
+JOB job_ARA_S2_C4_R7_E ARA_job.sub 
+VARS job_ARA_S2_C4_R7_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuE_signal_rayl.txt" st="2" config="4" run="7" flavor="E"
+
+JOB job_ARA_S2_C4_R8_E ARA_job.sub 
+VARS job_ARA_S2_C4_R8_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuE_signal_rayl.txt" st="2" config="4" run="8" flavor="E"
+
+JOB job_ARA_S2_C4_R9_E ARA_job.sub 
+VARS job_ARA_S2_C4_R9_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuE_signal_rayl.txt" st="2" config="4" run="9" flavor="E"
+
+JOB job_ARA_S3_C1_R0_Mu ARA_job.sub 
+VARS job_ARA_S3_C1_R0_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuMu_signal_rayl.txt" st="3" config="1" run="0" flavor="Mu"
+
+JOB job_ARA_S3_C1_R1_Mu ARA_job.sub 
+VARS job_ARA_S3_C1_R1_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuMu_signal_rayl.txt" st="3" config="1" run="1" flavor="Mu"
+
+JOB job_ARA_S3_C1_R2_Mu ARA_job.sub 
+VARS job_ARA_S3_C1_R2_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuMu_signal_rayl.txt" st="3" config="1" run="2" flavor="Mu"
+
+JOB job_ARA_S3_C1_R3_Mu ARA_job.sub 
+VARS job_ARA_S3_C1_R3_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuMu_signal_rayl.txt" st="3" config="1" run="3" flavor="Mu"
+
+JOB job_ARA_S3_C1_R4_Mu ARA_job.sub 
+VARS job_ARA_S3_C1_R4_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuMu_signal_rayl.txt" st="3" config="1" run="4" flavor="Mu"
+
+JOB job_ARA_S3_C1_R5_Mu ARA_job.sub 
+VARS job_ARA_S3_C1_R5_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuMu_signal_rayl.txt" st="3" config="1" run="5" flavor="Mu"
+
+JOB job_ARA_S3_C1_R6_Mu ARA_job.sub 
+VARS job_ARA_S3_C1_R6_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuMu_signal_rayl.txt" st="3" config="1" run="6" flavor="Mu"
+
+JOB job_ARA_S3_C1_R7_Mu ARA_job.sub 
+VARS job_ARA_S3_C1_R7_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuMu_signal_rayl.txt" st="3" config="1" run="7" flavor="Mu"
+
+JOB job_ARA_S3_C1_R8_Mu ARA_job.sub 
+VARS job_ARA_S3_C1_R8_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuMu_signal_rayl.txt" st="3" config="1" run="8" flavor="Mu"
+
+JOB job_ARA_S3_C1_R9_Mu ARA_job.sub 
+VARS job_ARA_S3_C1_R9_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuMu_signal_rayl.txt" st="3" config="1" run="9" flavor="Mu"
+
+JOB job_ARA_S3_C6_R0_Tau ARA_job.sub 
+VARS job_ARA_S3_C6_R0_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuTau_signal_rayl.txt" st="3" config="6" run="0" flavor="Tau"
+
+JOB job_ARA_S3_C6_R1_Tau ARA_job.sub 
+VARS job_ARA_S3_C6_R1_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuTau_signal_rayl.txt" st="3" config="6" run="1" flavor="Tau"
+
+JOB job_ARA_S3_C6_R2_Tau ARA_job.sub 
+VARS job_ARA_S3_C6_R2_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuTau_signal_rayl.txt" st="3" config="6" run="2" flavor="Tau"
+
+JOB job_ARA_S3_C6_R3_Tau ARA_job.sub 
+VARS job_ARA_S3_C6_R3_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuTau_signal_rayl.txt" st="3" config="6" run="3" flavor="Tau"
+
+JOB job_ARA_S3_C6_R4_Tau ARA_job.sub 
+VARS job_ARA_S3_C6_R4_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuTau_signal_rayl.txt" st="3" config="6" run="4" flavor="Tau"
+
+JOB job_ARA_S3_C6_R5_Tau ARA_job.sub 
+VARS job_ARA_S3_C6_R5_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuTau_signal_rayl.txt" st="3" config="6" run="5" flavor="Tau"
+
+JOB job_ARA_S3_C6_R6_Tau ARA_job.sub 
+VARS job_ARA_S3_C6_R6_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuTau_signal_rayl.txt" st="3" config="6" run="6" flavor="Tau"
+
+JOB job_ARA_S3_C6_R7_Tau ARA_job.sub 
+VARS job_ARA_S3_C6_R7_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuTau_signal_rayl.txt" st="3" config="6" run="7" flavor="Tau"
+
+JOB job_ARA_S3_C6_R8_Tau ARA_job.sub 
+VARS job_ARA_S3_C6_R8_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuTau_signal_rayl.txt" st="3" config="6" run="8" flavor="Tau"
+
+JOB job_ARA_S3_C6_R9_Tau ARA_job.sub 
+VARS job_ARA_S3_C6_R9_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuTau_signal_rayl.txt" st="3" config="6" run="9" flavor="Tau"
+
+JOB job_ARA_S3_C4_R0_Mu ARA_job.sub 
+VARS job_ARA_S3_C4_R0_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuMu_signal_rayl.txt" st="3" config="4" run="0" flavor="Mu"
+
+JOB job_ARA_S3_C4_R1_Mu ARA_job.sub 
+VARS job_ARA_S3_C4_R1_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuMu_signal_rayl.txt" st="3" config="4" run="1" flavor="Mu"
+
+JOB job_ARA_S3_C4_R2_Mu ARA_job.sub 
+VARS job_ARA_S3_C4_R2_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuMu_signal_rayl.txt" st="3" config="4" run="2" flavor="Mu"
+
+JOB job_ARA_S3_C4_R3_Mu ARA_job.sub 
+VARS job_ARA_S3_C4_R3_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuMu_signal_rayl.txt" st="3" config="4" run="3" flavor="Mu"
+
+JOB job_ARA_S3_C4_R4_Mu ARA_job.sub 
+VARS job_ARA_S3_C4_R4_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuMu_signal_rayl.txt" st="3" config="4" run="4" flavor="Mu"
+
+JOB job_ARA_S3_C4_R5_Mu ARA_job.sub 
+VARS job_ARA_S3_C4_R5_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuMu_signal_rayl.txt" st="3" config="4" run="5" flavor="Mu"
+
+JOB job_ARA_S3_C4_R6_Mu ARA_job.sub 
+VARS job_ARA_S3_C4_R6_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuMu_signal_rayl.txt" st="3" config="4" run="6" flavor="Mu"
+
+JOB job_ARA_S3_C4_R7_Mu ARA_job.sub 
+VARS job_ARA_S3_C4_R7_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuMu_signal_rayl.txt" st="3" config="4" run="7" flavor="Mu"
+
+JOB job_ARA_S3_C4_R8_Mu ARA_job.sub 
+VARS job_ARA_S3_C4_R8_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuMu_signal_rayl.txt" st="3" config="4" run="8" flavor="Mu"
+
+JOB job_ARA_S3_C4_R9_Mu ARA_job.sub 
+VARS job_ARA_S3_C4_R9_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuMu_signal_rayl.txt" st="3" config="4" run="9" flavor="Mu"
+
+JOB job_ARA_S2_C3_R0_Tau ARA_job.sub 
+VARS job_ARA_S2_C3_R0_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuTau_signal_rayl.txt" st="2" config="3" run="0" flavor="Tau"
+
+JOB job_ARA_S2_C3_R1_Tau ARA_job.sub 
+VARS job_ARA_S2_C3_R1_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuTau_signal_rayl.txt" st="2" config="3" run="1" flavor="Tau"
+
+JOB job_ARA_S2_C3_R2_Tau ARA_job.sub 
+VARS job_ARA_S2_C3_R2_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuTau_signal_rayl.txt" st="2" config="3" run="2" flavor="Tau"
+
+JOB job_ARA_S2_C3_R3_Tau ARA_job.sub 
+VARS job_ARA_S2_C3_R3_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuTau_signal_rayl.txt" st="2" config="3" run="3" flavor="Tau"
+
+JOB job_ARA_S2_C3_R4_Tau ARA_job.sub 
+VARS job_ARA_S2_C3_R4_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuTau_signal_rayl.txt" st="2" config="3" run="4" flavor="Tau"
+
+JOB job_ARA_S2_C3_R5_Tau ARA_job.sub 
+VARS job_ARA_S2_C3_R5_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuTau_signal_rayl.txt" st="2" config="3" run="5" flavor="Tau"
+
+JOB job_ARA_S2_C3_R6_Tau ARA_job.sub 
+VARS job_ARA_S2_C3_R6_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuTau_signal_rayl.txt" st="2" config="3" run="6" flavor="Tau"
+
+JOB job_ARA_S2_C3_R7_Tau ARA_job.sub 
+VARS job_ARA_S2_C3_R7_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuTau_signal_rayl.txt" st="2" config="3" run="7" flavor="Tau"
+
+JOB job_ARA_S2_C3_R8_Tau ARA_job.sub 
+VARS job_ARA_S2_C3_R8_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuTau_signal_rayl.txt" st="2" config="3" run="8" flavor="Tau"
+
+JOB job_ARA_S2_C3_R9_Tau ARA_job.sub 
+VARS job_ARA_S2_C3_R9_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuTau_signal_rayl.txt" st="2" config="3" run="9" flavor="Tau"
+
+JOB job_ARA_S3_C2_R0_Mu ARA_job.sub 
+VARS job_ARA_S3_C2_R0_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuMu_signal_rayl.txt" st="3" config="2" run="0" flavor="Mu"
+
+JOB job_ARA_S3_C2_R1_Mu ARA_job.sub 
+VARS job_ARA_S3_C2_R1_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuMu_signal_rayl.txt" st="3" config="2" run="1" flavor="Mu"
+
+JOB job_ARA_S3_C2_R2_Mu ARA_job.sub 
+VARS job_ARA_S3_C2_R2_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuMu_signal_rayl.txt" st="3" config="2" run="2" flavor="Mu"
+
+JOB job_ARA_S3_C2_R3_Mu ARA_job.sub 
+VARS job_ARA_S3_C2_R3_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuMu_signal_rayl.txt" st="3" config="2" run="3" flavor="Mu"
+
+JOB job_ARA_S3_C2_R4_Mu ARA_job.sub 
+VARS job_ARA_S3_C2_R4_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuMu_signal_rayl.txt" st="3" config="2" run="4" flavor="Mu"
+
+JOB job_ARA_S3_C2_R5_Mu ARA_job.sub 
+VARS job_ARA_S3_C2_R5_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuMu_signal_rayl.txt" st="3" config="2" run="5" flavor="Mu"
+
+JOB job_ARA_S3_C2_R6_Mu ARA_job.sub 
+VARS job_ARA_S3_C2_R6_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuMu_signal_rayl.txt" st="3" config="2" run="6" flavor="Mu"
+
+JOB job_ARA_S3_C2_R7_Mu ARA_job.sub 
+VARS job_ARA_S3_C2_R7_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuMu_signal_rayl.txt" st="3" config="2" run="7" flavor="Mu"
+
+JOB job_ARA_S3_C2_R8_Mu ARA_job.sub 
+VARS job_ARA_S3_C2_R8_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuMu_signal_rayl.txt" st="3" config="2" run="8" flavor="Mu"
+
+JOB job_ARA_S3_C2_R9_Mu ARA_job.sub 
+VARS job_ARA_S3_C2_R9_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuMu_signal_rayl.txt" st="3" config="2" run="9" flavor="Mu"
+
+JOB job_ARA_S2_C5_R0_Tau ARA_job.sub 
+VARS job_ARA_S2_C5_R0_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuTau_signal_rayl.txt" st="2" config="5" run="0" flavor="Tau"
+
+JOB job_ARA_S2_C5_R1_Tau ARA_job.sub 
+VARS job_ARA_S2_C5_R1_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuTau_signal_rayl.txt" st="2" config="5" run="1" flavor="Tau"
+
+JOB job_ARA_S2_C5_R2_Tau ARA_job.sub 
+VARS job_ARA_S2_C5_R2_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuTau_signal_rayl.txt" st="2" config="5" run="2" flavor="Tau"
+
+JOB job_ARA_S2_C5_R3_Tau ARA_job.sub 
+VARS job_ARA_S2_C5_R3_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuTau_signal_rayl.txt" st="2" config="5" run="3" flavor="Tau"
+
+JOB job_ARA_S2_C5_R4_Tau ARA_job.sub 
+VARS job_ARA_S2_C5_R4_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuTau_signal_rayl.txt" st="2" config="5" run="4" flavor="Tau"
+
+JOB job_ARA_S2_C5_R5_Tau ARA_job.sub 
+VARS job_ARA_S2_C5_R5_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuTau_signal_rayl.txt" st="2" config="5" run="5" flavor="Tau"
+
+JOB job_ARA_S2_C5_R6_Tau ARA_job.sub 
+VARS job_ARA_S2_C5_R6_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuTau_signal_rayl.txt" st="2" config="5" run="6" flavor="Tau"
+
+JOB job_ARA_S2_C5_R7_Tau ARA_job.sub 
+VARS job_ARA_S2_C5_R7_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuTau_signal_rayl.txt" st="2" config="5" run="7" flavor="Tau"
+
+JOB job_ARA_S2_C5_R8_Tau ARA_job.sub 
+VARS job_ARA_S2_C5_R8_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuTau_signal_rayl.txt" st="2" config="5" run="8" flavor="Tau"
+
+JOB job_ARA_S2_C5_R9_Tau ARA_job.sub 
+VARS job_ARA_S2_C5_R9_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C5_E100_NuTau_signal_rayl.txt" st="2" config="5" run="9" flavor="Tau"
+
+JOB job_ARA_S2_C6_R0_Mu ARA_job.sub 
+VARS job_ARA_S2_C6_R0_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuMu_signal_rayl.txt" st="2" config="6" run="0" flavor="Mu"
+
+JOB job_ARA_S2_C6_R1_Mu ARA_job.sub 
+VARS job_ARA_S2_C6_R1_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuMu_signal_rayl.txt" st="2" config="6" run="1" flavor="Mu"
+
+JOB job_ARA_S2_C6_R2_Mu ARA_job.sub 
+VARS job_ARA_S2_C6_R2_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuMu_signal_rayl.txt" st="2" config="6" run="2" flavor="Mu"
+
+JOB job_ARA_S2_C6_R3_Mu ARA_job.sub 
+VARS job_ARA_S2_C6_R3_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuMu_signal_rayl.txt" st="2" config="6" run="3" flavor="Mu"
+
+JOB job_ARA_S2_C6_R4_Mu ARA_job.sub 
+VARS job_ARA_S2_C6_R4_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuMu_signal_rayl.txt" st="2" config="6" run="4" flavor="Mu"
+
+JOB job_ARA_S2_C6_R5_Mu ARA_job.sub 
+VARS job_ARA_S2_C6_R5_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuMu_signal_rayl.txt" st="2" config="6" run="5" flavor="Mu"
+
+JOB job_ARA_S2_C6_R6_Mu ARA_job.sub 
+VARS job_ARA_S2_C6_R6_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuMu_signal_rayl.txt" st="2" config="6" run="6" flavor="Mu"
+
+JOB job_ARA_S2_C6_R7_Mu ARA_job.sub 
+VARS job_ARA_S2_C6_R7_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuMu_signal_rayl.txt" st="2" config="6" run="7" flavor="Mu"
+
+JOB job_ARA_S2_C6_R8_Mu ARA_job.sub 
+VARS job_ARA_S2_C6_R8_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuMu_signal_rayl.txt" st="2" config="6" run="8" flavor="Mu"
+
+JOB job_ARA_S2_C6_R9_Mu ARA_job.sub 
+VARS job_ARA_S2_C6_R9_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuMu_signal_rayl.txt" st="2" config="6" run="9" flavor="Mu"
+
+JOB job_ARA_S2_C1_R0_E ARA_job.sub 
+VARS job_ARA_S2_C1_R0_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuE_signal_rayl.txt" st="2" config="1" run="0" flavor="E"
+
+JOB job_ARA_S2_C1_R1_E ARA_job.sub 
+VARS job_ARA_S2_C1_R1_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuE_signal_rayl.txt" st="2" config="1" run="1" flavor="E"
+
+JOB job_ARA_S2_C1_R2_E ARA_job.sub 
+VARS job_ARA_S2_C1_R2_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuE_signal_rayl.txt" st="2" config="1" run="2" flavor="E"
+
+JOB job_ARA_S2_C1_R3_E ARA_job.sub 
+VARS job_ARA_S2_C1_R3_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuE_signal_rayl.txt" st="2" config="1" run="3" flavor="E"
+
+JOB job_ARA_S2_C1_R4_E ARA_job.sub 
+VARS job_ARA_S2_C1_R4_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuE_signal_rayl.txt" st="2" config="1" run="4" flavor="E"
+
+JOB job_ARA_S2_C1_R5_E ARA_job.sub 
+VARS job_ARA_S2_C1_R5_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuE_signal_rayl.txt" st="2" config="1" run="5" flavor="E"
+
+JOB job_ARA_S2_C1_R6_E ARA_job.sub 
+VARS job_ARA_S2_C1_R6_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuE_signal_rayl.txt" st="2" config="1" run="6" flavor="E"
+
+JOB job_ARA_S2_C1_R7_E ARA_job.sub 
+VARS job_ARA_S2_C1_R7_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuE_signal_rayl.txt" st="2" config="1" run="7" flavor="E"
+
+JOB job_ARA_S2_C1_R8_E ARA_job.sub 
+VARS job_ARA_S2_C1_R8_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuE_signal_rayl.txt" st="2" config="1" run="8" flavor="E"
+
+JOB job_ARA_S2_C1_R9_E ARA_job.sub 
+VARS job_ARA_S2_C1_R9_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C1_E100_NuE_signal_rayl.txt" st="2" config="1" run="9" flavor="E"
+
+JOB job_ARA_S2_C3_R0_Mu ARA_job.sub 
+VARS job_ARA_S2_C3_R0_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuMu_signal_rayl.txt" st="2" config="3" run="0" flavor="Mu"
+
+JOB job_ARA_S2_C3_R1_Mu ARA_job.sub 
+VARS job_ARA_S2_C3_R1_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuMu_signal_rayl.txt" st="2" config="3" run="1" flavor="Mu"
+
+JOB job_ARA_S2_C3_R2_Mu ARA_job.sub 
+VARS job_ARA_S2_C3_R2_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuMu_signal_rayl.txt" st="2" config="3" run="2" flavor="Mu"
+
+JOB job_ARA_S2_C3_R3_Mu ARA_job.sub 
+VARS job_ARA_S2_C3_R3_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuMu_signal_rayl.txt" st="2" config="3" run="3" flavor="Mu"
+
+JOB job_ARA_S2_C3_R4_Mu ARA_job.sub 
+VARS job_ARA_S2_C3_R4_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuMu_signal_rayl.txt" st="2" config="3" run="4" flavor="Mu"
+
+JOB job_ARA_S2_C3_R5_Mu ARA_job.sub 
+VARS job_ARA_S2_C3_R5_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuMu_signal_rayl.txt" st="2" config="3" run="5" flavor="Mu"
+
+JOB job_ARA_S2_C3_R6_Mu ARA_job.sub 
+VARS job_ARA_S2_C3_R6_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuMu_signal_rayl.txt" st="2" config="3" run="6" flavor="Mu"
+
+JOB job_ARA_S2_C3_R7_Mu ARA_job.sub 
+VARS job_ARA_S2_C3_R7_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuMu_signal_rayl.txt" st="2" config="3" run="7" flavor="Mu"
+
+JOB job_ARA_S2_C3_R8_Mu ARA_job.sub 
+VARS job_ARA_S2_C3_R8_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuMu_signal_rayl.txt" st="2" config="3" run="8" flavor="Mu"
+
+JOB job_ARA_S2_C3_R9_Mu ARA_job.sub 
+VARS job_ARA_S2_C3_R9_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C3_E100_NuMu_signal_rayl.txt" st="2" config="3" run="9" flavor="Mu"
+
+JOB job_ARA_S3_C2_R0_Tau ARA_job.sub 
+VARS job_ARA_S3_C2_R0_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuTau_signal_rayl.txt" st="3" config="2" run="0" flavor="Tau"
+
+JOB job_ARA_S3_C2_R1_Tau ARA_job.sub 
+VARS job_ARA_S3_C2_R1_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuTau_signal_rayl.txt" st="3" config="2" run="1" flavor="Tau"
+
+JOB job_ARA_S3_C2_R2_Tau ARA_job.sub 
+VARS job_ARA_S3_C2_R2_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuTau_signal_rayl.txt" st="3" config="2" run="2" flavor="Tau"
+
+JOB job_ARA_S3_C2_R3_Tau ARA_job.sub 
+VARS job_ARA_S3_C2_R3_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuTau_signal_rayl.txt" st="3" config="2" run="3" flavor="Tau"
+
+JOB job_ARA_S3_C2_R4_Tau ARA_job.sub 
+VARS job_ARA_S3_C2_R4_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuTau_signal_rayl.txt" st="3" config="2" run="4" flavor="Tau"
+
+JOB job_ARA_S3_C2_R5_Tau ARA_job.sub 
+VARS job_ARA_S3_C2_R5_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuTau_signal_rayl.txt" st="3" config="2" run="5" flavor="Tau"
+
+JOB job_ARA_S3_C2_R6_Tau ARA_job.sub 
+VARS job_ARA_S3_C2_R6_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuTau_signal_rayl.txt" st="3" config="2" run="6" flavor="Tau"
+
+JOB job_ARA_S3_C2_R7_Tau ARA_job.sub 
+VARS job_ARA_S3_C2_R7_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuTau_signal_rayl.txt" st="3" config="2" run="7" flavor="Tau"
+
+JOB job_ARA_S3_C2_R8_Tau ARA_job.sub 
+VARS job_ARA_S3_C2_R8_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuTau_signal_rayl.txt" st="3" config="2" run="8" flavor="Tau"
+
+JOB job_ARA_S3_C2_R9_Tau ARA_job.sub 
+VARS job_ARA_S3_C2_R9_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuTau_signal_rayl.txt" st="3" config="2" run="9" flavor="Tau"
+
+JOB job_ARA_S2_C6_R0_E ARA_job.sub 
+VARS job_ARA_S2_C6_R0_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuE_signal_rayl.txt" st="2" config="6" run="0" flavor="E"
+
+JOB job_ARA_S2_C6_R1_E ARA_job.sub 
+VARS job_ARA_S2_C6_R1_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuE_signal_rayl.txt" st="2" config="6" run="1" flavor="E"
+
+JOB job_ARA_S2_C6_R2_E ARA_job.sub 
+VARS job_ARA_S2_C6_R2_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuE_signal_rayl.txt" st="2" config="6" run="2" flavor="E"
+
+JOB job_ARA_S2_C6_R3_E ARA_job.sub 
+VARS job_ARA_S2_C6_R3_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuE_signal_rayl.txt" st="2" config="6" run="3" flavor="E"
+
+JOB job_ARA_S2_C6_R4_E ARA_job.sub 
+VARS job_ARA_S2_C6_R4_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuE_signal_rayl.txt" st="2" config="6" run="4" flavor="E"
+
+JOB job_ARA_S2_C6_R5_E ARA_job.sub 
+VARS job_ARA_S2_C6_R5_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuE_signal_rayl.txt" st="2" config="6" run="5" flavor="E"
+
+JOB job_ARA_S2_C6_R6_E ARA_job.sub 
+VARS job_ARA_S2_C6_R6_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuE_signal_rayl.txt" st="2" config="6" run="6" flavor="E"
+
+JOB job_ARA_S2_C6_R7_E ARA_job.sub 
+VARS job_ARA_S2_C6_R7_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuE_signal_rayl.txt" st="2" config="6" run="7" flavor="E"
+
+JOB job_ARA_S2_C6_R8_E ARA_job.sub 
+VARS job_ARA_S2_C6_R8_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuE_signal_rayl.txt" st="2" config="6" run="8" flavor="E"
+
+JOB job_ARA_S2_C6_R9_E ARA_job.sub 
+VARS job_ARA_S2_C6_R9_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C6_E100_NuE_signal_rayl.txt" st="2" config="6" run="9" flavor="E"
+
+JOB job_ARA_S3_C5_R0_Mu ARA_job.sub 
+VARS job_ARA_S3_C5_R0_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuMu_signal_rayl.txt" st="3" config="5" run="0" flavor="Mu"
+
+JOB job_ARA_S3_C5_R1_Mu ARA_job.sub 
+VARS job_ARA_S3_C5_R1_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuMu_signal_rayl.txt" st="3" config="5" run="1" flavor="Mu"
+
+JOB job_ARA_S3_C5_R2_Mu ARA_job.sub 
+VARS job_ARA_S3_C5_R2_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuMu_signal_rayl.txt" st="3" config="5" run="2" flavor="Mu"
+
+JOB job_ARA_S3_C5_R3_Mu ARA_job.sub 
+VARS job_ARA_S3_C5_R3_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuMu_signal_rayl.txt" st="3" config="5" run="3" flavor="Mu"
+
+JOB job_ARA_S3_C5_R4_Mu ARA_job.sub 
+VARS job_ARA_S3_C5_R4_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuMu_signal_rayl.txt" st="3" config="5" run="4" flavor="Mu"
+
+JOB job_ARA_S3_C5_R5_Mu ARA_job.sub 
+VARS job_ARA_S3_C5_R5_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuMu_signal_rayl.txt" st="3" config="5" run="5" flavor="Mu"
+
+JOB job_ARA_S3_C5_R6_Mu ARA_job.sub 
+VARS job_ARA_S3_C5_R6_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuMu_signal_rayl.txt" st="3" config="5" run="6" flavor="Mu"
+
+JOB job_ARA_S3_C5_R7_Mu ARA_job.sub 
+VARS job_ARA_S3_C5_R7_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuMu_signal_rayl.txt" st="3" config="5" run="7" flavor="Mu"
+
+JOB job_ARA_S3_C5_R8_Mu ARA_job.sub 
+VARS job_ARA_S3_C5_R8_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuMu_signal_rayl.txt" st="3" config="5" run="8" flavor="Mu"
+
+JOB job_ARA_S3_C5_R9_Mu ARA_job.sub 
+VARS job_ARA_S3_C5_R9_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C5_E100_NuMu_signal_rayl.txt" st="3" config="5" run="9" flavor="Mu"
+
+JOB job_ARA_S3_C4_R0_Tau ARA_job.sub 
+VARS job_ARA_S3_C4_R0_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuTau_signal_rayl.txt" st="3" config="4" run="0" flavor="Tau"
+
+JOB job_ARA_S3_C4_R1_Tau ARA_job.sub 
+VARS job_ARA_S3_C4_R1_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuTau_signal_rayl.txt" st="3" config="4" run="1" flavor="Tau"
+
+JOB job_ARA_S3_C4_R2_Tau ARA_job.sub 
+VARS job_ARA_S3_C4_R2_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuTau_signal_rayl.txt" st="3" config="4" run="2" flavor="Tau"
+
+JOB job_ARA_S3_C4_R3_Tau ARA_job.sub 
+VARS job_ARA_S3_C4_R3_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuTau_signal_rayl.txt" st="3" config="4" run="3" flavor="Tau"
+
+JOB job_ARA_S3_C4_R4_Tau ARA_job.sub 
+VARS job_ARA_S3_C4_R4_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuTau_signal_rayl.txt" st="3" config="4" run="4" flavor="Tau"
+
+JOB job_ARA_S3_C4_R5_Tau ARA_job.sub 
+VARS job_ARA_S3_C4_R5_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuTau_signal_rayl.txt" st="3" config="4" run="5" flavor="Tau"
+
+JOB job_ARA_S3_C4_R6_Tau ARA_job.sub 
+VARS job_ARA_S3_C4_R6_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuTau_signal_rayl.txt" st="3" config="4" run="6" flavor="Tau"
+
+JOB job_ARA_S3_C4_R7_Tau ARA_job.sub 
+VARS job_ARA_S3_C4_R7_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuTau_signal_rayl.txt" st="3" config="4" run="7" flavor="Tau"
+
+JOB job_ARA_S3_C4_R8_Tau ARA_job.sub 
+VARS job_ARA_S3_C4_R8_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuTau_signal_rayl.txt" st="3" config="4" run="8" flavor="Tau"
+
+JOB job_ARA_S3_C4_R9_Tau ARA_job.sub 
+VARS job_ARA_S3_C4_R9_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C4_E100_NuTau_signal_rayl.txt" st="3" config="4" run="9" flavor="Tau"
+
+JOB job_ARA_S3_C6_R0_Mu ARA_job.sub 
+VARS job_ARA_S3_C6_R0_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuMu_signal_rayl.txt" st="3" config="6" run="0" flavor="Mu"
+
+JOB job_ARA_S3_C6_R1_Mu ARA_job.sub 
+VARS job_ARA_S3_C6_R1_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuMu_signal_rayl.txt" st="3" config="6" run="1" flavor="Mu"
+
+JOB job_ARA_S3_C6_R2_Mu ARA_job.sub 
+VARS job_ARA_S3_C6_R2_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuMu_signal_rayl.txt" st="3" config="6" run="2" flavor="Mu"
+
+JOB job_ARA_S3_C6_R3_Mu ARA_job.sub 
+VARS job_ARA_S3_C6_R3_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuMu_signal_rayl.txt" st="3" config="6" run="3" flavor="Mu"
+
+JOB job_ARA_S3_C6_R4_Mu ARA_job.sub 
+VARS job_ARA_S3_C6_R4_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuMu_signal_rayl.txt" st="3" config="6" run="4" flavor="Mu"
+
+JOB job_ARA_S3_C6_R5_Mu ARA_job.sub 
+VARS job_ARA_S3_C6_R5_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuMu_signal_rayl.txt" st="3" config="6" run="5" flavor="Mu"
+
+JOB job_ARA_S3_C6_R6_Mu ARA_job.sub 
+VARS job_ARA_S3_C6_R6_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuMu_signal_rayl.txt" st="3" config="6" run="6" flavor="Mu"
+
+JOB job_ARA_S3_C6_R7_Mu ARA_job.sub 
+VARS job_ARA_S3_C6_R7_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuMu_signal_rayl.txt" st="3" config="6" run="7" flavor="Mu"
+
+JOB job_ARA_S3_C6_R8_Mu ARA_job.sub 
+VARS job_ARA_S3_C6_R8_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuMu_signal_rayl.txt" st="3" config="6" run="8" flavor="Mu"
+
+JOB job_ARA_S3_C6_R9_Mu ARA_job.sub 
+VARS job_ARA_S3_C6_R9_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuMu_signal_rayl.txt" st="3" config="6" run="9" flavor="Mu"
+
+JOB job_ARA_S3_C2_R0_E ARA_job.sub 
+VARS job_ARA_S3_C2_R0_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuE_signal_rayl.txt" st="3" config="2" run="0" flavor="E"
+
+JOB job_ARA_S3_C2_R1_E ARA_job.sub 
+VARS job_ARA_S3_C2_R1_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuE_signal_rayl.txt" st="3" config="2" run="1" flavor="E"
+
+JOB job_ARA_S3_C2_R2_E ARA_job.sub 
+VARS job_ARA_S3_C2_R2_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuE_signal_rayl.txt" st="3" config="2" run="2" flavor="E"
+
+JOB job_ARA_S3_C2_R3_E ARA_job.sub 
+VARS job_ARA_S3_C2_R3_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuE_signal_rayl.txt" st="3" config="2" run="3" flavor="E"
+
+JOB job_ARA_S3_C2_R4_E ARA_job.sub 
+VARS job_ARA_S3_C2_R4_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuE_signal_rayl.txt" st="3" config="2" run="4" flavor="E"
+
+JOB job_ARA_S3_C2_R5_E ARA_job.sub 
+VARS job_ARA_S3_C2_R5_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuE_signal_rayl.txt" st="3" config="2" run="5" flavor="E"
+
+JOB job_ARA_S3_C2_R6_E ARA_job.sub 
+VARS job_ARA_S3_C2_R6_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuE_signal_rayl.txt" st="3" config="2" run="6" flavor="E"
+
+JOB job_ARA_S3_C2_R7_E ARA_job.sub 
+VARS job_ARA_S3_C2_R7_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuE_signal_rayl.txt" st="3" config="2" run="7" flavor="E"
+
+JOB job_ARA_S3_C2_R8_E ARA_job.sub 
+VARS job_ARA_S3_C2_R8_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuE_signal_rayl.txt" st="3" config="2" run="8" flavor="E"
+
+JOB job_ARA_S3_C2_R9_E ARA_job.sub 
+VARS job_ARA_S3_C2_R9_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C2_E100_NuE_signal_rayl.txt" st="3" config="2" run="9" flavor="E"
+
+JOB job_ARA_S2_C2_R0_Mu ARA_job.sub 
+VARS job_ARA_S2_C2_R0_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuMu_signal_rayl.txt" st="2" config="2" run="0" flavor="Mu"
+
+JOB job_ARA_S2_C2_R1_Mu ARA_job.sub 
+VARS job_ARA_S2_C2_R1_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuMu_signal_rayl.txt" st="2" config="2" run="1" flavor="Mu"
+
+JOB job_ARA_S2_C2_R2_Mu ARA_job.sub 
+VARS job_ARA_S2_C2_R2_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuMu_signal_rayl.txt" st="2" config="2" run="2" flavor="Mu"
+
+JOB job_ARA_S2_C2_R3_Mu ARA_job.sub 
+VARS job_ARA_S2_C2_R3_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuMu_signal_rayl.txt" st="2" config="2" run="3" flavor="Mu"
+
+JOB job_ARA_S2_C2_R4_Mu ARA_job.sub 
+VARS job_ARA_S2_C2_R4_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuMu_signal_rayl.txt" st="2" config="2" run="4" flavor="Mu"
+
+JOB job_ARA_S2_C2_R5_Mu ARA_job.sub 
+VARS job_ARA_S2_C2_R5_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuMu_signal_rayl.txt" st="2" config="2" run="5" flavor="Mu"
+
+JOB job_ARA_S2_C2_R6_Mu ARA_job.sub 
+VARS job_ARA_S2_C2_R6_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuMu_signal_rayl.txt" st="2" config="2" run="6" flavor="Mu"
+
+JOB job_ARA_S2_C2_R7_Mu ARA_job.sub 
+VARS job_ARA_S2_C2_R7_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuMu_signal_rayl.txt" st="2" config="2" run="7" flavor="Mu"
+
+JOB job_ARA_S2_C2_R8_Mu ARA_job.sub 
+VARS job_ARA_S2_C2_R8_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuMu_signal_rayl.txt" st="2" config="2" run="8" flavor="Mu"
+
+JOB job_ARA_S2_C2_R9_Mu ARA_job.sub 
+VARS job_ARA_S2_C2_R9_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuMu_signal_rayl.txt" st="2" config="2" run="9" flavor="Mu"
+
+JOB job_ARA_S2_C2_R0_Tau ARA_job.sub 
+VARS job_ARA_S2_C2_R0_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuTau_signal_rayl.txt" st="2" config="2" run="0" flavor="Tau"
+
+JOB job_ARA_S2_C2_R1_Tau ARA_job.sub 
+VARS job_ARA_S2_C2_R1_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuTau_signal_rayl.txt" st="2" config="2" run="1" flavor="Tau"
+
+JOB job_ARA_S2_C2_R2_Tau ARA_job.sub 
+VARS job_ARA_S2_C2_R2_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuTau_signal_rayl.txt" st="2" config="2" run="2" flavor="Tau"
+
+JOB job_ARA_S2_C2_R3_Tau ARA_job.sub 
+VARS job_ARA_S2_C2_R3_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuTau_signal_rayl.txt" st="2" config="2" run="3" flavor="Tau"
+
+JOB job_ARA_S2_C2_R4_Tau ARA_job.sub 
+VARS job_ARA_S2_C2_R4_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuTau_signal_rayl.txt" st="2" config="2" run="4" flavor="Tau"
+
+JOB job_ARA_S2_C2_R5_Tau ARA_job.sub 
+VARS job_ARA_S2_C2_R5_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuTau_signal_rayl.txt" st="2" config="2" run="5" flavor="Tau"
+
+JOB job_ARA_S2_C2_R6_Tau ARA_job.sub 
+VARS job_ARA_S2_C2_R6_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuTau_signal_rayl.txt" st="2" config="2" run="6" flavor="Tau"
+
+JOB job_ARA_S2_C2_R7_Tau ARA_job.sub 
+VARS job_ARA_S2_C2_R7_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuTau_signal_rayl.txt" st="2" config="2" run="7" flavor="Tau"
+
+JOB job_ARA_S2_C2_R8_Tau ARA_job.sub 
+VARS job_ARA_S2_C2_R8_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuTau_signal_rayl.txt" st="2" config="2" run="8" flavor="Tau"
+
+JOB job_ARA_S2_C2_R9_Tau ARA_job.sub 
+VARS job_ARA_S2_C2_R9_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C2_E100_NuTau_signal_rayl.txt" st="2" config="2" run="9" flavor="Tau"
+
+JOB job_ARA_S3_C1_R0_Tau ARA_job.sub 
+VARS job_ARA_S3_C1_R0_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuTau_signal_rayl.txt" st="3" config="1" run="0" flavor="Tau"
+
+JOB job_ARA_S3_C1_R1_Tau ARA_job.sub 
+VARS job_ARA_S3_C1_R1_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuTau_signal_rayl.txt" st="3" config="1" run="1" flavor="Tau"
+
+JOB job_ARA_S3_C1_R2_Tau ARA_job.sub 
+VARS job_ARA_S3_C1_R2_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuTau_signal_rayl.txt" st="3" config="1" run="2" flavor="Tau"
+
+JOB job_ARA_S3_C1_R3_Tau ARA_job.sub 
+VARS job_ARA_S3_C1_R3_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuTau_signal_rayl.txt" st="3" config="1" run="3" flavor="Tau"
+
+JOB job_ARA_S3_C1_R4_Tau ARA_job.sub 
+VARS job_ARA_S3_C1_R4_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuTau_signal_rayl.txt" st="3" config="1" run="4" flavor="Tau"
+
+JOB job_ARA_S3_C1_R5_Tau ARA_job.sub 
+VARS job_ARA_S3_C1_R5_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuTau_signal_rayl.txt" st="3" config="1" run="5" flavor="Tau"
+
+JOB job_ARA_S3_C1_R6_Tau ARA_job.sub 
+VARS job_ARA_S3_C1_R6_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuTau_signal_rayl.txt" st="3" config="1" run="6" flavor="Tau"
+
+JOB job_ARA_S3_C1_R7_Tau ARA_job.sub 
+VARS job_ARA_S3_C1_R7_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuTau_signal_rayl.txt" st="3" config="1" run="7" flavor="Tau"
+
+JOB job_ARA_S3_C1_R8_Tau ARA_job.sub 
+VARS job_ARA_S3_C1_R8_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuTau_signal_rayl.txt" st="3" config="1" run="8" flavor="Tau"
+
+JOB job_ARA_S3_C1_R9_Tau ARA_job.sub 
+VARS job_ARA_S3_C1_R9_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C1_E100_NuTau_signal_rayl.txt" st="3" config="1" run="9" flavor="Tau"
+
+JOB job_ARA_S2_C4_R0_Mu ARA_job.sub 
+VARS job_ARA_S2_C4_R0_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuMu_signal_rayl.txt" st="2" config="4" run="0" flavor="Mu"
+
+JOB job_ARA_S2_C4_R1_Mu ARA_job.sub 
+VARS job_ARA_S2_C4_R1_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuMu_signal_rayl.txt" st="2" config="4" run="1" flavor="Mu"
+
+JOB job_ARA_S2_C4_R2_Mu ARA_job.sub 
+VARS job_ARA_S2_C4_R2_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuMu_signal_rayl.txt" st="2" config="4" run="2" flavor="Mu"
+
+JOB job_ARA_S2_C4_R3_Mu ARA_job.sub 
+VARS job_ARA_S2_C4_R3_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuMu_signal_rayl.txt" st="2" config="4" run="3" flavor="Mu"
+
+JOB job_ARA_S2_C4_R4_Mu ARA_job.sub 
+VARS job_ARA_S2_C4_R4_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuMu_signal_rayl.txt" st="2" config="4" run="4" flavor="Mu"
+
+JOB job_ARA_S2_C4_R5_Mu ARA_job.sub 
+VARS job_ARA_S2_C4_R5_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuMu_signal_rayl.txt" st="2" config="4" run="5" flavor="Mu"
+
+JOB job_ARA_S2_C4_R6_Mu ARA_job.sub 
+VARS job_ARA_S2_C4_R6_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuMu_signal_rayl.txt" st="2" config="4" run="6" flavor="Mu"
+
+JOB job_ARA_S2_C4_R7_Mu ARA_job.sub 
+VARS job_ARA_S2_C4_R7_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuMu_signal_rayl.txt" st="2" config="4" run="7" flavor="Mu"
+
+JOB job_ARA_S2_C4_R8_Mu ARA_job.sub 
+VARS job_ARA_S2_C4_R8_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuMu_signal_rayl.txt" st="2" config="4" run="8" flavor="Mu"
+
+JOB job_ARA_S2_C4_R9_Mu ARA_job.sub 
+VARS job_ARA_S2_C4_R9_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A2_C4_E100_NuMu_signal_rayl.txt" st="2" config="4" run="9" flavor="Mu"
+
+JOB job_ARA_S3_C6_R0_E ARA_job.sub 
+VARS job_ARA_S3_C6_R0_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuE_signal_rayl.txt" st="3" config="6" run="0" flavor="E"
+
+JOB job_ARA_S3_C6_R1_E ARA_job.sub 
+VARS job_ARA_S3_C6_R1_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuE_signal_rayl.txt" st="3" config="6" run="1" flavor="E"
+
+JOB job_ARA_S3_C6_R2_E ARA_job.sub 
+VARS job_ARA_S3_C6_R2_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuE_signal_rayl.txt" st="3" config="6" run="2" flavor="E"
+
+JOB job_ARA_S3_C6_R3_E ARA_job.sub 
+VARS job_ARA_S3_C6_R3_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuE_signal_rayl.txt" st="3" config="6" run="3" flavor="E"
+
+JOB job_ARA_S3_C6_R4_E ARA_job.sub 
+VARS job_ARA_S3_C6_R4_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuE_signal_rayl.txt" st="3" config="6" run="4" flavor="E"
+
+JOB job_ARA_S3_C6_R5_E ARA_job.sub 
+VARS job_ARA_S3_C6_R5_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuE_signal_rayl.txt" st="3" config="6" run="5" flavor="E"
+
+JOB job_ARA_S3_C6_R6_E ARA_job.sub 
+VARS job_ARA_S3_C6_R6_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuE_signal_rayl.txt" st="3" config="6" run="6" flavor="E"
+
+JOB job_ARA_S3_C6_R7_E ARA_job.sub 
+VARS job_ARA_S3_C6_R7_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuE_signal_rayl.txt" st="3" config="6" run="7" flavor="E"
+
+JOB job_ARA_S3_C6_R8_E ARA_job.sub 
+VARS job_ARA_S3_C6_R8_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuE_signal_rayl.txt" st="3" config="6" run="8" flavor="E"
+
+JOB job_ARA_S3_C6_R9_E ARA_job.sub 
+VARS job_ARA_S3_C6_R9_E setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C6_E100_NuE_signal_rayl.txt" st="3" config="6" run="9" flavor="E"
+
+JOB job_ARA_S3_C7_R0_Tau ARA_job.sub 
+VARS job_ARA_S3_C7_R0_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuTau_signal_rayl.txt" st="3" config="7" run="0" flavor="Tau"
+
+JOB job_ARA_S3_C7_R1_Tau ARA_job.sub 
+VARS job_ARA_S3_C7_R1_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuTau_signal_rayl.txt" st="3" config="7" run="1" flavor="Tau"
+
+JOB job_ARA_S3_C7_R2_Tau ARA_job.sub 
+VARS job_ARA_S3_C7_R2_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuTau_signal_rayl.txt" st="3" config="7" run="2" flavor="Tau"
+
+JOB job_ARA_S3_C7_R3_Tau ARA_job.sub 
+VARS job_ARA_S3_C7_R3_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuTau_signal_rayl.txt" st="3" config="7" run="3" flavor="Tau"
+
+JOB job_ARA_S3_C7_R4_Tau ARA_job.sub 
+VARS job_ARA_S3_C7_R4_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuTau_signal_rayl.txt" st="3" config="7" run="4" flavor="Tau"
+
+JOB job_ARA_S3_C7_R5_Tau ARA_job.sub 
+VARS job_ARA_S3_C7_R5_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuTau_signal_rayl.txt" st="3" config="7" run="5" flavor="Tau"
+
+JOB job_ARA_S3_C7_R6_Tau ARA_job.sub 
+VARS job_ARA_S3_C7_R6_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuTau_signal_rayl.txt" st="3" config="7" run="6" flavor="Tau"
+
+JOB job_ARA_S3_C7_R7_Tau ARA_job.sub 
+VARS job_ARA_S3_C7_R7_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuTau_signal_rayl.txt" st="3" config="7" run="7" flavor="Tau"
+
+JOB job_ARA_S3_C7_R8_Tau ARA_job.sub 
+VARS job_ARA_S3_C7_R8_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuTau_signal_rayl.txt" st="3" config="7" run="8" flavor="Tau"
+
+JOB job_ARA_S3_C7_R9_Tau ARA_job.sub 
+VARS job_ARA_S3_C7_R9_Tau setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C7_E100_NuTau_signal_rayl.txt" st="3" config="7" run="9" flavor="Tau"
+
+JOB job_ARA_S3_C3_R0_Mu ARA_job.sub 
+VARS job_ARA_S3_C3_R0_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuMu_signal_rayl.txt" st="3" config="3" run="0" flavor="Mu"
+
+JOB job_ARA_S3_C3_R1_Mu ARA_job.sub 
+VARS job_ARA_S3_C3_R1_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuMu_signal_rayl.txt" st="3" config="3" run="1" flavor="Mu"
+
+JOB job_ARA_S3_C3_R2_Mu ARA_job.sub 
+VARS job_ARA_S3_C3_R2_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuMu_signal_rayl.txt" st="3" config="3" run="2" flavor="Mu"
+
+JOB job_ARA_S3_C3_R3_Mu ARA_job.sub 
+VARS job_ARA_S3_C3_R3_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuMu_signal_rayl.txt" st="3" config="3" run="3" flavor="Mu"
+
+JOB job_ARA_S3_C3_R4_Mu ARA_job.sub 
+VARS job_ARA_S3_C3_R4_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuMu_signal_rayl.txt" st="3" config="3" run="4" flavor="Mu"
+
+JOB job_ARA_S3_C3_R5_Mu ARA_job.sub 
+VARS job_ARA_S3_C3_R5_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuMu_signal_rayl.txt" st="3" config="3" run="5" flavor="Mu"
+
+JOB job_ARA_S3_C3_R6_Mu ARA_job.sub 
+VARS job_ARA_S3_C3_R6_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuMu_signal_rayl.txt" st="3" config="3" run="6" flavor="Mu"
+
+JOB job_ARA_S3_C3_R7_Mu ARA_job.sub 
+VARS job_ARA_S3_C3_R7_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuMu_signal_rayl.txt" st="3" config="3" run="7" flavor="Mu"
+
+JOB job_ARA_S3_C3_R8_Mu ARA_job.sub 
+VARS job_ARA_S3_C3_R8_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuMu_signal_rayl.txt" st="3" config="3" run="8" flavor="Mu"
+
+JOB job_ARA_S3_C3_R9_Mu ARA_job.sub 
+VARS job_ARA_S3_C3_R9_Mu setup="/home/mkim/analysis/MF_filters/sim/sim_signal/A3_C3_E100_NuMu_signal_rayl.txt" st="3" config="3" run="9" flavor="Mu"
+
