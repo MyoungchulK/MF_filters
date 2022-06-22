@@ -1,0 +1,180 @@
+JOB job_ARA_S2_noise_0 ARA_job.sub 
+VARS job_ARA_S2_noise_0 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run9.root" st="2" d_type="noise" d_count="0"
+
+JOB job_ARA_S2_noise_1 ARA_job.sub 
+VARS job_ARA_S2_noise_1 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run0.root" st="2" d_type="noise" d_count="1"
+
+JOB job_ARA_S2_noise_2 ARA_job.sub 
+VARS job_ARA_S2_noise_2 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run0.root" st="2" d_type="noise" d_count="2"
+
+JOB job_ARA_S2_noise_3 ARA_job.sub 
+VARS job_ARA_S2_noise_3 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run6.root" st="2" d_type="noise" d_count="3"
+
+JOB job_ARA_S2_noise_4 ARA_job.sub 
+VARS job_ARA_S2_noise_4 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run3.root" st="2" d_type="noise" d_count="4"
+
+JOB job_ARA_S2_noise_5 ARA_job.sub 
+VARS job_ARA_S2_noise_5 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run4.root" st="2" d_type="noise" d_count="5"
+
+JOB job_ARA_S2_noise_6 ARA_job.sub 
+VARS job_ARA_S2_noise_6 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run1.root" st="2" d_type="noise" d_count="6"
+
+JOB job_ARA_S2_noise_7 ARA_job.sub 
+VARS job_ARA_S2_noise_7 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run9.root" st="2" d_type="noise" d_count="7"
+
+JOB job_ARA_S2_noise_8 ARA_job.sub 
+VARS job_ARA_S2_noise_8 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run0.root" st="2" d_type="noise" d_count="8"
+
+JOB job_ARA_S2_noise_9 ARA_job.sub 
+VARS job_ARA_S2_noise_9 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run7.root" st="2" d_type="noise" d_count="9"
+
+JOB job_ARA_S2_noise_10 ARA_job.sub 
+VARS job_ARA_S2_noise_10 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run8.root" st="2" d_type="noise" d_count="10"
+
+JOB job_ARA_S2_noise_11 ARA_job.sub 
+VARS job_ARA_S2_noise_11 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run1.root" st="2" d_type="noise" d_count="11"
+
+JOB job_ARA_S2_noise_12 ARA_job.sub 
+VARS job_ARA_S2_noise_12 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run4.root" st="2" d_type="noise" d_count="12"
+
+JOB job_ARA_S2_noise_13 ARA_job.sub 
+VARS job_ARA_S2_noise_13 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run5.root" st="2" d_type="noise" d_count="13"
+
+JOB job_ARA_S2_noise_14 ARA_job.sub 
+VARS job_ARA_S2_noise_14 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run2.root" st="2" d_type="noise" d_count="14"
+
+JOB job_ARA_S2_noise_15 ARA_job.sub 
+VARS job_ARA_S2_noise_15 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run2.root" st="2" d_type="noise" d_count="15"
+
+JOB job_ARA_S2_noise_16 ARA_job.sub 
+VARS job_ARA_S2_noise_16 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run0.root" st="2" d_type="noise" d_count="16"
+
+JOB job_ARA_S2_noise_17 ARA_job.sub 
+VARS job_ARA_S2_noise_17 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run5.root" st="2" d_type="noise" d_count="17"
+
+JOB job_ARA_S2_noise_18 ARA_job.sub 
+VARS job_ARA_S2_noise_18 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run2.root" st="2" d_type="noise" d_count="18"
+
+JOB job_ARA_S2_noise_19 ARA_job.sub 
+VARS job_ARA_S2_noise_19 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run2.root" st="2" d_type="noise" d_count="19"
+
+JOB job_ARA_S2_noise_20 ARA_job.sub 
+VARS job_ARA_S2_noise_20 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run6.root" st="2" d_type="noise" d_count="20"
+
+JOB job_ARA_S2_noise_21 ARA_job.sub 
+VARS job_ARA_S2_noise_21 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run3.root" st="2" d_type="noise" d_count="21"
+
+JOB job_ARA_S2_noise_22 ARA_job.sub 
+VARS job_ARA_S2_noise_22 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run3.root" st="2" d_type="noise" d_count="22"
+
+JOB job_ARA_S2_noise_23 ARA_job.sub 
+VARS job_ARA_S2_noise_23 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run8.root" st="2" d_type="noise" d_count="23"
+
+JOB job_ARA_S2_noise_24 ARA_job.sub 
+VARS job_ARA_S2_noise_24 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run9.root" st="2" d_type="noise" d_count="24"
+
+JOB job_ARA_S2_noise_25 ARA_job.sub 
+VARS job_ARA_S2_noise_25 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run7.root" st="2" d_type="noise" d_count="25"
+
+JOB job_ARA_S2_noise_26 ARA_job.sub 
+VARS job_ARA_S2_noise_26 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run1.root" st="2" d_type="noise" d_count="26"
+
+JOB job_ARA_S2_noise_27 ARA_job.sub 
+VARS job_ARA_S2_noise_27 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run3.root" st="2" d_type="noise" d_count="27"
+
+JOB job_ARA_S2_noise_28 ARA_job.sub 
+VARS job_ARA_S2_noise_28 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run4.root" st="2" d_type="noise" d_count="28"
+
+JOB job_ARA_S2_noise_29 ARA_job.sub 
+VARS job_ARA_S2_noise_29 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run8.root" st="2" d_type="noise" d_count="29"
+
+JOB job_ARA_S2_noise_30 ARA_job.sub 
+VARS job_ARA_S2_noise_30 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run5.root" st="2" d_type="noise" d_count="30"
+
+JOB job_ARA_S2_noise_31 ARA_job.sub 
+VARS job_ARA_S2_noise_31 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run7.root" st="2" d_type="noise" d_count="31"
+
+JOB job_ARA_S2_noise_32 ARA_job.sub 
+VARS job_ARA_S2_noise_32 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run6.root" st="2" d_type="noise" d_count="32"
+
+JOB job_ARA_S2_noise_33 ARA_job.sub 
+VARS job_ARA_S2_noise_33 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run1.root" st="2" d_type="noise" d_count="33"
+
+JOB job_ARA_S2_noise_34 ARA_job.sub 
+VARS job_ARA_S2_noise_34 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run4.root" st="2" d_type="noise" d_count="34"
+
+JOB job_ARA_S2_noise_35 ARA_job.sub 
+VARS job_ARA_S2_noise_35 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run5.root" st="2" d_type="noise" d_count="35"
+
+JOB job_ARA_S2_noise_36 ARA_job.sub 
+VARS job_ARA_S2_noise_36 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run6.root" st="2" d_type="noise" d_count="36"
+
+JOB job_ARA_S2_noise_37 ARA_job.sub 
+VARS job_ARA_S2_noise_37 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run7.root" st="2" d_type="noise" d_count="37"
+
+JOB job_ARA_S2_noise_38 ARA_job.sub 
+VARS job_ARA_S2_noise_38 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run8.root" st="2" d_type="noise" d_count="38"
+
+JOB job_ARA_S2_noise_39 ARA_job.sub 
+VARS job_ARA_S2_noise_39 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run9.root" st="2" d_type="noise" d_count="39"
+
+JOB job_ARA_S2_noise_40 ARA_job.sub 
+VARS job_ARA_S2_noise_40 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run0.root" st="2" d_type="noise" d_count="40"
+
+JOB job_ARA_S2_noise_41 ARA_job.sub 
+VARS job_ARA_S2_noise_41 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run2.root" st="2" d_type="noise" d_count="41"
+
+JOB job_ARA_S2_noise_42 ARA_job.sub 
+VARS job_ARA_S2_noise_42 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run1.root" st="2" d_type="noise" d_count="42"
+
+JOB job_ARA_S2_noise_43 ARA_job.sub 
+VARS job_ARA_S2_noise_43 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run3.root" st="2" d_type="noise" d_count="43"
+
+JOB job_ARA_S2_noise_44 ARA_job.sub 
+VARS job_ARA_S2_noise_44 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run4.root" st="2" d_type="noise" d_count="44"
+
+JOB job_ARA_S2_noise_45 ARA_job.sub 
+VARS job_ARA_S2_noise_45 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run5.root" st="2" d_type="noise" d_count="45"
+
+JOB job_ARA_S2_noise_46 ARA_job.sub 
+VARS job_ARA_S2_noise_46 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run6.root" st="2" d_type="noise" d_count="46"
+
+JOB job_ARA_S2_noise_47 ARA_job.sub 
+VARS job_ARA_S2_noise_47 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run7.root" st="2" d_type="noise" d_count="47"
+
+JOB job_ARA_S2_noise_48 ARA_job.sub 
+VARS job_ARA_S2_noise_48 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run8.root" st="2" d_type="noise" d_count="48"
+
+JOB job_ARA_S2_noise_49 ARA_job.sub 
+VARS job_ARA_S2_noise_49 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run9.root" st="2" d_type="noise" d_count="49"
+
+JOB job_ARA_S2_noise_50 ARA_job.sub 
+VARS job_ARA_S2_noise_50 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run0.root" st="2" d_type="noise" d_count="50"
+
+JOB job_ARA_S2_noise_51 ARA_job.sub 
+VARS job_ARA_S2_noise_51 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run1.root" st="2" d_type="noise" d_count="51"
+
+JOB job_ARA_S2_noise_52 ARA_job.sub 
+VARS job_ARA_S2_noise_52 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run2.root" st="2" d_type="noise" d_count="52"
+
+JOB job_ARA_S2_noise_53 ARA_job.sub 
+VARS job_ARA_S2_noise_53 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run3.root" st="2" d_type="noise" d_count="53"
+
+JOB job_ARA_S2_noise_54 ARA_job.sub 
+VARS job_ARA_S2_noise_54 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run6.root" st="2" d_type="noise" d_count="54"
+
+JOB job_ARA_S2_noise_55 ARA_job.sub 
+VARS job_ARA_S2_noise_55 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run5.root" st="2" d_type="noise" d_count="55"
+
+JOB job_ARA_S2_noise_56 ARA_job.sub 
+VARS job_ARA_S2_noise_56 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run4.root" st="2" d_type="noise" d_count="56"
+
+JOB job_ARA_S2_noise_57 ARA_job.sub 
+VARS job_ARA_S2_noise_57 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run7.root" st="2" d_type="noise" d_count="57"
+
+JOB job_ARA_S2_noise_58 ARA_job.sub 
+VARS job_ARA_S2_noise_58 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run8.root" st="2" d_type="noise" d_count="58"
+
+JOB job_ARA_S2_noise_59 ARA_job.sub 
+VARS job_ARA_S2_noise_59 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run9.root" st="2" d_type="noise" d_count="59"
+

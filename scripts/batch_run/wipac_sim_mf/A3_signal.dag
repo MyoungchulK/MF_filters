@@ -1,0 +1,630 @@
+JOB job_ARA_S3_signal_0 ARA_job.sub 
+VARS job_ARA_S3_signal_0 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuTau_signal_rayl.txt.run0.root" st="3" d_type="signal" d_count="0"
+
+JOB job_ARA_S3_signal_1 ARA_job.sub 
+VARS job_ARA_S3_signal_1 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuTau_signal_rayl.txt.run1.root" st="3" d_type="signal" d_count="1"
+
+JOB job_ARA_S3_signal_2 ARA_job.sub 
+VARS job_ARA_S3_signal_2 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuTau_signal_rayl.txt.run8.root" st="3" d_type="signal" d_count="2"
+
+JOB job_ARA_S3_signal_3 ARA_job.sub 
+VARS job_ARA_S3_signal_3 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuE_signal_rayl.txt.run4.root" st="3" d_type="signal" d_count="3"
+
+JOB job_ARA_S3_signal_4 ARA_job.sub 
+VARS job_ARA_S3_signal_4 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuE_signal_rayl.txt.run0.root" st="3" d_type="signal" d_count="4"
+
+JOB job_ARA_S3_signal_5 ARA_job.sub 
+VARS job_ARA_S3_signal_5 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuE_signal_rayl.txt.run8.root" st="3" d_type="signal" d_count="5"
+
+JOB job_ARA_S3_signal_6 ARA_job.sub 
+VARS job_ARA_S3_signal_6 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuTau_signal_rayl.txt.run3.root" st="3" d_type="signal" d_count="6"
+
+JOB job_ARA_S3_signal_7 ARA_job.sub 
+VARS job_ARA_S3_signal_7 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuTau_signal_rayl.txt.run2.root" st="3" d_type="signal" d_count="7"
+
+JOB job_ARA_S3_signal_8 ARA_job.sub 
+VARS job_ARA_S3_signal_8 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuE_signal_rayl.txt.run8.root" st="3" d_type="signal" d_count="8"
+
+JOB job_ARA_S3_signal_9 ARA_job.sub 
+VARS job_ARA_S3_signal_9 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuE_signal_rayl.txt.run2.root" st="3" d_type="signal" d_count="9"
+
+JOB job_ARA_S3_signal_10 ARA_job.sub 
+VARS job_ARA_S3_signal_10 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuTau_signal_rayl.txt.run5.root" st="3" d_type="signal" d_count="10"
+
+JOB job_ARA_S3_signal_11 ARA_job.sub 
+VARS job_ARA_S3_signal_11 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuE_signal_rayl.txt.run7.root" st="3" d_type="signal" d_count="11"
+
+JOB job_ARA_S3_signal_12 ARA_job.sub 
+VARS job_ARA_S3_signal_12 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuE_signal_rayl.txt.run9.root" st="3" d_type="signal" d_count="12"
+
+JOB job_ARA_S3_signal_13 ARA_job.sub 
+VARS job_ARA_S3_signal_13 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuE_signal_rayl.txt.run3.root" st="3" d_type="signal" d_count="13"
+
+JOB job_ARA_S3_signal_14 ARA_job.sub 
+VARS job_ARA_S3_signal_14 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuE_signal_rayl.txt.run6.root" st="3" d_type="signal" d_count="14"
+
+JOB job_ARA_S3_signal_15 ARA_job.sub 
+VARS job_ARA_S3_signal_15 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuTau_signal_rayl.txt.run7.root" st="3" d_type="signal" d_count="15"
+
+JOB job_ARA_S3_signal_16 ARA_job.sub 
+VARS job_ARA_S3_signal_16 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuTau_signal_rayl.txt.run6.root" st="3" d_type="signal" d_count="16"
+
+JOB job_ARA_S3_signal_17 ARA_job.sub 
+VARS job_ARA_S3_signal_17 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuE_signal_rayl.txt.run7.root" st="3" d_type="signal" d_count="17"
+
+JOB job_ARA_S3_signal_18 ARA_job.sub 
+VARS job_ARA_S3_signal_18 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuTau_signal_rayl.txt.run9.root" st="3" d_type="signal" d_count="18"
+
+JOB job_ARA_S3_signal_19 ARA_job.sub 
+VARS job_ARA_S3_signal_19 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuE_signal_rayl.txt.run3.root" st="3" d_type="signal" d_count="19"
+
+JOB job_ARA_S3_signal_20 ARA_job.sub 
+VARS job_ARA_S3_signal_20 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuTau_signal_rayl.txt.run9.root" st="3" d_type="signal" d_count="20"
+
+JOB job_ARA_S3_signal_21 ARA_job.sub 
+VARS job_ARA_S3_signal_21 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuE_signal_rayl.txt.run9.root" st="3" d_type="signal" d_count="21"
+
+JOB job_ARA_S3_signal_22 ARA_job.sub 
+VARS job_ARA_S3_signal_22 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuTau_signal_rayl.txt.run5.root" st="3" d_type="signal" d_count="22"
+
+JOB job_ARA_S3_signal_23 ARA_job.sub 
+VARS job_ARA_S3_signal_23 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuE_signal_rayl.txt.run7.root" st="3" d_type="signal" d_count="23"
+
+JOB job_ARA_S3_signal_24 ARA_job.sub 
+VARS job_ARA_S3_signal_24 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuE_signal_rayl.txt.run6.root" st="3" d_type="signal" d_count="24"
+
+JOB job_ARA_S3_signal_25 ARA_job.sub 
+VARS job_ARA_S3_signal_25 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuE_signal_rayl.txt.run6.root" st="3" d_type="signal" d_count="25"
+
+JOB job_ARA_S3_signal_26 ARA_job.sub 
+VARS job_ARA_S3_signal_26 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuE_signal_rayl.txt.run0.root" st="3" d_type="signal" d_count="26"
+
+JOB job_ARA_S3_signal_27 ARA_job.sub 
+VARS job_ARA_S3_signal_27 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuE_signal_rayl.txt.run1.root" st="3" d_type="signal" d_count="27"
+
+JOB job_ARA_S3_signal_28 ARA_job.sub 
+VARS job_ARA_S3_signal_28 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuE_signal_rayl.txt.run8.root" st="3" d_type="signal" d_count="28"
+
+JOB job_ARA_S3_signal_29 ARA_job.sub 
+VARS job_ARA_S3_signal_29 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuE_signal_rayl.txt.run4.root" st="3" d_type="signal" d_count="29"
+
+JOB job_ARA_S3_signal_30 ARA_job.sub 
+VARS job_ARA_S3_signal_30 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuE_signal_rayl.txt.run6.root" st="3" d_type="signal" d_count="30"
+
+JOB job_ARA_S3_signal_31 ARA_job.sub 
+VARS job_ARA_S3_signal_31 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuTau_signal_rayl.txt.run4.root" st="3" d_type="signal" d_count="31"
+
+JOB job_ARA_S3_signal_32 ARA_job.sub 
+VARS job_ARA_S3_signal_32 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuTau_signal_rayl.txt.run0.root" st="3" d_type="signal" d_count="32"
+
+JOB job_ARA_S3_signal_33 ARA_job.sub 
+VARS job_ARA_S3_signal_33 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuE_signal_rayl.txt.run5.root" st="3" d_type="signal" d_count="33"
+
+JOB job_ARA_S3_signal_34 ARA_job.sub 
+VARS job_ARA_S3_signal_34 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuE_signal_rayl.txt.run7.root" st="3" d_type="signal" d_count="34"
+
+JOB job_ARA_S3_signal_35 ARA_job.sub 
+VARS job_ARA_S3_signal_35 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuE_signal_rayl.txt.run1.root" st="3" d_type="signal" d_count="35"
+
+JOB job_ARA_S3_signal_36 ARA_job.sub 
+VARS job_ARA_S3_signal_36 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuTau_signal_rayl.txt.run8.root" st="3" d_type="signal" d_count="36"
+
+JOB job_ARA_S3_signal_37 ARA_job.sub 
+VARS job_ARA_S3_signal_37 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuMu_signal_rayl.txt.run0.root" st="3" d_type="signal" d_count="37"
+
+JOB job_ARA_S3_signal_38 ARA_job.sub 
+VARS job_ARA_S3_signal_38 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuE_signal_rayl.txt.run9.root" st="3" d_type="signal" d_count="38"
+
+JOB job_ARA_S3_signal_39 ARA_job.sub 
+VARS job_ARA_S3_signal_39 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuE_signal_rayl.txt.run0.root" st="3" d_type="signal" d_count="39"
+
+JOB job_ARA_S3_signal_40 ARA_job.sub 
+VARS job_ARA_S3_signal_40 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuMu_signal_rayl.txt.run1.root" st="3" d_type="signal" d_count="40"
+
+JOB job_ARA_S3_signal_41 ARA_job.sub 
+VARS job_ARA_S3_signal_41 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuE_signal_rayl.txt.run1.root" st="3" d_type="signal" d_count="41"
+
+JOB job_ARA_S3_signal_42 ARA_job.sub 
+VARS job_ARA_S3_signal_42 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuE_signal_rayl.txt.run0.root" st="3" d_type="signal" d_count="42"
+
+JOB job_ARA_S3_signal_43 ARA_job.sub 
+VARS job_ARA_S3_signal_43 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuE_signal_rayl.txt.run4.root" st="3" d_type="signal" d_count="43"
+
+JOB job_ARA_S3_signal_44 ARA_job.sub 
+VARS job_ARA_S3_signal_44 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuE_signal_rayl.txt.run3.root" st="3" d_type="signal" d_count="44"
+
+JOB job_ARA_S3_signal_45 ARA_job.sub 
+VARS job_ARA_S3_signal_45 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuE_signal_rayl.txt.run5.root" st="3" d_type="signal" d_count="45"
+
+JOB job_ARA_S3_signal_46 ARA_job.sub 
+VARS job_ARA_S3_signal_46 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuE_signal_rayl.txt.run2.root" st="3" d_type="signal" d_count="46"
+
+JOB job_ARA_S3_signal_47 ARA_job.sub 
+VARS job_ARA_S3_signal_47 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuTau_signal_rayl.txt.run3.root" st="3" d_type="signal" d_count="47"
+
+JOB job_ARA_S3_signal_48 ARA_job.sub 
+VARS job_ARA_S3_signal_48 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuTau_signal_rayl.txt.run4.root" st="3" d_type="signal" d_count="48"
+
+JOB job_ARA_S3_signal_49 ARA_job.sub 
+VARS job_ARA_S3_signal_49 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuTau_signal_rayl.txt.run7.root" st="3" d_type="signal" d_count="49"
+
+JOB job_ARA_S3_signal_50 ARA_job.sub 
+VARS job_ARA_S3_signal_50 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuTau_signal_rayl.txt.run1.root" st="3" d_type="signal" d_count="50"
+
+JOB job_ARA_S3_signal_51 ARA_job.sub 
+VARS job_ARA_S3_signal_51 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuTau_signal_rayl.txt.run2.root" st="3" d_type="signal" d_count="51"
+
+JOB job_ARA_S3_signal_52 ARA_job.sub 
+VARS job_ARA_S3_signal_52 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuTau_signal_rayl.txt.run6.root" st="3" d_type="signal" d_count="52"
+
+JOB job_ARA_S3_signal_53 ARA_job.sub 
+VARS job_ARA_S3_signal_53 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuE_signal_rayl.txt.run2.root" st="3" d_type="signal" d_count="53"
+
+JOB job_ARA_S3_signal_54 ARA_job.sub 
+VARS job_ARA_S3_signal_54 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuE_signal_rayl.txt.run5.root" st="3" d_type="signal" d_count="54"
+
+JOB job_ARA_S3_signal_55 ARA_job.sub 
+VARS job_ARA_S3_signal_55 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuE_signal_rayl.txt.run2.root" st="3" d_type="signal" d_count="55"
+
+JOB job_ARA_S3_signal_56 ARA_job.sub 
+VARS job_ARA_S3_signal_56 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuE_signal_rayl.txt.run3.root" st="3" d_type="signal" d_count="56"
+
+JOB job_ARA_S3_signal_57 ARA_job.sub 
+VARS job_ARA_S3_signal_57 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuE_signal_rayl.txt.run1.root" st="3" d_type="signal" d_count="57"
+
+JOB job_ARA_S3_signal_58 ARA_job.sub 
+VARS job_ARA_S3_signal_58 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuE_signal_rayl.txt.run4.root" st="3" d_type="signal" d_count="58"
+
+JOB job_ARA_S3_signal_59 ARA_job.sub 
+VARS job_ARA_S3_signal_59 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuE_signal_rayl.txt.run5.root" st="3" d_type="signal" d_count="59"
+
+JOB job_ARA_S3_signal_60 ARA_job.sub 
+VARS job_ARA_S3_signal_60 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuE_signal_rayl.txt.run8.root" st="3" d_type="signal" d_count="60"
+
+JOB job_ARA_S3_signal_61 ARA_job.sub 
+VARS job_ARA_S3_signal_61 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuE_signal_rayl.txt.run9.root" st="3" d_type="signal" d_count="61"
+
+JOB job_ARA_S3_signal_62 ARA_job.sub 
+VARS job_ARA_S3_signal_62 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuMu_signal_rayl.txt.run2.root" st="3" d_type="signal" d_count="62"
+
+JOB job_ARA_S3_signal_63 ARA_job.sub 
+VARS job_ARA_S3_signal_63 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuMu_signal_rayl.txt.run3.root" st="3" d_type="signal" d_count="63"
+
+JOB job_ARA_S3_signal_64 ARA_job.sub 
+VARS job_ARA_S3_signal_64 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuMu_signal_rayl.txt.run4.root" st="3" d_type="signal" d_count="64"
+
+JOB job_ARA_S3_signal_65 ARA_job.sub 
+VARS job_ARA_S3_signal_65 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuMu_signal_rayl.txt.run5.root" st="3" d_type="signal" d_count="65"
+
+JOB job_ARA_S3_signal_66 ARA_job.sub 
+VARS job_ARA_S3_signal_66 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuMu_signal_rayl.txt.run6.root" st="3" d_type="signal" d_count="66"
+
+JOB job_ARA_S3_signal_67 ARA_job.sub 
+VARS job_ARA_S3_signal_67 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuMu_signal_rayl.txt.run7.root" st="3" d_type="signal" d_count="67"
+
+JOB job_ARA_S3_signal_68 ARA_job.sub 
+VARS job_ARA_S3_signal_68 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuMu_signal_rayl.txt.run8.root" st="3" d_type="signal" d_count="68"
+
+JOB job_ARA_S3_signal_69 ARA_job.sub 
+VARS job_ARA_S3_signal_69 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuMu_signal_rayl.txt.run9.root" st="3" d_type="signal" d_count="69"
+
+JOB job_ARA_S3_signal_70 ARA_job.sub 
+VARS job_ARA_S3_signal_70 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuE_signal_rayl.txt.run0.root" st="3" d_type="signal" d_count="70"
+
+JOB job_ARA_S3_signal_71 ARA_job.sub 
+VARS job_ARA_S3_signal_71 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuE_signal_rayl.txt.run1.root" st="3" d_type="signal" d_count="71"
+
+JOB job_ARA_S3_signal_72 ARA_job.sub 
+VARS job_ARA_S3_signal_72 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuE_signal_rayl.txt.run2.root" st="3" d_type="signal" d_count="72"
+
+JOB job_ARA_S3_signal_73 ARA_job.sub 
+VARS job_ARA_S3_signal_73 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuE_signal_rayl.txt.run3.root" st="3" d_type="signal" d_count="73"
+
+JOB job_ARA_S3_signal_74 ARA_job.sub 
+VARS job_ARA_S3_signal_74 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuE_signal_rayl.txt.run4.root" st="3" d_type="signal" d_count="74"
+
+JOB job_ARA_S3_signal_75 ARA_job.sub 
+VARS job_ARA_S3_signal_75 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuE_signal_rayl.txt.run5.root" st="3" d_type="signal" d_count="75"
+
+JOB job_ARA_S3_signal_76 ARA_job.sub 
+VARS job_ARA_S3_signal_76 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuE_signal_rayl.txt.run6.root" st="3" d_type="signal" d_count="76"
+
+JOB job_ARA_S3_signal_77 ARA_job.sub 
+VARS job_ARA_S3_signal_77 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuE_signal_rayl.txt.run7.root" st="3" d_type="signal" d_count="77"
+
+JOB job_ARA_S3_signal_78 ARA_job.sub 
+VARS job_ARA_S3_signal_78 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuE_signal_rayl.txt.run8.root" st="3" d_type="signal" d_count="78"
+
+JOB job_ARA_S3_signal_79 ARA_job.sub 
+VARS job_ARA_S3_signal_79 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuE_signal_rayl.txt.run9.root" st="3" d_type="signal" d_count="79"
+
+JOB job_ARA_S3_signal_80 ARA_job.sub 
+VARS job_ARA_S3_signal_80 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuMu_signal_rayl.txt.run0.root" st="3" d_type="signal" d_count="80"
+
+JOB job_ARA_S3_signal_81 ARA_job.sub 
+VARS job_ARA_S3_signal_81 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuMu_signal_rayl.txt.run1.root" st="3" d_type="signal" d_count="81"
+
+JOB job_ARA_S3_signal_82 ARA_job.sub 
+VARS job_ARA_S3_signal_82 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuMu_signal_rayl.txt.run2.root" st="3" d_type="signal" d_count="82"
+
+JOB job_ARA_S3_signal_83 ARA_job.sub 
+VARS job_ARA_S3_signal_83 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuMu_signal_rayl.txt.run3.root" st="3" d_type="signal" d_count="83"
+
+JOB job_ARA_S3_signal_84 ARA_job.sub 
+VARS job_ARA_S3_signal_84 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuMu_signal_rayl.txt.run4.root" st="3" d_type="signal" d_count="84"
+
+JOB job_ARA_S3_signal_85 ARA_job.sub 
+VARS job_ARA_S3_signal_85 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuMu_signal_rayl.txt.run5.root" st="3" d_type="signal" d_count="85"
+
+JOB job_ARA_S3_signal_86 ARA_job.sub 
+VARS job_ARA_S3_signal_86 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuMu_signal_rayl.txt.run6.root" st="3" d_type="signal" d_count="86"
+
+JOB job_ARA_S3_signal_87 ARA_job.sub 
+VARS job_ARA_S3_signal_87 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuMu_signal_rayl.txt.run7.root" st="3" d_type="signal" d_count="87"
+
+JOB job_ARA_S3_signal_88 ARA_job.sub 
+VARS job_ARA_S3_signal_88 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuMu_signal_rayl.txt.run8.root" st="3" d_type="signal" d_count="88"
+
+JOB job_ARA_S3_signal_89 ARA_job.sub 
+VARS job_ARA_S3_signal_89 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuMu_signal_rayl.txt.run9.root" st="3" d_type="signal" d_count="89"
+
+JOB job_ARA_S3_signal_90 ARA_job.sub 
+VARS job_ARA_S3_signal_90 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuTau_signal_rayl.txt.run0.root" st="3" d_type="signal" d_count="90"
+
+JOB job_ARA_S3_signal_91 ARA_job.sub 
+VARS job_ARA_S3_signal_91 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuTau_signal_rayl.txt.run1.root" st="3" d_type="signal" d_count="91"
+
+JOB job_ARA_S3_signal_92 ARA_job.sub 
+VARS job_ARA_S3_signal_92 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuTau_signal_rayl.txt.run2.root" st="3" d_type="signal" d_count="92"
+
+JOB job_ARA_S3_signal_93 ARA_job.sub 
+VARS job_ARA_S3_signal_93 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuTau_signal_rayl.txt.run3.root" st="3" d_type="signal" d_count="93"
+
+JOB job_ARA_S3_signal_94 ARA_job.sub 
+VARS job_ARA_S3_signal_94 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuTau_signal_rayl.txt.run4.root" st="3" d_type="signal" d_count="94"
+
+JOB job_ARA_S3_signal_95 ARA_job.sub 
+VARS job_ARA_S3_signal_95 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuTau_signal_rayl.txt.run5.root" st="3" d_type="signal" d_count="95"
+
+JOB job_ARA_S3_signal_96 ARA_job.sub 
+VARS job_ARA_S3_signal_96 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuTau_signal_rayl.txt.run6.root" st="3" d_type="signal" d_count="96"
+
+JOB job_ARA_S3_signal_97 ARA_job.sub 
+VARS job_ARA_S3_signal_97 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuTau_signal_rayl.txt.run7.root" st="3" d_type="signal" d_count="97"
+
+JOB job_ARA_S3_signal_98 ARA_job.sub 
+VARS job_ARA_S3_signal_98 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuTau_signal_rayl.txt.run8.root" st="3" d_type="signal" d_count="98"
+
+JOB job_ARA_S3_signal_99 ARA_job.sub 
+VARS job_ARA_S3_signal_99 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuTau_signal_rayl.txt.run9.root" st="3" d_type="signal" d_count="99"
+
+JOB job_ARA_S3_signal_100 ARA_job.sub 
+VARS job_ARA_S3_signal_100 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuMu_signal_rayl.txt.run0.root" st="3" d_type="signal" d_count="100"
+
+JOB job_ARA_S3_signal_101 ARA_job.sub 
+VARS job_ARA_S3_signal_101 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuMu_signal_rayl.txt.run1.root" st="3" d_type="signal" d_count="101"
+
+JOB job_ARA_S3_signal_102 ARA_job.sub 
+VARS job_ARA_S3_signal_102 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuMu_signal_rayl.txt.run2.root" st="3" d_type="signal" d_count="102"
+
+JOB job_ARA_S3_signal_103 ARA_job.sub 
+VARS job_ARA_S3_signal_103 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuMu_signal_rayl.txt.run3.root" st="3" d_type="signal" d_count="103"
+
+JOB job_ARA_S3_signal_104 ARA_job.sub 
+VARS job_ARA_S3_signal_104 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuMu_signal_rayl.txt.run4.root" st="3" d_type="signal" d_count="104"
+
+JOB job_ARA_S3_signal_105 ARA_job.sub 
+VARS job_ARA_S3_signal_105 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuMu_signal_rayl.txt.run5.root" st="3" d_type="signal" d_count="105"
+
+JOB job_ARA_S3_signal_106 ARA_job.sub 
+VARS job_ARA_S3_signal_106 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuMu_signal_rayl.txt.run6.root" st="3" d_type="signal" d_count="106"
+
+JOB job_ARA_S3_signal_107 ARA_job.sub 
+VARS job_ARA_S3_signal_107 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuMu_signal_rayl.txt.run7.root" st="3" d_type="signal" d_count="107"
+
+JOB job_ARA_S3_signal_108 ARA_job.sub 
+VARS job_ARA_S3_signal_108 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuMu_signal_rayl.txt.run8.root" st="3" d_type="signal" d_count="108"
+
+JOB job_ARA_S3_signal_109 ARA_job.sub 
+VARS job_ARA_S3_signal_109 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuMu_signal_rayl.txt.run9.root" st="3" d_type="signal" d_count="109"
+
+JOB job_ARA_S3_signal_110 ARA_job.sub 
+VARS job_ARA_S3_signal_110 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuMu_signal_rayl.txt.run0.root" st="3" d_type="signal" d_count="110"
+
+JOB job_ARA_S3_signal_111 ARA_job.sub 
+VARS job_ARA_S3_signal_111 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuMu_signal_rayl.txt.run1.root" st="3" d_type="signal" d_count="111"
+
+JOB job_ARA_S3_signal_112 ARA_job.sub 
+VARS job_ARA_S3_signal_112 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuMu_signal_rayl.txt.run2.root" st="3" d_type="signal" d_count="112"
+
+JOB job_ARA_S3_signal_113 ARA_job.sub 
+VARS job_ARA_S3_signal_113 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuMu_signal_rayl.txt.run3.root" st="3" d_type="signal" d_count="113"
+
+JOB job_ARA_S3_signal_114 ARA_job.sub 
+VARS job_ARA_S3_signal_114 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuMu_signal_rayl.txt.run4.root" st="3" d_type="signal" d_count="114"
+
+JOB job_ARA_S3_signal_115 ARA_job.sub 
+VARS job_ARA_S3_signal_115 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuMu_signal_rayl.txt.run5.root" st="3" d_type="signal" d_count="115"
+
+JOB job_ARA_S3_signal_116 ARA_job.sub 
+VARS job_ARA_S3_signal_116 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuMu_signal_rayl.txt.run8.root" st="3" d_type="signal" d_count="116"
+
+JOB job_ARA_S3_signal_117 ARA_job.sub 
+VARS job_ARA_S3_signal_117 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuMu_signal_rayl.txt.run6.root" st="3" d_type="signal" d_count="117"
+
+JOB job_ARA_S3_signal_118 ARA_job.sub 
+VARS job_ARA_S3_signal_118 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuMu_signal_rayl.txt.run7.root" st="3" d_type="signal" d_count="118"
+
+JOB job_ARA_S3_signal_119 ARA_job.sub 
+VARS job_ARA_S3_signal_119 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuMu_signal_rayl.txt.run9.root" st="3" d_type="signal" d_count="119"
+
+JOB job_ARA_S3_signal_120 ARA_job.sub 
+VARS job_ARA_S3_signal_120 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuTau_signal_rayl.txt.run0.root" st="3" d_type="signal" d_count="120"
+
+JOB job_ARA_S3_signal_121 ARA_job.sub 
+VARS job_ARA_S3_signal_121 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuTau_signal_rayl.txt.run1.root" st="3" d_type="signal" d_count="121"
+
+JOB job_ARA_S3_signal_122 ARA_job.sub 
+VARS job_ARA_S3_signal_122 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuTau_signal_rayl.txt.run2.root" st="3" d_type="signal" d_count="122"
+
+JOB job_ARA_S3_signal_123 ARA_job.sub 
+VARS job_ARA_S3_signal_123 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuTau_signal_rayl.txt.run3.root" st="3" d_type="signal" d_count="123"
+
+JOB job_ARA_S3_signal_124 ARA_job.sub 
+VARS job_ARA_S3_signal_124 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuTau_signal_rayl.txt.run4.root" st="3" d_type="signal" d_count="124"
+
+JOB job_ARA_S3_signal_125 ARA_job.sub 
+VARS job_ARA_S3_signal_125 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuTau_signal_rayl.txt.run5.root" st="3" d_type="signal" d_count="125"
+
+JOB job_ARA_S3_signal_126 ARA_job.sub 
+VARS job_ARA_S3_signal_126 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuTau_signal_rayl.txt.run6.root" st="3" d_type="signal" d_count="126"
+
+JOB job_ARA_S3_signal_127 ARA_job.sub 
+VARS job_ARA_S3_signal_127 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuTau_signal_rayl.txt.run7.root" st="3" d_type="signal" d_count="127"
+
+JOB job_ARA_S3_signal_128 ARA_job.sub 
+VARS job_ARA_S3_signal_128 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuTau_signal_rayl.txt.run8.root" st="3" d_type="signal" d_count="128"
+
+JOB job_ARA_S3_signal_129 ARA_job.sub 
+VARS job_ARA_S3_signal_129 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuTau_signal_rayl.txt.run9.root" st="3" d_type="signal" d_count="129"
+
+JOB job_ARA_S3_signal_130 ARA_job.sub 
+VARS job_ARA_S3_signal_130 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuMu_signal_rayl.txt.run0.root" st="3" d_type="signal" d_count="130"
+
+JOB job_ARA_S3_signal_131 ARA_job.sub 
+VARS job_ARA_S3_signal_131 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuMu_signal_rayl.txt.run1.root" st="3" d_type="signal" d_count="131"
+
+JOB job_ARA_S3_signal_132 ARA_job.sub 
+VARS job_ARA_S3_signal_132 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuMu_signal_rayl.txt.run2.root" st="3" d_type="signal" d_count="132"
+
+JOB job_ARA_S3_signal_133 ARA_job.sub 
+VARS job_ARA_S3_signal_133 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuMu_signal_rayl.txt.run3.root" st="3" d_type="signal" d_count="133"
+
+JOB job_ARA_S3_signal_134 ARA_job.sub 
+VARS job_ARA_S3_signal_134 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuMu_signal_rayl.txt.run4.root" st="3" d_type="signal" d_count="134"
+
+JOB job_ARA_S3_signal_135 ARA_job.sub 
+VARS job_ARA_S3_signal_135 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuMu_signal_rayl.txt.run5.root" st="3" d_type="signal" d_count="135"
+
+JOB job_ARA_S3_signal_136 ARA_job.sub 
+VARS job_ARA_S3_signal_136 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuMu_signal_rayl.txt.run6.root" st="3" d_type="signal" d_count="136"
+
+JOB job_ARA_S3_signal_137 ARA_job.sub 
+VARS job_ARA_S3_signal_137 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuMu_signal_rayl.txt.run7.root" st="3" d_type="signal" d_count="137"
+
+JOB job_ARA_S3_signal_138 ARA_job.sub 
+VARS job_ARA_S3_signal_138 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuMu_signal_rayl.txt.run8.root" st="3" d_type="signal" d_count="138"
+
+JOB job_ARA_S3_signal_139 ARA_job.sub 
+VARS job_ARA_S3_signal_139 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C5_E100_NuMu_signal_rayl.txt.run9.root" st="3" d_type="signal" d_count="139"
+
+JOB job_ARA_S3_signal_140 ARA_job.sub 
+VARS job_ARA_S3_signal_140 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuTau_signal_rayl.txt.run0.root" st="3" d_type="signal" d_count="140"
+
+JOB job_ARA_S3_signal_141 ARA_job.sub 
+VARS job_ARA_S3_signal_141 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuTau_signal_rayl.txt.run1.root" st="3" d_type="signal" d_count="141"
+
+JOB job_ARA_S3_signal_142 ARA_job.sub 
+VARS job_ARA_S3_signal_142 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuTau_signal_rayl.txt.run2.root" st="3" d_type="signal" d_count="142"
+
+JOB job_ARA_S3_signal_143 ARA_job.sub 
+VARS job_ARA_S3_signal_143 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuTau_signal_rayl.txt.run3.root" st="3" d_type="signal" d_count="143"
+
+JOB job_ARA_S3_signal_144 ARA_job.sub 
+VARS job_ARA_S3_signal_144 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuTau_signal_rayl.txt.run4.root" st="3" d_type="signal" d_count="144"
+
+JOB job_ARA_S3_signal_145 ARA_job.sub 
+VARS job_ARA_S3_signal_145 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuTau_signal_rayl.txt.run5.root" st="3" d_type="signal" d_count="145"
+
+JOB job_ARA_S3_signal_146 ARA_job.sub 
+VARS job_ARA_S3_signal_146 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuTau_signal_rayl.txt.run6.root" st="3" d_type="signal" d_count="146"
+
+JOB job_ARA_S3_signal_147 ARA_job.sub 
+VARS job_ARA_S3_signal_147 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuTau_signal_rayl.txt.run7.root" st="3" d_type="signal" d_count="147"
+
+JOB job_ARA_S3_signal_148 ARA_job.sub 
+VARS job_ARA_S3_signal_148 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuTau_signal_rayl.txt.run8.root" st="3" d_type="signal" d_count="148"
+
+JOB job_ARA_S3_signal_149 ARA_job.sub 
+VARS job_ARA_S3_signal_149 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C4_E100_NuTau_signal_rayl.txt.run9.root" st="3" d_type="signal" d_count="149"
+
+JOB job_ARA_S3_signal_150 ARA_job.sub 
+VARS job_ARA_S3_signal_150 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuMu_signal_rayl.txt.run0.root" st="3" d_type="signal" d_count="150"
+
+JOB job_ARA_S3_signal_151 ARA_job.sub 
+VARS job_ARA_S3_signal_151 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuMu_signal_rayl.txt.run1.root" st="3" d_type="signal" d_count="151"
+
+JOB job_ARA_S3_signal_152 ARA_job.sub 
+VARS job_ARA_S3_signal_152 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuMu_signal_rayl.txt.run2.root" st="3" d_type="signal" d_count="152"
+
+JOB job_ARA_S3_signal_153 ARA_job.sub 
+VARS job_ARA_S3_signal_153 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuMu_signal_rayl.txt.run3.root" st="3" d_type="signal" d_count="153"
+
+JOB job_ARA_S3_signal_154 ARA_job.sub 
+VARS job_ARA_S3_signal_154 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuMu_signal_rayl.txt.run4.root" st="3" d_type="signal" d_count="154"
+
+JOB job_ARA_S3_signal_155 ARA_job.sub 
+VARS job_ARA_S3_signal_155 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuMu_signal_rayl.txt.run5.root" st="3" d_type="signal" d_count="155"
+
+JOB job_ARA_S3_signal_156 ARA_job.sub 
+VARS job_ARA_S3_signal_156 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuMu_signal_rayl.txt.run6.root" st="3" d_type="signal" d_count="156"
+
+JOB job_ARA_S3_signal_157 ARA_job.sub 
+VARS job_ARA_S3_signal_157 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuMu_signal_rayl.txt.run7.root" st="3" d_type="signal" d_count="157"
+
+JOB job_ARA_S3_signal_158 ARA_job.sub 
+VARS job_ARA_S3_signal_158 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuMu_signal_rayl.txt.run8.root" st="3" d_type="signal" d_count="158"
+
+JOB job_ARA_S3_signal_159 ARA_job.sub 
+VARS job_ARA_S3_signal_159 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuMu_signal_rayl.txt.run9.root" st="3" d_type="signal" d_count="159"
+
+JOB job_ARA_S3_signal_160 ARA_job.sub 
+VARS job_ARA_S3_signal_160 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuE_signal_rayl.txt.run0.root" st="3" d_type="signal" d_count="160"
+
+JOB job_ARA_S3_signal_161 ARA_job.sub 
+VARS job_ARA_S3_signal_161 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuE_signal_rayl.txt.run1.root" st="3" d_type="signal" d_count="161"
+
+JOB job_ARA_S3_signal_162 ARA_job.sub 
+VARS job_ARA_S3_signal_162 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuE_signal_rayl.txt.run2.root" st="3" d_type="signal" d_count="162"
+
+JOB job_ARA_S3_signal_163 ARA_job.sub 
+VARS job_ARA_S3_signal_163 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuE_signal_rayl.txt.run3.root" st="3" d_type="signal" d_count="163"
+
+JOB job_ARA_S3_signal_164 ARA_job.sub 
+VARS job_ARA_S3_signal_164 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuE_signal_rayl.txt.run4.root" st="3" d_type="signal" d_count="164"
+
+JOB job_ARA_S3_signal_165 ARA_job.sub 
+VARS job_ARA_S3_signal_165 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuE_signal_rayl.txt.run5.root" st="3" d_type="signal" d_count="165"
+
+JOB job_ARA_S3_signal_166 ARA_job.sub 
+VARS job_ARA_S3_signal_166 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuE_signal_rayl.txt.run6.root" st="3" d_type="signal" d_count="166"
+
+JOB job_ARA_S3_signal_167 ARA_job.sub 
+VARS job_ARA_S3_signal_167 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuE_signal_rayl.txt.run7.root" st="3" d_type="signal" d_count="167"
+
+JOB job_ARA_S3_signal_168 ARA_job.sub 
+VARS job_ARA_S3_signal_168 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuE_signal_rayl.txt.run8.root" st="3" d_type="signal" d_count="168"
+
+JOB job_ARA_S3_signal_169 ARA_job.sub 
+VARS job_ARA_S3_signal_169 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C2_E100_NuE_signal_rayl.txt.run9.root" st="3" d_type="signal" d_count="169"
+
+JOB job_ARA_S3_signal_170 ARA_job.sub 
+VARS job_ARA_S3_signal_170 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuTau_signal_rayl.txt.run0.root" st="3" d_type="signal" d_count="170"
+
+JOB job_ARA_S3_signal_171 ARA_job.sub 
+VARS job_ARA_S3_signal_171 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuTau_signal_rayl.txt.run1.root" st="3" d_type="signal" d_count="171"
+
+JOB job_ARA_S3_signal_172 ARA_job.sub 
+VARS job_ARA_S3_signal_172 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuTau_signal_rayl.txt.run2.root" st="3" d_type="signal" d_count="172"
+
+JOB job_ARA_S3_signal_173 ARA_job.sub 
+VARS job_ARA_S3_signal_173 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuTau_signal_rayl.txt.run3.root" st="3" d_type="signal" d_count="173"
+
+JOB job_ARA_S3_signal_174 ARA_job.sub 
+VARS job_ARA_S3_signal_174 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuTau_signal_rayl.txt.run4.root" st="3" d_type="signal" d_count="174"
+
+JOB job_ARA_S3_signal_175 ARA_job.sub 
+VARS job_ARA_S3_signal_175 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuTau_signal_rayl.txt.run5.root" st="3" d_type="signal" d_count="175"
+
+JOB job_ARA_S3_signal_176 ARA_job.sub 
+VARS job_ARA_S3_signal_176 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuTau_signal_rayl.txt.run6.root" st="3" d_type="signal" d_count="176"
+
+JOB job_ARA_S3_signal_177 ARA_job.sub 
+VARS job_ARA_S3_signal_177 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuTau_signal_rayl.txt.run7.root" st="3" d_type="signal" d_count="177"
+
+JOB job_ARA_S3_signal_178 ARA_job.sub 
+VARS job_ARA_S3_signal_178 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuTau_signal_rayl.txt.run8.root" st="3" d_type="signal" d_count="178"
+
+JOB job_ARA_S3_signal_179 ARA_job.sub 
+VARS job_ARA_S3_signal_179 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C1_E100_NuTau_signal_rayl.txt.run9.root" st="3" d_type="signal" d_count="179"
+
+JOB job_ARA_S3_signal_180 ARA_job.sub 
+VARS job_ARA_S3_signal_180 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuE_signal_rayl.txt.run0.root" st="3" d_type="signal" d_count="180"
+
+JOB job_ARA_S3_signal_181 ARA_job.sub 
+VARS job_ARA_S3_signal_181 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuE_signal_rayl.txt.run1.root" st="3" d_type="signal" d_count="181"
+
+JOB job_ARA_S3_signal_182 ARA_job.sub 
+VARS job_ARA_S3_signal_182 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuE_signal_rayl.txt.run2.root" st="3" d_type="signal" d_count="182"
+
+JOB job_ARA_S3_signal_183 ARA_job.sub 
+VARS job_ARA_S3_signal_183 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuE_signal_rayl.txt.run3.root" st="3" d_type="signal" d_count="183"
+
+JOB job_ARA_S3_signal_184 ARA_job.sub 
+VARS job_ARA_S3_signal_184 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuE_signal_rayl.txt.run4.root" st="3" d_type="signal" d_count="184"
+
+JOB job_ARA_S3_signal_185 ARA_job.sub 
+VARS job_ARA_S3_signal_185 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuE_signal_rayl.txt.run5.root" st="3" d_type="signal" d_count="185"
+
+JOB job_ARA_S3_signal_186 ARA_job.sub 
+VARS job_ARA_S3_signal_186 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuE_signal_rayl.txt.run6.root" st="3" d_type="signal" d_count="186"
+
+JOB job_ARA_S3_signal_187 ARA_job.sub 
+VARS job_ARA_S3_signal_187 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuE_signal_rayl.txt.run7.root" st="3" d_type="signal" d_count="187"
+
+JOB job_ARA_S3_signal_188 ARA_job.sub 
+VARS job_ARA_S3_signal_188 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuE_signal_rayl.txt.run8.root" st="3" d_type="signal" d_count="188"
+
+JOB job_ARA_S3_signal_189 ARA_job.sub 
+VARS job_ARA_S3_signal_189 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C6_E100_NuE_signal_rayl.txt.run9.root" st="3" d_type="signal" d_count="189"
+
+JOB job_ARA_S3_signal_190 ARA_job.sub 
+VARS job_ARA_S3_signal_190 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuTau_signal_rayl.txt.run0.root" st="3" d_type="signal" d_count="190"
+
+JOB job_ARA_S3_signal_191 ARA_job.sub 
+VARS job_ARA_S3_signal_191 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuTau_signal_rayl.txt.run1.root" st="3" d_type="signal" d_count="191"
+
+JOB job_ARA_S3_signal_192 ARA_job.sub 
+VARS job_ARA_S3_signal_192 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuTau_signal_rayl.txt.run2.root" st="3" d_type="signal" d_count="192"
+
+JOB job_ARA_S3_signal_193 ARA_job.sub 
+VARS job_ARA_S3_signal_193 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuTau_signal_rayl.txt.run3.root" st="3" d_type="signal" d_count="193"
+
+JOB job_ARA_S3_signal_194 ARA_job.sub 
+VARS job_ARA_S3_signal_194 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuTau_signal_rayl.txt.run4.root" st="3" d_type="signal" d_count="194"
+
+JOB job_ARA_S3_signal_195 ARA_job.sub 
+VARS job_ARA_S3_signal_195 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuTau_signal_rayl.txt.run5.root" st="3" d_type="signal" d_count="195"
+
+JOB job_ARA_S3_signal_196 ARA_job.sub 
+VARS job_ARA_S3_signal_196 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuTau_signal_rayl.txt.run6.root" st="3" d_type="signal" d_count="196"
+
+JOB job_ARA_S3_signal_197 ARA_job.sub 
+VARS job_ARA_S3_signal_197 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuTau_signal_rayl.txt.run7.root" st="3" d_type="signal" d_count="197"
+
+JOB job_ARA_S3_signal_198 ARA_job.sub 
+VARS job_ARA_S3_signal_198 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuTau_signal_rayl.txt.run8.root" st="3" d_type="signal" d_count="198"
+
+JOB job_ARA_S3_signal_199 ARA_job.sub 
+VARS job_ARA_S3_signal_199 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C7_E100_NuTau_signal_rayl.txt.run9.root" st="3" d_type="signal" d_count="199"
+
+JOB job_ARA_S3_signal_200 ARA_job.sub 
+VARS job_ARA_S3_signal_200 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuMu_signal_rayl.txt.run0.root" st="3" d_type="signal" d_count="200"
+
+JOB job_ARA_S3_signal_201 ARA_job.sub 
+VARS job_ARA_S3_signal_201 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuMu_signal_rayl.txt.run1.root" st="3" d_type="signal" d_count="201"
+
+JOB job_ARA_S3_signal_202 ARA_job.sub 
+VARS job_ARA_S3_signal_202 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuMu_signal_rayl.txt.run2.root" st="3" d_type="signal" d_count="202"
+
+JOB job_ARA_S3_signal_203 ARA_job.sub 
+VARS job_ARA_S3_signal_203 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuMu_signal_rayl.txt.run3.root" st="3" d_type="signal" d_count="203"
+
+JOB job_ARA_S3_signal_204 ARA_job.sub 
+VARS job_ARA_S3_signal_204 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuMu_signal_rayl.txt.run4.root" st="3" d_type="signal" d_count="204"
+
+JOB job_ARA_S3_signal_205 ARA_job.sub 
+VARS job_ARA_S3_signal_205 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuMu_signal_rayl.txt.run5.root" st="3" d_type="signal" d_count="205"
+
+JOB job_ARA_S3_signal_206 ARA_job.sub 
+VARS job_ARA_S3_signal_206 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuMu_signal_rayl.txt.run6.root" st="3" d_type="signal" d_count="206"
+
+JOB job_ARA_S3_signal_207 ARA_job.sub 
+VARS job_ARA_S3_signal_207 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuMu_signal_rayl.txt.run7.root" st="3" d_type="signal" d_count="207"
+
+JOB job_ARA_S3_signal_208 ARA_job.sub 
+VARS job_ARA_S3_signal_208 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuMu_signal_rayl.txt.run8.root" st="3" d_type="signal" d_count="208"
+
+JOB job_ARA_S3_signal_209 ARA_job.sub 
+VARS job_ARA_S3_signal_209 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuMu_signal_rayl.txt.run9.root" st="3" d_type="signal" d_count="209"
+

@@ -1,0 +1,17 @@
+log    = /scratch/mkim/wipac_sim_signal/logs/A$(st).$(d_type).$(d_count).log
+output = /scratch/mkim/wipac_sim_signal/logs/A$(st).$(d_type).$(d_count).out
+error  = /scratch/mkim/wipac_sim_signal/logs/A$(st).$(d_type).$(d_count).err
+
+request_memory = 1GB
+
+Universe = vanilla
+getenv = true
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+
+nice_user = false
+
+executable = ARA_job.sh
+arguments = $(st) $(data)
+
+queue

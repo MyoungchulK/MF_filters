@@ -58,7 +58,7 @@ def rayl_sim_collector(Data, Station, Year):
     # rayl fit 
     binning = np.array([1000], dtype = int)
     rayl, rfft_2d, bin_edges = get_rayl_distribution(rffts, binning = binning[0])
-    #del rffts
+    del rffts
 
     # signal chain
     ara_sc = signal_chain_loader(Station, freq_range)
@@ -73,7 +73,7 @@ def rayl_sim_collector(Data, Station, Year):
             'rayl':rayl,
             'rfft_2d':rfft_2d,
             'bin_edges':bin_edges,
-            'rffts':rffts,
+            #'rffts':rffts,
             'dt':dt,
             'wf_len':wf_len,
             'sc':sc}
