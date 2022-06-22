@@ -1,8 +1,8 @@
-log    = /scratch/mkim/wipac_sim_signal/logs/A$(st).$(d_type).$(d_count).log
-output = /scratch/mkim/wipac_sim_signal/logs/A$(st).$(d_type).$(d_count).out
-error  = /scratch/mkim/wipac_sim_signal/logs/A$(st).$(d_type).$(d_count).err
+log    = /scratch/mkim/wipac_sim_mf/logs/A$(st).$(d_type).$(d_count).log
+output = /scratch/mkim/wipac_sim_mf/logs/A$(st).$(d_type).$(d_count).out
+error  = /scratch/mkim/wipac_sim_mf/logs/A$(st).$(d_type).$(d_count).err
 
-request_memory = 1GB
+request_memory = 2GB
 
 Universe = vanilla
 getenv = true
@@ -12,6 +12,6 @@ when_to_transfer_output = ON_EXIT
 nice_user = false
 
 executable = ARA_job.sh
-arguments = $(st) $(data)
+arguments = $(st) $(year) $(data)
 
 queue
