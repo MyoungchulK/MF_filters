@@ -611,20 +611,20 @@ JOB job_ARA_S3_signal_203 ARA_job.sub
 VARS job_ARA_S3_signal_203 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuMu_signal_rayl.txt.run3.root" st="3" year="2015" d_type="signal" d_count="203"
 
 JOB job_ARA_S3_signal_204 ARA_job.sub 
-VARS job_ARA_S3_signal_204 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuMu_signal_rayl.txt.run4.root" st="3" year="2015" d_type="signal" d_count="204"
+VARS job_ARA_S3_signal_204 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuMu_signal_rayl.txt.run5.root" st="3" year="2015" d_type="signal" d_count="204"
 
 JOB job_ARA_S3_signal_205 ARA_job.sub 
-VARS job_ARA_S3_signal_205 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuMu_signal_rayl.txt.run5.root" st="3" year="2015" d_type="signal" d_count="205"
+VARS job_ARA_S3_signal_205 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuMu_signal_rayl.txt.run7.root" st="3" year="2015" d_type="signal" d_count="205"
 
 JOB job_ARA_S3_signal_206 ARA_job.sub 
-VARS job_ARA_S3_signal_206 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuMu_signal_rayl.txt.run6.root" st="3" year="2015" d_type="signal" d_count="206"
+VARS job_ARA_S3_signal_206 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuMu_signal_rayl.txt.run8.root" st="3" year="2015" d_type="signal" d_count="206"
 
 JOB job_ARA_S3_signal_207 ARA_job.sub 
-VARS job_ARA_S3_signal_207 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuMu_signal_rayl.txt.run7.root" st="3" year="2015" d_type="signal" d_count="207"
+VARS job_ARA_S3_signal_207 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuMu_signal_rayl.txt.run9.root" st="3" year="2015" d_type="signal" d_count="207"
 
 JOB job_ARA_S3_signal_208 ARA_job.sub 
-VARS job_ARA_S3_signal_208 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuMu_signal_rayl.txt.run8.root" st="3" year="2015" d_type="signal" d_count="208"
+VARS job_ARA_S3_signal_208 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuMu_signal_rayl.txt.run4.root" st="3" year="2015" d_type="signal" d_count="208"
 
 JOB job_ARA_S3_signal_209 ARA_job.sub 
-VARS job_ARA_S3_signal_209 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuMu_signal_rayl.txt.run9.root" st="3" year="2015" d_type="signal" d_count="209"
+VARS job_ARA_S3_signal_209 data="/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal/AraOut.A3_C3_E100_NuMu_signal_rayl.txt.run6.root" st="3" year="2015" d_type="signal" d_count="209"
 
