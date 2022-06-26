@@ -11,7 +11,7 @@ out=${ped_path}ped_full_values_A${station}_R${run}.dat
 # run the reconstruction script
 export HDF5_USE_FILE_LOCKING='FALSE'
 source /cvmfs/ara.opensciencegrid.org/trunk/centos7/setup.sh
-source /home/mkim/analysis/AraSoft/for_local_araroot.sh
+source /home/mkim/analysis/MF_filters/setup.sh
 cd /home/mkim/analysis/AraSoft/AraUtil/bin/
 
 ./repeder -d -m 0 -M 4096 -q ${qual} ${data} ${out}
