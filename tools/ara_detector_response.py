@@ -66,7 +66,7 @@ class signal_chain_loader:
 
     def get_in_ice_noise_table(self, use_int = False):
 
-        ntot_name = f'../data/in_ice_noise_est/A{self.st}_Ntot_Lab.txt'
+        ntot_name = f'../data/in_ice_noise_est/A{self.st}_Ntot_Lab_real.txt'
         print(f'Ntot_path: {ntot_name}')
         ntot_file = np.loadtxt(ntot_name)
 

@@ -58,14 +58,20 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
 
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_rfft = True, use_band_pass = True)
-    dt = np.array([wf_int.dt], dtype = int)
+    dt = np.array([wf_int.dt], dtype = float)
     fft_len = wf_int.pad_fft_len
     freq_range = wf_int.pad_zero_freq 
+    #pad_len = wf_int.pad_len
 
     # output 
-    wf_len = np.full((num_ants, num_clean_rf_evts), np.nan, dtype = float)
+    rf_len = np.full((num_ants, num_clean_rf_evts), np.nan, dtype = float)
+    soft_len = np.full((num_ants, num_clean_soft_evts), np.nan, dtype = float)
+    rf_std = np.copy(rf_len)
+    soft_std = np.copy(soft_len)
     clean_rf_rffts = np.full((fft_len, num_ants, num_clean_rf_evts), np.nan, dtype = float)
     clean_soft_rffts = np.full((fft_len, num_ants, num_clean_soft_evts), np.nan, dtype = float)
+    #clean_rf_wfs = np.full((pad_len, num_ants, num_clean_rf_evts), np.nan, dtype = float)
+    #clean_soft_wfs = np.full((pad_len, num_ants, num_clean_soft_evts), np.nan, dtype = float)
     print(f'fft array dim.: {clean_rf_rffts.shape}, {clean_soft_rffts.shape}')
     print(f'fft array size: ~{np.round(clean_rf_rffts.nbytes/1024/1024)} MB, ~{np.round(clean_soft_rffts.nbytes/1024/1024)} MB')
     del fft_len
@@ -82,7 +88,18 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
             # get entry and wf
             ara_root.get_entry(clean_entry[evt])
             ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
-        
+            """
+            # loop over the antennas
+            for ant in range(num_ants):
+                raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
+                wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = False, use_band_pass = True)
+                del raw_t, raw_v
+                ara_root.del_TGraph()
+            if trig == 0:
+                clean_rf_wfs[:, :, evt] = wf_int.pad_v
+            else:
+                clean_soft_wfs[:, :, evt] = wf_int.pad_v
+            """
             # loop over the antennas
             for ant in range(num_ants):
                 raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
@@ -91,11 +108,14 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
                 ara_root.del_TGraph()
             ara_root.del_usefulEvt()
 
-            wf_len[:, evt] = wf_int.pad_num
             wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_abs = True, use_norm = True)
             if trig == 0:
+                rf_len[:, evt] = wf_int.pad_num
+                rf_std[:, evt] = np.nanstd(wf_int.pad_v, axis = 0)
                 clean_rf_rffts[:, :, evt] = wf_int.pad_fft
             else:
+                soft_len[:, evt] = wf_int.pad_num
+                soft_std[:, evt] = np.nanstd(wf_int.pad_v, axis = 0)
                 clean_soft_rffts[:, :, evt] = wf_int.pad_fft
         del num_clean_evts, clean_entry
     del num_ants, ara_root, wf_int, c_evts, c_entry, clean_rf_entry, clean_soft_entry, num_clean_rf_evts, num_clean_soft_evts
@@ -122,12 +142,19 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
             'pps_number':pps_number,
             'total_qual_cut':total_qual_cut,
             'freq_range':freq_range,
+            #'clean_rf_wfs':clean_rf_wfs,
+            #'clean_soft_wfs':clean_soft_wfs,
+            #'clean_rf_rffts':clean_rf_rffts,
+            #'clean_soft_rffts':clean_soft_rffts,
             'clean_rf_bin_edges':clean_rf_bin_edges,
             'clean_soft_bin_edges':clean_soft_bin_edges,
             'clean_rf_rfft_2d':clean_rf_rfft_2d,
             'clean_soft_rfft_2d':clean_soft_rfft_2d,
             'binning':binning,
-            'wf_len':wf_len,
+            'rf_len':rf_len,
+            'soft_len':soft_len,
+            'rf_std':rf_std,
+            'soft_std':soft_std,
             'dt':dt,
             'rf_rayl':rf_rayl,
             'soft_rayl':soft_rayl,

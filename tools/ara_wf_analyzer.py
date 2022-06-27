@@ -55,9 +55,14 @@ class wf_analyzer:
         # from a2/3 length
         pad_i = -186.5
         pad_f = 953
+        pad_i = self.dt * np.ceil((1/self.dt) * pad_i)
+        pad_f = self.dt * np.floor((1/self.dt) * pad_f)
         pad_w = int((pad_f - pad_i) / self.dt) + 1
 
         if new_wf_time is not None:
+            new_wf_i = self.dt * np.floor((1/self.dt) * new_wf_time[0])
+            new_wf_f = self.dt * np.ceil((1/self.dt) * new_wf_time[-1])
+            new_wf_time = np.linspace(new_wf_i, new_wf_f, int((new_wf_f - new_wf_i)/self.dt) + 1, dtype = float)
             new_wf_len = len(new_wf_time)
             pad_diff = pad_w - new_wf_len
             pad_front = pad_diff // 2
@@ -66,7 +71,7 @@ class wf_analyzer:
             pad_i = -pad_front * self.dt + new_wf_time[0]
             pad_f = pad_end * self.dt + new_wf_time[-1]
             pad_w = np.copy(int((pad_f - pad_i) / self.dt) + 1)
-            del new_wf_len, pad_diff, pad_front, pad_end
+            del new_wf_i, new_wf_f, new_wf_len, pad_diff, pad_front, pad_end
 
         if add_double_pad:
             half_pad_t = pad_w * self.dt / 2
@@ -91,7 +96,7 @@ class wf_analyzer:
             self.pad_zero_freq = np.fft.fftfreq(self.pad_len, self.dt)
         self.pad_fft_len = len(self.pad_zero_freq)
         self.df = 1 / (self.pad_len *  self.dt) 
-        self.dt_sq = np.sqrt(self.dt)        
+        self.sqrt_dt = np.sqrt(self.dt)        
 
     def get_int_time(self, raw_ti, raw_tf):
 
@@ -161,7 +166,7 @@ class wf_analyzer:
         if use_norm:
             # mv*N to mv/sqrt(GHz)
             self.pad_fft /= np.sqrt(self.pad_num)[np.newaxis, :]
-            self.pad_fft *= self.dt_sq
+            self.pad_fft *= self.sqrt_dt
         
         if use_abs:
             self.pad_fft = np.abs(self.pad_fft)
