@@ -1,4 +1,3 @@
-import sys
 import numpy as np
 from scipy.interpolate import Akima1DInterpolator
 from scipy.signal import butter, filtfilt
