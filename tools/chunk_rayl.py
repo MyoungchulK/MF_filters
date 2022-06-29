@@ -61,7 +61,7 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
     dt = np.array([wf_int.dt], dtype = float)
     fft_len = wf_int.pad_fft_len
     freq_range = wf_int.pad_zero_freq 
-    #pad_len = wf_int.pad_len
+    pad_len = wf_int.pad_len
 
     # output 
     rf_len = np.full((num_ants, num_clean_rf_evts), np.nan, dtype = float)
@@ -70,8 +70,8 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
     soft_std = np.copy(soft_len)
     clean_rf_rffts = np.full((fft_len, num_ants, num_clean_rf_evts), np.nan, dtype = float)
     clean_soft_rffts = np.full((fft_len, num_ants, num_clean_soft_evts), np.nan, dtype = float)
-    #clean_rf_wfs = np.full((pad_len, num_ants, num_clean_rf_evts), np.nan, dtype = float)
-    #clean_soft_wfs = np.full((pad_len, num_ants, num_clean_soft_evts), np.nan, dtype = float)
+    clean_rf_wfs = np.full((pad_len, num_ants, num_clean_rf_evts), np.nan, dtype = float)
+    clean_soft_wfs = np.full((pad_len, num_ants, num_clean_soft_evts), np.nan, dtype = float)
     print(f'fft array dim.: {clean_rf_rffts.shape}, {clean_soft_rffts.shape}')
     print(f'fft array size: ~{np.round(clean_rf_rffts.nbytes/1024/1024)} MB, ~{np.round(clean_soft_rffts.nbytes/1024/1024)} MB')
     del fft_len
@@ -88,7 +88,7 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
             # get entry and wf
             ara_root.get_entry(clean_entry[evt])
             ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
-            """
+            
             # loop over the antennas
             for ant in range(num_ants):
                 raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
@@ -99,7 +99,7 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
                 clean_rf_wfs[:, :, evt] = wf_int.pad_v
             else:
                 clean_soft_wfs[:, :, evt] = wf_int.pad_v
-            """
+            
             # loop over the antennas
             for ant in range(num_ants):
                 raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
@@ -124,7 +124,7 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
     binning = np.array([1000], dtype = int)
     rf_rayl, clean_rf_rfft_2d, clean_rf_bin_edges = get_rayl_distribution(clean_rf_rffts, binning = binning[0])
     soft_rayl, clean_soft_rfft_2d, clean_soft_bin_edges = get_rayl_distribution(clean_soft_rffts, binning = binning[0])
-    del clean_rf_rffts, clean_soft_rffts
+    #del clean_rf_rffts, clean_soft_rffts
 
     # signal chain
     ara_sc = signal_chain_loader(st, freq_range)
@@ -142,10 +142,10 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
             'pps_number':pps_number,
             'total_qual_cut':total_qual_cut,
             'freq_range':freq_range,
-            #'clean_rf_wfs':clean_rf_wfs,
-            #'clean_soft_wfs':clean_soft_wfs,
-            #'clean_rf_rffts':clean_rf_rffts,
-            #'clean_soft_rffts':clean_soft_rffts,
+            'clean_rf_wfs':clean_rf_wfs,
+            'clean_soft_wfs':clean_soft_wfs,
+            'clean_rf_rffts':clean_rf_rffts,
+            'clean_soft_rffts':clean_soft_rffts,
             'clean_rf_bin_edges':clean_rf_bin_edges,
             'clean_soft_bin_edges':clean_soft_bin_edges,
             'clean_rf_rfft_2d':clean_rf_rfft_2d,
