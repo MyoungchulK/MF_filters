@@ -56,7 +56,7 @@ def cw_lite_collector(Data, Ped, analyze_blind_dat = False):
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, cw_params = cw_params)
 
     # output
-    sol_pad = 200
+    sol_pad = 100
     sub_ratio = np.full((sol_pad, num_ants, num_clean_evts), np.nan, dtype = float)
     sub_ratio[0, ~bad_ant] = 0
     sub_power = np.copy(sub_ratio)
