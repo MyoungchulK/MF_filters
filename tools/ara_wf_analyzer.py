@@ -33,7 +33,8 @@ class wf_analyzer:
             ratio_cut = np.full((num_ants), 0.05, dtype = float)
             if cw_params is not None:
                 ratio_cut = cw_params
-            self.sin_sub = sin_subtract_loader(3, 0.125, 0.85, self.dt, ratio_cut) # debug
+            #self.sin_sub = sin_subtract_loader(3, 0.125, 0.85, self.dt, ratio_cut) # debug
+            self.sin_sub = sin_subtract_loader(3, 0.38, 0.42, self.dt, ratio_cut) # debug
 
     def get_band_pass_filter(self, low_freq_cut = 0.13, high_freq_cut = 0.85, order = 10, pass_type = 'band'):
 
@@ -54,21 +55,15 @@ class wf_analyzer:
         # from a2/3 length
         pad_i = -186.5
         pad_f = 953
-        print(pad_i, pad_f)
-        pad_i = self.dt * np.ceil((1/self.dt) * pad_i)
-        pad_f = self.dt * np.floor((1/self.dt) * pad_f)
+        #pad_i = self.dt * np.ceil((1/self.dt) * pad_i)
+        #pad_f = self.dt * np.floor((1/self.dt) * pad_f)
         pad_w = int((pad_f - pad_i) / self.dt) + 1
-        print(pad_i, pad_f)
-        print(pad_w)
 
         if new_wf_time is not None:
-            print(new_wf_time[0], new_wf_time[-1])
             new_wf_i = self.dt * np.ceil((1/self.dt) * new_wf_time[0])
             new_wf_f = self.dt * np.floor((1/self.dt) * new_wf_time[-1])
-            print(new_wf_i, new_wf_f)
             #new_wf_time = np.linspace(new_wf_i, new_wf_f, int((new_wf_f - new_wf_i)/self.dt) + 1, dtype = float)
             new_wf_time = np.arange(new_wf_i, new_wf_f+self.dt/2, self.dt, dtype = float)
-            print(new_wf_time)
             new_wf_len = len(new_wf_time)
             pad_diff = pad_w - new_wf_len
             pad_front = pad_diff // 2
@@ -78,8 +73,6 @@ class wf_analyzer:
             pad_f = pad_end * self.dt + new_wf_time[-1]
             pad_w = np.copy(int((pad_f - pad_i) / self.dt) + 1)
             del new_wf_i, new_wf_f, new_wf_len, pad_diff, pad_front, pad_end
-            print(pad_i, pad_f)
-            print(pad_w)
 
         if add_double_pad:
             half_pad_t = pad_w * self.dt / 2
@@ -90,7 +83,6 @@ class wf_analyzer:
 
         #self.pad_zero_t = np.linspace(pad_i, pad_f, pad_w, dtype = float)
         self.pad_zero_t = np.arange(pad_i, pad_f+self.dt/2, self.dt, dtype = float)
-        print(self.pad_zero_t)
         self.pad_len = len(self.pad_zero_t)
         self.pad_t = np.full((self.pad_len, self.num_chs), np.nan, dtype = float)
         self.pad_v = np.copy(self.pad_t)
