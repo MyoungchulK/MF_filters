@@ -31,6 +31,7 @@ def cw_lite_collector(Data, Ped, analyze_blind_dat = False):
     trig_type = ara_uproot.get_trig_type() 
     unix_min_bins = ara_uproot.get_minute_bins_in_unixtime()
     ara_root = ara_root_loader(Data, Ped, st, ara_uproot.year)
+    del ara_uproot
 
     knwon_issue = known_issue_loader(st)
     bad_ant = knwon_issue.get_bad_antenna(run) == 1 
@@ -49,11 +50,12 @@ def cw_lite_collector(Data, Ped, analyze_blind_dat = False):
     clean_evt = evt_num[clean_evt_idx]
     num_clean_evts = len(clean_evt)
     print(f'Number of clean event is {num_clean_evts}')
-    del clean_evt_idx, run_info, daq_cut_dat, daq_cut_hf, daq_cut, st, run
+    del clean_evt_idx, run_info, daq_cut_dat, daq_cut_hf, daq_cut, st, run, entry_num
 
     # wf analyzer
     cw_params = np.full((num_ants), 0.02, dtype = float)
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, cw_params = cw_params)
+    del cw_params
 
     # output
     sol_pad = 100
@@ -110,7 +112,7 @@ def cw_lite_collector(Data, Ped, analyze_blind_dat = False):
 
     unix_ratio_rf_cut_map = ara_hist.get_2d_hist(clean_unix_all, sub_ratio, weight = sub_weight, use_flat = True)
     unix_ratio_rf_cut_map_max = ara_hist.get_2d_hist_max(unix_ratio_rf_cut_map)
-    del ara_hist, sol_pad, clean_unix_ant, clean_unix_all
+    del ara_hist, sol_pad, clean_unix_ant, clean_unix_all, num_ants
 
     print('cw collecting is done!')
 
