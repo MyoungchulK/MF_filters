@@ -62,68 +62,6 @@ class run_info_loader:
 
         return run_6_digit
 
-    def get_data_path_from_list(self, file_type = 'event', verbose = False, return_none = False):
-    
-        blind_type = ''
-        if self.analyze_blind_dat:
-            blind_type = '_full'
-
-        dat_path = '0'
-        dat_goal = '0'
-        dat_ls_path = '0'
-
-        list_path = '../data/run_list/'
-        list_name = f'{list_path}A{self.st}_run_list{blind_type}.txt'        
-        if verbose:
-            print(f'list_path:{list_name}')
-        list_file =  open(list_name, "r")
-        for lines in list_file:
-            line = lines.split()
-            run_num = int(line[0])
-            if self.run == run_num:
-                dat_str = line[1]                
-                yrs_key = '/20'
-                yrs_idx = dat_str.find(yrs_key) 
-                dat_path = os.path.expandvars("$RAW_PATH") + dat_str[yrs_idx:]
-                ls_key = 'event'
-                ls_idx = dat_str.find(ls_key)
-                dat_ls_path = os.path.expandvars("$RAW_PATH") + dat_str[yrs_idx:ls_idx]
-                dat_goal = dat_path
-                if file_type != 'event':
-                    dat_goal = f'{dat_ls_path}{file_type}[{run_num}].root'
-                    dat_path = glob(f'{dat_ls_path}{file_type}*')
-                    if len(dat_path) != 1:
-                        print(f'There is no desired {file_type} data!')
-                        print(f'File on the search: {dat_goal}')
-                        print(f'Possible location: {dat_ls_path}')
-                        try:
-                            print('Files in the location:', os.listdir(dat_ls_path))
-                        except FileNotFoundError:
-                            pass
-                        if return_none == True:
-                            return None
-                        else:
-                            sys.exit(1)
-                    else:
-                        dat_path = dat_path[0]
-                del dat_str, yrs_key, yrs_idx, ls_key, ls_idx
-                break
-            del line, run_num
-        list_file.close()
-        del list_path, list_name, list_file, blind_type
-
-        if os.path.exists(dat_path):
-            if verbose:
-                print(f'{file_type}_dat_path:{dat_path}')
-        else:
-            print(f'There is no desired {file_type} data!')
-            if return_none == True:
-                return None
-            else:
-                sys.exit(1)
-
-        return dat_path
-
     def get_data_path(self, file_type = 'event', verbose = False, return_none = False):
 
         if self.analyze_blind_dat == True:
@@ -189,12 +127,9 @@ class run_info_loader:
 
         return dat_path
 
-    def get_data_ped_path(self, file_type = 'event', verbose = False, return_none = False, return_dat_only = False, use_path_search = False):
+    def get_data_ped_path(self, file_type = 'event', verbose = False, return_none = False, return_dat_only = False):
 
-        if use_path_search:
-            dat_path = self.get_data_path(file_type = file_type, verbose = verbose, return_none = return_none)
-        else:
-            dat_path = self.get_data_path_from_list(file_type = file_type, verbose = verbose, return_none = return_none)
+        dat_path = self.get_data_path(file_type = file_type, verbose = verbose, return_none = return_none)
         if return_dat_only == True:
             ped_path = '0'
         else:
@@ -215,13 +150,10 @@ class run_info_loader:
 
         return val
 
-    def get_data_info(self, use_path_search = False):
+    def get_data_info(self):
 
         # salvage just number
-        if use_path_search:
-            dat_path = self.get_data_path()
-        else:
-            dat_path = self.get_data_path_from_list()
+        dat_path = self.get_data_path()
 
         config = self.get_config_number() 
         year = int(self.get_path_info(dat_path, 'ARA/', '/'))

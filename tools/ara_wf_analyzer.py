@@ -35,6 +35,7 @@ class wf_analyzer:
                 ratio_cut = cw_params
             #self.sin_sub = sin_subtract_loader(3, 0.125, 0.85, self.dt, ratio_cut) # debug
             self.sin_sub = sin_subtract_loader(3, 0.395, 0.415, self.dt, ratio_cut) # debug
+            #self.sin_sub = sin_subtract_loader(3, 0.24, 0.26, self.dt, ratio_cut) # debug
 
     def get_band_pass_filter(self, low_freq_cut = 0.13, high_freq_cut = 0.85, order = 10, pass_type = 'band'):
 

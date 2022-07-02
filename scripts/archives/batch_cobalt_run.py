@@ -6,32 +6,26 @@ from subprocess import call
 # custom lib
 curr_path = os.getcwd()
 sys.path.append(curr_path+'/../')
+from tools.ara_run_manager import batch_info_loader
 
 def cobalt_run_loader(Station = None, Key = None, Act_Evt = None, analyze_blind_dat = False):
 
     print('cobalt run starts!')
     print('event range:', Act_Evt)
 
-    blind_type = ''
-    if analyze_blind_dat:
-        blind_type = '_full'
-    list_path = '../data/run_list/'
-    list_name = f'{list_path}A{Station}_run_list{blind_type}.txt'
-    list_file =  open(list_name, "r")
-    lists = []
-    for lines in list_file:
-        line = lines.split()
-        run_num = int(line[0])
-        lists.append(run_num)
-        del line
-    list_file.close()
-    del list_path, list_name, list_file, blind_type
-    lists = np.asarray(lists, dtype = int)
+    batch_info = batch_info_loader(Station)
+    lists = batch_info.get_dat_list(analyze_blind_dat = analyze_blind_dat)[0]
+
+    #print(lists[652])
+    #print(lists[667])
 
     count = 0
     for w in tqdm(lists):
 
         if count >= Act_Evt[0] and count < Act_Evt[1]:
+
+            #BASH_line = f'source ../../AraSoft/for_local_araroot.sh'
+            #call(BASH_line.split(' '))
 
             CMD_line = f'python3 -W ignore script_executor.py {Key} {Station} {int(w)} {int(analyze_blind_dat)}'
             print(CMD_line)
