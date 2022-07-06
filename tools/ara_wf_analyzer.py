@@ -39,7 +39,7 @@ class wf_analyzer:
             freq_cut[:, 1] = 0.85
             if cw_freq is not None:
                 freq_cut = cw_freq
-            self.sin_sub = sin_subtract_loader(freq_cut, ratio_cut, 3, num_params = num_params, self.dt, sol_pad = 30, use_filter = True)
+            self.sin_sub = sin_subtract_loader(freq_cut, ratio_cut, 3, num_params = num_params, dt = self.dt, sol_pad = 30, use_filter = True)
 
     def get_band_pass_filter(self, low_freq_cut = 0.13, high_freq_cut = 0.85, order = 10, pass_type = 'band'):
 
