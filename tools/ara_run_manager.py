@@ -255,6 +255,7 @@ class run_info_loader:
 
         # default. unknown
         config=0
+        self.num_configs = 0
 
         # by statation
         if self.st == 2:
@@ -281,6 +282,7 @@ class run_info_loader:
                 config=6
             else:
                 pass
+            self.num_configs = 6
 
         elif self.st == 3:
             if self.run>=0 and self.run<=4:
@@ -305,6 +307,7 @@ class run_info_loader:
                 config=7
             else:
                 pass
+            self.num_configs = 7
 
         elif self.st == 5:
             pass

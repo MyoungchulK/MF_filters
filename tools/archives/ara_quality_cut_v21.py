@@ -513,15 +513,18 @@ class post_qual_cut_loader:
         from tools.ara_wf_analyzer import wf_analyzer
         self.wf_int = wf_analyzer(dt = dt, use_time_pad = True, use_band_pass = True)
 
-        num_params, cw_thres, cw_freq = self.get_cw_params()
+        cw_thres_0125, cw_thres_025, cw_thres_04 = self.get_cw_params()
         from tools.ara_data_load import sin_subtract_loader
-        self.sin_sub = sin_subtract_loader(cw_freq, cw_thres, 3, num_params, dt, sol_pad)
-        del cw_thres, cw_freq
+        self.sin_sub_0125 = sin_subtract_loader(3, 0.125, 0.15, dt, cw_thres_0125)
+        self.sin_sub_025 = sin_subtract_loader(3, 0.24, 0.26, dt, cw_thres_025)
+        self.sin_sub_04 = sin_subtract_loader(3, 0.395, 0.415, dt, cw_thres_04)
+        del cw_thres_0125, cw_thres_025, cw_thres_04
 
         # array
         self.unlock_cal_evts = np.full((self.num_evts), 0, dtype = int)
-        self.sub_ratios = np.full((sol_pad, num_params, num_ants, self.num_evts), np.nan, dtype = float)
-        del num_params
+        self.sub_ratios_0125 = np.full((sol_pad, num_ants, self.num_evts), np.nan, dtype = float)
+        self.sub_ratios_025 = np.copy(self.sub_ratios_0125)
+        self.sub_ratios_04 = np.copy(self.sub_ratios_0125)
 
     def run_post_qual_cut(self, evt):
 
@@ -550,9 +553,19 @@ class post_qual_cut_loader:
                     continue
                 raw_t, raw_v = self.ara_root.get_rf_ch_wf(ant)
                 int_v, int_num = self.wf_int.get_int_wf(raw_t, raw_v, ant, use_unpad = True, use_band_pass = True)[1:]
-                self.sin_sub.get_sin_subtract_wf(int_v, int_num, ant, return_none = True)  
-                self.sub_ratios[:, :, ant, evt] = self.sin_sub.sub_ratios
-                del raw_t, raw_v, int_v, int_num
+                self.sin_sub_0125.get_sin_subtract_wf(int_v, int_num, ant, return_none = True)  
+                num_sols_0125 = self.sin_sub_0125.num_sols
+                if num_sols_0125:
+                    self.sub_ratios_0125[:num_sols_0125, ant, evt] = self.sin_sub_0125.sub_ratios[1:]
+                self.sin_sub_025.get_sin_subtract_wf(int_v, int_num, ant, return_none = True)  
+                num_sols_025 = self.sin_sub_025.num_sols
+                if num_sols_025:
+                    self.sub_ratios_025[:num_sols_025, ant, evt] = self.sin_sub_025.sub_ratios[1:]
+                self.sin_sub_04.get_sin_subtract_wf(int_v, int_num, ant, return_none = True)  
+                num_sols_04 = self.sin_sub_04.num_sols
+                if num_sols_04:
+                    self.sub_ratios_04[:num_sols_04, ant, evt] = self.sin_sub_04.sub_ratios[1:]
+                del raw_t, raw_v, int_v, int_num, num_sols_0125, num_sols_025, num_sols_04
                 self.ara_root.del_TGraph()
             self.ara_root.del_usefulEvt()
 
@@ -638,37 +651,44 @@ class post_qual_cut_loader:
         cw_thres[2] = cw_arr_04[:, config_idx]
 
         cw_freq = np.full((num_params, 2), np.nan, dtype = float)
-        cw_freq[0, 0] = 0.125 
-        cw_freq[0, 1] = 0.15
-        cw_freq[1, 0] = 0.24
-        cw_freq[1, 1] = 0.26
-        cw_freq[2, 0] = 0.395
-        cw_freq[2, 1] = 0.415
+        cw_freq[0, 0] 
+
+self.sin_sub_0125 = sin_subtract_loader(3, 0.125, 0.15, dt, cw_thres_0125)
+        self.sin_sub_025 = sin_subtract_loader(3, 0.24, 0.26, dt, cw_thres_025)
+        self.sin_sub_04 = sin_subtract_loader(3, 0.395, 0.415, dt, cw_thres_04)
 
         if self.verbose:
             print(f'run config: {config_idx + 1}')
-            print(f'cw params {cw_freq[0, 0]} ~ {cw_freq[0, 1]} GHz: {cw_thres[0]}')
-            print(f'cw params {cw_freq[1, 0]} ~ {cw_freq[1, 1]} GHz: {cw_thres[1]}')
-            print(f'cw params {cw_freq[2, 0]} ~ {cw_freq[2, 1]} GHz: {cw_thres[2]}')
+            print(f'cw params 0.125 GHz: {cw_thres_0125}')
+            print(f'cw params 0.25 GHz: {cw_thres_025}')
+            print(f'cw params 0.4 GHz: {cw_thres_04}')
         del config_idx, num_configs
 
-        return num_params, cw_thres, cw_freq
+        return cw_thres_0125, cw_thres_025, cw_thres_04
 
     def get_cw_events(self, cut_val = 1, use_smear = False):
 
-        cw_ants = np.any(~np.isnan(self.sub_ratios), axis = 0)
-        cw_cut = np.count_nonzero(cw_ants, axis = 1) > cut_val
-        cw_evts = np.any(cw_cut, axis = 0)
-        del cw_cut
+        cw_ants_0125 = np.any(~np.isnan(self.sub_ratios_0125), axis = 0)
+        cw_ants_025 = np.any(~np.isnan(self.sub_ratios_025), axis = 0)
+        cw_ants_04 = np.any(~np.isnan(self.sub_ratios_04), axis = 0)
+
+        cw_cut_0125 = np.count_nonzero(cw_ants_0125, axis = 0) > cut_val
+        cw_cut_025 = np.count_nonzero(cw_ants_025, axis = 0) > cut_val
+        cw_cut_04 = np.count_nonzero(cw_ants_04, axis = 0) > cut_val
+        cw_evts = np.any((cw_cut_0125, cw_cut_025, cw_cut_04), axis = 0)
+        del cw_cut_0125, cw_cut_025, cw_cut_04
     
         if use_smear:
-            cw_time = get_time_smearing(self.unix_time[cw_evts], smear_arr = np.arange(-1,2,1, dtype = int))
+            cw_time = get_time_smearing(self.unix_time[cw_evts], smear_arr = np.arange(-30,30,1, dtype = int))
             cw_evts = np.in1d(self.unix_time, cw_time)
             del cw_time
     
-        self.rp_ants = cw_ants.astype(int)
+        self.rp_ants = np.full((3, num_ants, self.num_evts), 0, dtype = int)
+        self.rp_ants[0] = cw_ants_0125.astype(int)
+        self.rp_ants[1] = cw_ants_025.astype(int)
+        self.rp_ants[2] = cw_ants_04.astype(int)
         self.rp_ants[:, :, cw_evts] = 0
-        del cw_ants
+        del cw_ants_0125, cw_ants_025, cw_ants_04
     
         cw_evts = cw_evts.astype(int)
 
@@ -686,7 +706,7 @@ class post_qual_cut_loader:
 
         tot_post_qual_cut = np.full((self.num_evts, 2), 0, dtype = int)
         tot_post_qual_cut[:, 0] = self.unlock_cal_evts
-        tot_post_qual_cut[:, 1] = self.get_cw_events(use_smear = True)
+        tot_post_qual_cut[:, 1] = self.get_cw_events(use_smear = False)
 
         self.post_qual_cut_sum = np.nansum(tot_post_qual_cut, axis = 1)
 

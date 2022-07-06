@@ -670,30 +670,63 @@ class ara_eventHk_uproot_loader:
 
 class sin_subtract_loader:
 
-    def __init__(self, max_fail_atts = 3, min_freq = 0.2, max_freq = 0.3, dt = 0.5, cw_params = None):
+    def __init__(self, cw_freq, cw_thres, max_fail_atts = 3, num_params = 3, dt = 0.5, sol_pad = 10, use_filter = False):
 
         self.dt = dt
+        self.sol_pad = sol_pad
+        self.num_params = num_params
+        self.cw_freq = cw_freq
+        self.cw_thres = cw_thres
 
         self.sin_sub = ROOT.FFTtools.SineSubtract(max_fail_atts, 0.05, False) # no store
         #self.sin_sub.setVerbose(True)
-        self.sin_sub.setFreqLimits(min_freq, max_freq)
-        #self.sin_sub.unsetFreqLimits()
 
-        self.cw_params = cw_params.astype(np.double)
+        if use_filter:
+            self.sin_sub.setFreqLimits(self.num_params, cw_freq[:, 0], cw_freq[:, 1])
 
-    def get_sin_subtract_wf(self, int_v, int_num, ant):
+    def get_filtered_wf(self, int_v, int_num, ant):
 
-        int_v = int_v.astype(np.double)
+        int_v_db = int_v.astype(np.double)
         cw_v = np.full((int_num), 0, dtype = np.double)
-        self.sin_sub.subtractCW(int_num, int_v, self.dt, self.cw_params[ant], cw_v)
+        self.sub_ratios = np.full((self.sol_pad), np.nan, dtype = float)
+        #self.sub_powers = np.copy(self.sub_ratios)
+        #self.sub_freqs = np.copy(self.sub_ratios)
+
+        self.sin_sub.subtractCW(int_num, int_v_db, self.dt, self.cw_thres[ant], cw_v)
+        self.num_sols = self.sin_sub.getNSines()
+        self.sub_ratios[1:self.num_sols+1] = np.frombuffer(self.sin_sub.getRatios(), dtype = float, count = self.num_sols + 1)[1:]
+        #self.sub_powers[:self.num_sols+1] = np.frombuffer(self.sin_sub.getPowers(), dtype = float, count = self.num_sols + 1)
+        #self.sub_freqs[:self.num_sols] = np.frombuffer(self.sin_sub.getFreqs(), dtype = float, count = self.num_sols)
+
         cw_v = cw_v.astype(float)
 
-        self.num_sols = self.sin_sub.getNSines()
-        #self.sub_freqs = np.frombuffer(self.sin_sub.getFreqs(), dtype = float, count = self.num_sols)
-        #self.sub_amp_errs = np.frombuffer(self.sin_sub.getAmpErrs(0), dtype = float, count = self.num_sols)
-        self.sub_ratios = np.frombuffer(self.sin_sub.getRatios(), dtype = float, count = self.num_sols + 1)
-        self.sub_powers = np.frombuffer(self.sin_sub.getPowers(), dtype = float, count = self.num_sols + 1)
+        return cw_v
 
+    def get_sin_subtract_wf(self, int_v, int_num, ant, return_none = False):
+
+        int_v_db = int_v.astype(np.double)
+        cw_v = np.full((self.num_params, int_num), 0, dtype = np.double)
+        self.sub_ratios = np.full((self.sol_pad, self.num_params), np.nan, dtype = float)
+        #self.sub_powers = np.copy(self.sub_ratios)
+        #self.sub_freqs = np.copy(self.sub_ratios)
+
+        for params in range(self.num_params):
+
+            self.sin_sub.setFreqLimits(self.cw_freq[params, 0], self.cw_freq[params, 1])
+            self.sin_sub.subtractCW(int_num, int_v_db, self.dt, self.cw_thres[params, ant], cw_v[params])
+            self.sin_sub.unsetFreqLimits()
+
+            self.num_sols = self.sin_sub.getNSines()
+            self.sub_ratios[1:self.num_sols+1, params] = np.frombuffer(self.sin_sub.getRatios(), dtype = float, count = self.num_sols + 1)[1:]
+            #self.sub_powers[:self.num_sols+1, params] = np.frombuffer(self.sin_sub.getPowers(), dtype = float, count = self.num_sols + 1)
+            #self.sub_freqs[:self.num_sols, params] = np.frombuffer(self.sin_sub.getFreqs(), dtype = float, count = self.num_sols)
+        del int_v_db
+
+        if return_none:
+            del cw_v
+            return
+        else:
+            cw_v = cw_v.astype(float)
         return cw_v
 
 class analog_buffer_info_loader:

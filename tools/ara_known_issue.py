@@ -14,31 +14,34 @@ class known_issue_loader:
 
         self.st = st
       
-    def get_bad_antenna(self, run, good_ant_true = False, print_ant_idx = False):
+    def get_bad_antenna(self, run, good_ant_true = False, print_ant_idx = False, print_integer = False):
 
         # masked antenna
-        bad_ant = np.full((num_ants), 0, dtype = bool)
+        bad_ant = np.full((num_ants), False, dtype = bool)
         ant_idx = np.arange(num_ants, dtype = int)
 
         if self.st == 2:
-            bad_ant[15] = 1 #D4BH
+            bad_ant[15] = True #D4BH
 
         if self.st ==  3:
             if run > 1901 and run < 10001:
                 st_idx = 3
-                bad_ant[st_idx::num_ddas] = 1# all D4 antennas
+                bad_ant[st_idx::num_ddas] = True # all D4 antennas
             if run > 12865:
                 st_idx = 0
-                bad_ant[st_idx::num_ddas] = 1 # all D1 antennas, dead bit issue
+                bad_ant[st_idx::num_ddas] = True # all D1 antennas, dead bit issue
                 #bad_ant[3::4] = 1 # all D4 antennas, duplication issue
 
-        if good_ant_true == True:
+        if good_ant_true:
             bad_ant = ~bad_ant
 
-        if print_ant_idx == True:
+        if print_ant_idx:
             bad_ant = ant_idx[bad_ant]
 
-        return bad_ant.astype(int)
+        if print_integer:
+            bad_ant = bad_ant.astype(int)
+
+        return bad_ant
 
     def get_unchecked_unixtime(self, unix_time):
 

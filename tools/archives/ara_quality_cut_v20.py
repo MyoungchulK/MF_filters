@@ -494,186 +494,27 @@ class pre_qual_cut_loader:
 
 class post_qual_cut_loader:
 
-    def __init__(self, ara_root, ara_uproot, pre_cut, daq_cut_sum, dt = 0.5, sol_pad = 10, verbose = False):
+    def __init__(self, ara_uproot, ara_root, dt = 0.5, verbose = False):
 
-        self.verbose = verbose
-        self.ara_root = ara_root
+        #from tools.ara_wf_analyzer import wf_analyzer
+        #wf_int = wf_analyzer(dt = dt)
+        #self.dt = wf_int.dt
         self.st = ara_uproot.station_id
         self.run = ara_uproot.run
         self.evt_num = ara_uproot.evt_num
         self.num_evts = ara_uproot.num_evts
-        self.unix_time = ara_uproot.unix_time
-        self.daq_cut_sum = daq_cut_sum != 0
-        self.per_cut_evts = self.get_pre_cut_for_cw(pre_cut, ara_uproot.get_trig_type())
-        
+        self.ara_root = ara_root
+        self.verbose = verbose
+ 
         ara_known_issue = known_issue_loader(self.st)
         self.bad_ant = ara_known_issue.get_bad_antenna(self.run)
-        del ara_known_issue
+        del ara_known_issue, ara_uproot#, wf_int
 
-        from tools.ara_wf_analyzer import wf_analyzer
-        self.wf_int = wf_analyzer(dt = dt, use_time_pad = True, use_band_pass = True)
-
-        num_params, cw_thres, cw_freq = self.get_cw_params()
-        from tools.ara_data_load import sin_subtract_loader
-        self.sin_sub = sin_subtract_loader(cw_freq, cw_thres, 3, num_params, dt, sol_pad)
-        del cw_thres, cw_freq
-
-        # array
+        # spare
+        # spikey 
+     
         self.unlock_cal_evts = np.full((self.num_evts), 0, dtype = int)
-        self.sub_ratios = np.full((sol_pad, num_params, num_ants, self.num_evts), np.nan, dtype = float)
-        del num_params
 
-    def run_post_qual_cut(self, evt):
-
-        if self.daq_cut_sum[evt]:
-            return
-
-        self.ara_root.get_entry(evt)
-
-        if self.st == 3 and (self.run > 1124 and self.run < 1429):
-
-            self.ara_root.get_useful_evt(self.ara_root.cal_type.kOnlyADCWithOut1stBlockAndBadSamples)
-            raw_v = self.ara_root.get_rf_ch_wf(2)[1]   
-            self.unlock_cal_evts[evt] = self.get_unlocked_calpulser_events(raw_v)    
-            del raw_v
-            self.ara_root.del_TGraph()
-            self.ara_root.del_usefulEvt()
-  
-        if self.unlock_cal_evts[evt]:
-            return
-
-        if self.per_cut_evts[evt]:
-
-            self.ara_root.get_useful_evt(self.ara_root.cal_type.kLatestCalib)
-            for ant in range(num_ants):
-                if self.bad_ant[ant]:
-                    continue
-                raw_t, raw_v = self.ara_root.get_rf_ch_wf(ant)
-                int_v, int_num = self.wf_int.get_int_wf(raw_t, raw_v, ant, use_unpad = True, use_band_pass = True)[1:]
-                self.sin_sub.get_sin_subtract_wf(int_v, int_num, ant, return_none = True)  
-                self.sub_ratios[:, :, ant, evt] = self.sin_sub.sub_ratios
-                del raw_t, raw_v, int_v, int_num
-                self.ara_root.del_TGraph()
-            self.ara_root.del_usefulEvt()
-
-    def get_pre_cut_for_cw(self, pre_cut, trig_type):
-
-        pre_cut_cw = np.copy(pre_cut)
-        pre_cut_cw[:, 10] = 0 # disable bad unix time
-        pre_cut_cw[:, 21] = 0 # disable known bad run
-        pre_cut_sum = np.nansum(pre_cut_cw, axis = 1)
-        pre_cut_evts = np.logical_and(pre_cut_sum == 0, trig_type != 1)
-        del pre_cut_cw, pre_cut_sum
-
-        if self.verbose:
-            print(f'number of clean events for cw cut: {np.nansum(pre_cut_evts)}')
-
-        return pre_cut_evts
-
-    def get_cw_params(self):
-
-        run_info = run_info_loader(self.st, self.run)    
-        config_idx = int(run_info.get_config_number() - 1) 
-        num_configs = run_info.num_configs
-        del run_info
-
-        if self.st == 2:
-            cw_arr_04 = np.full((num_ants, num_configs), np.nan, dtype = float) 
-            cw_arr_04[:,0] = np.array([0.06, 0.06, 0.04, 0.04, 0.06, 0.06, 0.04, 0.06, 0.06, 0.04, 0.04, 0.04, 0.04, 0.06, 0.04, 1000], dtype = float)
-            cw_arr_04[:,1] = np.array([0.06, 0.08, 0.04, 0.04, 0.06, 0.06, 0.04, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 1000], dtype = float)
-            cw_arr_04[:,2] = np.array([0.06, 0.08, 0.04, 0.04, 0.06, 0.06, 0.06, 0.06, 0.06, 0.04, 0.06, 0.06, 0.06, 0.06, 0.06, 1000], dtype = float)
-            cw_arr_04[:,3] = np.array([0.04, 0.04, 0.04, 0.04, 0.06, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 1000], dtype = float)
-            cw_arr_04[:,4] = np.array([0.04, 0.04, 0.04, 0.04, 0.06, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 1000], dtype = float)
-            cw_arr_04[:,5] = np.array([0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 1000], dtype = float)
-
-            cw_arr_025 = np.full((num_ants, num_configs), np.nan, dtype = float)
-            cw_arr_025[:,0] = np.array([0.16, 0.16, 0.16, 0.16, 0.14, 0.14, 0.14, 0.14, 0.18,  0.2, 0.16, 0.24, 0.16, 0.16, 0.16, 1000], dtype = float)
-            cw_arr_025[:,1] = np.array([0.16, 0.16, 0.16,  0.2, 0.14, 0.12, 0.24, 0.14,  0.2,  0.2, 0.18, 0.24, 0.16, 0.18, 0.16, 1000], dtype = float)
-            cw_arr_025[:,2] = np.array([0.14, 0.16, 0.14, 0.14,  0.1,  0.1, 0.14, 0.14, 0.18, 0.18, 0.18, 0.26, 0.16, 0.16, 0.16, 1000], dtype = float)
-            cw_arr_025[:,3] = np.array([0.12, 0.14,  0.1, 0.12,  0.1,  0.1, 0.18,  0.1, 0.14, 0.16, 0.16, 0.26, 0.14, 0.14, 0.14, 1000], dtype = float)
-            cw_arr_025[:,4] = np.array([0.12, 0.14,  0.1, 0.12,  0.1,  0.1, 0.18,  0.1, 0.14, 0.16, 0.14, 0.18, 0.14, 0.12, 0.14, 1000], dtype = float)
-            cw_arr_025[:,5] = np.array([0.12, 0.12,  0.1, 0.12,  0.1,  0.1,  0.1,  0.1, 0.14, 0.16, 0.14, 0.18, 0.12, 0.12, 0.12, 1000], dtype = float)
-
-            cw_arr_0125 = np.full((num_ants, num_configs), np.nan, dtype = float)
-            cw_arr_0125[:,0] = np.array([0.06, 0.18, 0.06, 0.14, 0.12, 0.08, 0.08, 0.08,  0.1,  0.1, 0.08,  0.1, 0.08,  0.2,  0.1, 1000], dtype = float)
-            cw_arr_0125[:,1] = np.array([0.06,  0.2, 0.06, 0.18,  0.2, 0.08,  0.1, 0.08,  0.1,  0.1, 0.08,  0.1, 0.08, 0.16,  0.1, 1000], dtype = float)
-            cw_arr_0125[:,2] = np.array([0.08, 0.16, 0.06, 0.12, 0.14,  0.1,  0.1, 0.08,  0.1,  0.1, 0.08,  0.1, 0.08, 0.16,  0.1, 1000], dtype = float)
-            cw_arr_0125[:,3] = np.array([0.08, 0.14, 0.04, 0.08, 0.22, 0.08, 0.06, 0.06,  0.1,  0.1, 0.08, 0.08, 0.06, 0.14, 0.08, 1000], dtype = float)
-            cw_arr_0125[:,4] = np.array([0.04, 0.14, 0.04, 0.06, 0.22, 0.08, 0.06, 0.06,  0.1, 0.08, 0.06, 0.06, 0.06, 0.14, 0.06, 1000], dtype = float)
-            cw_arr_0125[:,5] = np.array([0.04, 0.08, 0.04, 0.06, 0.14, 0.08, 0.06, 0.06,  0.1, 0.08, 0.06, 0.08, 0.06, 0.12, 0.08, 1000], dtype = float)
-
-        if self.st == 3:
-            cw_arr_04 = np.full((num_ants, num_configs), np.nan, dtype = float)
-            cw_arr_04[:,0] = np.array([0.06, 0.06, 0.06, 0.06, 0.06, 0.04, 0.06, 0.04, 0.06, 0.06, 0.06, 0.04, 0.04, 0.04, 0.06, 0.04], dtype = float)
-            cw_arr_04[:,1] = np.array([0.08, 0.06, 0.06, 0.06, 0.06, 0.04, 0.06, 0.04, 0.06, 0.06, 0.06, 0.04, 0.04, 0.06, 0.06, 0.04], dtype = float)
-            cw_arr_04[:,2] = np.array([0.06, 0.04, 0.04, 1000, 0.04, 0.04, 0.06, 1000, 0.04, 0.04, 0.04, 1000, 0.04, 0.04, 0.04, 1000], dtype = float)
-            cw_arr_04[:,3] = np.array([0.06, 0.04, 0.04, 1000, 0.04, 0.04, 0.08, 1000, 0.04, 0.04, 0.08, 1000, 0.04, 0.04, 0.04, 1000], dtype = float)
-            cw_arr_04[:,4] = np.array([0.08, 0.06, 0.06, 1000, 0.06, 0.04, 0.06, 1000, 0.06, 0.05, 0.06, 1000, 0.06, 0.06, 0.06, 1000], dtype = float)
-            cw_arr_04[:,5] = np.array([0.04, 0.04, 0.04,  0.1, 0.04, 0.04, 0.12, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.08, 0.04], dtype = float)
-            cw_arr_04[:,6] = np.array([1000, 0.04, 0.04, 0.06, 1000, 0.04, 0.12, 0.02, 1000, 0.04, 0.04, 0.06, 1000, 0.04, 0.08, 0.06], dtype = float)
-
-            cw_arr_025 = np.full((num_ants, num_configs), np.nan, dtype = float)
-            cw_arr_025[:,0] = np.array([0.16, 0.12, 0.12, 0.12, 0.16, 0.12, 0.14, 0.14, 0.14, 0.14, 0.14, 0.16, 0.16, 0.16, 0.16, 0.14], dtype = float)
-            cw_arr_025[:,1] = np.array([0.16, 0.12, 0.12, 0.14, 0.16, 0.14, 0.14, 0.16, 0.16, 0.14,  0.2, 0.14, 0.14, 0.14, 0.16, 0.16], dtype = float)
-            cw_arr_025[:,2] = np.array([0.12,  0.1,  0.1, 1000, 0.12, 0.12,  0.1, 1000, 0.14, 0.12, 0.14, 1000, 0.12, 0.14, 0.16, 1000], dtype = float)
-            cw_arr_025[:,3] = np.array([0.12,  0.1,  0.1, 1000, 0.12, 0.12,  0.1, 1000, 0.14, 0.14, 0.14, 1000, 0.14, 0.14, 0.14, 1000], dtype = float)
-            cw_arr_025[:,4] = np.array([0.14, 0.12, 0.12, 1000, 0.16, 0.16, 0.12, 1000, 0.18, 0.14, 0.16, 1000, 0.16, 0.16, 0.16, 1000], dtype = float)
-            cw_arr_025[:,5] = np.array([ 0.1, 0.08, 0.12, 0.08,  0.1, 0.12, 0.08, 0.12, 0.12,  0.1, 0.12, 0.12,  0.1, 0.14, 0.14, 0.12], dtype = float)
-            cw_arr_025[:,6] = np.array([1000, 0.06,  0.1, 0.08, 1000,  0.1, 0.06, 0.08, 1000, 0.12, 0.14,  0.1, 1000, 0.14, 0.12,  0.1], dtype = float)
-
-            cw_arr_0125 = np.full((num_ants, num_configs), np.nan, dtype = float)
-            cw_arr_0125[:,0] = np.array([ 0.1, 0.06, 0.06, 0.06, 0.06, 0.08, 0.08, 0.12,  0.1, 0.08, 0.16, 0.06,  0.1, 0.14,  0.1,  0.1], dtype = float)
-            cw_arr_0125[:,1] = np.array([0.14, 0.06, 0.06, 0.06,  0.1,  0.1, 0.14, 0.12, 0.12, 0.08, 0.16, 0.08,  0.1, 0.14, 0.12,  0.1], dtype = float)
-            cw_arr_0125[:,2] = np.array([0.08, 0.06, 0.04, 1000, 0.06, 0.08, 0.06, 1000,  0.1, 0.06,  0.1, 1000,  0.1,  0.1,  0.1, 1000], dtype = float)
-            cw_arr_0125[:,3] = np.array([0.08, 0.06, 0.04, 1000, 0.06, 0.08, 0.06, 1000,  0.1, 0.06,  0.1, 1000, 0.08,  0.1, 0.08, 1000], dtype = float)
-            cw_arr_0125[:,4] = np.array([0.08, 0.06, 0.06, 1000, 0.08,  0.1, 0.08, 1000,  0.1, 0.08,  0.1, 1000,  0.1, 0.12,  0.1, 1000], dtype = float)
-            cw_arr_0125[:,5] = np.array([0.06, 0.04, 0.06, 0.04, 0.08, 0.08, 0.04,  0.1, 0.12, 0.06, 0.08, 0.06, 0.08,  0.1,  0.1, 0.08], dtype = float)
-            cw_arr_0125[:,6] = np.array([1000, 0.04, 0.06,  0.2, 1000, 0.06, 0.04, 0.18, 1000, 0.06, 0.08, 0.18, 1000,  0.1, 0.08, 0.18], dtype = float)
-
-        num_params = 3
-
-        cw_thres = np.full((num_params, num_ants), np.nan, dtype = float)
-        cw_thres[0] = cw_arr_0125[:, config_idx]
-        cw_thres[1] = cw_arr_025[:, config_idx]
-        cw_thres[2] = cw_arr_04[:, config_idx]
-
-        cw_freq = np.full((num_params, 2), np.nan, dtype = float)
-        cw_freq[0, 0] = 0.125 
-        cw_freq[0, 1] = 0.15
-        cw_freq[1, 0] = 0.24
-        cw_freq[1, 1] = 0.26
-        cw_freq[2, 0] = 0.395
-        cw_freq[2, 1] = 0.415
-
-        if self.verbose:
-            print(f'run config: {config_idx + 1}')
-            print(f'cw params {cw_freq[0, 0]} ~ {cw_freq[0, 1]} GHz: {cw_thres[0]}')
-            print(f'cw params {cw_freq[1, 0]} ~ {cw_freq[1, 1]} GHz: {cw_thres[1]}')
-            print(f'cw params {cw_freq[2, 0]} ~ {cw_freq[2, 1]} GHz: {cw_thres[2]}')
-        del config_idx, num_configs
-
-        return num_params, cw_thres, cw_freq
-
-    def get_cw_events(self, cut_val = 1, use_smear = False):
-
-        cw_ants = np.any(~np.isnan(self.sub_ratios), axis = 0)
-        cw_cut = np.count_nonzero(cw_ants, axis = 1) > cut_val
-        cw_evts = np.any(cw_cut, axis = 0)
-        del cw_cut
-    
-        if use_smear:
-            cw_time = get_time_smearing(self.unix_time[cw_evts], smear_arr = np.arange(-1,2,1, dtype = int))
-            cw_evts = np.in1d(self.unix_time, cw_time)
-            del cw_time
-    
-        self.rp_ants = cw_ants.astype(int)
-        self.rp_ants[:, :, cw_evts] = 0
-        del cw_ants
-    
-        cw_evts = cw_evts.astype(int)
-
-        return cw_evts
- 
     def get_unlocked_calpulser_events(self, raw_v, cal_amp_limit = 2200):
 
         raw_v_max = np.nanmax(raw_v)
@@ -681,21 +522,146 @@ class post_qual_cut_loader:
         del raw_v_max
 
         return unlock_cal_flag
- 
+
+    def run_post_qual_cut(self, evt):
+
+        if self.st == 3 and (self.run > 1124 and self.run < 1429):
+
+            self.ara_root.get_entry(evt)
+            self.ara_root.get_useful_evt(self.ara_root.cal_type.kOnlyADCWithOut1stBlockAndBadSamples)
+            raw_v = self.ara_root.get_rf_ch_wf(2)[1]   
+            self.unlock_cal_evts[evt] = self.get_unlocked_calpulser_events(raw_v)    
+            del raw_v
+            self.ara_root.del_TGraph()
+            self.ara_root.del_usefulEvt()
+    
+    def get_channel_cerrelation_flag(self, dat, ant_limit = 2, st_limit = 1, apply_bad_ant = False):
+
+        dat_copy = np.copy(dat)
+
+        if apply_bad_ant:
+            dat_copy[self.bad_ant != 0] = 0
+
+        flagged_events = np.full((self.num_evts), 0, dtype = int)
+        for string in range(num_ddas):
+            dat_sum = np.nansum(dat_copy[string::num_ddas], axis = 0)
+            flagged_events += (dat_sum > ant_limit).astype(int)
+            del dat_sum
+        flagged_events = (flagged_events > st_limit).astype(int)
+
+        return flagged_events
+
+    def get_post_qual_cut_value(self):
+
+        return self.unlock_cal_evts
+
     def get_post_qual_cut(self):
 
-        tot_post_qual_cut = np.full((self.num_evts, 2), 0, dtype = int)
+        tot_post_qual_cut = np.full((self.num_evts, 1), 0, dtype = int)
         tot_post_qual_cut[:, 0] = self.unlock_cal_evts
-        tot_post_qual_cut[:, 1] = self.get_cw_events(use_smear = True)
 
         self.post_qual_cut_sum = np.nansum(tot_post_qual_cut, axis = 1)
 
         if self.verbose:
             quick_qual_check(tot_post_qual_cut[:, 0] != 0, 'unlocked calpulser events!', self.evt_num)
-            quick_qual_check(tot_post_qual_cut[:, 1] != 0, 'cw events!', self.evt_num)
             quick_qual_check(self.post_qual_cut_sum != 0, 'total post qual cut!', self.evt_num)
         
         return tot_post_qual_cut
+
+class cw_qual_cut_loader:
+
+    def __init__(self, st, run, evt_num, time_arr, verbose = False):
+
+        self.verbose = verbose
+        self.evt_num = evt_num
+        self.num_evts = len(self.evt_num)
+        self.cw_evts = np.full((self.num_evts), 0, dtype = int)
+        self.rp_evts = np.copy(self.cw_evts)
+        self.rp_ants = np.full((num_ants, self.num_evts), 0, dtype = int)
+        self.time_arr = time_arr
+        self.min_ants = 3
+        self.ratio_cut = self.get_cut_parameters(st, run)
+
+    def get_cut_parameters(self, st, run):
+
+        ratio_cut = np.full((num_ants), 0.05, dtype = float)
+
+        if st == 2:
+            if run < 1730:
+                ratio_cut = np.array([0.12, 0.32, 0.1, 0.16, 0.32, 0.1, 0.16, 0.1, 0.2, 0.14, 0.14, 0.2, 0.12, 0.14, 0.12, 0.05], dtype = float)
+            elif run > 1729 and run < 4028:
+                ratio_cut = np.array([0.12, 0.22, 0.1, 0.14, 0.16, 0.1, 0.14, 0.1, 0.14, 0.14, 0.14, 0.22, 0.12, 0.16, 0.12, 0.05], dtype = float)
+            elif run > 4027 and run < 8098:
+                ratio_cut = np.array([0.16, 0.16, 0.1, 0.1, 0.32, 0.1, 0.12, 0.1, 0.12, 0.12, 0.12, 0.22, 0.1, 0.14, 0.1, 0.05], dtype = float)
+            elif run > 8097 and run < 9402:
+                ratio_cut = np.array([0.1, 0.12, 0.1, 0.1, 0.4, 0.12, 0.14, 0.1, 0.14, 0.12, 0.12, 0.26, 0.1, 0.1, 0.1, 0.05], dtype = float)
+            elif run > 9401:
+                ratio_cut = np.array([0.22, 0.12, 0.08, 0.1, 0.28, 0.1, 0.08, 0.08, 0.14, 0.1, 0.1, 0.2, 0.1, 0.1, 0.1, 0.05], dtype = float)
+            else:
+                print(f'run number is weired! A{st} R{run}')
+                sys.exit(1)
+
+        if st == 3:
+            if run < 785:
+                ratio_cut = np.array([0.14, 0.1, 0.1, 0.1, 0.12, 0.12, 0.34, 0.14, 0.16, 0.12, 0.18, 0.16, 0.14, 0.14, 0.14, 0.14], dtype = float)
+            elif run > 784 and run < 3104:
+                ratio_cut = np.array([0.12, 0.1, 0.1, 0.1, 0.12, 0.12, 0.24, 0.14, 0.16, 0.12, 0.16, 0.14, 0.14, 0.14, 0.14, 0.14], dtype = float)
+            elif run > 3103 and run < 10001:
+                ratio_cut = np.array([0.1, 0.14, 0.1, 0.05, 0.1, 0.1, 0.2, 0.05, 0.16, 0.1, 0.12, 0.05, 0.12, 0.12, 0.14, 0.05], dtype = float)
+            elif run > 10000 and run < 13085 :
+                ratio_cut = np.array([0.1, 0.16, 0.1, 0.28, 0.1, 0.1, 0.2, 0.12, 0.16, 0.1, 0.1, 0.12, 0.1, 0.1, 0.12, 0.12], dtype = float)
+            elif run > 13084:
+                ratio_cut = np.array([0.1, 0.16, 0.1, 0.28, 0.1, 0.1, 0.2, 0.12, 0.16, 0.1, 0.1, 0.12, 0.1, 0.1, 0.12, 0.12], dtype = float)
+            else:
+                print(f'run number is weired! A{st} R{run}')
+                sys.exit(1)
+
+        if self.verbose:
+            print(f'ratio cut config: {ratio_cut}')
+
+        return ratio_cut
+
+    def run_cw_qual_cut(self, evt, ant, counts):
+    
+        if counts == 0:
+            return 
+        elif counts < self.min_ants and counts > 0:
+            self.rp_evts[evt] = 1
+            rp_idx = np.asarray(ant, dtype = int)
+            self.rp_ants[rp_idx, evt] = 1
+            del rp_idx
+            return
+        else:
+            self.cw_evts[evt] = 1
+            return       
+
+    def get_cw_time_smearing(self, smear_val = 5, use_smear = False):
+
+        if use_smear == False:
+            return self.cw_evts
+
+        bad_bools = self.cw_evts.astype(bool)
+        cw_smear_time = get_time_smearing(self.time_arr[bad_bools])
+
+        cw_smear_evts = np.in1d(self.time_arr, cw_smear_time).astype(int)
+        del bad_bools, cw_smear_time
+
+        self.rp_evts[cw_smear_evts != 0] = 0
+        self.rp_ants[:, cw_smear_evts != 0] = 0
+
+        return cw_smear_evts
+
+    def get_cw_qual_cut(self):
+
+        tot_cw_qual_cut = np.full((self.num_evts, 1), 0, dtype = int)
+        tot_cw_qual_cut[:, 0] = self.get_cw_time_smearing(use_smear = True)
+
+        self.cw_qual_cut_sum = np.nansum(tot_cw_qual_cut, axis = 1)
+
+        if self.verbose:
+            quick_qual_check(self.cw_qual_cut_sum != 0, 'total cw qual cut!', self.evt_num)
+
+        return tot_cw_qual_cut
 
 class ped_qual_cut_loader:
 
