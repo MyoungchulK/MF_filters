@@ -672,6 +672,12 @@ class post_qual_cut_loader:
     
         cw_evts = cw_evts.astype(int)
 
+        if self.verbose:
+            rp_ants_sum = np.nansum(self.rp_ants, axis = (0,1))
+            quick_qual_check(cw_evts != 0, 'cw events!', self.evt_num)
+            quick_qual_check(rp_ants_sum != 0, 'repair required events!', self.evt_num)
+            del rp_ants_sum
+
         return cw_evts
  
     def get_unlocked_calpulser_events(self, raw_v, cal_amp_limit = 2200):
@@ -686,13 +692,12 @@ class post_qual_cut_loader:
 
         tot_post_qual_cut = np.full((self.num_evts, 2), 0, dtype = int)
         tot_post_qual_cut[:, 0] = self.unlock_cal_evts
-        tot_post_qual_cut[:, 1] = self.get_cw_events(use_smear = True)
+        tot_post_qual_cut[:, 1] = self.get_cw_events(use_smear = False)
 
         self.post_qual_cut_sum = np.nansum(tot_post_qual_cut, axis = 1)
 
         if self.verbose:
             quick_qual_check(tot_post_qual_cut[:, 0] != 0, 'unlocked calpulser events!', self.evt_num)
-            quick_qual_check(tot_post_qual_cut[:, 1] != 0, 'cw events!', self.evt_num)
             quick_qual_check(self.post_qual_cut_sum != 0, 'total post qual cut!', self.evt_num)
         
         return tot_post_qual_cut
