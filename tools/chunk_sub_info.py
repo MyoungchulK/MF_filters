@@ -26,6 +26,8 @@ def sub_info_collector(Data, Ped, analyze_blind_dat = False):
     #geom info
     ara_geom = ara_geom_loader(station, ara_uproot.year, verbose = True)
     trig_ch = ara_geom.get_trig_ch_idx()
+    ele_ch = ara_geom.get_ele_ch_idx()
+    print(ele_ch) 
     del ara_geom
 
     # remove nasty unix error
