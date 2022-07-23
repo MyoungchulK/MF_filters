@@ -468,22 +468,9 @@ class pre_qual_cut_loader:
     
         return known_bad_run_evetns
 
-    def get_cw_log_events(self):
-
-        cw_log_dat = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/radiosonde_data/radius_tot/A{self.st}_mwx_R.h5'
-        cw_log_hf = h5py.File(cw_log_dat, 'r')
-        cw_unix = cw_log_hf['cw_unix_time'][:]
-        cw_log_events = np.in1d(self.unix_time, cw_unix).astype(int)
-        del cw_log_dat, cw_log_hf, cw_unix
-
-        if self.verbose:
-            quick_qual_check(cw_log_events != 0, 'cw log events', self.evt_num)
-
-        return cw_log_events
-
     def run_pre_qual_cut(self):
 
-        tot_pre_qual_cut = np.full((self.num_evts, 23), 0, dtype = int)
+        tot_pre_qual_cut = np.full((self.num_evts, 22), 0, dtype = int)
         tot_pre_qual_cut[:, :5] = self.get_daq_structure_errors()
         tot_pre_qual_cut[:, 5:9] = self.get_readout_window_errors(use_smear =True)
         tot_pre_qual_cut[:, 9] = self.get_bad_unix_time_sequence()
@@ -495,7 +482,6 @@ class pre_qual_cut_loader:
         tot_pre_qual_cut[:, 17:20] = self.get_bad_rate_events(use_sec = True)
         tot_pre_qual_cut[:, 20] = self.get_high_rf_rate_events(use_smear = True)
         tot_pre_qual_cut[:, 21] = self.get_known_bad_run_events()
-        tot_pre_qual_cut[:, 22] = self.get_cw_log_events()
 
         self.daq_qual_cut_sum = np.nansum(tot_pre_qual_cut[:, :6], axis = 1)
         self.pre_qual_cut_sum = np.nansum(tot_pre_qual_cut, axis = 1)
@@ -969,51 +955,39 @@ class run_qual_cut_loader:
                         f.write(bad_run_info)
                 del bad_path, bad_run_info
 
-def get_bad_live_time(trig_type, unix_time, time_bins, sec_per_min, cuts, verbose = False):
+def get_live_time(st, run, unix_time, cut = None, use_dead = False, verbose = False):
 
-    rc_trig = trig_type != 2
+    time = np.abs(unix_time[-1] - unix_time[0])
+    live_time = np.array([time], dtype = float)
+    del time
 
-    rc_trig_flag = rc_trig.astype(int)
-    rc_trig_flag = rc_trig_flag.astype(float)
-    rc_trig_flag[rc_trig_flag < 0.5] = np.nan
-    rc_trig_flag *= unix_time
-    tot_evt_per_min = np.histogram(rc_trig_flag, bins = time_bins)[0]
-    trig_live_time = (tot_evt_per_min > 0.5).astype(int)
-    trig_live_time = trig_live_time.astype(float) * sec_per_min
-    del rc_trig_flag
+    if use_dead:
+        run_info = run_info_loader(st, run, analyze_blind_dat = True)
+        sub_info_dat = run_info.get_result_path(file_type = 'sub_info', verbose = verbose)
+        sub_info_hf = h5py.File(sub_info_dat, 'r')
+        dig_dead = sub_info_hf['dig_dead'][:]
+        dig_dead = dig_dead.astype(float)
+        dig_dead *= 1e-6
+        buff_dead = sub_info_hf['buff_dead'][:]
+        buff_dead = buff_dead.astype(float)
+        buff_dead *= 1e-6
+        dead = np.nansum(dig_dead + buff_dead)
+        live_time -= dead    
+        del run_info, sub_info_dat, sub_info_hf, dig_dead, buff_dead, dead
 
-    cut_flag = (cuts != 0).astype(int)
-    cut_flag = cut_flag.astype(float)
-    cut_flag[cut_flag < 0.5] = np.nan
-    cut_flag[~rc_trig] = np.nan
-    del rc_trig
-
-    dim_len = len(cuts.shape)
-    if dim_len == 1:
-        cut_flag *= unix_time
-        bad_evt_per_min = np.histogram(cut_flag, bins = time_bins)[0]
-        bad_live_time = bad_evt_per_min / tot_evt_per_min * sec_per_min
-        rough_tot_bad_time = np.nansum(bad_live_time)
+    if cut is not None:
+        clean_num_evts = np.count_nonzero(cut == 0)
+        num_evts = len(cut)
+        clean_live_time = live_time * (clean_num_evts / num_evts)
+        del clean_num_evts, num_evts
     else:
-        cut_flag *= unix_time[:, np.newaxis]
-        num_cuts = cuts.shape[1]
-        bad_evt_per_min = np.full((len(sec_per_min), num_cuts), np.nan, dtype = float)
-        for cut in range(num_cuts):
-            bad_evt_per_min[:, cut] = np.histogram(cut_flag[:, cut], bins = time_bins)[0] 
-        bad_live_time = bad_evt_per_min / tot_evt_per_min[:, np.newaxis] * sec_per_min[:, np.newaxis]
-        rough_tot_bad_time = np.nansum(bad_live_time, axis = 0)
-        del num_cuts
-    del cut_flag, tot_evt_per_min, dim_len, bad_evt_per_min
-
-    total_live_time = np.copy(sec_per_min)
+        clean_live_time = np.full((1), np.nan, dtype = float)
 
     if verbose:
-        print(f'bad live time: ~{np.round(rough_tot_bad_time/60, 1)} min.')
-        print(f'trig live time: ~{np.round(np.nansum(trig_live_time)/60, 1)} min.')
-        print(f'total live time: ~{np.round(np.nansum(total_live_time)/60, 1)} min.')
-    del rough_tot_bad_time
+        print(f'total live time: ~{np.round(live_time[0]/60, 1)} min.')
+        print(f'clean live time: ~{np.round(clean_live_time[0]/60, 1)} min.')
 
-    return total_live_time, trig_live_time, bad_live_time
+    return live_time, clean_live_time
 
 class qual_cut_loader:
 

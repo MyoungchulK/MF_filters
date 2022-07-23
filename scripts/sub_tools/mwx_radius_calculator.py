@@ -101,6 +101,7 @@ def main(st = None, r_cut = 17000):
     unix_temp = np.copy(unix_whole_flight)
     unix_temp[~bad_r_idx] = np.nan
     cw_unix_time = unix_temp[~np.isnan(unix_temp)]
+    cw_unix_time = cw_unix_time.astype(int)
 
     medi_name = f'{r_path}A{st}_mwx_R.h5'
     print(medi_name)

@@ -331,7 +331,7 @@ class ara_uproot_loader:
 
         return blk_len, rf_blk_len, cal_blk_len, soft_blk_len
 
-    def get_event_rate(self, use_pps = False, use_sec = False):
+    def get_event_rate(self, use_pps = False, use_sec = False, use_time_bins = False):
 
         evt_sort_idx = np.argsort(self.evt_num)
         trig_type = self.get_trig_type()
@@ -357,6 +357,9 @@ class ara_uproot_loader:
         time_bin_center = (time_bins[1:] + time_bins[:-1]) / 2
         num_secs = np.diff(time_bins).astype(int) 
         del time_unique
+
+        if use_time_bins:
+            return time_bins, num_secs
 
         evt_rate = np.histogram(time_sort, bins = time_bins)[0] / num_secs
         rf_evt_rate = np.histogram(time_sort[trig_sort == 0], bins = time_bins)[0] / num_secs
