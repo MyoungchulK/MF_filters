@@ -225,11 +225,10 @@ class ara_uproot_loader:
             self.num_evts = len(st_arr)
             self.entry_num = np.arange(len(st_arr))
             self.evt_num = np.asarray(self.evtTree['event/eventNumber'],dtype=int)
-            run_str = re.findall(r'\d+', data[-11:-5])[0]
-            self.run = int(run_str)
+            self.run = int(np.asarray(self.evtTree['run'],dtype=int)[0])
             self.year = self.get_year()
             print('total events:', self.num_evts)
-            del st_arr, run_str
+            del st_arr
         except uproot.exceptions.KeyInFileError:
             self.hasKeyInFileError = True
             print('File is currupted!')
@@ -407,9 +406,8 @@ class ara_sensorHk_uproot_loader:
             self.station_id = st_arr[0]
             self.num_sensors = len(st_arr)
             self.sensors_entry_num = np.arange(len(st_arr))
-            run_str = re.findall(r'\d+', data[-11:-5])[0]
-            self.run = int(run_str)
-            del st_arr, run_str
+            self.run = int(np.asarray(self.evtTree['run'],dtype=int)[0])
+            del st_arr
         except uproot.exceptions.KeyInFileError:
             self.unix_time = empty_unix
             self.empty_file_error = True
@@ -595,9 +593,8 @@ class ara_eventHk_uproot_loader:
             self.station_id = st_arr[0]
             self.num_events = len(st_arr)
             self.events_entry_num = np.arange(len(st_arr))
-            run_str = re.findall(r'\d+', data[-11:-5])[0]
-            self.run = int(run_str)
-            del st_arr, run_str
+            self.run = int(np.asarray(self.evtTree['run'],dtype=int)[0])
+            del st_arr
         except uproot.exceptions.KeyInFileError:
             self.unix_time = empty_unix
             self.pps_counter = empty_pps
