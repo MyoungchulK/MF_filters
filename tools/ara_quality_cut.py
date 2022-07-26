@@ -508,7 +508,7 @@ class pre_qual_cut_loader:
 
 class post_qual_cut_loader:
 
-    def __init__(self, ara_root, ara_uproot, pre_cut, daq_cut_sum, dt = 0.5, sol_pad = 10, verbose = False):
+    def __init__(self, ara_root, ara_uproot, daq_cut_sum, dt = 0.5, sol_pad = 10, pre_cut = None, verbose = False):
 
         self.verbose = verbose
         self.ara_root = ara_root
@@ -518,8 +518,11 @@ class post_qual_cut_loader:
         self.num_evts = ara_uproot.num_evts
         self.unix_time = ara_uproot.unix_time
         self.daq_cut_sum = daq_cut_sum != 0
-        self.per_cut_evts = self.get_pre_cut_for_cw(pre_cut, ara_uproot.get_trig_type())
-        
+        if pre_cut is not None:
+            self.per_cut_evts = self.get_pre_cut_for_cw(pre_cut, ara_uproot.get_trig_type())
+        else:
+            self.per_cut_evts = np.full((self.num_evts), 1, dtype = int)        
+
         ara_known_issue = known_issue_loader(self.st)
         self.bad_ant = ara_known_issue.get_bad_antenna(self.run)
         del ara_known_issue
@@ -553,7 +556,7 @@ class post_qual_cut_loader:
             self.ara_root.del_TGraph()
             self.ara_root.del_usefulEvt()
   
-        if self.unlock_cal_evts[evt]:
+        if self.unlock_cal_evts[evt] and pre_cut is not None:
             return
 
         if self.per_cut_evts[evt]:
@@ -679,9 +682,12 @@ class post_qual_cut_loader:
             cw_time = get_time_smearing(self.unix_time[cw_evts], smear_arr = np.arange(-1,2,1, dtype = int))
             cw_evts = np.in1d(self.unix_time, cw_time)
             del cw_time
-    
-        self.rp_ants = cw_ants.astype(int)
-        self.rp_ants[:, :, cw_evts] = 0
+   
+        if cut_val > 0: 
+            self.rp_ants = cw_ants.astype(int)
+            self.rp_ants[:, :, cw_evts] = 0
+        else:
+            self.rp_ants = np.full(cw_ants.shape, 0, dtype = int)
         del cw_ants
     
         cw_evts = cw_evts.astype(int)
@@ -706,7 +712,7 @@ class post_qual_cut_loader:
 
         tot_post_qual_cut = np.full((self.num_evts, 2), 0, dtype = int)
         tot_post_qual_cut[:, 0] = self.unlock_cal_evts
-        tot_post_qual_cut[:, 1] = self.get_cw_events(use_smear = False)
+        tot_post_qual_cut[:, 1] = self.get_cw_events(cut_val = 0, use_smear = False)
 
         self.post_qual_cut_sum = np.nansum(tot_post_qual_cut, axis = 1)
 
