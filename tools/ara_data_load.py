@@ -707,7 +707,7 @@ class sin_subtract_loader:
         int_v_db = int_v.astype(np.double)
         cw_v = np.full((self.num_params, int_num), 0, dtype = np.double)
         self.sub_ratios = np.full((self.sol_pad, self.num_params), np.nan, dtype = float)
-        #self.sub_powers = np.copy(self.sub_ratios)
+        self.sub_powers = np.copy(self.sub_ratios)
         #self.sub_freqs = np.copy(self.sub_ratios)
 
         for params in range(self.num_params):
@@ -717,8 +717,8 @@ class sin_subtract_loader:
             self.sin_sub.unsetFreqLimits()
 
             self.num_sols = self.sin_sub.getNSines()
-            self.sub_ratios[1:self.num_sols+1, params] = np.frombuffer(self.sin_sub.getRatios(), dtype = float, count = self.num_sols + 1)[1:]
-            #self.sub_powers[:self.num_sols+1, params] = np.frombuffer(self.sin_sub.getPowers(), dtype = float, count = self.num_sols + 1)
+            self.sub_ratios[:self.num_sols+1, params] = np.frombuffer(self.sin_sub.getRatios(), dtype = float, count = self.num_sols + 1)
+            self.sub_powers[:self.num_sols+1, params] = np.frombuffer(self.sin_sub.getPowers(), dtype = float, count = self.num_sols + 1)
             #self.sub_freqs[:self.num_sols, params] = np.frombuffer(self.sin_sub.getFreqs(), dtype = float, count = self.num_sols)
         del int_v_db
 

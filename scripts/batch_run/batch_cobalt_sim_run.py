@@ -6,7 +6,7 @@ from glob import glob
 
 # custom lib
 curr_path = os.getcwd()
-sys.path.append(curr_path+'/../')
+sys.path.append(curr_path+'/../../')
 from tools.ara_run_manager import batch_info_loader
 
 def cobalt_run_loader(Key = None, Station = None, Act_Evt = None):
@@ -15,7 +15,8 @@ def cobalt_run_loader(Key = None, Station = None, Act_Evt = None):
     print('event range:', Act_Evt)
     Yrs = 2015
   
-    d_path = '/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run*'
+    #d_path = '/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run*'
+    d_path = '/data/user/mkim/OMF_filter/ARA02/sim_signal/AraOut*'
     print(len(d_path))
     lists = glob(d_path)
  

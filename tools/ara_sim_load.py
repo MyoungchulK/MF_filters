@@ -47,15 +47,19 @@ class ara_root_loader:
 
         ara_tree = file_uproot['AraTree']
         settings = ara_tree['settings']
-        self.time_step = np.asarray(settings['TIMESTEP'], dtype = float)[0] * 1e9
-        self.waveform_length = np.asarray(settings['WAVEFORM_LENGTH'], dtype = int)[0]
+        self.time_step = np.asarray(settings['TIMESTEP'], dtype = float) * 1e9
+        self.waveform_length = np.asarray(settings['WAVEFORM_LENGTH'], dtype = int)
         self.wf_time = np.arange(self.waveform_length) * self.time_step - self.waveform_length // 2 * self.time_step
+        self.posnu_radius = np.asarray(settings['POSNU_RADIUS'], dtype = int)
  
         ara_tree_2 = file_uproot['AraTree2']
         event = ara_tree_2['event']
         self.pnu = np.asarray(event['pnu'], dtype = float)
         self.nuflavorint = np.asarray(event['nuflavorint'], dtype = int)
         self.nu_nubar = np.asarray(event['nu_nubar'], dtype = int)
+        self.inu_thrown = np.asarray(event['inu_thrown'], dtype = int)
+        self.weight = np.asarray(event['Nu_Interaction/Nu_Interaction.weight'], dtype = float)
+        self.probability = np.asarray(event['Nu_Interaction/Nu_Interaction.probability'], dtype = float)
         self.currentint = np.asarray(event['Nu_Interaction/Nu_Interaction.currentint'], dtype = int)
         self.elast_y = np.asarray(event['Nu_Interaction/Nu_Interaction.elast_y'], dtype = float)
         self.posnu = np.full((6, self.num_evts), np.nan, dtype = float)

@@ -26,7 +26,7 @@ TAUDECAY=1                  //account for tau decay in secondaries
 SHOWER_MODE=2               //both EM and hadronic shower in t-domain signal
 POSNU_RADIUS=300
 RAYSOL_RANGE=13000
-INTERACTION_MODE=1          //Veff cylinder mode
+INTERACTION_MODE=0          //Veff cylinder mode
 SIGMA_SELECT=0                          //cross section (0=nominal, 1=upper bound, 2=lower bound)
 SHOWER_STEP=0.001
 
