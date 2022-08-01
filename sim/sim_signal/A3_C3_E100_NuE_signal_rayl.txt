@@ -24,7 +24,7 @@ SELECT_CURRENT=2            //force charged current
 SECONDARIES=1               //enable secondaries
 TAUDECAY=1                  //account for tau decay in secondaries
 SHOWER_MODE=2               //both EM and hadronic shower in t-domain signal
-POSNU_RADIUS=10000
+POSNU_RADIUS=5000
 RAYSOL_RANGE=13000
 INTERACTION_MODE=0          //Veff cylinder mode
 SIGMA_SELECT=0                          //cross section (0=nominal, 1=upper bound, 2=lower bound)
