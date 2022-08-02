@@ -6,8 +6,8 @@ from glob import glob
 d_path = f'/home/mkim/analysis/MF_filters/sim/sim_signal/*'
 d_list = glob(d_path)
 
-old_line = 'POSNU_RADIUS=10000'
-new_line = 'POSNU_RADIUS=5000'
+old_line = 'EXPONENT=2'
+new_line = 'EXPONENT=1'
 
 for t in tqdm(range(len(d_list))):
 

@@ -33,7 +33,7 @@ def get_dag_statement(st, config, run, setup, f_type = None):
 
 setup_path = str(sys.argv[1])
 sim_type = str(sys.argv[2])
-num_runs = 1000
+num_runs = 100
 
 result_path = f'/misc/disk19/users/mkim/OMF_filter/ARA02/sim_{sim_type}'
 if not os.path.exists(result_path):

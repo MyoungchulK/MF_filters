@@ -46,7 +46,7 @@ def run_time_start_info(run_start_list, run_key, empty_run_key, time_key, empty_
             print('No runStart!')
             date_start = np.nan
         else:
-            date_start = datetime.fromtimestamp(unix_start)
+            date_start = datetime.utcfromtimestamp(unix_start)
             date_start = date_start.strftime('%Y%m%d%H%M%S')
             date_start = int(date_start)
     
@@ -70,7 +70,7 @@ def run_time_stop_info(run_stop_list, run_key, empty_run_key, time_key, empty_ti
             print('No runStop!')
             date_stop = np.nan
         else:
-            date_stop = datetime.fromtimestamp(unix_stop)
+            date_stop = datetime.utcfromtimestamp(unix_stop)
             date_stop = date_stop.strftime('%Y%m%d%H%M%S')
             date_stop = int(date_stop)
     

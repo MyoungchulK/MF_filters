@@ -19,31 +19,37 @@ def reco_collector(Data, Ped, analyze_blind_dat = False):
 
     # data config
     ara_uproot = ara_uproot_loader(Data)
-    ara_uproot.get_sub_info()
+    ara_root = ara_root_loader(Data, Ped, ara_uproot.station_id, ara_uproot.year)
     num_evts = ara_uproot.num_evts
     evt_num = ara_uproot.evt_num
-    entry_num = ara_uproot.entry_num
-    unix_time = ara_uproot.unix_time
-    pps_number = ara_uproot.pps_number
     trig_type = ara_uproot.get_trig_type()
-    ara_root = ara_root_loader(Data, Ped, ara_uproot.station_id, ara_uproot.year)
+
+    # qulity cut
+    ara_qual = qual_cut_loader(analyze_blind_dat = analyze_blind_dat, verbose = True)
+    total_qual_cut = ara_qual.load_qual_cut_result(ara_uproot.station_id, ara_uproot.run)
+    qual_cut_sum = np.nansum(total_qual_cut, axis = 1)   
+    clean_evt_idx = np.logical_and(qual_cut_sum == 0, trig_type == 1)
+    clean_evt = evt_num[clean_evt_idx]   
+    print(f'Number of clean event is {len(clean_evt)}') 
+    del qual_cut_sum, ara_qual
 
     # wf analyzer
-    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, add_double_pad = True)
+    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True)
 
     # interferometers
     ara_int = py_interferometers(41, 0, wf_int.pad_len, wf_int.dt, ara_uproot.station_id, ara_uproot.year, ara_uproot.run)
-    del ara_uproot
 
-    # output array  
-    snr = np.full((num_ants, num_evts), np.nan, dtype = float)
-    coef = np.full((2, 2, 2, num_evts), np.nan, dtype = float) # pol, rad, sol
-    coord = np.full((2, 2, 2, 2, num_evts), np.nan, dtype = float) # thephi, pol, rad, sol
+    # output arr
+    corr_v = []
+    corr_h = []
 
     # loop over the events
     for evt in tqdm(range(num_evts)):
       #if evt <100:        
    
+        if clean_evt_idx[evt] == False:
+            continue 
+
         # get entry and wf
         ara_root.get_entry(evt)
         ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
@@ -56,19 +62,22 @@ def reco_collector(Data, Ped, analyze_blind_dat = False):
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()   
  
-        coef[:, :, :, evt], coord[:, :, :, :, evt] = ara_int.get_sky_map(wf_int.pad_v)
-    del ara_root, ara_uproot, num_evts, num_ants, wf_int, ara_int
+        corr_v_evt, corr_h_evt = ara_int.get_sky_map(wf_int.pad_v)
+        corr_v.append(corr_v_evt)
+        corr_h.append(corr_h_evt)
+    del ara_root, ara_uproot, num_evts, num_ants, clean_evt_idx, wf_int, ara_int
+
+    corr_v = np.asarray(corr_v)
+    corr_h = np.asarray(corr_h)
 
     print('Reco collecting is done!')
 
     return {'evt_num':evt_num,
-            'entry_num':entry_num,
+            'clean_evt':clean_evt,
             'trig_type':trig_type,
-            'unix_time':unix_time,
-            'pps_number':pps_number,
-            'snr':snr,
-            'coef':coef,
-            'coord':coord}
+            'total_qual_cut':total_qual_cut,
+            'corr_v':corr_v,
+            'corr_h':corr_h}
 
 
 

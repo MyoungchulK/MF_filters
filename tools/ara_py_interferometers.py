@@ -15,7 +15,7 @@ num_ants = ara_const.USEFUL_CHAN_PER_STATION
 
 class py_interferometers:
 
-    def __init__(self, radius, ray_sol, pad_len, dt, st, yrs, run = None):
+    def __init__(self, pad_len, dt, st, yrs, run = None):
 
         self.dt = dt
         self.st = st
@@ -23,14 +23,10 @@ class py_interferometers:
         self.run = run
         self.lags = correlation_lags(pad_len, pad_len, 'same') * self.dt
         self.lag_len = len(self.lags)
-        self.radius = radius
-        self.ray_sol = int(ray_sol)
+        self.pad_one = np.full((pad_len, num_ants), 1, dtype = float)
 
         self.pairs = self.get_pair_info()
-        self.pair_len = self.pairs.shape[0]
-        self.pad_one = np.full((pad_len, num_ants), 1, dtype = float)
         self.p0_idx, self.int_factor = self.get_coval_time()
-        self.table_shape = self.p0_idx.shape
 
     def get_pair_info(self):
 
@@ -46,6 +42,7 @@ class py_interferometers:
         v_pairs = np.asarray(list(combinations(good_ant[good_ant < 8], 2)))
         h_pairs = np.asarray(list(combinations(good_ant[good_ant > 7], 2)))
         pairs = np.append(v_pairs, h_pairs, axis = 0)
+        self.pair_len = len(pairs)
         self.v_pairs_len = len(v_pairs)
         del v_pairs, h_pairs, good_ant
         print('number of pairs:', len(pairs))
@@ -54,32 +51,37 @@ class py_interferometers:
 
     def get_arrival_time_tables(self):
 
+        if self.st == 2 or (self.st == 3 and self.yrs <= 1515974400):
+            year = 2015
+        else:
+            year = 2018
+
         table_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{self.st}/arr_time_table/'
-        table_name = f'arr_time_table_A{self.st}_Y{self.yrs}.h5'
+        table_name = f'arr_time_table_A{self.st}_Y{year}.h5'
         print('arrival time table:', table_path+table_name)        
 
         table_hf = h5py.File(table_path + table_name, 'r')
         theta = table_hf['theta_bin'][:] - 90 # zenith to elevation angle
         phi = table_hf['phi_bin'][:]
         radius_arr = table_hf['radius_bin'][:]
-        r_idx = np.where(radius_arr == self.radius)[0][0]
-        print(f'selected R: {radius_arr[r_idx]} m')
-        #num_ray_sol = table_hf['num_ray_sol'][0]
-        arr_table = table_hf['arr_time_table'][:,:,r_idx,:,self.ray_sol]
-        del r_idx, radius_arr#, num_ray_sol
+        num_ray_sol = table_hf['num_ray_sol'][:]
+        arr_table = table_hf['arr_time_table'][:]
+        print(f'selected R: {radius_arr} m')
+        del radius_arr, num_ray_sol
         
-        table = np.full((len(theta), len(phi), self.pair_len), np.nan, dtype = float)
+        table = np.full((len(theta), len(phi), len(radius_arr), len(num_ray_sol), self.pair_len), np.nan, dtype = float)
         table_p1 = np.copy(table)
         table_p2 = np.copy(table)
         for p in range(self.pair_len):
             p_1st = self.pairs[p, 0]
             p_2nd = self.pairs[p, 1]
-            table[:,:,p] = arr_table[:,:,p_1st] - arr_table[:,:,p_2nd]
-            table_p1[:,:,p] = arr_table[:,:,p_1st]
-            table_p2[:,:,p] = arr_table[:,:,p_2nd]
+            table[:,:,:,:,p] = arr_table[:,:,:,p_1st,:] - arr_table[:,:,:,:,p_2nd,:]
+            table_p1[:,:,:,:,p] = arr_table[:,:,:,p_1st,:]
+            table_p2[:,:,:,:,p] = arr_table[:,:,:,p_2nd,:]
             del p_1st, p_2nd
 
         self.bad_arr = np.logical_or(table_p1 < -100, table_p2 < -100)
+        self.table_shape = table.shape
         del table_p1, table_p2, theta, phi, arr_table, table_hf
 
         return table
@@ -103,16 +105,25 @@ class py_interferometers:
 
         coval = np.full(self.table_shape, 0, dtype=float)
         for p in range(self.pair_len):
-            coval[:,:,p] = corr_diff[:,p][self.p0_idx[:,:,p]] * self.int_factor[:,:,p] + corr[:,p][self.p0_idx[:,:,p]]
+            coval[:,:,:,:,p] = corr_diff[:,p][self.p0_idx[:,:,:,:,p]] * self.int_factor[:,:,:,:,p] + corr[:,p][self.p0_idx[:,:,:,:,p]]
         coval[self.bad_arr] = 0
         del corr_diff
    
         if sum_pol:
-            corr_v = np.nansum(coval[:,:,:self.v_pairs_len],axis=2)
-            corr_h = np.nansum(coval[:,:,self.v_pairs_len:],axis=2)
-            coval = np.asarray([corr_v, corr_h])
+            corr_v_sum = np.nansum(coval[:,:,:,:,:self.v_pairs_len],axis=2)
+            corr_h_sum = np.nansum(coval[:,:,:,:,self.v_pairs_len:],axis=2)
 
-        return coval
+            corr_v = np.nanargmax(corr_v_sum, axis = (0,1))
+            corr_h = np.nanargmax(corr_h_sum, axis = (0,1))
+
+            del corr_v_sum, corr_h_sum
+
+            coval = np.asarray([corr_v, corr_h])
+            coord = np.asarray([coord_v, coord_h])
+        
+            return coval, coord
+        else:
+            return coval
 
     def get_cross_correlation(self, pad_v, return_debug_dat = False):
 
@@ -142,10 +153,10 @@ class py_interferometers:
         corr = self.get_cross_correlation(pad_v)
 
         #coval
-        coval = self.get_coval_sample(corr, sum_pol = True)
+        coval, coord = self.get_coval_sample(corr, sum_pol = True)
         del corr
 
-        return coval
+        return coval, coord
 
 
     
