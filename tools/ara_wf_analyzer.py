@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.interpolate import Akima1DInterpolator
-from scipy.signal import butter, filtfilt
+from scipy.signal import butter, filtfilt, argrelextrema
 from tqdm import tqdm
 
 # custom lib
@@ -116,7 +116,7 @@ class wf_analyzer:
 
         return int_t
 
-    def get_int_wf(self, raw_t, raw_v, ant, use_unpad = False, use_zero_pad = False, use_band_pass = False, use_cw = False):
+    def get_int_wf(self, raw_t, raw_v, ant, use_unpad = False, use_zero_pad = False, use_band_pass = False, use_cw = False, use_p2p = False):
 
         # akima interpolation!
         akima = Akima1DInterpolator(raw_t, raw_v)
@@ -130,6 +130,9 @@ class wf_analyzer:
 
         if use_cw:
             int_v = self.sin_sub.get_filtered_wf(int_v, int_num, ant)
+
+        if use_p2p:
+            self.int_p2p = self.get_p2p(int_v, use_max = True) 
 
         if use_unpad:
             int_t = self.pad_zero_t[int_idx]
@@ -193,6 +196,19 @@ class wf_analyzer:
         del max_idx
 
         return max_t, max_v
+
+    def get_p2p(self, y, use_max = False):
+
+        upper_peak_idx = argrelextrema(y, np.greater_equal, order=1)[0]
+        lower_peak_idx = argrelextrema(y, np.less_equal, order=1)[0]
+        peak_idx = np.unique(np.concatenate((upper_peak_idx, lower_peak_idx)))
+        peak = y[peak_idx]
+        p2p = np.abs(np.diff(peak))
+        if use_max:
+            p2p = np.nanmax(p2p)
+        del upper_peak_idx, lower_peak_idx, peak_idx, peak
+
+        return p2p
 
 class hist_loader():
 
