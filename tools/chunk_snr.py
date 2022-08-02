@@ -1,5 +1,6 @@
 import numpy as np
 from tqdm import tqdm
+import h5py
 
 def snr_collector(Data, Ped, analyze_blind_dat = False):
 
@@ -64,17 +65,17 @@ def snr_collector(Data, Ped, analyze_blind_dat = False):
 
         if trig_type[evt] == 0:
             rms[:, evt] = np.nanstd(wf_int.pad_v, axis = 0)
-    del ara_root, num_evts, num_ants, wf_int, daq_qual_cut_sum, pre_qual_cut_sum
+    del ara_root, num_evts, num_ants, wf_int
 
     clean_idx = np.logical_and(pre_qual_cut_sum == 0, trig_type == 0)
-    if np.count_nonzero(clean_idx) != 0:
-        print('no clean rf events!')
+    if np.count_nonzero(clean_idx) == 0:
         clean_idx = np.logical_and(daq_qual_cut_sum == 0, trig_type == 0)
+        print(f'no clean rf events! all # of rf events: {np.count_nonzero(clean_idx)}')
     rms_copy = np.copy(rms)
     rms_copy[:, ~clean_idx] = np.nan
     rms_mean = np.nanmean(rms_copy, axis = 1)
     snr = p2p / 2 / rms_mean[:, np.newaxis]
-    del rms_copy
+    del rms_copy, daq_qual_cut_sum, pre_qual_cut_sum
 
     print('SNR collecting is done!')
 
