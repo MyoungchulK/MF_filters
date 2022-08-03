@@ -226,6 +226,8 @@ class ara_uproot_loader:
             self.entry_num = np.arange(len(st_arr))
             self.evt_num = np.asarray(self.evtTree['event/eventNumber'],dtype=int)
             self.run = int(np.asarray(self.evtTree['run'],dtype=int)[0])
+            if self.station_id == 3 and self.run == 3429:
+                self.run = 3517
             self.year = self.get_year()
             print('total events:', self.num_evts)
             del st_arr
