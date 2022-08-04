@@ -15,7 +15,7 @@ num_ants = ara_const.USEFUL_CHAN_PER_STATION
 
 class py_interferometers:
 
-    def __init__(self, pad_len, dt, st, yrs, run):
+    def __init__(self, pad_len, dt, st, yrs, run = None):
 
         self.dt = dt
         self.st = st
