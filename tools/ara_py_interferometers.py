@@ -15,7 +15,7 @@ num_ants = ara_const.USEFUL_CHAN_PER_STATION
 
 class py_interferometers:
 
-    def __init__(self, pad_len, dt, st, yrs, run = None):
+    def __init__(self, pad_len, dt, st, yrs, run):
 
         self.dt = dt
         self.st = st
@@ -150,7 +150,7 @@ class py_interferometers:
         else:
             del nor_fac
             return corr
-
+    
     def get_sky_map(self, pad_v, weights = None):
         
         # correlation

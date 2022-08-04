@@ -20,8 +20,9 @@ del knwon_issue
 # sort
 d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/snr/*'
 d_list, d_run_tot, d_run_range = file_sorter(d_path)
-q_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/daq_cut/'
 d_len = len(d_run_tot)
+q_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/daq_cut/'
+c_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_cut_lite/'
 
 snr_bins = np.linspace(0,150,150+1)
 snr_bin_center = (snr_bins[1:] + snr_bins[:-1]) / 2
@@ -34,10 +35,12 @@ snr_rf = np.copy(snr_tot)
 snr_cal = np.copy(snr_tot)
 snr_soft = np.copy(snr_tot)
 snr_rf_cut = np.copy(snr_tot)
+snr_rf_ant1_cut = np.copy(snr_tot)
+snr_rf_ant2_cut = np.copy(snr_tot)
 
 for r in tqdm(range(len(d_run_tot))):
     
-  #if r <10:
+  #if r <100:
 
     hf = h5py.File(d_list[r], 'r')
     config = hf['config'][2]
@@ -67,7 +70,21 @@ for r in tqdm(range(len(d_run_tot))):
     snr_rf_clean = snr_r[:, (trig == 0) & (cuts == 0)]
     for a in range(16):
         snr_rf_cut[:,a,r] = np.histogram(snr_rf_clean[a], bins = snr_bins)[0].astype(int)
-    del hf, trig, snr_r, snr_rf_clean, cuts
+
+    hf_c = h5py.File(f'{c_path}cw_cut_A{Station}_R{d_run_tot[r]}.h5', 'r')
+    cw_cut_04 = hf_c['cw_cut_04'][:2]
+    cw_cut_025 = hf_c['cw_cut_025'][:2]
+    cw_cut_0125 = hf_c['cw_cut_0125'][:2]
+    cw_cut = cw_cut_04 + cw_cut_025 + cw_cut_0125
+    cw_cut += cuts[np.newaxis, :]
+    
+    snr_cw_ant1 = snr_r[:, (trig == 0) & (cw_cut[0] == 0)]
+    snr_cw_ant2 = snr_r[:, (trig == 0) & (cw_cut[1] == 0)]
+    for a in range(16):
+        snr_rf_ant1_cut[:,a,r] = np.histogram(snr_cw_ant1[a], bins = snr_bins)[0].astype(int)
+        snr_rf_ant2_cut[:,a,r] = np.histogram(snr_cw_ant2[a], bins = snr_bins)[0].astype(int)
+    del snr_cw_ant1, snr_cw_ant2
+    del hf, trig, snr_r, snr_rf_clean, cuts, hf_c, cw_cut_04, cw_cut_025, cw_cut_0125, cw_cut
 
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
@@ -86,6 +103,8 @@ hf.create_dataset('snr_rf', data=snr_rf, compression="gzip", compression_opts=9)
 hf.create_dataset('snr_cal', data=snr_cal, compression="gzip", compression_opts=9)
 hf.create_dataset('snr_soft', data=snr_soft, compression="gzip", compression_opts=9)
 hf.create_dataset('snr_rf_cut', data=snr_rf_cut, compression="gzip", compression_opts=9)
+hf.create_dataset('snr_rf_ant1_cut', data=snr_rf_ant1_cut, compression="gzip", compression_opts=9)
+hf.create_dataset('snr_rf_ant2_cut', data=snr_rf_ant2_cut, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name)
 # quick size check

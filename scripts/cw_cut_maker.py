@@ -79,7 +79,7 @@ d_list_04, d_run_tot, d_run_range = file_sorter(d_path_04)
 del d_path_0125, d_path_025, d_path_04, d_run_range
 cut_label = ['cw_cut_04', 'cw_cut_025', 'cw_cut_0125']
 
-r_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_cut/'
+r_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_cut_lite/'
 if not os.path.exists(r_path):
     os.makedirs(r_path)
 
@@ -112,12 +112,12 @@ for r in range(len(d_run_tot)):
             hf_r.create_dataset('evt_num', data=evt_num, compression="gzip", compression_opts=9)
         clean_evt = hf['clean_evt'][:]
         evt_idx = np.in1d(evt_num, clean_evt)
-        del hf, evt_num, clean_evt
+        del hf, clean_evt
 
         cw_cut_r = np.full((16, len(evt_num)), 0, dtype = int)
         for a in range(16):
             cw_cut_r[a, evt_idx] = (r_count > a).astype(int)
-        del r_count, evt_idx
+        del r_count, evt_idx, evt_num
         hf_r.create_dataset(cut_label[h], data=cw_cut_r, compression="gzip", compression_opts=9)
     hf_r.close()
     del run_list, cut_tot, g_idx, file_name
