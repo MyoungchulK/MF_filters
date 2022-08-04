@@ -80,7 +80,7 @@ def reco_collector(Data, Ped, analyze_blind_dat = False):
         ara_root.del_usefulEvt()   
  
         coef[:, :, evt], coord[:, :, :, evt] = ara_int.get_sky_map(wf_int.pad_v, weights = snr_weights[:, evt])
-    del ara_root, ara_uproot, num_evts, num_ants, wf_int, ara_int, snr, daq_qual_cut_sum
+    del ara_root, num_evts, num_ants, wf_int, ara_int,daq_qual_cut_sum
 
     print('Reco collecting is done!')
 
