@@ -11,6 +11,7 @@ import h5py
 from tqdm import tqdm
 from glob import glob
 from scipy.interpolate import interp1d
+from scipy.signal import medfilt
 import ROOT
 
 def cart_to_sph(x, y, z):
@@ -86,6 +87,7 @@ def main(h5_path, output_path, st, distance_cut = 17000):
     pad = 18000
     balloon_unix_time = np.full((pad, h5_len), np.nan, dtype = float)
     balloon_distance = np.copy(balloon_unix_time)
+    balloon_smooth_distance = np.copy(balloon_unix_time)
 
     ## loop over all h5 files
     for h in tqdm(range(h5_len)):
@@ -137,9 +139,10 @@ def main(h5_path, output_path, st, distance_cut = 17000):
         ## save into numpy array 
         balloon_unix_time[:len(tot_unix_time), h] = tot_unix_time
         balloon_distance[:len(tot_distance), h] = tot_distance
-    
+        balloon_smooth_distance[:len(tot_distance), h] = medfilt(tot_distance, kernel_size = 39) # use rolling median to remove huge distance (wgs84xyz) value probably caused by error  
+
     ## calculating bad unix time for analysis
-    bad_dis_idx = balloon_distance < distance_cut
+    bad_dis_idx = balloon_smooth_distance < distance_cut
     bad_unix_time = np.copy(balloon_unix_time)
     bad_unix_time[~bad_dis_idx] = np.nan
     bad_unix_time = bad_unix_time[~np.isnan(bad_unix_time)]
@@ -152,6 +155,7 @@ def main(h5_path, output_path, st, distance_cut = 17000):
     hf = h5py.File(f'{output_path}A{st}_balloon_distance.h5', 'w')
     hf.create_dataset('balloon_unix_time', data=balloon_unix_time, compression="gzip", compression_opts=9)
     hf.create_dataset('balloon_distance', data=balloon_distance, compression="gzip", compression_opts=9)
+    hf.create_dataset('balloon_smooth_distance', data=balloon_smooth_distance, compression="gzip", compression_opts=9)
     hf.create_dataset('bad_unix_time', data=bad_unix_time, compression="gzip", compression_opts=9)
     hf.close()
     print('Done!')

@@ -379,7 +379,7 @@ class pre_qual_cut_loader:
         if use_sec:
             bin_type = 'sec'
             rf_rate_cut = 1
-            cal_rate_cut = 1
+            cal_rate_cut = 0
             cal_upper_cut = 1
             soft_rate_cut = 0
             soft_upper_cut = 2
@@ -470,9 +470,9 @@ class pre_qual_cut_loader:
 
     def get_cw_log_events(self):
 
-        cw_log_dat = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/radiosonde_data/radius_tot/A{self.st}_mwx_R.h5'
+        cw_log_dat = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/radiosonde_data/weather_balloon/radius_tot/A{self.st}_balloon_distance.h5'
         cw_log_hf = h5py.File(cw_log_dat, 'r')
-        cw_unix = cw_log_hf['cw_unix_time'][:]
+        cw_unix = cw_log_hf['bad_unix_time'][:]
         cw_log_events = np.in1d(self.unix_time, cw_unix).astype(int)
         del cw_log_dat, cw_log_hf, cw_unix
 
@@ -508,7 +508,7 @@ class pre_qual_cut_loader:
 
 class post_qual_cut_loader:
 
-    def __init__(self, ara_root, ara_uproot, daq_cut_sum, dt = 0.5, sol_pad = 10, pre_cut = None, verbose = False):
+    def __init__(self, ara_root, ara_uproot, daq_cut_sum, dt = 0.5, sol_pad = 10, pre_cut = None, use_unlock_cal = False, use_cw_cut = False, verbose = False):
 
         self.verbose = verbose
         self.ara_root = ara_root
@@ -518,60 +518,70 @@ class post_qual_cut_loader:
         self.num_evts = ara_uproot.num_evts
         self.unix_time = ara_uproot.unix_time
         self.daq_cut_sum = daq_cut_sum != 0
-        if pre_cut is not None:
-            self.per_cut_evts = self.get_pre_cut_for_cw(pre_cut, ara_uproot.get_trig_type())
-        else:
-            self.per_cut_evts = np.full((self.num_evts), 1, dtype = int)        
 
-        ara_known_issue = known_issue_loader(self.st)
-        self.bad_ant = ara_known_issue.get_bad_antenna(self.run)
-        del ara_known_issue
+        self.use_unlock_cal = use_unlock_cal
+        if self.use_unlock_cal:
+            # array
+            self.unlock_cal_evts = np.full((self.num_evts), 0, dtype = int)
 
-        from tools.ara_wf_analyzer import wf_analyzer
-        self.wf_int = wf_analyzer(dt = dt, use_time_pad = True, use_band_pass = True)
+        self.use_cw_cut = use_cw_cut
+        if self.use_cw_cut:
+            if pre_cut is not None:
+                self.pre_cut_evts = self.get_pre_cut_for_cw(pre_cut, ara_uproot.get_trig_type())
+            else:
+                self.pre_cut_evts = np.full((self.num_evts), 1, dtype = int)        
 
-        num_params, cw_thres, cw_freq = self.get_cw_params()
-        from tools.ara_data_load import sin_subtract_loader
-        self.sin_sub = sin_subtract_loader(cw_freq, cw_thres, 3, num_params, dt, sol_pad)
-        del cw_thres, cw_freq
+            ara_known_issue = known_issue_loader(self.st)
+            self.bad_ant = ara_known_issue.get_bad_antenna(self.run)
+            del ara_known_issue
 
-        # array
-        self.unlock_cal_evts = np.full((self.num_evts), 0, dtype = int)
-        self.sub_ratios = np.full((sol_pad, num_params, num_ants, self.num_evts), np.nan, dtype = float)
-        del num_params
+            from tools.ara_wf_analyzer import wf_analyzer
+            self.wf_int = wf_analyzer(dt = dt, use_time_pad = True, use_band_pass = True)
+
+            num_params, cw_thres, cw_freq = self.get_cw_params()
+            from tools.ara_data_load import sin_subtract_loader
+            self.sin_sub = sin_subtract_loader(cw_freq, cw_thres, 3, num_params, dt, sol_pad)
+            del cw_thres, cw_freq
+        
+            # array
+            self.sub_ratios = np.full((sol_pad, num_params, num_ants, self.num_evts), np.nan, dtype = float)
+            del num_params
 
     def run_post_qual_cut(self, evt):
 
         if self.daq_cut_sum[evt]:
             return
 
-        self.ara_root.get_entry(evt)
+        if self.use_unlock_cal or self.use_cw_cut:
+            self.ara_root.get_entry(evt)
+    
+        if self.use_unlock_cal:
+            if self.st == 3 and (self.run > 1124 and self.run < 1429):
 
-        if self.st == 3 and (self.run > 1124 and self.run < 1429):
-
-            self.ara_root.get_useful_evt(self.ara_root.cal_type.kOnlyADCWithOut1stBlockAndBadSamples)
-            raw_v = self.ara_root.get_rf_ch_wf(2)[1]   
-            self.unlock_cal_evts[evt] = self.get_unlocked_calpulser_events(raw_v)    
-            del raw_v
-            self.ara_root.del_TGraph()
-            self.ara_root.del_usefulEvt()
-  
-        if self.unlock_cal_evts[evt] and pre_cut is not None:
-            return
-
-        if self.per_cut_evts[evt]:
-
-            self.ara_root.get_useful_evt(self.ara_root.cal_type.kLatestCalib)
-            for ant in range(num_ants):
-                if self.bad_ant[ant]:
-                    continue
-                raw_t, raw_v = self.ara_root.get_rf_ch_wf(ant)
-                int_v, int_num = self.wf_int.get_int_wf(raw_t, raw_v, ant, use_unpad = True, use_band_pass = True)[1:]
-                self.sin_sub.get_sin_subtract_wf(int_v, int_num, ant, return_none = True)  
-                self.sub_ratios[:, :, ant, evt] = self.sin_sub.sub_ratios
-                del raw_t, raw_v, int_v, int_num
+                self.ara_root.get_useful_evt(self.ara_root.cal_type.kOnlyADCWithOut1stBlockAndBadSamples)
+                raw_v = self.ara_root.get_rf_ch_wf(2)[1]   
+                self.unlock_cal_evts[evt] = self.get_unlocked_calpulser_events(raw_v)    
+                del raw_v
                 self.ara_root.del_TGraph()
-            self.ara_root.del_usefulEvt()
+                self.ara_root.del_usefulEvt()
+
+        if self.use_cw_cut:
+            if self.unlock_cal_evts[evt] and pre_cut is not None:
+                return
+
+            if self.pre_cut_evts[evt]:
+
+                self.ara_root.get_useful_evt(self.ara_root.cal_type.kLatestCalib)
+                for ant in range(num_ants):
+                    if self.bad_ant[ant]:
+                        continue
+                    raw_t, raw_v = self.ara_root.get_rf_ch_wf(ant)
+                    int_v, int_num = self.wf_int.get_int_wf(raw_t, raw_v, ant, use_unpad = True, use_band_pass = True)[1:]
+                    self.sin_sub.get_sin_subtract_wf(int_v, int_num, ant, return_none = True)  
+                    self.sub_ratios[:, :, ant, evt] = self.sin_sub.sub_ratios
+                    del raw_t, raw_v, int_v, int_num
+                    self.ara_root.del_TGraph()
+                self.ara_root.del_usefulEvt()
 
     def get_pre_cut_for_cw(self, pre_cut, trig_type):
 
@@ -710,14 +720,19 @@ class post_qual_cut_loader:
  
     def get_post_qual_cut(self):
 
-        tot_post_qual_cut = np.full((self.num_evts, 2), 0, dtype = int)
-        tot_post_qual_cut[:, 0] = self.unlock_cal_evts
-        tot_post_qual_cut[:, 1] = self.get_cw_events(cut_val = 0, use_smear = False)
+        tot_post_qual_cut = np.full((self.num_evts, int(self.use_unlock_cal) + int(self.use_cw_cut)), 0, dtype = int)
+        if self.use_unlock_cal:
+            col_idx = int(self.use_unlock_cal) - 1
+            tot_post_qual_cut[:, col_idx] = self.unlock_cal_evts
+            if self.verbose:
+                quick_qual_check(tot_post_qual_cut[:, 0] != 0, 'unlocked calpulser events!', self.evt_num)
+        if self.use_cw_cut:
+            col_idx = int(self.use_unlock_cal) + int(self.use_cw_cut) - 1
+            tot_post_qual_cut[:, col_idx] = self.get_cw_events(cut_val = 0, use_smear = False)
 
         self.post_qual_cut_sum = np.nansum(tot_post_qual_cut, axis = 1)
 
         if self.verbose:
-            quick_qual_check(tot_post_qual_cut[:, 0] != 0, 'unlocked calpulser events!', self.evt_num)
             quick_qual_check(self.post_qual_cut_sum != 0, 'total post qual cut!', self.evt_num)
         
         return tot_post_qual_cut
@@ -760,8 +775,8 @@ class ped_qual_cut_loader:
         # 19 bad soft sec rate
         # 20 high rf sec rate
         # 21 bad run
-        # 22 unlock calpulser
-        # 23 cw cut
+        # 22 cw log cut
+        # 23 unlock calpulser
 
         # turn on all cuts
         clean_evts_qual_type[:, 0] = 1
@@ -774,7 +789,7 @@ class ped_qual_cut_loader:
         del qual_type
 
         # hardware error only. not use 1) 10 bad unix time, 3) 13 bad cal ratio, and 4) 14 bad rf rate 5) 21 bad run 6) 23 cw cut
-        qual_type = np.array([0,1,2,3,4,5,6,7,8,9,11,12,15,16,17,18,19,20,22], dtype = int)
+        qual_type = np.array([0,1,2,3,4,5,6,7,8,9,11,12,15,16,17,18,19,20,23], dtype = int)
         clean_evts_qual_type[qual_type, 2] = 1
         clean_evts[:, 2] = np.logical_and(np.nansum(self.total_qual_cut[:, qual_type], axis = 1) == 0, self.trig_type != 1).astype(int)
         del qual_type
@@ -866,10 +881,10 @@ class ped_qual_cut_loader:
             ped_counts = np.copy(self.ped_counts)    
         else:
             run_info = run_info_loader(self.st, self.run, analyze_blind_dat = self.analyze_blind_dat)
-            ped_dat = run_info.get_result_path(file_type = 'ped_cut', verbose = self.verbose, force_blind = True)
+            ped_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = self.verbose, force_blind = True)
             ped_hf = h5py.File(ped_dat, 'r')
             ped_counts = ped_hf['ped_counts'][:]
-            known_bad_ped_evts = ped_hf['total_ped_cut'][0,-1]
+            known_bad_ped_evts = ped_hf['ped_qual_cut'][0,-1]
             del ped_dat, ped_hf, run_info
         zero_ped_counts = ped_counts < 1
         ped_blk_counts = ped_counts == 1
