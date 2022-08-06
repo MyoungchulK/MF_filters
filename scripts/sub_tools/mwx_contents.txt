@@ -1,0 +1,3 @@
+SystemEvents DataSrvTimePk,EventType,Data
+RadioDiagnostics DataSrvTime,RadiosondeCarrier,SignalLevelPeak,NoiseFloor,SignalPower,NoisePower,SNR
+GpsResults DataSrvTime,GpsSeconds,Wgs84Latitude,Wgs84Longitude,Wgs84Altitude,Wgs84X,Wgs84Y,Wgs84Z
