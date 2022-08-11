@@ -52,7 +52,7 @@ def main(mwx_path, output_path, del_xml = False):
 
     ## loop over all mwx files
     for m in tqdm(range(mwx_len)):
-      #if m < 0: # for debug
+      #if m > 4053: # for debug
 
         ## collect mwx file name
         nzsp_key = mwx_list[m].find('NZSP_')
@@ -64,6 +64,9 @@ def main(mwx_path, output_path, del_xml = False):
         ara_key = mwx_list[m].find(ara_key_name)
         mwx_dir_key_name = '/MWX/'
         mwx_dir_key =  mwx_list[m].find(mwx_dir_key_name)
+        if mwx_dir_key == -1:
+            mwx_dir_key_name = '/DC3DB/'
+            mwx_dir_key =  mwx_list[m].find(mwx_dir_key_name)
         year_name = mwx_list[m][ara_key+len(ara_key_name):mwx_dir_key]
         date_name = mwx_list[m][mwx_dir_key+len(mwx_dir_key_name):nzsp_key-1]
         new_mwx_name = f'{mwx_name}_{year_name}_{date_name}_c{m}'

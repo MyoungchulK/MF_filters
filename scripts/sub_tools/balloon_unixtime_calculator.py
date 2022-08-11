@@ -71,11 +71,7 @@ def main(h5_path, output_path, st, distance_cut = 17000):
     ara_Lat = ara_geom.getGeometricLatitudeFromArrayCoords(stationVector[1], stationVector[0], 2011) # get the 'Geometric' latitude. We are going to compare with weather balloon 'XYZ' coordinates
     ara_Lat = np.radians(ara_Lat)
     ara_Lon = np.radians(ara_Lon) 
-
-    ## These value are copied from AraRoot. In the future, we need make a function in AraRoot to return these values
-    fGeoidC=6356752.3
-    fIceThicknessSP=2646.28 
-    ara_R = fGeoidC + fIceThicknessSP
+    ara_R = ara_geom.getGeometricRadius()
     print(f'A{st} coord. Lat: {np.degrees(ara_Lat)} deg, Lon: {np.degrees(ara_Lon)} deg, R: {ara_R} m') 
 
     ## make h5 file list in h5_list

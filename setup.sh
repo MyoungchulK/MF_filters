@@ -7,8 +7,10 @@ echo "LD_LIBRARY_PATH = "${LD_LIBRARY_PATH}
 export ARA_UTIL_INSTALL_DIR=/home/mkim/analysis/AraSoft/AraUtil
 export ARA_ROOT_DIR=/home/mkim/analysis/AraSoft/AraRoot
 export SIM=/home/mkim/analysis/AraSoft/AraSim
+export GTRS=/home/mkim/analysis/AraSoft/GruanToolRs92
 export LD_LIBRARY_PATH=${ARA_UTIL_INSTALL_DIR}/lib:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=${SIM}:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=${GTRS}:$LD_LIBRARY_PATH
 
 echo "after  :)"
 echo "ARA_UTIL_INSTALL_DIR = "${ARA_UTIL_INSTALL_DIR}

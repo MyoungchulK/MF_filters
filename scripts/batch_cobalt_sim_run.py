@@ -16,9 +16,9 @@ def cobalt_run_loader(Key = None, Station = None, Act_Evt = None):
     Yrs = 2015
   
     #d_path = '/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run*'
-    d_path = f'/data/user/mkim/OMF_filter/ARA0{Station}/sim_signal/AraOut*'
-    print(len(d_path))
+    d_path = f'/misc/disk19/users/mkim/OMF_filter/ARA0{Station}/sim_signal/AraOut*'
     lists = glob(d_path)
+    print(len(lists))
  
     count = 0
     for w in tqdm(lists):

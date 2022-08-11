@@ -1,0 +1,2 @@
+GPSDCC_RESULT000;time [s],dSondeX [m],dSondeY [m],dSondeZ [m],fNorth [m],fEast [m],fUp [m],fAltitude [m]
+GPSCCLOC000;time [s],lLatitude [deg],lLongitude [deg],wHeight [m]

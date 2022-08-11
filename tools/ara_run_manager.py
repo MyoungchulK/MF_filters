@@ -1,10 +1,48 @@
 import os, sys
 import numpy as np
 import re
+import shutil
 from glob import glob
 from tqdm import tqdm
 from datetime import datetime
 from subprocess import call
+
+class condor_info_loader:
+
+    def __init__(self, use_condor = False, verbose = False):
+
+        self.use_condor = use_condor
+        self.verbose = verbose
+        #self.local_path = os.path.expandvars("$_CONDOR_SCRATCH_DIR") + '/'
+        self.local_path = os.path.expandvars("$TMPDIR") + '/'
+
+    def get_target_to_condor_path(self, tar_path):
+
+        if (tar_path is not None and tar_path != '0') and self.use_condor:
+            self.temp_tar_path = shutil.copy(tar_path, self.local_path)
+            if self.verbose:
+                print(f'{tar_path} is copied into {self.local_path}')
+            condor_path = self.temp_tar_path
+        else:
+            condor_path = tar_path
+
+        return condor_path
+
+    def get_condor_to_target_path(self, file_name, tar_path):
+        
+        if self.use_condor:
+            local_output_path = f'{self.local_path}{file_name}'
+            mv_CMD = f'mv {local_output_path} {tar_path}'
+            call(mv_CMD.split(' '))
+            print(f'{local_output_path} is moved into {tar_path}')
+            #rm_CMD = f'rm -rf {self.temp_tar_path}'
+            #call(rm_CMD.split(' '))
+            #print(f'{self.temp_tar_path} is deleted')
+            output_path = f'{tar_path}{file_name}'
+        else:            
+            output_path = f'{tar_path}{file_name}'
+
+        return output_path
 
 class run_info_loader:
 
