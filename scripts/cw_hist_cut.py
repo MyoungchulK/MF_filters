@@ -15,18 +15,18 @@ from tools.ara_run_manager import run_info_loader
 
 Station = int(sys.argv[1])
 #d_type = 'all_002'
-#d_type = 'wb_002'
+d_type = 'wb_002'
 #d_type = 'ha_002'
-d_type = 'ha2_002'
+#d_type = 'ha2_002'
 
 knwon_issue = known_issue_loader(Station)
 bad_runs = knwon_issue.get_knwon_bad_run(use_qual = True)
 del knwon_issue
 
 # sort
-#d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_lite_04/*'
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_lite_04/*'
 #d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_lite_025/*'
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_lite_0125/*'
+#d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_lite_0125/*'
 print(d_path)
 d_list, d_run_tot, d_run_range = file_sorter(d_path)
 del d_run_range
@@ -179,48 +179,13 @@ days_range = np.arange(days).astype(int)
 mins_range = np.arange(min_in_day).astype(int)
 
 ratio_map = np.full((len(unix_min_bins[:-1]), 16), 0, dtype = float)
-tsv_map = np.full((len(unix_min_bins[:-1])), 0, dtype = int)
 
-cw_h5_path = '/home/mkim/analysis/MF_filters/data/cw_log/'
-txt_name = f'{cw_h5_path}launchtimes.h5'
+cw_h5_path = '/misc/disk19/users/mkim/OMF_filter/radiosonde_data/weather_balloon/radius_tot/'
+txt_name = f'{cw_h5_path}A{Station}_balloon_distance.h5'
 hf = h5py.File(txt_name, 'r')
-unix_txt = hf['unix_time'][:]
+unix_txt = hf['bad_unix_time'][:]
 txt_map = np.histogram(unix_txt, bins = unix_min_bins)[0].astype(int)
 del hf
-
-min_30 = np.arange(30*60, dtype = int)
-unix_txt_30 = np.repeat(unix_txt[:, np.newaxis], len(min_30), axis = 1)
-unix_txt_30 += min_30[np.newaxis, :]
-txt_map_30 = np.histogram(unix_txt_30.flatten(), bins = unix_min_bins)[0].astype(int)
-txt_map_30[txt_map_30 != 0] = 1
-txt_map_30_unix = txt_map_30 * unix_min_bins[:-1]
-del unix_txt, unix_txt_30, min_30
-
-tsv_path = glob(f'{cw_h5_path}tsv*')
-for t in tqdm(tsv_path):
-    hf = h5py.File(t, 'r')
-    unix_tsv = hf['unix_time'][:]
-    tsv_map += np.histogram(unix_tsv.flatten(), bins = unix_min_bins)[0].astype(int)
-    del hf, unix_tsv
-
-mwx_name = f'{cw_h5_path}mwx.h5'
-hf = h5py.File(mwx_name, 'r')
-unix_mwx = hf['unix_time'][:]
-unix_mwx_f = hf['unix_time_f'][:]
-mwx_map = np.histogram(unix_mwx.flatten(), bins = unix_min_bins)[0].astype(int)
-del hf, unix_mwx
-
-min_10 = np.arange(10*60, dtype = int)
-unix_mwx_f_10 = np.repeat(unix_mwx_f[:, np.newaxis], len(min_10), axis = 1)
-unix_mwx_f_10 -= min_10[np.newaxis, :]
-mwx_map_10 = np.histogram(unix_mwx_f_10.flatten(), bins = unix_min_bins)[0].astype(int)
-mwx_map_10[mwx_map_10 != 0] = 1
-mwx_map_10_unix = mwx_map_10 * unix_min_bins[:-1]
-del min_10, unix_mwx_f, unix_mwx_f_10
-
-tot_cut_map = mwx_map_10 + txt_map_30
-tot_cut_map[tot_cut_map != 0] = 1
-tot_cut_map_unix = tot_cut_map * unix_min_bins[:-1]
 
 for r in tqdm(range(len(d_run_tot))):
     
@@ -242,7 +207,7 @@ for r in tqdm(range(len(d_run_tot))):
     min_idx = (unix_time - day_init)//60
     min_idx = min_idx % min_in_day
 
-    bad_idx = np.in1d(unix_time, tot_cut_map_unix)
+    bad_idx = np.in1d(unix_time, unix_txt)
     good_idx = ~bad_idx
     #bad_idx_len = np.count_nonzero(bad_idx)
     #if bad_idx_len != 0:
@@ -297,8 +262,6 @@ days_len = len(days_range)
 mins_len = len(mins_range)
 
 ratio_map = np.reshape(ratio_map, (days_len, mins_len, 16))
-mwx_map = np.reshape(mwx_map, (days_len, mins_len))
-tsv_map = np.reshape(tsv_map, (days_len, mins_len))
 txt_map = np.reshape(txt_map, (days_len, mins_len))
     
 path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
@@ -306,7 +269,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'CW_Log_{d_type}_A{Station}_v9.h5'
+file_name = f'CW_Log_Full_{d_type}_A{Station}.h5'
 #file_name = f'CW_Log_{d_type}_A{Station}_v9.5.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('ratio_bins', data=ratio_bins, compression="gzip", compression_opts=9)
@@ -316,15 +279,7 @@ hf.create_dataset('unix_min_map', data=unix_min_map, compression="gzip", compres
 hf.create_dataset('days_range', data=days_range, compression="gzip", compression_opts=9)
 hf.create_dataset('mins_range', data=mins_range, compression="gzip", compression_opts=9)
 hf.create_dataset('ratio_map', data=ratio_map, compression="gzip", compression_opts=9)
-hf.create_dataset('mwx_map', data=mwx_map, compression="gzip", compression_opts=9)
-hf.create_dataset('mwx_map_10', data=mwx_map_10, compression="gzip", compression_opts=9)
-hf.create_dataset('mwx_map_10_unix', data=mwx_map_10_unix, compression="gzip", compression_opts=9)
-hf.create_dataset('tsv_map', data=tsv_map, compression="gzip", compression_opts=9)
 hf.create_dataset('txt_map', data=txt_map, compression="gzip", compression_opts=9)
-hf.create_dataset('txt_map_30', data=txt_map_30, compression="gzip", compression_opts=9)
-hf.create_dataset('txt_map_30_unix', data=txt_map_30_unix, compression="gzip", compression_opts=9)
-hf.create_dataset('tot_cut_map', data=tot_cut_map, compression="gzip", compression_opts=9)
-hf.create_dataset('tot_cut_map_unix', data=tot_cut_map_unix, compression="gzip", compression_opts=9)
 hf.create_dataset('unix_ratio_rf_cut_map', data=unix_ratio_rf_cut_map, compression="gzip", compression_opts=9)
 hf.create_dataset('unix_ratio_rf_cut_map_good', data=unix_ratio_rf_cut_map_good, compression="gzip", compression_opts=9)
 hf.create_dataset('unix_ratio_rf_cut_map_good_kind', data=unix_ratio_rf_cut_map_good_kind, compression="gzip", compression_opts=9)

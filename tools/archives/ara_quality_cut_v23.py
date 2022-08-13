@@ -679,53 +679,36 @@ class post_qual_cut_loader:
 
         return num_params, cw_thres, cw_freq
 
-    def get_cw_events(self, cut_val = 1, smear_val = 5, use_smear = False):
+    def get_cw_events(self, cut_val = 1, use_smear = False):
 
-        ## 0.4 GHz WB                                               # sol_pad, num_params, num_ants, num_evts -> original array dim
-        wb_arr = np.copy(self.sub_ratios[:, 2])                     # sol_pad,             num_ants, num_evts -> wb flag only
-        wb_flag = np.any(~np.isnan(wb_arr), axis = 0)               #                      num_ants, num_evts -> check indi ch flag
-        wb_evts = np.count_nonzero(wb_flag, axis = 0) > cut_val     #                                num_evts -> check num of chs flag. at least bigger than cut_val
-        del wb_arr       
- 
-        ## 0.125 and 0.25 GHz unknown                               # sol_pad, num_params, num_ants, num_evts -> original array dim
-        uk_arr = np.copy(self.sub_ratios[:, :2])                    # sol_pad, num_params, num_ants, num_evts -> unknown flags
-        uk_flag = np.any(~np.isnan(uk_arr), axis = 0)               #          num_params, num_ants, num_evts -> check indi ch flag
-        uk_flag_sum = np.logical_or(uk_flag[0], uk_flag[1])         #                      num_ants, num_evts -> sum up two flags
-        uk_evts = np.count_nonzero(uk_flag_sum, axis = 0) > cut_val #                                num_evts -> check num of chs flag. at least bigger than cut_val
-        del uk_arr, uk_flag_sum
-
+                                                                # sol_pad, num_params, num_ants, num_evts -> original array dim
+        cw_ants = np.any(~np.isnan(self.sub_ratios), axis = 0)  #          num_params, num_ants, num_evts -> check indi ch flag
+        cw_cut = np.count_nonzero(cw_ants, axis = 1) > cut_val  #          num_params,           num_evts -> check num of chs flag. at least 2 chs
+        cw_evts = np.any(cw_cut, axis = 0)                      #                                num_evts -> check indi freq flag
+        del cw_cut
+    
         if use_smear:
-            smear_arr = np.arange(-1* smear_val, smear_val + 1, 1, dtype = int)
-            wb_unix = get_time_smearing(self.unix_time[wb_evts], smear_arr = smear_arr)
-            wb_evts = np.in1d(self.unix_time, wb_unix)
-            uk_unix = get_time_smearing(self.unix_time[uk_evts], smear_arr = smear_arr)
-            uk_evts = np.in1d(self.unix_time, uk_unix)
-            del smear_arr, wb_unix, uk_unix
-
-        self.rp_ants = np.full((self.sub_ratios.shape[1], self.sub_ratios.shape[2], self.sub_ratios.shape[3]), 0, dtype = int)
-        if cut_val > 0:
-            self.rp_ants[:2] = uk_flag.astype(int)
-            self.rp_ants[2] = wb_flag.astype(int)
-            self.rp_ants[:2, :, uk_evts] = 0
-            self.rp_ants[2, :, wb_evts] = 0
+            cw_time = get_time_smearing(self.unix_time[cw_evts], smear_arr = np.arange(1, dtype = int))
+            cw_evts = np.in1d(self.unix_time, cw_time)
+            del cw_time
+   
+        if cut_val > 0: 
+            self.rp_ants = cw_ants.astype(int)
+            self.rp_ants[:, :, cw_evts] = 0
         else:
-            pass
-        del wb_flag, uk_flag 
-
-        cw_evts = np.full((self.num_evts, 2), 0, dtype = int)
-        cw_evts[:, 0] = wb_evts.astype(int)
-        cw_evts[:, 1] = uk_evts.astype(int)
-        del wb_evts, uk_evts
+            self.rp_ants = np.full(cw_ants.shape, 0, dtype = int)
+        del cw_ants
+    
+        cw_evts = cw_evts.astype(int)
 
         if self.verbose:
             rp_ants_sum = np.nansum(self.rp_ants, axis = (0,1))
-            quick_qual_check(cw_evts[:, 0] != 0, 'cw wb events!', self.evt_num)
-            quick_qual_check(cw_evts[:, 1] != 0, 'cw unknown events!', self.evt_num)
+            quick_qual_check(cw_evts != 0, 'cw events!', self.evt_num)
             quick_qual_check(rp_ants_sum != 0, 'repair required events!', self.evt_num)
-            del rp_ants_sum        
+            del rp_ants_sum
 
         return cw_evts
-
+ 
     def get_unlocked_calpulser_events(self, raw_v, cal_amp_limit = 2200):
 
         raw_v_max = np.nanmax(raw_v)
@@ -736,11 +719,7 @@ class post_qual_cut_loader:
  
     def get_post_qual_cut(self):
 
-        if self.use_cw_cut:
-            num_cw_cut_type = 2
-        else:
-            num_cw_cut_type = 0
-        tot_post_qual_cut = np.full((self.num_evts, int(self.use_unlock_cal) + num_cw_cut_type), 0, dtype = int)
+        tot_post_qual_cut = np.full((self.num_evts, int(self.use_unlock_cal) + int(self.use_cw_cut)), 0, dtype = int)
         if self.use_unlock_cal:
             col_idx = int(self.use_unlock_cal) - 1
             tot_post_qual_cut[:, col_idx] = self.unlock_cal_evts
@@ -748,7 +727,7 @@ class post_qual_cut_loader:
                 quick_qual_check(tot_post_qual_cut[:, 0] != 0, 'unlocked calpulser events!', self.evt_num)
         if self.use_cw_cut:
             col_idx = int(self.use_unlock_cal) + int(self.use_cw_cut) - 1
-            tot_post_qual_cut[:, col_idx:] = self.get_cw_events(use_smear = True)
+            tot_post_qual_cut[:, col_idx] = self.get_cw_events(cut_val = 1, use_smear = True)
 
         self.post_qual_cut_sum = np.nansum(tot_post_qual_cut, axis = 1)
 

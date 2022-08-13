@@ -32,13 +32,9 @@ class condor_info_loader:
         
         if self.use_condor:
             local_output_path = f'{self.local_path}{file_name}'
-            mv_CMD = f'mv {local_output_path} {tar_path}'
-            call(mv_CMD.split(' '))
-            print(f'{local_output_path} is moved into {tar_path}')
-            #rm_CMD = f'rm -rf {self.temp_tar_path}'
-            #call(rm_CMD.split(' '))
-            #print(f'{self.temp_tar_path} is deleted')
-            output_path = f'{tar_path}{file_name}'
+            output_path = shutil.copy(local_output_path, tar_path)
+            if self.verbose:
+                print(f'{local_output_path} is copied into {tar_path}')
         else:            
             output_path = f'{tar_path}{file_name}'
 

@@ -36,10 +36,11 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
     post_qual = post_qual_cut_loader(ara_root, ara_uproot, daq_qual_cut_sum, use_unlock_cal = True, verbose = True)
 
     # loop over the events
-    for evt in tqdm(range(num_evts)):
-      #if evt<100:
-        # post quality cut
-        post_qual.run_post_qual_cut(evt)
+    if ara_uproot.station_id == 3 and (ara_uproot.run > 1124 and ara_uproot.run < 1429):
+        for evt in tqdm(range(num_evts)):
+          #if evt<100:
+            # post quality cut
+            post_qual.run_post_qual_cut(evt)
     del ara_root, num_evts
 
     # post quality cut

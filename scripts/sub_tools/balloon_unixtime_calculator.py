@@ -8,6 +8,7 @@
 import os, sys
 import numpy as np
 import h5py
+import click # 'pip3 install click' will make you very happy
 from tqdm import tqdm
 from glob import glob
 from scipy.interpolate import interp1d
@@ -52,7 +53,12 @@ def get_distance(lat1, lon1, r1, lat2, lon2, r2):
     
     return distance
 
-def main(h5_path, output_path, st, distance_cut = 17000):
+@click.command()
+@click.option('-h', '--h5_path', type = str, help = 'ex) /data/user/mkim/OMF_filter/radiosonde_data/weather_balloon/h5/')
+@click.option('-o', '--output_path', type = str, help = 'ex) /data/user/mkim/OMF_filter/radiosonde_data/weather_balloon/radius_tot/')
+@click.option('-s', '--st', type = int, help = 'ex) 2')
+@click.option('-d', '--distance_cut', default = 17000, type = float, help = 'ex) 17000')
+def main(h5_path, output_path, st, distance_cut):
     """! main function for calculating distance between weather balloon and each station and corresponding unix time
 
     @param h5_path  string
@@ -75,27 +81,46 @@ def main(h5_path, output_path, st, distance_cut = 17000):
     print(f'A{st} coord. Lat: {np.degrees(ara_Lat)} deg, Lon: {np.degrees(ara_Lon)} deg, R: {ara_R} m') 
 
     ## make h5 file list in h5_list
-    h5_list = glob(f'{h5_path}*')
+    h5_list = glob(f'{h5_path}*.h5')
     h5_len = len(h5_list)
     print('# of total h5 files:', h5_len)
 
     ## numpy array pad for saving disance and unix time of evil balloon
-    pad = 18000
+    pad = 25000
     balloon_unix_time = np.full((pad, h5_len), np.nan, dtype = float)
     balloon_distance = np.copy(balloon_unix_time)
     balloon_smooth_distance = np.copy(balloon_unix_time)
 
+    ## h5 file tree name
+    log_name = ['SystemEvents', 'metadata']
+    log_label = [['UnixTime', 'EventType'], ['UnixTime', 'TimeLabel']]
+    launch_name = ['BalloonReleased', 'RsActualLaunchTime']
+    gps_name = ['GpsResults', 'GPSDCC_RESULT000']
+    gps_label = [['Wgs84X', 'Wgs84Y', 'Wgs84Z', 'UnixTime'], ['dSondeX [m]', 'dSondeY [m]', 'dSondeZ [m]', 'time [s]']]
+
     ## loop over all h5 files
     for h in tqdm(range(h5_len)):
-      #if h < 10: # for debug        
+      #if h == 4162: # for debug        
+        #print(h5_list[h]) # for debug
 
         hf = h5py.File(h5_list[h], 'r')
 
+        ## check whether it is from pre 2016 or post 2016
+        nzsp_flag = h5_list[h].find('NZSP')
+        southpole_flag = h5_list[h].find('SOUTHPOLE')
+        if nzsp_flag != -1:
+            t_idx = 0
+        elif southpole_flag != -1:
+            t_idx = 1
+        else:
+            print(f'Something wrong in {h5_list[h]} !!')
+            sys.exit(1)
+
         ## tag pre launch period as a bad unix time: time between 'viselar on' and 'balloon released'
         ## Since in this time period, all the GPS informations are showing error value and distance to all stations are close, I dont think this time period is safe to use for analysis
-        SystemEvents = hf['SystemEvents']
-        sys_unix = SystemEvents['UnixTime'][:]
-        sys_evt_type = SystemEvents['EventType'][:]
+        SystemEvents = hf[log_name[t_idx]]
+        sys_unix = SystemEvents[log_label[t_idx][0]][:]
+        sys_evt_type = SystemEvents[log_label[t_idx][1]][:]
         if h5_list[h].find('NZSP_20180310_211810') != -1: # corrupted unxitime. evil...
             print('NZSP_20180310_211810, corrupted unxitime')
             sys_unix = sys_unix[:-17]
@@ -104,38 +129,83 @@ def main(h5_path, output_path, st, distance_cut = 17000):
         ## find the unix time when 'balloon released'
         sys_evt_type = list(sys_evt_type.astype(str))
         try:
-            str_idx = sys_evt_type.index('BalloonReleased')
+            str_idx = sys_evt_type.index(launch_name[t_idx])+1
             sys_unix_launch = sys_unix[:str_idx]
         except ValueError:
-            print(f'There is no BalloonReleased tag in {h5_list[h]}. Condamn all this flight time')
+            print(f'There is no {launch_name[t_idx]} tag in {h5_list[h]}. Condamn all this flight time')
             sys_unix_launch = np.copy(sys_unix)
-        pre_launch = np.arange(np.floor(np.nanmin(sys_unix_launch)), np.ceil(np.nanmax(sys_unix_launch)) + 1, 1, dtype = int) # final pre launch unix time 
+        if h5_list[h].find('SOUTHPOLE_20110331_211530') != -1 or h5_list[h].find('SOUTHPOLE_20121221_091513') != -1 or h5_list[h].find('SOUTHPOLE_20120118_093154') != -1 or h5_list[h].find('SOUTHPOLE_20121106_092614') != -1 or h5_list[h].find('SOUTHPOLE_20121107_084439') != -1 or h5_list[h].find('SOUTHPOLE_20120210_221021') != -1  or h5_list[h].find('SOUTHPOLE_20130123_212047') != -1 or h5_list[h].find('SOUTHPOLE_20131227_091019') != -1  or h5_list[h].find('SOUTHPOLE_20130220_094246') != -1 or h5_list[h].find('SOUTHPOLE_20131114_092949') != -1  or h5_list[h].find('SOUTHPOLE_20130506_221741') != -1 or h5_list[h].find('SOUTHPOLE_20141127_212335') != -1 or h5_list[h].find('SOUTHPOLE_20141128_222220') != -1 or h5_list[h].find('SOUTHPOLE_20141113_213258') != -1 or h5_list[h].find('SOUTHPOLE_20150223_095428') != -1 or h5_list[h].find('SOUTHPOLE_20150501_222129') != -1: # bad flights...
+            print(f'Wrong time label in {h5_list[h]} !!')
+            pre_launch = np.arange(np.floor(sys_unix_launch[2]), np.ceil(sys_unix_launch[3]) + 1, 1, dtype = int)
+        else:
+            pre_launch = np.arange(np.floor(np.nanmin(sys_unix_launch)), np.ceil(np.nanmax(sys_unix_launch)) + 1, 1, dtype = int) # final pre launch unix time 
 
         ## load balloon XYZ and unix time
-        GpsResults = hf['GpsResults']
-        Wgs84X = GpsResults['Wgs84X'][:]
-        Wgs84Y = GpsResults['Wgs84Y'][:]
-        Wgs84Z = GpsResults['Wgs84Z'][:]
-        gps_unix = GpsResults['UnixTime'][:]
+        GpsResults = hf[gps_name[t_idx]]
+        Wgs84X = GpsResults[gps_label[t_idx][0]][:]
+        Wgs84Y = GpsResults[gps_label[t_idx][1]][:]
+        Wgs84Z = GpsResults[gps_label[t_idx][2]][:]
+        gps_unix = GpsResults[gps_label[t_idx][3]][:]
+        if t_idx == 1:
+            reset_idx = sys_evt_type.index('RsTimeResetBase')
+            gps_unix += sys_unix[reset_idx]
         hf.close()
-   
+
         ## distance calculation 
         Wgs84_lon, Wgs84_lat, Wgs84_r = cart_to_sph(Wgs84X, Wgs84Y, Wgs84Z) # converted to 1) longitude, 2) 'Geometric' latitude, 3) Radius
         distance = get_distance(ara_Lat, ara_Lon, ara_R, Wgs84_lat, Wgs84_lon, Wgs84_r)
 
+        ## remove nan
+        dis_nan = np.isnan(distance)
+        gps_unix = gps_unix[~dis_nan]
+        distance = distance[~dis_nan]
+        if h5_list[h].find('SOUTHPOLE_20111107_212531') != -1:
+            print(f'There is too much error in {h5_list[h]}. Surgical removing')
+            distance[10:350] = np.nan
+            dis_nan = np.isnan(distance)
+            gps_unix = gps_unix[~dis_nan]
+            distance = distance[~dis_nan]
+        if h5_list[h].find('SOUTHPOLE_20130424_220017') != -1:
+            print(f'There is too much error in {h5_list[h]}. Surgical removing')
+            distance[9:] = np.nan
+            dis_nan = np.isnan(distance)
+            gps_unix = gps_unix[~dis_nan]
+            distance = distance[~dis_nan]
+
+        if h5_list[h].find('SOUTHPOLE_20110803_215627') != -1: # bad flights...
+            print(f'There is no distance info. in {h5_list[h]}. Condamn all this flight time')
+            temp_flight = np.arange(1000, dtype = int) + int(reset_idx)
+            balloon_unix_time[:len(temp_flight), h] = temp_flight
+            balloon_distance[:len(temp_flight), h] = 0
+            balloon_smooth_distance[:len(temp_flight), h] = 0
+            continue
+
+        if len(distance) == 0:
+            print(f'There is no distance info. in {h5_list[h]}. Condamn all this flight time')
+            balloon_unix_time[:len(pre_launch), h] = pre_launch
+            balloon_distance[:len(pre_launch), h] = 0
+            balloon_smooth_distance[:len(pre_launch), h] = 0
+            continue
+
         ## fill the time gap by interpolation
         dis_int = interp1d(np.append(gps_unix, gps_unix[-1]+1), np.append(distance, distance[-1]), fill_value = 'extrapolate') # duplicate fianl value to array for preventing wrong extrapolation
-        tot_unix_time = np.arange(np.floor(np.nanmin(sys_unix)), np.ceil(np.nanmax(sys_unix)) + 1, 1, dtype = int) # total balloon operation time including when balloon is in the ground
+        if h5_list[h].find('SOUTHPOLE_20110331_211530') != -1 or h5_list[h].find('SOUTHPOLE_20121221_091513') != -1 or h5_list[h].find('SOUTHPOLE_20120118_093154') != -1 or h5_list[h].find('SOUTHPOLE_20121106_092614') != -1  or h5_list[h].find('SOUTHPOLE_20121107_084439') != -1 or h5_list[h].find('SOUTHPOLE_20120210_221021') != -1  or h5_list[h].find('SOUTHPOLE_20130123_212047') != -1 or h5_list[h].find('SOUTHPOLE_20131227_091019') != -1 or h5_list[h].find('SOUTHPOLE_20130220_094246') != -1 or h5_list[h].find('SOUTHPOLE_20131114_092949') != -1  or h5_list[h].find('SOUTHPOLE_20130506_221741') != -1 or h5_list[h].find('SOUTHPOLE_20141127_212335') != -1 or h5_list[h].find('SOUTHPOLE_20141128_222220') != -1 or h5_list[h].find('SOUTHPOLE_20141113_213258') != -1 or h5_list[h].find('SOUTHPOLE_20150223_095428') != -1 or h5_list[h].find('SOUTHPOLE_20150501_222129') != -1: # bad flights...
+            max_unix = np.ceil(gps_unix[-1])
+        else:
+            max_unix = np.ceil(np.nanmax(sys_unix))
+        tot_unix_time = np.arange(np.floor(np.nanmin(sys_unix)), max_unix + 1, 1, dtype = int) # total balloon operation time including when balloon is in the ground
         tot_distance = dis_int(tot_unix_time)
-   
+        tot_smooth_distance = medfilt(tot_distance, kernel_size = 39) # use rolling median to remove huge distance (wgs84xyz) value probably caused by error         
+ 
         ## replace distance to 0 at the pre launch period. so that no matter what distance_cut user use, it will always tagged as a bad period for analysis 
         pre_launch_idx = np.in1d(tot_unix_time, pre_launch)
         tot_distance[pre_launch_idx] = 0
+        tot_smooth_distance[pre_launch_idx] = 0
 
         ## save into numpy array 
         balloon_unix_time[:len(tot_unix_time), h] = tot_unix_time
         balloon_distance[:len(tot_distance), h] = tot_distance
-        balloon_smooth_distance[:len(tot_distance), h] = medfilt(tot_distance, kernel_size = 39) # use rolling median to remove huge distance (wgs84xyz) value probably caused by error  
+        balloon_smooth_distance[:len(tot_smooth_distance), h] = tot_smooth_distance
 
     ## calculating bad unix time for analysis
     bad_dis_idx = balloon_smooth_distance < distance_cut
@@ -158,28 +228,7 @@ def main(h5_path, output_path, st, distance_cut = 17000):
 
 if __name__ == "__main__":
 
-    # since there is no click package in cobalt...
-    if len (sys.argv) != 4 and len (sys.argv) != 5:
-        Usage = """
-
-    Usage = python3 %s <h5_path ex)/data/user/mkim/OMF_filter/radiosonde_data/weather_balloon/h5/> <output_path ex)/data/user/mkim/OMF_filter/radiosonde_data/weather_balloon/radius_tot/> <st ex)2> <distance = 17000>
-
-        """ %(sys.argv[0])
-        print(Usage)
-        del Usage
-        sys.exit(1)
-
-    #argv
-    H5_path = str(sys.argv[1])
-    Output_path = str(sys.argv[2])
-    ST = int(sys.argv[3])
-    if len (sys.argv) == 5:
-        DIS_CUT = int(sys.argv[4])
-    else:
-        DIS_CUT = 17000 
-    print("H5 Path: {}, Output Path: {}, Station ID: {}, Distance Cut: {}".format(H5_path, Output_path, ST, DIS_CUT))
-
-    main(h5_path = H5_path, output_path = Output_path, st = ST, distance_cut = DIS_CUT)
+    main()
 
 
 
