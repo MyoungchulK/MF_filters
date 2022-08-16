@@ -158,7 +158,10 @@ def main(Station, Output):
 
             rf_block_num[run_config] = context_finder(config_read, rf_blk_key, end_key)
             soft_block_num[run_config] = context_finder(config_read, soft_blk_key, end_key)
-            trig_win_num[run_config] = context_finder(config_read, trig_win_key, end_key)
+            try:
+                trig_win_num[run_config] = context_finder(config_read, trig_win_key, '//')
+            except ValueError:
+                trig_win_num[run_config] = context_finder(config_read, trig_win_key, end_key)
             delay_enable[run_config] = context_finder(config_read, delay_enable_key, end_key)
             delay_num[:, run_config] = context_finder(config_read, delay_key, end_key, empty_format = empty_delay_format)
             masked_ant[:, run_config] = context_finder(config_read, masked_ant_key, end_key, empty_format = empty_masked_ant_foramt)        
