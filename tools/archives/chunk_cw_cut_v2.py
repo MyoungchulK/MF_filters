@@ -1,6 +1,5 @@
 import os
 import numpy as np
-import h5py
 from tqdm import tqdm
 
 def cw_cut_collector(Data, Ped, analyze_blind_dat = False):
@@ -9,6 +8,7 @@ def cw_cut_collector(Data, Ped, analyze_blind_dat = False):
 
     from tools.ara_data_load import ara_uproot_loader
     from tools.ara_data_load import ara_root_loader
+    from tools.ara_quality_cut import pre_qual_cut_loader
     from tools.ara_quality_cut import post_qual_cut_loader
     from tools.ara_quality_cut import get_bad_live_time
     from tools.ara_run_manager import run_info_loader
@@ -26,15 +26,15 @@ def cw_cut_collector(Data, Ped, analyze_blind_dat = False):
     ara_root = ara_root_loader(Data, Ped, ara_uproot.station_id, ara_uproot.year)
 
     # pre quality cut
-    run_info = run_info_loader(ara_uproot.station_id, ara_uproot.run, analyze_blind_dat = analyze_blind_dat)
-    qual_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True)
-    qual_hf = h5py.File(qual_dat, 'r')
-    daq_qual_cut_sum = qual_hf['daq_qual_cut_sum'][:]
-    del run_info, qual_dat, qual_hf
+    pre_qual = pre_qual_cut_loader(ara_uproot, analyze_blind_dat = analyze_blind_dat, verbose = True)
+    daq_qual_cut_sum = np.nansum(pre_qual.get_daq_structure_errors(), axis = 1)
+    daq_qual_cut_sum += pre_qual.get_readout_window_errors()[:,0]
+    daq_qual_cut_sum = (daq_qual_cut_sum != 0).astype(int)
+    del pre_qual
 
     # post quality cut
     post_qual = post_qual_cut_loader(ara_root, ara_uproot, daq_qual_cut_sum, use_cw_cut = True, verbose = True)
-    del daq_qual_cut_sum, ara_uproot 
+    del ara_uproot 
 
     # loop over the events
     for evt in tqdm(range(num_evts)):
@@ -65,6 +65,7 @@ def cw_cut_collector(Data, Ped, analyze_blind_dat = False):
             'pps_number':pps_number,
             'time_bins':time_bins,
             'sec_per_min':sec_per_min,
+            'daq_qual_cut_sum':daq_qual_cut_sum,
             'sub_ratios':sub_ratios,
             'rp_ants':rp_ants,
             'cw_wb_evts':cw_wb_evts,
