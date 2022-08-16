@@ -24,7 +24,10 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
     pps_number = ara_uproot.pps_number
     unix_time = ara_uproot.unix_time
     time_bins, sec_per_min = ara_uproot.get_event_rate(use_time_bins = True)
-    ara_root = ara_root_loader(Data, Ped, ara_uproot.station_id, ara_uproot.year)
+    if ara_uproot.station_id == 3 and (ara_uproot.run > 1124 and ara_uproot.run < 1429):
+        ara_root = ara_root_loader(Data, Ped, ara_uproot.station_id, ara_uproot.year)
+    else:
+        ara_root = None
 
     # pre quality cut
     pre_qual = pre_qual_cut_loader(ara_uproot, analyze_blind_dat = analyze_blind_dat, verbose = True)
