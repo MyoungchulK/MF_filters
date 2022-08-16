@@ -26,11 +26,14 @@ def cw_cut_collector(Data, Ped, analyze_blind_dat = False):
     ara_root = ara_root_loader(Data, Ped, ara_uproot.station_id, ara_uproot.year)
 
     # pre quality cut
-    run_info = run_info_loader(ara_uproot.station_id, ara_uproot.run, analyze_blind_dat = analyze_blind_dat)
+    run_info = run_info_loader(ara_uproot.station_id, ara_uproot.run, analyze_blind_dat = True)
     qual_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True)
     qual_hf = h5py.File(qual_dat, 'r')
+    evt_num_full = qual_hf['evt_num'][:]
+    evt_full_idx = np.in1d(evt_num_full, evt_num)
     daq_qual_cut_sum = qual_hf['daq_qual_cut_sum'][:]
-    del run_info, qual_dat, qual_hf
+    daq_qual_cut_sum = daq_qual_cut_sum[evt_full_idx]
+    del run_info, qual_dat, qual_hf, evt_num_full, evt_full_idx
 
     # post quality cut
     post_qual = post_qual_cut_loader(ara_root, ara_uproot, daq_qual_cut_sum, use_cw_cut = True, verbose = True)
