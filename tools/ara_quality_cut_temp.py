@@ -518,6 +518,7 @@ class post_qual_cut_loader:
         self.num_evts = ara_uproot.num_evts
         self.unix_time = ara_uproot.unix_time
         self.daq_cut_sum = daq_cut_sum != 0
+        self.trig_type = ara_uproot.get_trig_type()
 
         self.use_unlock_cal = use_unlock_cal
         self.unlock_cal_evts = np.full((self.num_evts), 0, dtype = int)
@@ -525,7 +526,7 @@ class post_qual_cut_loader:
         self.use_cw_cut = use_cw_cut
         if self.use_cw_cut:
             if pre_cut is not None:
-                self.pre_cut_evts = self.get_pre_cut_for_cw(pre_cut, ara_uproot.get_trig_type())
+                self.pre_cut_evts = self.get_pre_cut_for_cw(pre_cut, self.trig_type)
             else:
                 self.pre_cut_evts = np.full((self.num_evts), 1, dtype = int)        
 
@@ -679,20 +680,27 @@ class post_qual_cut_loader:
 
         return num_params, cw_thres, cw_freq
 
-    def get_cw_events(self, cut_val = 1, smear_val = 5, use_smear = False):
+    def get_cw_events(self, cut_val = 1, smear_val = 5, use_rf = False,  use_smear = False):
 
         ## 0.4 GHz WB                                               # sol_pad, num_params, num_ants, num_evts -> original array dim
-        wb_arr = np.copy(self.sub_ratios[:, 2])                     # sol_pad,             num_ants, num_evts -> wb flag only
+        wb_arr = np.copy(self.sub_ratios[1:, 2])                     # sol_pad,             num_ants, num_evts -> wb flag only
         wb_flag = np.any(~np.isnan(wb_arr), axis = 0)               #                      num_ants, num_evts -> check indi ch flag
         wb_evts = np.count_nonzero(wb_flag, axis = 0) > cut_val     #                                num_evts -> check num of chs flag. at least bigger than cut_val
         del wb_arr       
  
         ## 0.125 and 0.25 GHz unknown                               # sol_pad, num_params, num_ants, num_evts -> original array dim
-        uk_arr = np.copy(self.sub_ratios[:, :2])                    # sol_pad, num_params, num_ants, num_evts -> unknown flags
+        uk_arr = np.copy(self.sub_ratios[1:, :2])                    # sol_pad, num_params, num_ants, num_evts -> unknown flags
         uk_flag = np.any(~np.isnan(uk_arr), axis = 0)               #          num_params, num_ants, num_evts -> check indi ch flag
         uk_flag_sum = np.logical_or(uk_flag[0], uk_flag[1])         #                      num_ants, num_evts -> sum up two flags
         uk_evts = np.count_nonzero(uk_flag_sum, axis = 0) > cut_val #                                num_evts -> check num of chs flag. at least bigger than cut_val
         del uk_arr, uk_flag_sum
+
+        self.cw_wb_evts = np.copy(wb_evts).astype(int)
+        self.cw_uk_evts = np.copy(uk_evts).astype(int)
+
+        if use_rf:
+            wb_evts[self.trig_type != 0] = False
+            wb_evts[self.trig_type != 0] = False
 
         if use_smear:
             smear_arr = np.arange(-1* smear_val, smear_val + 1, 1, dtype = int)
@@ -719,7 +727,9 @@ class post_qual_cut_loader:
 
         if self.verbose:
             rp_ants_sum = np.nansum(self.rp_ants, axis = (0,1))
+            quick_qual_check(self.cw_wb_evts != 0, 'original cw wb events!', self.evt_num)
             quick_qual_check(cw_evts[:, 0] != 0, 'cw wb events!', self.evt_num)
+            quick_qual_check(self.cw_uk_evts != 0, 'original cw unknown events!', self.evt_num)
             quick_qual_check(cw_evts[:, 1] != 0, 'cw unknown events!', self.evt_num)
             quick_qual_check(rp_ants_sum != 0, 'repair required events!', self.evt_num)
             del rp_ants_sum        
@@ -748,7 +758,7 @@ class post_qual_cut_loader:
                 quick_qual_check(tot_post_qual_cut[:, 0] != 0, 'unlocked calpulser events!', self.evt_num)
         if self.use_cw_cut:
             col_idx = int(self.use_unlock_cal) + int(self.use_cw_cut) - 1
-            tot_post_qual_cut[:, col_idx:] = self.get_cw_events(smear_val = 10, use_smear = True)
+            tot_post_qual_cut[:, col_idx:] = self.get_cw_events(smear_val = 10, use_rf = True, use_smear = True)
 
         self.post_qual_cut_sum = np.nansum(tot_post_qual_cut, axis = 1)
 

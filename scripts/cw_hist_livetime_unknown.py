@@ -60,8 +60,10 @@ d_path_0125 = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/c
 d_list_0125, d_run_tot_0125, d_run_range_0125 = file_sorter(d_path_0125)
 del d_path_0125, d_run_range_0125
 
-count_i = int(sys.argv[2])
-count_f = int(sys.argv[3])
+smear = int(sys.argv[2])
+
+count_i = int(sys.argv[3])
+count_f = int(sys.argv[4])
 
 # time map
 md_2013 = datetime(2013, 1, 1, 0, 0)
@@ -77,6 +79,8 @@ min_in_day = 24 * 60
 hrs_in_days = np.arange(min_in_day) / 60
 
 #output
+ratio_025_map = np.full((len(unix_min_bins[:-1]), num_ants), 0, dtype = float)
+ratio_0125_map = np.full((len(unix_min_bins[:-1]), num_ants), 0, dtype = float)
 ratio_025_pass_map = np.full((len(unix_min_bins[:-1]), num_ants), 0, dtype = float)
 ratio_0125_pass_map = np.copy(ratio_025_pass_map)
 ratio_025_com_pass_map = np.copy(ratio_025_pass_map)
@@ -89,6 +93,8 @@ ratio_0125_com_cut_map = np.copy(ratio_025_pass_map)
 ratio_bins = np.linspace(0, 1, 50 + 1)
 ratio_bin_center = (ratio_bins[1:] + ratio_bins[:-1]) / 2
 ratio_bin_len = len(ratio_bin_center)
+ratio_025_hist = np.full((ratio_bin_len, num_ants, num_configs), 0, dtype = int)
+ratio_0125_hist = np.full((ratio_bin_len, num_ants, num_configs), 0, dtype = int)
 ratio_025_pass_hist = np.full((ratio_bin_len, num_ants, num_configs), 0, dtype = int)
 ratio_0125_pass_hist = np.copy(ratio_025_pass_hist)
 ratio_025_com_pass_hist = np.copy(ratio_025_pass_hist)
@@ -117,10 +123,12 @@ def time_smearing(unix_time, cut_idx, time_smear, time_len):
     new_cut_idx = np.in1d(unix_time, clean_idx)
     return new_cut_idx
 
-#time_smear = np.arange(-10,10+1,1,dtype = int)
-time_smear = np.arange(-5,5+1,1,dtype = int)
-#time_smear = np.arange(1,dtype = int)
-time_len = len(time_smear)
+if smear == 0:
+    pass
+else:   
+    time_smear = np.arange(-smear,smear+1,1,dtype = int)
+    time_len = len(time_smear)
+    print(time_smear)
 
 for r in tqdm(range(len(d_run_tot_025))):
     
@@ -142,15 +150,23 @@ for r in tqdm(range(len(d_run_tot_025))):
     del hf
 
     thres_025 = cw_arr_025[:, g_idx]   
-    thres_0125 = cw_arr_0125[:, g_idx]   
-    thres_025_cut_idx = np.count_nonzero(ratio_025 > thres_025[:, np.newaxis], axis = 0) > 1
-    thres_0125_cut_idx = np.count_nonzero(ratio_0125 > thres_0125[:, np.newaxis], axis = 0) > 1
-    #thres_025_cut_idx = time_smearing(unix_time, thres_025_cut_idx, time_smear, time_len)
-    #thres_0125_cut_idx = time_smearing(unix_time, thres_0125_cut_idx, time_smear, time_len)
+    thres_0125 = cw_arr_0125[:, g_idx]  
+    
+    thres_025_flag = ratio_025 > thres_025[:, np.newaxis]
+    thres_0125_flag = ratio_0125 > thres_0125[:, np.newaxis]
+ 
+    thres_025_cut_idx = np.count_nonzero(thres_025_flag, axis = 0) > 1
+    thres_0125_cut_idx = np.count_nonzero(thres_0125_flag, axis = 0) > 1
+    if smear != 0:
+        thres_025_cut_idx = time_smearing(unix_time, thres_025_cut_idx, time_smear, time_len)
+        thres_0125_cut_idx = time_smearing(unix_time, thres_0125_cut_idx, time_smear, time_len)
     thres_025_pass_idx = ~thres_025_cut_idx 
     thres_0125_pass_idx = ~thres_0125_cut_idx
 
-    thres_com_cut_idx = np.logical_or(thres_025_cut_idx, thres_0125_cut_idx)
+    thres_com_flag = np.logical_or(thres_025_flag, thres_0125_flag)
+    thres_com_cut_idx = np.count_nonzero(thres_com_flag, axis = 0) > 1
+    if smear != 0:
+        thres_com_cut_idx = time_smearing(unix_time, thres_com_cut_idx, time_smear, time_len)
     thres_com_pass_idx = ~thres_com_cut_idx
 
     ratio_025_cut = np.copy(ratio_025)
@@ -172,6 +188,8 @@ for r in tqdm(range(len(d_run_tot_025))):
 
 
     for ant in range(num_ants):
+        ratio_025_map[unix_idx, ant] = get_max_2d(unix_time, ratio_025[ant], unix_m_bins, ratio_bins, ratio_bin_center)
+        ratio_0125_map[unix_idx, ant] = get_max_2d(unix_time, ratio_0125[ant], unix_m_bins, ratio_bins, ratio_bin_center)
         ratio_025_pass_map[unix_idx, ant] = get_max_2d(unix_time, ratio_025_pass[ant], unix_m_bins, ratio_bins, ratio_bin_center)     
         ratio_0125_pass_map[unix_idx, ant] = get_max_2d(unix_time, ratio_0125_pass[ant], unix_m_bins, ratio_bins, ratio_bin_center)     
         ratio_025_com_pass_map[unix_idx, ant] = get_max_2d(unix_time, ratio_025_com_pass[ant], unix_m_bins, ratio_bins, ratio_bin_center)     
@@ -181,6 +199,8 @@ for r in tqdm(range(len(d_run_tot_025))):
         ratio_025_com_cut_map[unix_idx, ant] = get_max_2d(unix_time, ratio_025_com_cut[ant], unix_m_bins, ratio_bins, ratio_bin_center)     
         ratio_0125_com_cut_map[unix_idx, ant] = get_max_2d(unix_time, ratio_0125_com_cut[ant], unix_m_bins, ratio_bins, ratio_bin_center)     
 
+        ratio_025_hist[:, ant, g_idx] += np.histogram(ratio_025[ant], bins = ratio_bins)[0].astype(int)
+        ratio_0125_hist[:, ant, g_idx] += np.histogram(ratio_0125[ant], bins = ratio_bins)[0].astype(int)
         ratio_025_pass_hist[:, ant, g_idx] += np.histogram(ratio_025_pass[ant], bins = ratio_bins)[0].astype(int)
         ratio_0125_pass_hist[:, ant, g_idx] += np.histogram(ratio_0125_pass[ant], bins = ratio_bins)[0].astype(int)
         ratio_025_com_pass_hist[:, ant, g_idx] += np.histogram(ratio_025_com_pass[ant], bins = ratio_bins)[0].astype(int)
@@ -191,6 +211,8 @@ for r in tqdm(range(len(d_run_tot_025))):
         ratio_0125_com_cut_hist[:, ant, g_idx] += np.histogram(ratio_0125_com_cut[ant], bins = ratio_bins)[0].astype(int)
 
 unix_min_map = np.reshape(unix_min_bins[:-1], (-1, min_in_day))
+ratio_025_map = np.reshape(ratio_025_map, (-1, min_in_day, num_ants))
+ratio_0125_map = np.reshape(ratio_0125_map, (-1, min_in_day, num_ants))
 ratio_025_pass_map = np.reshape(ratio_025_pass_map, (-1, min_in_day, num_ants))
 ratio_0125_pass_map = np.reshape(ratio_0125_pass_map, (-1, min_in_day, num_ants))
 ratio_025_com_pass_map = np.reshape(ratio_025_com_pass_map, (-1, min_in_day, num_ants))
@@ -207,12 +229,14 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'CW_Table_Unknown_025_0125_A{Station}_{count_i}.h5'
+file_name = f'CW_Table_Unknown_025_0125_s{smear}_A{Station}_{count_i}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('hrs_in_days', data=hrs_in_days, compression="gzip", compression_opts=9)
 hf.create_dataset('day_in_yrs', data=day_in_yrs, compression="gzip", compression_opts=9)
 hf.create_dataset('unix_min_bins', data=unix_min_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('unix_min_map', data=unix_min_map, compression="gzip", compression_opts=9)
+hf.create_dataset('ratio_025_map', data=ratio_025_map, compression="gzip", compression_opts=9)
+hf.create_dataset('ratio_0125_map', data=ratio_0125_map, compression="gzip", compression_opts=9)
 hf.create_dataset('ratio_025_pass_map', data=ratio_025_pass_map, compression="gzip", compression_opts=9)
 hf.create_dataset('ratio_0125_pass_map', data=ratio_0125_pass_map, compression="gzip", compression_opts=9)
 hf.create_dataset('ratio_025_com_pass_map', data=ratio_025_com_pass_map, compression="gzip", compression_opts=9)
@@ -223,6 +247,8 @@ hf.create_dataset('ratio_025_com_cut_map', data=ratio_025_com_cut_map, compressi
 hf.create_dataset('ratio_0125_com_cut_map', data=ratio_0125_com_cut_map, compression="gzip", compression_opts=9)
 hf.create_dataset('ratio_bins', data=ratio_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('ratio_bin_center', data=ratio_bin_center, compression="gzip", compression_opts=9)
+hf.create_dataset('ratio_025_hist', data=ratio_025_hist, compression="gzip", compression_opts=9)
+hf.create_dataset('ratio_0125_hist', data=ratio_0125_hist, compression="gzip", compression_opts=9)
 hf.create_dataset('ratio_025_pass_hist', data=ratio_025_pass_hist, compression="gzip", compression_opts=9)
 hf.create_dataset('ratio_0125_pass_hist', data=ratio_0125_pass_hist, compression="gzip", compression_opts=9)
 hf.create_dataset('ratio_025_com_pass_hist', data=ratio_025_com_pass_hist, compression="gzip", compression_opts=9)
