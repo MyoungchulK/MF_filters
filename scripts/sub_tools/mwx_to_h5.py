@@ -9,6 +9,7 @@
 import os, sys
 import numpy as np
 import h5py
+import click
 from tqdm import tqdm
 from glob import glob
 from subprocess import call
@@ -16,14 +17,22 @@ from datetime import datetime, timezone
 from zipfile import ZipFile, BadZipFile
 import xml.etree.ElementTree as ET
 
-def main(mwx_path, output_path, del_xml = False):
-    """! main function for unpack mwx files and collect gps information and save into h5 files
-        since each file takes only few second to process, let just unpack/scrap all together
+@click.command()
+@click.option('-m', '--mwx_path', type = str, help = 'ex) /data/user/mkim/OMF_filter/radiosonde_data/WEATHER_DATA_FOR_ARA/')
+@click.option('-o', '--output_path', type = str, help = 'ex) /data/user/mkim/OMF_filter/radiosonde_data/weather_balloon/')
+@click.option('-d', '--del_xml', type = bool, default = False, help = 'whether user want to delete xml files or not ex) 0 or 1')
+def main(mwx_path, output_path, del_xml):
+    """! Main function for unpack mwx files and collect gps information and save into h5 files
+        Since each file takes only few second to process, let just unpack/scrap all together
+        Recommand to launch the script before going lunch. 
+        It will take around 3 hours
 
     @param mwx_path  string
     @param output_path  string
     @param del_xml  boolean 
     """
+
+    print("MWX Path: {}, Output Path: {}, Del XML: {}".format(mwx_path, output_path, del_xml))
 
     ## make a mwx file list in the mwx_path
     mwx_list = glob(f'{mwx_path}*/*/*/*.mwx')
@@ -163,28 +172,7 @@ def main(mwx_path, output_path, del_xml = False):
 
 if __name__ == "__main__":
 
-    # since there is no click package in cobalt...
-    if len (sys.argv) != 3 and len (sys.argv) != 4:
-        Usage = """
-
-    Usage = python3 %s <mwx_path ex)/data/user/mkim/OMF_filter/radiosonde_data/WEATHER_DATA_FOR_ARA/> <output_path ex)/data/user/mkim/OMF_filter/radiosonde_data/weather_balloon/> <del_xml = 0>
-
-        """ %(sys.argv[0])
-        print(Usage)
-        del Usage
-        sys.exit(1)
-
-    #argv
-    MWX_path = str(sys.argv[1])
-    Output_path = str(sys.argv[2])
-    if len (sys.argv) == 4:
-        Del_xml = bool(int(sys.argv[3]))
-    else:
-        Del_xml = False
-    print("MWX Path: {}, Output Path: {}, Del XML: {}".format(MWX_path, Output_path, Del_xml))
-    
-    main(mwx_path = MWX_path, output_path = Output_path, del_xml = Del_xml)
-
+    main()
 
 
 

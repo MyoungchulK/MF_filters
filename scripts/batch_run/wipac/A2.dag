@@ -2275,7 +2275,7 @@ VARS job_ARA_S2_R2492 station="2" run="2492"
 JOB job_ARA_S2_R2502 ARA_job.sub 
 VARS job_ARA_S2_R2502 station="2" run="2502"
 
-JOB job_ARA_S2_R2506 ARA_job.sub 
+JOB job_ARA_S2_R2506 ARA_job_1.sub 
 VARS job_ARA_S2_R2506 station="2" run="2506"
 
 JOB job_ARA_S2_R2507 ARA_job.sub 
@@ -2395,7 +2395,7 @@ VARS job_ARA_S2_R2597 station="2" run="2597"
 JOB job_ARA_S2_R2598 ARA_job.sub 
 VARS job_ARA_S2_R2598 station="2" run="2598"
 
-JOB job_ARA_S2_R2599 ARA_job.sub 
+JOB job_ARA_S2_R2599 ARA_job_1.sub 
 VARS job_ARA_S2_R2599 station="2" run="2599"
 
 JOB job_ARA_S2_R2601 ARA_job.sub 

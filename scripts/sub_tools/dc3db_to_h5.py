@@ -8,21 +8,31 @@
 import os, sys
 import numpy as np
 import h5py
+import click
 import csv
 from tqdm import tqdm
 from glob import glob
 from subprocess import call
 from datetime import datetime, timezone
 
-def main(dc3db_path, output_path, gt92_path, del_csv = False):
-    """! main function for unpack dc3db files and collect gps information and save into h5 files
-        since each file takes only few second to process, let just unpack/scrap all together
+@click.command()
+@click.option('-d', '--dc3db_path', type = str, help = 'ex) /data/user/mkim/OMF_filter/radiosonde_data/WEATHER_DATA_FOR_ARA/')
+@click.option('-o', '--output_path', type = str, help = 'ex) /data/user/mkim/OMF_filter/radiosonde_data/weather_balloon/')
+@click.option('-g', '--gt92_path', type = str, help = 'ex) /home/mkim/analysis/AraSoft/GruanToolRs92/')
+@click.option('-c', '--del_csv', type = bool, default = False, help = 'whether user want to delete csv files or not ex) 0 or 1')
+def main(dc3db_path, output_path, gt92_path, del_csv):
+    """! Main function for unpack dc3db files and collect gps information and save into h5 files
+        Since each file takes only few second to process, let just unpack/scrap all together
+        Recommand to launch the script before going lunch. 
+        It will take around 3 hours
 
     @param dc3db_path  string
     @param output_path  string
     @param gt92_path  string
     @param del_csv  boolean 
     """
+
+    print("DC3DB Path: {}, Output Path: {}, gt92 Path: {}, Del CSV: {}".format(dc3db_path, output_path, gt92_path, del_csv))
 
     ## make a dc3db file list in the dc3db_path
     dc3db_list = glob(f'{dc3db_path}*/*/*/*.dc3db')
@@ -83,9 +93,9 @@ def main(dc3db_path, output_path, gt92_path, del_csv = False):
         ## user must put gt92_path on the LDLIBRARY_PATH
         ## contacts to mkim@icecube.wisc.edu, if user need package
         gt92_CMD = f'./gt92 --no-msg-header --no-msg-info -f DC3DB -x {dc3db_list[m]} -o {csv_path}' 
-        print('!!!Msg from gt92 Failed silence it...!!!')
+        print('!!!Msg from gt92. Failed silence it...!!!')
         call(gt92_CMD.split(' '))
-        print('!!!Msg from gt92 Failed silence it...!!!')
+        print('!!!Msg from gt92. Failed silence it...!!!')
 
         ## load metadata scrap the information from the files that ARA needs
         ## first metadata.txt
@@ -166,32 +176,7 @@ def main(dc3db_path, output_path, gt92_path, del_csv = False):
 
 if __name__ == "__main__":
 
-    # since there is no click package in cobalt...
-    if len (sys.argv) != 4 and len (sys.argv) != 5:
-        Usage = """
-
-    Usage = python3 %s 
-    <dc3db_path ex)/data/user/mkim/OMF_filter/radiosonde_data/WEATHER_DATA_FOR_ARA/> 
-    <output_path ex)/data/user/mkim/OMF_filter/radiosonde_data/weather_balloon/> 
-    <gt92_path ex)/home/mkim/analysis/AraSoft/GruanToolRs92/>
-    <del_csv = 0>
-
-        """ %(sys.argv[0])
-        print(Usage)
-        del Usage
-        sys.exit(1)
-
-    #argv
-    DC3DB_path = str(sys.argv[1])
-    Output_path = str(sys.argv[2])
-    GT92_path = str(sys.argv[3])
-    if len (sys.argv) == 5:
-        Del_csv = bool(int(sys.argv[4]))
-    else:
-        Del_csv = False
-    print("DC3DB Path: {}, Output Path: {}, gt92 Path: {}, Del CSV: {}".format(DC3DB_path, Output_path, GT92_path, Del_csv))
-    
-    main(dc3db_path = DC3DB_path, output_path = Output_path, gt92_path = GT92_path, del_csv = Del_csv)
+    main()
 
 
 

@@ -31,7 +31,7 @@ def reco_collector(Data, Ped, analyze_blind_dat = False):
 
     # pre quality cut
     run_info = run_info_loader(ara_uproot.station_id, ara_uproot.run, analyze_blind_dat = analyze_blind_dat)
-    daq_dat = run_info.get_result_path(file_type = 'daq_cut', verbose = True)
+    daq_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True)
     daq_hf = h5py.File(daq_dat, 'r')
     daq_qual_cut_sum = daq_hf['daq_qual_cut_sum'][:]
     del daq_dat, daq_hf

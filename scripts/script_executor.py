@@ -18,7 +18,19 @@ from tools.ara_utility import size_checker
 @click.option('-a', '--act_evt', default = None, multiple = True)
 @click.option('-b', '--blind_dat', default = False, type = bool)
 @click.option('-c', '--condor_run', default = False, type = bool)
-def script_loader(key, station, run, act_evt, blind_dat, condor_run):
+@click.option('-n', '--not_override', default = False, type = bool)
+def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_override):
+
+    if not_override:
+        blind_type = ''
+        if blind_dat:
+            blind_type = '_full'
+        true_output_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{station}/{key}{blind_type}/'
+        h5_file_name = f'{key}{blind_type}_A{station}_R{run}'
+        done_path = f'{true_output_path}{h5_file_name}.h5'
+        if os.path.exists(done_path):
+            print(f'{done_path} is already there!!')
+            return
 
     # get run info
     run_info = run_info_loader(station, run, analyze_blind_dat = blind_dat)

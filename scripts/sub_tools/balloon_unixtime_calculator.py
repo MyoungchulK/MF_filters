@@ -60,6 +60,7 @@ def get_distance(lat1, lon1, r1, lat2, lon2, r2):
 @click.option('-d', '--distance_cut', default = 17000, type = float, help = 'ex) 17000')
 def main(h5_path, output_path, st, distance_cut):
     """! main function for calculating distance between weather balloon and each station and corresponding unix time
+        cuttently this code is including lots of hard coding. Please read the code before launch
 
     @param h5_path  string
     @param output_path  string
