@@ -15,7 +15,7 @@ with open(dag_file_name, 'w') as f:
     f.write(statements)
 
     trig = np.arange(3, dtype = int)
-    run_w = 100
+    run_w = 1000
     run = np.arange(0, 11000, run_w, dtype = int)
 
     for t in range(len(trig)):
