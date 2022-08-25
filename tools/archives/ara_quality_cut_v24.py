@@ -508,7 +508,7 @@ class pre_qual_cut_loader:
 
 class post_qual_cut_loader:
 
-    def __init__(self, ara_root, ara_uproot, daq_cut_sum, dt = 0.5, sol_pad = None, pre_cut = None, use_unlock_cal = False, use_cw_cut = False, use_cw_val =False, verbose = False):
+    def __init__(self, ara_root, ara_uproot, daq_cut_sum, dt = 0.5, sol_pad = 10, pre_cut = None, use_unlock_cal = False, use_cw_cut = False, verbose = False):
 
         self.verbose = verbose
         self.ara_root = ara_root
@@ -524,7 +524,6 @@ class post_qual_cut_loader:
         self.unlock_cal_evts = np.full((self.num_evts), 0, dtype = int)
 
         self.use_cw_cut = use_cw_cut
-        self.sol_pad = sol_pad
         if self.use_cw_cut:
             if pre_cut is not None:
                 self.pre_cut_evts = self.get_pre_cut_for_cw(pre_cut, self.trig_type)
@@ -539,19 +538,12 @@ class post_qual_cut_loader:
             self.wf_int = wf_analyzer(dt = dt, use_time_pad = True, use_band_pass = True)
 
             num_params, cw_thres, cw_freq = self.get_cw_params()
-            if use_cw_val:
-                cut_val = 0.02
-                print(f'This is cw value run! All the cut ratio value is {cut_val}')
-                cw_thres = np.full(cw_thres.shape, cut_val, dtype = float)
             from tools.ara_data_load import sin_subtract_loader
-            self.sin_sub = sin_subtract_loader(cw_freq, cw_thres, 3, num_params, dt, self.sol_pad)
+            self.sin_sub = sin_subtract_loader(cw_freq, cw_thres, 3, num_params, dt, sol_pad)
             del cw_thres, cw_freq
         
             # array
-            if self.sol_pad is None:
-                self.sub_ratios = np.full((num_params, num_ants, self.num_evts), np.nan, dtype = float)
-            else:
-                self.sub_ratios = np.full((self.sol_pad, num_params, num_ants, self.num_evts), np.nan, dtype = float)
+            self.sub_ratios = np.full((sol_pad, num_params, num_ants, self.num_evts), np.nan, dtype = float)
             del num_params
 
     def run_post_qual_cut(self, evt):
@@ -585,10 +577,7 @@ class post_qual_cut_loader:
                     raw_t, raw_v = self.ara_root.get_rf_ch_wf(ant)
                     int_v, int_num = self.wf_int.get_int_wf(raw_t, raw_v, ant, use_unpad = True, use_band_pass = True)[1:]
                     self.sin_sub.get_sin_subtract_wf(int_v, int_num, ant, return_none = True)  
-                    if self.sol_pad is None:
-                        self.sub_ratios[:, ant, evt] = self.sin_sub.sub_ratios
-                    else:
-                        self.sub_ratios[:, :, ant, evt] = self.sin_sub.sub_ratios
+                    self.sub_ratios[:, :, ant, evt] = self.sin_sub.sub_ratios
                     del raw_t, raw_v, int_v, int_num
                     self.ara_root.del_TGraph()
                 self.ara_root.del_usefulEvt()
@@ -675,8 +664,8 @@ class post_qual_cut_loader:
         cw_thres[2] = cw_arr_04[:, config_idx]
 
         cw_freq = np.full((num_params, 2), np.nan, dtype = float)
-        cw_freq[0, 0] = 0.115 
-        cw_freq[0, 1] = 0.135
+        cw_freq[0, 0] = 0.125 
+        cw_freq[0, 1] = 0.15
         cw_freq[1, 0] = 0.24
         cw_freq[1, 1] = 0.26
         cw_freq[2, 0] = 0.395

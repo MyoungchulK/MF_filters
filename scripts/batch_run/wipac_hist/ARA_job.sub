@@ -1,0 +1,18 @@
+log    = /scratch/mkim/wipac_hist/logs/A$(station).T$(trig).R$(run).log
+output = /scratch/mkim/wipac_hist/logs/A$(station).T$(trig).R$(run).out
+error  = /scratch/mkim/wipac_hist/logs/A$(station).T$(trig).R$(run).err
+
+request_memory = 2GB
+
+Universe = vanilla
+getenv = true
++TransferOutput = ""
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+
+nice_user = false
+
+executable = ARA_job.sh
+arguments = $(station) $(trig) $(run) $(run_w)
+
+queue

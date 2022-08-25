@@ -672,7 +672,7 @@ class ara_eventHk_uproot_loader:
 
 class sin_subtract_loader:
 
-    def __init__(self, cw_freq, cw_thres, max_fail_atts = 3, num_params = 3, dt = 0.5, sol_pad = 10, use_filter = False):
+    def __init__(self, cw_freq, cw_thres, max_fail_atts = 3, num_params = 3, dt = 0.5, sol_pad = None, use_filter = False):
 
         self.dt = dt
         self.sol_pad = sol_pad
@@ -708,8 +708,11 @@ class sin_subtract_loader:
 
         int_v_db = int_v.astype(np.double)
         cw_v = np.full((self.num_params, int_num), 0, dtype = np.double)
-        self.sub_ratios = np.full((self.sol_pad, self.num_params), np.nan, dtype = float)
-        self.sub_powers = np.copy(self.sub_ratios)
+        if self.sol_pad is None:
+            self.sub_ratios = np.full((self.num_params), np.nan, dtype = float)
+        else:
+            self.sub_ratios = np.full((self.sol_pad, self.num_params), np.nan, dtype = float)
+        #self.sub_powers = np.copy(self.sub_ratios)
         #self.sub_freqs = np.copy(self.sub_ratios)
 
         for params in range(self.num_params):
@@ -719,8 +722,14 @@ class sin_subtract_loader:
             self.sin_sub.unsetFreqLimits()
 
             self.num_sols = self.sin_sub.getNSines()
-            self.sub_ratios[:self.num_sols+1, params] = np.frombuffer(self.sin_sub.getRatios(), dtype = float, count = self.num_sols + 1)
-            self.sub_powers[:self.num_sols+1, params] = np.frombuffer(self.sin_sub.getPowers(), dtype = float, count = self.num_sols + 1)
+            sub_r = np.frombuffer(self.sin_sub.getRatios(), dtype = float, count = self.num_sols + 1)
+            if self.sol_pad is None:
+                self.sub_ratios[params] = np.nanmax(sub_r)
+            else:
+                self.sub_ratios[:self.num_sols+1, params] = sub_r
+            del sub_r           
+ 
+            #self.sub_powers[:self.num_sols+1, params] = np.frombuffer(self.sin_sub.getPowers(), dtype = float, count = self.num_sols + 1)
             #self.sub_freqs[:self.num_sols, params] = np.frombuffer(self.sin_sub.getFreqs(), dtype = float, count = self.num_sols)
         del int_v_db
 

@@ -3,14 +3,13 @@ import numpy as np
 import h5py
 from tqdm import tqdm
 
-def cw_cut_collector(Data, Ped, analyze_blind_dat = False):
+def cw_val_collector(Data, Ped, analyze_blind_dat = False):
 
-    print('CW cut starts!')
+    print('CW value starts!')
 
     from tools.ara_data_load import ara_uproot_loader
     from tools.ara_data_load import ara_root_loader
     from tools.ara_quality_cut import post_qual_cut_loader
-    from tools.ara_quality_cut import get_bad_live_time
     from tools.ara_run_manager import run_info_loader
 
     # data config
@@ -33,7 +32,7 @@ def cw_cut_collector(Data, Ped, analyze_blind_dat = False):
     del run_info, qual_dat, qual_hf
 
     # post quality cut
-    post_qual = post_qual_cut_loader(ara_root, ara_uproot, daq_qual_cut_sum, sol_pad = 20, use_cw_cut = True, verbose = True)
+    post_qual = post_qual_cut_loader(ara_root, ara_uproot, daq_qual_cut_sum, use_cw_cut = True, use_cw_val = True, verbose = True)
     del daq_qual_cut_sum, ara_uproot 
 
     # loop over the events
@@ -44,19 +43,10 @@ def cw_cut_collector(Data, Ped, analyze_blind_dat = False):
     del ara_root, num_evts 
 
     # post quality cut
-    cw_qual_cut = post_qual.get_post_qual_cut()
-    cw_qual_cut_sum = post_qual.post_qual_cut_sum
     sub_ratios = post_qual.sub_ratios
-    rp_ants = post_qual.rp_ants
-    cw_wb_evts = post_qual.cw_wb_evts
-    cw_uk_evts = post_qual.cw_uk_evts
     del post_qual
 
-    # live time
-    cw_total_live_time, cw_trig_live_time, cw_bad_live_time = get_bad_live_time(trig_type, unix_time, time_bins, sec_per_min, cw_qual_cut, verbose = True)
-    cw_sum_bad_live_time = get_bad_live_time(trig_type, unix_time, time_bins, sec_per_min, cw_qual_cut_sum, verbose = True)[2]
- 
-    print('CW cut is done!')
+    print('CW value is done!')
 
     return {'evt_num':evt_num,
             'entry_num':entry_num,
@@ -65,17 +55,7 @@ def cw_cut_collector(Data, Ped, analyze_blind_dat = False):
             'pps_number':pps_number,
             'time_bins':time_bins,
             'sec_per_min':sec_per_min,
-            'sub_ratios':sub_ratios,
-            'rp_ants':rp_ants,
-            'cw_wb_evts':cw_wb_evts,
-            'cw_uk_evts':cw_uk_evts,
-            'cw_qual_cut':cw_qual_cut,
-            'cw_qual_cut_sum':cw_qual_cut_sum,
-            'cw_total_live_time':cw_total_live_time,
-            'cw_trig_live_time':cw_trig_live_time,
-            'cw_bad_live_time':cw_bad_live_time,
-            'cw_sum_bad_live_time':cw_sum_bad_live_time}
-
+            'sub_ratios':sub_ratios}
 
 
 
