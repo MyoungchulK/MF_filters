@@ -2,7 +2,7 @@ log    = /scratch/mkim/wipac_hist/logs/A$(station).T$(trig).R$(run).log
 output = /scratch/mkim/wipac_hist/logs/A$(station).T$(trig).R$(run).out
 error  = /scratch/mkim/wipac_hist/logs/A$(station).T$(trig).R$(run).err
 
-request_memory = 2GB
+request_memory = 8GB
 
 Universe = vanilla
 getenv = true

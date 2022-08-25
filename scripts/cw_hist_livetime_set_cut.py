@@ -103,10 +103,12 @@ def get_max_2d(x, y, x_bins):
 
     return xy
 
+count_ff = count_i + count_f
+
 for r in tqdm(range(len(d_run_tot))):
     
   #if r <10:
-  if r >= count_i and r < count_i + count_f:
+  if r >= count_i and r < count_ff:
 
     ara_run = run_info_loader(Station, d_run_tot[r])
     g_idx = ara_run.get_config_number() - 1
