@@ -48,7 +48,7 @@ class ara_root_loader:
         ara_tree = file_uproot['AraTree']
         settings = ara_tree['settings']
         self.time_step = np.asarray(settings['TIMESTEP'], dtype = float) * 1e9
-        self.waveform_length = np.asarray(settings['WAVEFORM_LENGTH'], dtype = int)
+        self.waveform_length = np.asarray(settings['WAVEFORM_LENGTH'], dtype = int)[0]
         self.wf_time = np.arange(self.waveform_length) * self.time_step - self.waveform_length // 2 * self.time_step
         self.posnu_radius = np.asarray(settings['POSNU_RADIUS'], dtype = int)
  

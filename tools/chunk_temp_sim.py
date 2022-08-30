@@ -18,26 +18,30 @@ def temp_sim_collector(Data, Station, Year):
     ara_root.get_sub_info(Data, get_angle_info = False)
     num_evts = ara_root.num_evts
     dt = ara_root.time_step
+    print(dt)
     wf_len = ara_root.waveform_length
     wf_time = ara_root.wf_time    
-    
+    #print(wf_len)   
+    #print(wf_time)
+ 
     # template parameter
     nu_elst = np.array([0.1, 0.9])
     off_cone = np.arange(0, 4.1, 0.5)
     off_int = (off_cone * 2).astype(int)
-    print(off_int)
+    #print(off_int)
     ant_res = np.arange(0, -61, -10, dtype = int)    
     ant_ch = np.arange(num_ants, dtype = int)
 
     # load path
-    param_path = f'../sim/temp_A{Station}_setup_parameter.txt'
+    param_path = f'../sim/sim_temp/temp_A{Station}_setup_parameter.txt'
     param = open(param_path, 'r')
     p_lines = param.readlines()
     print(p_lines[0])
 
     # wf arr
     temp = np.full((wf_len, num_ants, len(ant_res), len(off_cone), len(nu_elst)), 0, dtype = float)
-    
+    print(temp.shape)   
+ 
     # loop over the events
     for evt in tqdm(range(num_evts)):
       #if evt <100: # debug 
@@ -51,7 +55,7 @@ def temp_sim_collector(Data, Station, Year):
         ant_idx = int(temp_idx[-1])
         off_idx = np.where(off_int == int(float(temp_idx[-2])*2))[0][0]
 
-        print(evt, str(temp_idx[1]), elst_idx, int(temp_idx[-3]), res_idx, float(temp_idx[-2]), off_idx, ant_idx)
+        #print(evt, str(temp_idx[1]), elst_idx, int(temp_idx[-3]), res_idx, float(temp_idx[-2]), off_idx, ant_idx)
 
         temp_wf = ara_root.get_rf_wfs(evt)[:, ant_idx]
         temp_wf_len = np.count_nonzero(temp_wf)
@@ -66,7 +70,7 @@ def temp_sim_collector(Data, Station, Year):
 
     print('Template collecting is done!')
 
-    return {'dt':np.asarray([dt]),
+    return {'dt':dt,
             'wf_time':wf_time,
             'temp':temp,
             'nu_elst':nu_elst,

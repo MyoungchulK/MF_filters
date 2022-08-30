@@ -1,0 +1,38 @@
+JOB job_ARA_S2_C1_R0 ARA_job.sub 
+VARS job_ARA_S2_C1_R0 setup="/home/mkim/analysis/MF_filters/sim/sim_temp/A2_C1_temp_rayl.txt" st="2" config="1" run="0"
+
+JOB job_ARA_S2_C2_R0 ARA_job.sub
+VARS job_ARA_S2_C2_R0 setup="/home/mkim/analysis/MF_filters/sim/sim_temp/A2_C2_temp_rayl.txt" st="2" config="2" run="0"
+
+JOB job_ARA_S2_C3_R0 ARA_job.sub
+VARS job_ARA_S2_C3_R0 setup="/home/mkim/analysis/MF_filters/sim/sim_temp/A2_C3_temp_rayl.txt" st="2" config="3" run="0"
+
+JOB job_ARA_S2_C4_R0 ARA_job.sub
+VARS job_ARA_S2_C4_R0 setup="/home/mkim/analysis/MF_filters/sim/sim_temp/A2_C4_temp_rayl.txt" st="2" config="4" run="0"
+
+JOB job_ARA_S2_C5_R0 ARA_job.sub
+VARS job_ARA_S2_C5_R0 setup="/home/mkim/analysis/MF_filters/sim/sim_temp/A2_C5_temp_rayl.txt" st="2" config="5" run="0"
+
+JOB job_ARA_S2_C6_R0 ARA_job.sub
+VARS job_ARA_S2_C6_R0 setup="/home/mkim/analysis/MF_filters/sim/sim_temp/A2_C6_temp_rayl.txt" st="2" config="6" run="0"
+
+JOB job_ARA_S3_C1_R0 ARA_job.sub
+VARS job_ARA_S3_C1_R0 setup="/home/mkim/analysis/MF_filters/sim/sim_temp/A3_C1_temp_rayl.txt" st="3" config="1" run="0"
+
+JOB job_ARA_S3_C2_R0 ARA_job.sub
+VARS job_ARA_S3_C2_R0 setup="/home/mkim/analysis/MF_filters/sim/sim_temp/A3_C2_temp_rayl.txt" st="3" config="2" run="0"
+
+JOB job_ARA_S3_C3_R0 ARA_job.sub
+VARS job_ARA_S3_C3_R0 setup="/home/mkim/analysis/MF_filters/sim/sim_temp/A3_C3_temp_rayl.txt" st="3" config="3" run="0"
+
+JOB job_ARA_S3_C4_R0 ARA_job.sub
+VARS job_ARA_S3_C4_R0 setup="/home/mkim/analysis/MF_filters/sim/sim_temp/A3_C4_temp_rayl.txt" st="3" config="4" run="0"
+
+JOB job_ARA_S3_C5_R0 ARA_job.sub
+VARS job_ARA_S3_C5_R0 setup="/home/mkim/analysis/MF_filters/sim/sim_temp/A3_C5_temp_rayl.txt" st="3" config="5" run="0"
+
+JOB job_ARA_S3_C6_R0 ARA_job.sub
+VARS job_ARA_S3_C6_R0 setup="/home/mkim/analysis/MF_filters/sim/sim_temp/A3_C6_temp_rayl.txt" st="3" config="6" run="0"
+
+JOB job_ARA_S23_C7_R0 ARA_job.sub
+VARS job_ARA_S3_C7_R0 setup="/home/mkim/analysis/MF_filters/sim/sim_temp/A3_C7_temp_rayl.txt" st="3" config="7" run="0"

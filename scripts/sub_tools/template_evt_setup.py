@@ -1,6 +1,7 @@
 import os, sys
 import numpy as np
 from tqdm import tqdm
+import ROOT
 
 print('Lib Loading Complete!')
 
@@ -11,25 +12,17 @@ if len (sys.argv) !=2:
 
 st=int(sys.argv[1])
 
-if st == 2:
-    ant_pos = np.full((16, 3), np.nan, dtype = float)
-    ant_pos[6-1] = np.array([10004.9, 9989.6, -189.4], dtype = float)
-    ant_pos[14-1] = np.array([10004.9, 9989.6, -186.115], dtype = float)
-    ant_pos[2-1] = np.array([10004.9, 9989.6, -170.347], dtype = float)
-    ant_pos[10-1] = np.array([10004.9, 9989.6, -167.428], dtype = float)
-    ant_pos[7-1] = np.array([9997.42, 10009.4, -191.242], dtype = float)
-    ant_pos[15-1] = np.array([9997.42, 10009.4, -187.522], dtype = float)
-    ant_pos[3-1] = np.array([9997.42, 10009.4, -171.589], dtype = float)
-    ant_pos[11-1] = np.array([9997.42, 10009.4, -168.468], dtype = float)
-    ant_pos[8-1] = np.array([9992.16, 9995.94, -194.266], dtype = float)
-    ant_pos[16-1] = np.array([9992.16, 9995.94, -190.981], dtype = float)
-    ant_pos[4-1] = np.array([9992.16, 9995.94, -175.377], dtype = float)
-    ant_pos[12-1] = np.array([9992.16, 9995.94, -172.42], dtype = float)
-    ant_pos[5-1] = np.array([10010.6, 10002.3, -189.502], dtype = float)
-    ant_pos[13-1] = np.array([10010.6, 10002.3, -186.546], dtype = float)
-    ant_pos[1-1] = np.array([10010.6, 10002.3, -170.247], dtype = float)
-    ant_pos[9-1] = np.array([10010.6, 10002.3, -167.492], dtype = float)
-    print(ant_pos)
+## ARA station coordinate
+ROOT.gSystem.Load(os.environ.get('ARA_UTIL_INSTALL_DIR')+"/lib/libAraEvent.so")
+
+geomTool = ROOT.AraGeomTool.Instance()
+st_info = geomTool.getStationInfo(st, 2015)
+ant_pos = np.full((16, 3), np.nan, dtype = float)
+for ant in range(16):
+    ant_pos[ant, 0] = st_info.getAntennaInfo(ant).antLocation[0] + 10000
+    ant_pos[ant, 1] = st_info.getAntennaInfo(ant).antLocation[1] + 10000
+    ant_pos[ant, 2] = st_info.getAntennaInfo(ant).antLocation[2]
+print('antenna location:',ant_pos)
 
 #nu flavor
 nu_bar = ['Nu', 'Nu']
@@ -85,8 +78,8 @@ phi_unit_y=0
 #phi_unit_z=0
 
 #antenna pos path
-output_path = os.getcwd()+f'/../sim/temp_A{st}_setup.txt'
-param_path = os.getcwd()+f'/../sim/temp_A{st}_setup_parameter.txt'
+output_path = os.getcwd()+f'/../../sim/sim_temp/temp_A{st}_setup.txt'
+param_path = os.getcwd()+f'/../../sim/sim_temp/temp_A{st}_setup_parameter.txt'
 print(output_path)
 print(param_path)
 
