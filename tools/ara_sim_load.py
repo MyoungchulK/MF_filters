@@ -37,7 +37,7 @@ class ara_root_loader:
 
         # get the number of entries in this file
         self.num_evts = int(self.evtTree.GetEntries())
-        self.entry_num = np.arange(self.num_evts)
+        self.entry_num = np.arange(self.num_evts, dtype = int)
         print('total events:', self.num_evts)
 
     def get_sub_info(self, data, get_angle_info = False):

@@ -75,6 +75,7 @@ class pre_qual_cut_loader:
         bi_ch_mask = 1 << np.arange(num_chs, dtype = int)
         dda_ch = np.arange(num_ddas, dtype = int)
         dda_idx = (self.channel_mask & 0x300) >> 8
+        max_blk_diff = -(num_blks -1)
 
         daq_st_err = np.full((self.num_evts, 5), 0, dtype = int)
         # bad block lengh
@@ -106,7 +107,12 @@ class pre_qual_cut_loader:
                 if first_block_idx + block_diff != last_block_idx:
                     if num_blks - first_block_idx + last_block_idx != block_diff:
                         daq_st_err[evt, 2] += 1
-                del first_block_idx, last_block_idx, block_diff, blk_idx_dda
+
+                blk_diff = np.diff(blk_idx_dda).astype(int)
+                incre_flag = np.any(np.logical_and(blk_diff != 1, blk_diff != max_blk_diff))
+                if incre_flag:
+                    daq_st_err[evt, 2] += 1
+                del first_block_idx, last_block_idx, block_diff, blk_idx_dda, blk_diff, incre_flag
             del blk_idx_reshape
 
             # bad dda channel
@@ -121,7 +127,7 @@ class pre_qual_cut_loader:
             ch_mask_bit = ch_mask_reshape & bi_ch_mask[np.newaxis, :]
             daq_st_err[evt, 4] = int(np.any(ch_mask_bit != bi_ch_mask[np.newaxis, :]))
             del ch_mask_reshape, ch_mask_bit, ch_mask_evt
-        del bi_ch_mask, dda_ch, dda_idx
+        del bi_ch_mask, dda_ch, dda_idx, max_blk_diff
 
         if self.verbose:
             quick_qual_check(daq_st_err[:, 0] != 0, 'bad block length events', self.evt_num)
