@@ -16,7 +16,8 @@ def cobalt_run_loader(Key = None, Station = None, Act_Evt = None):
     Yrs = 2015
   
     #d_path = '/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run*'
-    d_path = f'/misc/disk19/users/mkim/OMF_filter/ARA0{Station}/sim_signal/AraOut*'
+    #d_path = f'/misc/disk19/users/mkim/OMF_filter/ARA0{Station}/sim_signal/AraOut*'
+    d_path = f'/misc/disk19/users/mkim/OMF_filter/ARA0{Station}/sim_noise/AraOut*'
     lists = glob(d_path)
     print(len(lists))
  
@@ -25,7 +26,7 @@ def cobalt_run_loader(Key = None, Station = None, Act_Evt = None):
 
         if count >= Act_Evt[0] and count < Act_Evt[1]:
 
-            CMD_line = f'python3 -W ignore sim_script_executor.py {Key} {Station} {Yrs} {w}'
+            CMD_line = f'python3 -W ignore sim_script_executor.py -k {Key} -s {Station} -y {Yrs} -d {w}'
             print(CMD_line)
             call(CMD_line.split(' '))
 
