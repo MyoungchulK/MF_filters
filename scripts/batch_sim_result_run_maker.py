@@ -25,7 +25,7 @@ if not os.path.exists(dag_path):
     os.makedirs(dag_path)
 print(dag_path)
 
-dag_file_name = f'{dag_path}A{st}.dag'
+dag_file_name = f'{dag_path}A{st}_g.dag'
 statements = ""
 with open(dag_file_name, 'w') as f:
     f.write(statements)

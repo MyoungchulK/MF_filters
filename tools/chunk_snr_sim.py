@@ -1,12 +1,13 @@
 import numpy as np
 from tqdm import tqdm
 
-def wf_simple_sim_collector(Data, Station, Year):
+def snr_sim_collector(Data, Station, Year):
 
-    print('Collecting sim wf starts!')
+    print('Collecting sim snr starts!')
 
     from tools.ara_sim_load import ara_root_loader
     from tools.ara_constant import ara_const
+    from tools.ara_wf_analyzer import wf_analyzer
 
     # const. info.
     ara_const = ara_const()
@@ -31,22 +32,31 @@ def wf_simple_sim_collector(Data, Station, Year):
     elast_y = ara_root.elast_y
     posnu = ara_root.posnu
     nnu = ara_root.nnu
-    #rec_ang = ara_root.rec_ang
-    #view_ang = ara_root.view_ang
-    #arrival_time = ara_root.arrival_time
+
+    # wf analyzer
+    wf_int = wf_analyzer(dt = dt)
  
-    # wf arr
-    wf = np.full((wf_len, num_ants, num_evts), np.nan, dtype = float)
-    print(wf.shape)   
+    # output array
+    rms = np.full((num_ants, num_evts), np.nan, dtype = float)
+    p2p = np.copy(rms)
  
     # loop over the events
     for evt in tqdm(range(num_evts)):
       #if evt <100: # debug 
 
-        wf[:,:,evt] = ara_root.get_rf_wfs(evt)
+        ara_root.get_entry(evt)
+        for ant in range(num_ants):
+            wf_v = ara_root.get_rf_ch_wf(ant)[1]
+            rms[ant, evt] = np.nanstd(wf_v)
+            p2p[ant, evt] = wf_int.get_p2p(wf_v, use_max = True)
+            del wf_v
+            ara_root.del_TGraph()
     del ara_root, num_ants, num_evts
 
-    print('Sim wf collecting is done!')
+    rms_mean = np.nanmean(rms, axis = 1)
+    snr = p2p / 2 / rms_mean[:, np.newaxis]
+
+    print('Sim snr collecting is done!')
 
     return {'entry_num':entry_num,
             'dt':dt,
@@ -61,9 +71,8 @@ def wf_simple_sim_collector(Data, Station, Year):
             'elast_y':elast_y,
             'posnu':posnu,
             'nnu':nnu,
-            #'rec_ang':rec_ang,
-            #'view_ang':view_ang,
-            #'arrival_time':arrival_time,
-            'wf':wf}
-    
+            'snr':snr,
+            'p2p':p2p,
+            'rms':rms,
+            'rms_mean':rms_mean} 
 
