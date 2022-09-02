@@ -26,14 +26,15 @@ def snr_collector(Data, Ped, analyze_blind_dat = False):
     unix_time = ara_uproot.unix_time
     pps_number = ara_uproot.pps_number
     trig_type = ara_uproot.get_trig_type()
+    time_bins, sec_per_min = ara_uproot.get_event_rate(use_time_bins = True)
     ara_root = ara_root_loader(Data, Ped, ara_uproot.station_id, ara_uproot.year)
 
     # pre quality cut
     run_info = run_info_loader(ara_uproot.station_id, ara_uproot.run, analyze_blind_dat = analyze_blind_dat)
-    daq_dat = run_info.get_result_path(file_type = 'daq_cut', verbose = True)
+    daq_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True)
     daq_hf = h5py.File(daq_dat, 'r')
     pre_qual_cut_sum = daq_hf['pre_qual_cut_sum'][:]
-    daq_qual_cut_sum = daq_hf['daq_qual_cut_sum'][:]
+    daq_qual_cut_sum = daq_hf['tot_qual_cut_sum'][:]
     del ara_uproot, run_info, daq_dat, daq_hf
 
     # wf analyzer
@@ -63,8 +64,7 @@ def snr_collector(Data, Ped, analyze_blind_dat = False):
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()   
 
-        if trig_type[evt] == 0:
-            rms[:, evt] = np.nanstd(wf_int.pad_v, axis = 0)
+        rms[:, evt] = np.nanstd(wf_int.pad_v, axis = 0)
     del ara_root, num_evts, num_ants, wf_int
 
     clean_idx = np.logical_and(pre_qual_cut_sum == 0, trig_type == 0)
@@ -84,6 +84,8 @@ def snr_collector(Data, Ped, analyze_blind_dat = False):
             'trig_type':trig_type,
             'unix_time':unix_time,
             'pps_number':pps_number,
+            'time_bins':time_bins,
+            'sec_per_min':sec_per_min,
             'snr':snr,
             'p2p':p2p,
             'rms':rms,
