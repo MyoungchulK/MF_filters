@@ -125,8 +125,8 @@ class ara_root_loader:
 
         self.get_entry(evt)
         for ant in range(num_ants):
-             wf_v[:, ant] = self.get_rf_ch_wf(ant)[1]
-        self.del_TGraph()
+            wf_v[:, ant] = self.get_rf_ch_wf(ant)[1]
+            self.del_TGraph()
 
         return wf_v
 

@@ -16,7 +16,22 @@ from tools.ara_utility import size_checker
 @click.option('-y', '--year', default = 2015, type = int)
 @click.option('-d', '--data', type = str)
 @click.option('-e', '--evt_range', default = [], multiple = True)
-def script_loader(key, station, year, data, evt_range):
+@click.option('-n', '--not_override', default = False, type = bool)
+def script_loader(key, station, year, data, evt_range, not_override):
+
+    if not_override:
+        output = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{station}/{key}_sim/'
+        slash_idx = data.rfind('/')
+        dot_idx = data.rfind('.')
+        data_name = data[slash_idx+1:dot_idx]
+        if key == 'mf_noise' or key == 'mf_noise_debug':
+            h5_file_name = f'{output}{key}_sim_A{station}_Evt{evt_range[0]}_{evt_range[1]}_{data_name}'
+        else:
+            h5_file_name = f'{output}{key}_{data_name}'
+        h5_file_name_out = h5_file_name + '.h5'
+        if os.path.exists(h5_file_name_out):
+            print(f'{h5_file_name_out} is already there!!')
+            return    
 
     # run the chunk code
     module = import_module(f'tools.chunk_{key}_sim')

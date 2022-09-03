@@ -1,12 +1,9 @@
 import os
 import numpy as np
-#from scipy.signal import fftconvolve
-from scipy.signal import correlation_lags
-#from scipy.signal import hilbert
-from scipy.stats import rayleigh
-#from scipy.optimize import curve_fit
-from tqdm import tqdm
 import h5py
+from scipy.signal import butter, filtfilt, hilbert, fftconvolve, correlation_lags
+from scipy.ndimage import maximum_filter1d
+from tqdm import tqdm
 
 # custom lib
 from tools.ara_constant import ara_const
@@ -16,219 +13,211 @@ num_ants = ara_const.USEFUL_CHAN_PER_STATION
 
 class ara_matched_filter:
 
-    def __init__(self, wf_len, dt, add_pad = False):
+    def __init__(self, st, config, year, dt, wf_len, bad_ant):
 
-        self.add_pad = add_pad
+        self.st = st
+        self.config = config
+        self.year = year
         self.dt = dt
+        self.bad_ant = bad_ant
         self.wf_len = wf_len
-        self.pad_len = self.wf_len
-        self.df = 1 / (self.dt * self.pad_len)        
-        if self.add_pad: # need a pad for correlation process
-            self.pad_len = self.wf_len * 2
-            self.df = 1 / (self.dt * self.pad_len)
-            self.half_wf_len = self.wf_len // 2
+        self.lag = correlation_lags(self.wf_len, self.wf_len, 'full') * self.dt
+        self.lag_len = len(self.lag)
+        print(self.lag_len)
+        self.half_pad = 500
+        self.sum_lag_pad = self.lag_len + self.half_pad * 2
+        self.wf_freq = np.fft.fftfreq(self.wf_len, self.dt)
 
-        # get x-axis info
-        self.time_pad = np.arange(self.pad_len) * self.dt
-        self.time_pad -= self.pad_len // 2 * self.dt
-        self.freq_pad = np.fft.fftfreq(self.pad_len, self.dt)
-        self.lags = correlation_lags(self.pad_len, self.pad_len, 'same') * self.dt
+        self.theta_width = 30
+        self.theta = np.arange(30, 150 + 1, self.theta_width, dtype = int)
+        self.theta_len = len(self.theta)
+        self.phi_width = 60
+        self.phi = np.arange(30, 330 + 1, self.phi_width, dtype = int)
+        self.phi_len = len(self.phi)
+        self.theta_idx = np.array([2, 1, 0, 1, 2], dtype = int)
 
-    def get_psd(self, wf_v, binning = 1000): # computationally expensive process...
+        self.ant_res_width = np.copy(self.theta_width)
+        self.ant_res = np.arange(0, -60 - 1, -self.ant_res_width, dtype = int)
+        self.ant_res_len = len(self.ant_res)
+        self.off_cone_width = 2
+        self.off_cone = np.arange(0, 4+1, self.off_cone_width, dtype = int)
+        self.off_cone_len = len(self.off_cone)
 
-        if self.add_pad:
-            # add pad in both side
-            wf_v = np.pad(wf_v, [(self.half_wf_len, ), (0, ), (0, )], 'constant', constant_values = 0)
+        self.roll_win = int(100/self.dt) + 1
+        self.em_had_thres = int((num_ants - np.count_nonzero(self.bad_ant)) * self.ant_res_len * self.off_cone_len / 2)
+        self.num_sols = 2
+        self.num_fin_temps = self.theta_len * self.phi_len * self.num_sols
 
-        # normalized fft
-        wf_v = np.abs(np.fft.fft(wf_v, axis = 0)) / np.sqrt(self.wf_len) # since length of wfs from sim are identical, let just use setting value
-
-        # rayl fit
-        bin_edges = np.asarray([np.nanmin(wf_v, axis = 2), np.nanmax(wf_v, axis = 2)])
-        rayl_mu = np.full((self.pad_len, num_ants), np.nan, dtype = float)
+    def get_temp_wfs(self):
+    
+        t_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{self.st}/temp_sim/temp_AraOut.A{self.st}_C{self.config}_temp_rayl.txt.run0.h5'
+        print('temp_path', t_path)
+        hf_t = h5py.File(t_path, 'r')
+        off_len = len(hf_t['off_cone'][:])
+        test_temp0 = hf_t['temp'][:]
+        temp_len = len(test_temp0[:,0,0,0,0])
+        test_temp1 = np.full((temp_len, num_ants, self.ant_res_len, off_len, self.num_sols), np.nan, dtype = float)
+        test_temp1[:,:,0] = test_temp0[:, :, int(self.ant_res[0]/10)]
+        test_temp1[:,:,1] = test_temp0[:, :, int(-self.ant_res[1]/10)]
+        test_temp1[:,:,2] = test_temp0[:, :, int(-self.ant_res[2]/10)]
+        test_temp = np.full((temp_len, num_ants, self.ant_res_len, self.off_cone_len, self.num_sols), np.nan, dtype = float)
+        test_temp[:,:,:,0] = test_temp1[:,:,:,int(self.off_cone[0]/self.dt)]
+        test_temp[:,:,:,1] = test_temp1[:,:,:,int(self.off_cone[1]/self.dt)]
+        test_temp[:,:,:,2] = test_temp1[:,:,:,int(self.off_cone[2]/self.dt)]
         
-        for f in tqdm(range(self.pad_len)):
-            for ant in range(num_ants):
+        nu, de = butter(10, [0.13, 0.85], btype = 'band', fs = 1 / self.dt)
+        temp = filtfilt(nu, de, test_temp, axis = 0)
+        print(temp.shape)
+        if self.wf_len != temp_len:
+            temp = np.pad(temp, [(0, self.wf_len - len(temp[:,0,0,0,0])), (0, 0), (0, 0), (0, 0), (0, 0)], 'constant', constant_values = 0)
+        del t_path, hf_t, test_temp0, test_temp1, test_temp, nu, de, off_len
+        print(temp.shape)
 
-                # get guess
-                amp_bins = np.linspace(bin_edges[0, f, ant], bin_edges[0, f, ant], binning + 1) # set bin space in each frequency for more fine binning
-                amp_bins_center = (amp_bins[1:] + amp_bins[:-1]) / 2
-                amp_hist = np.histogram(wf_v[f, ant], bins = amp_bins)[0]
-                mu_init_idx = np.nanargmax(amp_hist)
-                if np.isnan(mu_init_idx):
-                    continue
-                mu_init = amp_bins_center[mu_init_idx]
-                del amp_bins, amp_bins_center, amp_hist, mu_init_idx               
- 
-                # perform unbinned fitting
-                try:
-                    loc, scale = rayleigh.fit(wf_v[f, ant], loc = bin_edges[0, f, ant], scale = mu_init)
-                    rayl_mu[f, ant] = loc + scale
-                    del loc, scale
-                except RuntimeError:
-                    #print('Runtime Issue!')
-                    pass
-                del mu_init
-        del wf_v, bin_edges
+        return temp
 
-        # psd mV**2/Hz
-        psd = rayl_mu**2 / self.df
-        #del rayl_mu
+    def get_psd(self, d_path, corr_fac = None):
 
-        return psd, rayl_mu
-"""
-    def get_matched_results(self, wf_all, wf_len):
+        print('psd_path', d_path)
+        hf_n = h5py.File(d_path, 'r')
+        try:
+            rayl = np.nansum(hf_n['rayl'][:], axis = 0)
+        except KeyError:
+            rayl = np.nansum(hf_n['soft_rayl'][:], axis = 0)
+            print(rayl.shape)
+            rayl = np.append(rayl[:-1], rayl[1:][::-1], axis = 0)
+        if corr_fac is not None:
+            rayl *= corr_fac
+        psd = (rayl / np.sqrt(self.dt / self.wf_len))**2
+        del hf_n, rayl
 
-        # add pad in both side
-        pad_wf_all = np.pad(wf_all, [(self.half_wf_len, ), (0, )], 'constant', constant_values=0)
+        return psd
 
-        # normalized fft
-        fft_all = np.abs(np.fft.fft(pad_wf_all, axis = 0)) / np.sqrt(wf_len)[np.newaxis, :, :]
-        del pad_wf_all
+    def get_arr_table(self):
 
-        mf = fft_all.conjugate() * self.temp[:, np.newaxis]
-        mf /= self.psd[:, np.newaxis]
-        mf = np.real(2*np.fft.ifft(snr, axis = 0) / self.dt)
+        a_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{self.st}/arr_time_table/arr_time_table_A{self.st}_Y{self.year}.h5'
+        print('arr_table_path', a_path) 
+        hf_a = h5py.File(a_path, 'r')
+        arr_time_table = hf_a['arr_time_table'][:]
+        arr_delay_table = arr_time_table - np.nanmean(arr_time_table, axis = 3)[:, :, :, np.newaxis]
+        arr_delay_table = arr_delay_table[:,:,1]
+        arr_del_idx = np.full((self.theta_len, self.phi_len, num_ants, self.num_sols), np.nan, dtype = float)
+        for t in range(self.theta_len):
+            for p in range(self.phi_len):
+                arr_del_idx[t, p] = arr_delay_table[self.theta[t], self.phi[p]] 
+        self.arr_nan = np.isnan(arr_del_idx)
+        arr_del_idx = (arr_del_idx / self.dt).astype(int) + self.half_pad 
+        print(arr_del_idx.shape)
+        del a_path, hf_a, arr_time_table, arr_delay_table           
 
+        return arr_del_idx 
 
-        self.dt = dt
-        self.lags = correlation_lags(pad_len, pad_len, 'same') * self.dt
-        self.lag_len = len(self.lags)
+    def get_template(self, d_path, corr_fac = None):
 
-    def get_time_pad(self, add_double_pad = False):
+        self.temp = self.get_temp_wfs()
+        self.psd = self.get_psd(d_path, corr_fac = corr_fac)
+        self.arr_del_idx = self.get_arr_table() 
 
-        pad_i = -186.5
-        pad_f = 953
-        pad_w = int((pad_f - pad_i) / self.dt) + 1
-        if add_double_pad:
-            half_pad_t = pad_w * self.dt / 2
-            pad_i -= half_pad_t
-            pad_f += half_pad_t
-            pad_w = np.copy(int((pad_f - pad_i) / self.dt) + 1)
-            del half_pad_t
+        # normalization factor
+        temp_fft = np.fft.fft(self.temp, axis = 0)
+        nor_fac = np.abs(temp_fft)**2 / self.psd[:, :, np.newaxis, np.newaxis, np.newaxis]
+        nor_fac = np.sqrt(np.nansum(nor_fac, axis = 0) / (self.dt * self.wf_len))
+        self.temp /= nor_fac[np.newaxis, :, :, :, :]
+        del nor_fac
 
-        self.pad_zero_t = np.linspace(pad_i, pad_f, pad_w, dtype = float)
-        #self.pad_zero_t = np.arange(pad_i, pad_f+self.dt/2, self.dt, dtype = float)
-        self.pad_len = len(self.pad_zero_t)
-        self.pad_t = np.full((self.pad_len, self.num_chs), np.nan, dtype = float)
-        self.pad_v = np.copy(self.pad_t)
-        self.pad_num = np.full((self.num_chs), 0, dtype = int)
-        print(f'time pad length: {self.pad_len * self.dt} ns')
+    def get_band_pass_filter(self, amp, val = 1e-100): # for temp, lets use brutal method.... for now....
 
+        #notch filter
+        amp[(self.wf_freq >= 0.43) & (self.wf_freq <= 0.48)] *= val
+        amp[(self.wf_freq <= -0.43) & (self.wf_freq >= -0.48)] *= val
 
-    def get_pair_info(self):
+        # front/back band
+        amp[(self.wf_freq >= -0.14) & (self.wf_freq <= 0.14)] *= val
+        amp[(self.wf_freq >= 0.75) | (self.wf_freq <= -0.75)] *= val
 
-        if self.run is not None:
-            from tools.ara_known_issue import known_issue_loader
-            known_issue = known_issue_loader(self.st)
-            good_ant = known_issue.get_bad_antenna(self.run, good_ant_true = True, print_ant_idx = True) 
-            del known_issue
-        else:
-            good_ant = np.arange(num_ants, dtype = int)
-        print('useful antenna chs for reco:', good_ant)
+        return amp
 
-        v_pairs = np.asarray(list(combinations(good_ant[good_ant < 8], 2)))
-        h_pairs = np.asarray(list(combinations(good_ant[good_ant > 7], 2)))
-        pairs = np.append(v_pairs, h_pairs, axis = 0)
-        self.v_pairs_len = len(v_pairs)
-        del v_pairs, h_pairs, good_ant
-        print('number of pairs:', len(pairs))
+    def get_mf_wfs(self, wf_v):
 
-        return pairs
+        # fft and deconvolve psd
+        wf_fft = np.fft.fft(wf_v, axis = 0) / self.psd
+        wf_fft = self.get_band_pass_filter(wf_fft)        
+        wf_v_w = np.real(np.fft.ifft(wf_fft, axis = 0))
+        del wf_fft
 
-    def get_arrival_time_tables(self):
-
-        table_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{self.st}/arr_time_table/'
-        table_name = f'arr_time_table_A{self.st}_Y{self.yrs}.h5'
-        print('arrival time table:', table_path+table_name)        
-
-        table_hf = h5py.File(table_path + table_name, 'r')
-        theta = table_hf['theta_bin'][:] - 90 # zenith to elevation angle
-        phi = table_hf['phi_bin'][:]
-        radius_arr = table_hf['radius_bin'][:]
-        r_idx = np.where(radius_arr == self.radius)[0][0]
-        print(f'selected R: {radius_arr[r_idx]} m')
-        #num_ray_sol = table_hf['num_ray_sol'][0]
-        arr_table = table_hf['arr_time_table'][:,:,r_idx,:,self.ray_sol]
-        del r_idx, radius_arr#, num_ray_sol
-        
-        table = np.full((len(theta), len(phi), self.pair_len), np.nan, dtype = float)
-        table_p1 = np.copy(table)
-        table_p2 = np.copy(table)
-        for p in range(self.pair_len):
-            p_1st = self.pairs[p, 0]
-            p_2nd = self.pairs[p, 1]
-            table[:,:,p] = arr_table[:,:,p_1st] - arr_table[:,:,p_2nd]
-            table_p1[:,:,p] = arr_table[:,:,p_1st]
-            table_p2[:,:,p] = arr_table[:,:,p_2nd]
-            del p_1st, p_2nd
-
-        self.bad_arr = np.logical_or(table_p1 < -100, table_p2 < -100)
-        del table_p1, table_p2, theta, phi, arr_table, table_hf
-
-        return table
-
-    def get_coval_time(self):
-
-        table = self.get_arrival_time_tables()
-
-        p0_idx = np.floor((table - self.lags[0])/self.dt).astype(int)
-        p0_idx[p0_idx < 0] = 0
-        p0_idx[p0_idx >= self.lag_len - 1] = self.lag_len - 2
-
-        int_factor = (table - self.lags[p0_idx])/self.dt
-        del table
-
-        return p0_idx, int_factor
-
-    def get_coval_sample(self, corr, sum_pol = False):
-
-        corr_diff = corr[1:] - corr[:-1]
-
-        coval = np.full(self.table_shape, 0, dtype=float)
-        for p in range(self.pair_len):
-            coval[:,:,p] = corr_diff[:,p][self.p0_idx[:,:,p]] * self.int_factor[:,:,p] + corr[:,p][self.p0_idx[:,:,p]]
-        coval[self.bad_arr] = 0
-        del corr_diff
-   
-        if sum_pol:
-            corr_v = np.nansum(coval[:,:,:self.v_pairs_len],axis=2)
-            corr_h = np.nansum(coval[:,:,self.v_pairs_len:],axis=2)
-            coval = np.asarray([corr_v, corr_h])
-
-        return coval
-
-    def get_cross_correlation(self, pad_v, return_debug_dat = False):
-
-        # fft correlation w/ multiple array at once
-        corr = fftconvolve(pad_v[:, self.pairs[:, 0]], pad_v[::-1, self.pairs[:, 1]], 'same', axes = 0)
-        if return_debug_dat:
-            corr_nonorm = np.copy(corr)
-
-        # normalization factor by wf weight
-        nor_fac = fftconvolve(pad_v**2, self.pad_one, 'same', axes = 0)
-        nor_fac = np.sqrt(nor_fac[::-1, self.pairs[:, 0]] * nor_fac[:, self.pairs[:, 1]])
-        corr /= nor_fac
-        corr[np.isnan(corr) | np.isinf(corr)] = 0 # convert x/nan result
-
-        # hilbert
-        corr = np.abs(hilbert(corr, axis = 0))
-
-        if return_debug_dat:
-            return corr, corr_nonorm, nor_fac
-        else:
-            del nor_fac
-            return corr
-
-    def get_sky_map(self, pad_v):
-        
         # correlation
-        corr = self.get_cross_correlation(pad_v)
+        corr = fftconvolve(self.temp, wf_v_w[:, :, np.newaxis, np.newaxis, np.newaxis], 'full', axes = 0)
+        corr = np.abs(hilbert(corr, axis = 0))
+        del wf_v_w
 
-        #coval
-        coval = self.get_coval_sample(corr, sum_pol = True)
+        return corr
+
+    def get_evt_wise_corr(self, corr, use_max = False):
+
+        # select max corr
+        corr_max = np.nanmax(corr, axis = 0)
+        em_had_sel = int(np.nansum(np.argmax(corr_max, axis = 3)) > self.em_had_thres) # 1st choose em or had
+        corr_off_max = np.argmax(corr_max[:, :, :, em_had_sel], axis = 2) # 2nd choose max off-cone
+
+        corr_sort = np.full((self.lag_len, num_ants, self.ant_res_len), np.nan, dtype = float)
+        for ant in range(num_ants):
+            for res in range(self.ant_res_len):
+                corr_sort[:, ant, res] = corr[:, ant, res, corr_off_max[ant, res], em_had_sel]
+        del em_had_sel, corr_off_max, corr_max
+
+        # rolling max
+        corr_sort_roll_max = maximum_filter1d(corr_sort, axis = 0, size = self.roll_win, mode='constant')
+        del corr_sort
+
+        # sum up by arrival time delay
+        evt_wize_corr = np.full((2, self.sum_lag_pad, self.num_fin_temps), 0, dtype = float)
+        evt_wize_corr_max_ant = np.full((num_ants, self.num_fin_temps), np.nan, dtype = float)
+        count = 0 
+        for t in range(self.theta_len):
+            for p in range(self.phi_len):
+                for s in range(self.num_sols):
+                    for ant in range(num_ants):
+                        if self.arr_nan[t, p, ant, s]:
+                            continue
+                        if self.bad_ant[ant]:
+                            continue
+                        pol_idx = int(ant > 7)
+                        arr_idx = self.arr_del_idx[t, p, ant, s]
+                        corr_ch = corr_sort_roll_max[:, ant, self.theta_idx[t]]
+                        evt_wize_corr[pol_idx, arr_idx:arr_idx + self.lag_len, count] += corr_ch
+                        evt_wize_corr_max_ant[ant, count] = np.nanmax(corr_ch)
+                        del arr_idx, pol_idx, corr_ch
+                    count += 1
+        del corr_sort_roll_max
+
+        evt_wize_corr_max = np.nanmax(evt_wize_corr, axis = (1,2))
+        evt_wize_corr_max_ant = evt_wize_corr_max_ant[:, np.where(evt_wize_corr == np.nanmax(evt_wize_corr_max))[2][0]]
+        del evt_wize_corr
+
+        return evt_wize_corr_max, evt_wize_corr_max_ant 
+
+    def get_evt_wise_snr(self, wf_v, snr = None):
+
+        corr = self.get_mf_wfs(wf_v) 
+
+        if snr is not None:
+            corr *= snr[np.newaxis, :, np.newaxis, np.newaxis, np.newaxis]
+        corr[:, self.bad_ant] = np.nan
+
+        evt_wize_corr, evt_wize_corr_max_ant = self.get_evt_wise_corr(corr, use_max = True)
         del corr
 
-        return coval
-"""
-    
+        return evt_wize_corr, evt_wize_corr_max_ant
+
+
+
+
+
+
+
+
+
+
+
+
+
+
