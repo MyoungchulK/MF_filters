@@ -14,5 +14,8 @@ source /cvmfs/ara.opensciencegrid.org/trunk/centos7/setup.sh
 source /home/mkim/analysis/MF_filters/setup.sh
 cd /home/mkim/analysis/AraSoft/AraSim/
 
-./AraSim ${setup} ${run} ${result} ${evt_file}
+./AraSim ${setup} ${run} $TMPDIR ${evt_file}
+
+# at the end, move the results back
+mv $TMPDIR/*.root ${result}
 

@@ -17,7 +17,7 @@ def get_dag_statement(d_count, d_name, st):
 st = int(sys.argv[1])
 s_type = str(sys.argv[2])
 d_path = str(sys.argv[3])
-d_list = glob(f'{d_path}*')
+d_list = glob(f'{d_path}*root')
 
 print('Dag making starts!')
 dag_path = f'/home/mkim/analysis/MF_filters/scripts/batch_run/wipac_sim_{s_type}_result/'

@@ -1,183 +1,180 @@
 JOB job_ARA_S2_R0 ARA_job.sub 
-VARS job_ARA_S2_R0 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/output.txt" st="2" run="0"
+VARS job_ARA_S2_R0 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run0.root" st="2" run="0"
 
 JOB job_ARA_S2_R1 ARA_job.sub 
-VARS job_ARA_S2_R1 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run0.root" st="2" run="1"
+VARS job_ARA_S2_R1 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run9.root" st="2" run="1"
 
 JOB job_ARA_S2_R2 ARA_job.sub 
-VARS job_ARA_S2_R2 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run9.root" st="2" run="2"
+VARS job_ARA_S2_R2 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run2.root" st="2" run="2"
 
 JOB job_ARA_S2_R3 ARA_job.sub 
-VARS job_ARA_S2_R3 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run2.root" st="2" run="3"
+VARS job_ARA_S2_R3 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run8.root" st="2" run="3"
 
 JOB job_ARA_S2_R4 ARA_job.sub 
-VARS job_ARA_S2_R4 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run8.root" st="2" run="4"
+VARS job_ARA_S2_R4 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run1.root" st="2" run="4"
 
 JOB job_ARA_S2_R5 ARA_job.sub 
-VARS job_ARA_S2_R5 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run1.root" st="2" run="5"
+VARS job_ARA_S2_R5 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run7.root" st="2" run="5"
 
 JOB job_ARA_S2_R6 ARA_job.sub 
-VARS job_ARA_S2_R6 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run7.root" st="2" run="6"
+VARS job_ARA_S2_R6 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run5.root" st="2" run="6"
 
 JOB job_ARA_S2_R7 ARA_job.sub 
-VARS job_ARA_S2_R7 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run5.root" st="2" run="7"
+VARS job_ARA_S2_R7 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run7.root" st="2" run="7"
 
 JOB job_ARA_S2_R8 ARA_job.sub 
-VARS job_ARA_S2_R8 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run7.root" st="2" run="8"
+VARS job_ARA_S2_R8 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run1.root" st="2" run="8"
 
 JOB job_ARA_S2_R9 ARA_job.sub 
-VARS job_ARA_S2_R9 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run1.root" st="2" run="9"
+VARS job_ARA_S2_R9 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run0.root" st="2" run="9"
 
 JOB job_ARA_S2_R10 ARA_job.sub 
-VARS job_ARA_S2_R10 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run0.root" st="2" run="10"
+VARS job_ARA_S2_R10 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run3.root" st="2" run="10"
 
 JOB job_ARA_S2_R11 ARA_job.sub 
-VARS job_ARA_S2_R11 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run3.root" st="2" run="11"
+VARS job_ARA_S2_R11 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run1.root" st="2" run="11"
 
 JOB job_ARA_S2_R12 ARA_job.sub 
-VARS job_ARA_S2_R12 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run1.root" st="2" run="12"
+VARS job_ARA_S2_R12 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run2.root" st="2" run="12"
 
 JOB job_ARA_S2_R13 ARA_job.sub 
-VARS job_ARA_S2_R13 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run2.root" st="2" run="13"
+VARS job_ARA_S2_R13 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run6.root" st="2" run="13"
 
 JOB job_ARA_S2_R14 ARA_job.sub 
-VARS job_ARA_S2_R14 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run6.root" st="2" run="14"
+VARS job_ARA_S2_R14 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run9.root" st="2" run="14"
 
 JOB job_ARA_S2_R15 ARA_job.sub 
-VARS job_ARA_S2_R15 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run9.root" st="2" run="15"
+VARS job_ARA_S2_R15 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run5.root" st="2" run="15"
 
 JOB job_ARA_S2_R16 ARA_job.sub 
-VARS job_ARA_S2_R16 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run5.root" st="2" run="16"
+VARS job_ARA_S2_R16 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run3.root" st="2" run="16"
 
 JOB job_ARA_S2_R17 ARA_job.sub 
-VARS job_ARA_S2_R17 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run3.root" st="2" run="17"
+VARS job_ARA_S2_R17 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run0.root" st="2" run="17"
 
 JOB job_ARA_S2_R18 ARA_job.sub 
-VARS job_ARA_S2_R18 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run0.root" st="2" run="18"
+VARS job_ARA_S2_R18 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run9.root" st="2" run="18"
 
 JOB job_ARA_S2_R19 ARA_job.sub 
-VARS job_ARA_S2_R19 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run9.root" st="2" run="19"
+VARS job_ARA_S2_R19 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run2.root" st="2" run="19"
 
 JOB job_ARA_S2_R20 ARA_job.sub 
-VARS job_ARA_S2_R20 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run2.root" st="2" run="20"
+VARS job_ARA_S2_R20 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run9.root" st="2" run="20"
 
 JOB job_ARA_S2_R21 ARA_job.sub 
-VARS job_ARA_S2_R21 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run9.root" st="2" run="21"
+VARS job_ARA_S2_R21 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run4.root" st="2" run="21"
 
 JOB job_ARA_S2_R22 ARA_job.sub 
-VARS job_ARA_S2_R22 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run4.root" st="2" run="22"
+VARS job_ARA_S2_R22 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run3.root" st="2" run="22"
 
 JOB job_ARA_S2_R23 ARA_job.sub 
-VARS job_ARA_S2_R23 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run3.root" st="2" run="23"
+VARS job_ARA_S2_R23 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run8.root" st="2" run="23"
 
 JOB job_ARA_S2_R24 ARA_job.sub 
-VARS job_ARA_S2_R24 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run8.root" st="2" run="24"
+VARS job_ARA_S2_R24 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run4.root" st="2" run="24"
 
 JOB job_ARA_S2_R25 ARA_job.sub 
-VARS job_ARA_S2_R25 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run4.root" st="2" run="25"
+VARS job_ARA_S2_R25 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run2.root" st="2" run="25"
 
 JOB job_ARA_S2_R26 ARA_job.sub 
-VARS job_ARA_S2_R26 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run2.root" st="2" run="26"
+VARS job_ARA_S2_R26 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run0.root" st="2" run="26"
 
 JOB job_ARA_S2_R27 ARA_job.sub 
-VARS job_ARA_S2_R27 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run0.root" st="2" run="27"
+VARS job_ARA_S2_R27 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run5.root" st="2" run="27"
 
 JOB job_ARA_S2_R28 ARA_job.sub 
-VARS job_ARA_S2_R28 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run5.root" st="2" run="28"
+VARS job_ARA_S2_R28 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run5.root" st="2" run="28"
 
 JOB job_ARA_S2_R29 ARA_job.sub 
-VARS job_ARA_S2_R29 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run5.root" st="2" run="29"
+VARS job_ARA_S2_R29 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run6.root" st="2" run="29"
 
 JOB job_ARA_S2_R30 ARA_job.sub 
-VARS job_ARA_S2_R30 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run6.root" st="2" run="30"
+VARS job_ARA_S2_R30 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run7.root" st="2" run="30"
 
 JOB job_ARA_S2_R31 ARA_job.sub 
-VARS job_ARA_S2_R31 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C5_E10000_noise_rayl.txt.run7.root" st="2" run="31"
+VARS job_ARA_S2_R31 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run1.root" st="2" run="31"
 
 JOB job_ARA_S2_R32 ARA_job.sub 
-VARS job_ARA_S2_R32 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run1.root" st="2" run="32"
+VARS job_ARA_S2_R32 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run4.root" st="2" run="32"
 
 JOB job_ARA_S2_R33 ARA_job.sub 
-VARS job_ARA_S2_R33 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run4.root" st="2" run="33"
+VARS job_ARA_S2_R33 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run6.root" st="2" run="33"
 
 JOB job_ARA_S2_R34 ARA_job.sub 
-VARS job_ARA_S2_R34 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run6.root" st="2" run="34"
+VARS job_ARA_S2_R34 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run7.root" st="2" run="34"
 
 JOB job_ARA_S2_R35 ARA_job.sub 
-VARS job_ARA_S2_R35 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run7.root" st="2" run="35"
+VARS job_ARA_S2_R35 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run4.root" st="2" run="35"
 
 JOB job_ARA_S2_R36 ARA_job.sub 
-VARS job_ARA_S2_R36 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run4.root" st="2" run="36"
+VARS job_ARA_S2_R36 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run7.root" st="2" run="36"
 
 JOB job_ARA_S2_R37 ARA_job.sub 
-VARS job_ARA_S2_R37 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run7.root" st="2" run="37"
+VARS job_ARA_S2_R37 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run5.root" st="2" run="37"
 
 JOB job_ARA_S2_R38 ARA_job.sub 
-VARS job_ARA_S2_R38 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run5.root" st="2" run="38"
+VARS job_ARA_S2_R38 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run3.root" st="2" run="38"
 
 JOB job_ARA_S2_R39 ARA_job.sub 
-VARS job_ARA_S2_R39 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run3.root" st="2" run="39"
+VARS job_ARA_S2_R39 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run0.root" st="2" run="39"
 
 JOB job_ARA_S2_R40 ARA_job.sub 
-VARS job_ARA_S2_R40 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run0.root" st="2" run="40"
+VARS job_ARA_S2_R40 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run1.root" st="2" run="40"
 
 JOB job_ARA_S2_R41 ARA_job.sub 
-VARS job_ARA_S2_R41 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run1.root" st="2" run="41"
+VARS job_ARA_S2_R41 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run5.root" st="2" run="41"
 
 JOB job_ARA_S2_R42 ARA_job.sub 
-VARS job_ARA_S2_R42 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run5.root" st="2" run="42"
+VARS job_ARA_S2_R42 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run2.root" st="2" run="42"
 
 JOB job_ARA_S2_R43 ARA_job.sub 
-VARS job_ARA_S2_R43 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run2.root" st="2" run="43"
+VARS job_ARA_S2_R43 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run4.root" st="2" run="43"
 
 JOB job_ARA_S2_R44 ARA_job.sub 
-VARS job_ARA_S2_R44 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run4.root" st="2" run="44"
+VARS job_ARA_S2_R44 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run8.root" st="2" run="44"
 
 JOB job_ARA_S2_R45 ARA_job.sub 
-VARS job_ARA_S2_R45 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run8.root" st="2" run="45"
+VARS job_ARA_S2_R45 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run8.root" st="2" run="45"
 
 JOB job_ARA_S2_R46 ARA_job.sub 
-VARS job_ARA_S2_R46 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run8.root" st="2" run="46"
+VARS job_ARA_S2_R46 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run6.root" st="2" run="46"
 
 JOB job_ARA_S2_R47 ARA_job.sub 
-VARS job_ARA_S2_R47 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run6.root" st="2" run="47"
+VARS job_ARA_S2_R47 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run3.root" st="2" run="47"
 
 JOB job_ARA_S2_R48 ARA_job.sub 
-VARS job_ARA_S2_R48 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run3.root" st="2" run="48"
+VARS job_ARA_S2_R48 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run9.root" st="2" run="48"
 
 JOB job_ARA_S2_R49 ARA_job.sub 
-VARS job_ARA_S2_R49 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C4_E10000_noise_rayl.txt.run9.root" st="2" run="49"
+VARS job_ARA_S2_R49 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run8.root" st="2" run="49"
 
 JOB job_ARA_S2_R50 ARA_job.sub 
-VARS job_ARA_S2_R50 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run8.root" st="2" run="50"
+VARS job_ARA_S2_R50 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run6.root" st="2" run="50"
 
 JOB job_ARA_S2_R51 ARA_job.sub 
-VARS job_ARA_S2_R51 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C1_E10000_noise_rayl.txt.run6.root" st="2" run="51"
+VARS job_ARA_S2_R51 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run7.root" st="2" run="51"
 
 JOB job_ARA_S2_R52 ARA_job.sub 
-VARS job_ARA_S2_R52 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run7.root" st="2" run="52"
+VARS job_ARA_S2_R52 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run1.root" st="2" run="52"
 
 JOB job_ARA_S2_R53 ARA_job.sub 
-VARS job_ARA_S2_R53 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run1.root" st="2" run="53"
+VARS job_ARA_S2_R53 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run9.root" st="2" run="53"
 
 JOB job_ARA_S2_R54 ARA_job.sub 
-VARS job_ARA_S2_R54 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run9.root" st="2" run="54"
+VARS job_ARA_S2_R54 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run0.root" st="2" run="54"
 
 JOB job_ARA_S2_R55 ARA_job.sub 
-VARS job_ARA_S2_R55 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run0.root" st="2" run="55"
+VARS job_ARA_S2_R55 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run2.root" st="2" run="55"
 
 JOB job_ARA_S2_R56 ARA_job.sub 
-VARS job_ARA_S2_R56 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C6_E10000_noise_rayl.txt.run2.root" st="2" run="56"
+VARS job_ARA_S2_R56 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run3.root" st="2" run="56"
 
 JOB job_ARA_S2_R57 ARA_job.sub 
-VARS job_ARA_S2_R57 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run3.root" st="2" run="57"
+VARS job_ARA_S2_R57 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run4.root" st="2" run="57"
 
 JOB job_ARA_S2_R58 ARA_job.sub 
-VARS job_ARA_S2_R58 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run4.root" st="2" run="58"
+VARS job_ARA_S2_R58 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run8.root" st="2" run="58"
 
 JOB job_ARA_S2_R59 ARA_job.sub 
-VARS job_ARA_S2_R59 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C3_E10000_noise_rayl.txt.run8.root" st="2" run="59"
-
-JOB job_ARA_S2_R60 ARA_job.sub 
-VARS job_ARA_S2_R60 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run6.root" st="2" run="60"
+VARS job_ARA_S2_R59 data="/misc/disk19/users/mkim/OMF_filter/ARA02/sim_noise/AraOut.A2_C2_E10000_noise_rayl.txt.run6.root" st="2" run="59"
 
