@@ -28,6 +28,25 @@ class ara_matched_filter:
         self.sum_lag_pad = self.lag_len + self.half_pad * 2
         self.wf_freq = np.fft.fftfreq(self.wf_len, self.dt)
 
+
+        if self.st == 2:
+            if self.config < 4:
+                self.true_wf_len = int(22*20/0.5)
+            elif self.config > 3 and self.config < 6:
+                self.true_wf_len = int(26*20/0.5)
+            else:
+                self.true_wf_len = int(28*20/0.5)
+        if self.st == 3:
+            if self.config < 3:
+                self.true_wf_len = int(22*20/0.5)
+            elif self.config > 2 and self.config < 5:
+                self.true_wf_len = int(26*20/0.5)
+            elif self.config == 5:
+                self.true_wf_len = int(22*20/0.5)
+            else:
+                self.true_wf_len = int(28*20/0.5) 
+        print(self.true_wf_len)
+
         self.theta_width = 30
         self.theta = np.arange(30, 150 + 1, self.theta_width, dtype = int)
         self.theta_len = len(self.theta)
@@ -81,13 +100,16 @@ class ara_matched_filter:
         hf_n = h5py.File(d_path, 'r')
         try:
             rayl = np.nansum(hf_n['rayl'][:], axis = 0)
+            if corr_fac is not None:
+                rayl *= corr_fac
+            psd = (rayl / np.sqrt(self.dt / self.wf_len))**2
         except KeyError:
             rayl = np.nansum(hf_n['soft_rayl'][:], axis = 0)
             print(rayl.shape)
             rayl = np.append(rayl[:-1], rayl[1:][::-1], axis = 0)
-        if corr_fac is not None:
-            rayl *= corr_fac
-        psd = (rayl / np.sqrt(self.dt / self.wf_len))**2
+            if corr_fac is not None:
+                rayl *= corr_fac
+            psd = (rayl / np.sqrt(self.dt / self.true_wf_len))**2
         del hf_n, rayl
 
         return psd

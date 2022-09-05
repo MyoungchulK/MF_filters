@@ -40,7 +40,6 @@ def mf_collector(Data, Ped, analyze_blind_dat = False):
     daq_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True)
     daq_hf = h5py.File(daq_dat, 'r')
     daq_qual_cut_sum = daq_hf['daq_qual_cut_sum'][:]
-    tot_qual_cut_sum = daq_hf['tot_qual_cut_sum'][:]
     del daq_dat, daq_hf
 
     # snr info
@@ -59,7 +58,6 @@ def mf_collector(Data, Ped, analyze_blind_dat = False):
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True)
     dt = wf_int.dt
     wf_len = wf_int.pad_len
-    print(wf_len)
 
     config = run_info.get_config_number()
     p_path  = run_info.get_result_path(file_type = 'rayl', verbose = True)
@@ -77,10 +75,6 @@ def mf_collector(Data, Ped, analyze_blind_dat = False):
       #if evt <100:        
    
         if daq_qual_cut_sum[evt]:
-            continue
-        if tot_qual_cut_sum[evt]:
-            continue
-        if trig_type[evt] != 0:
             continue
 
         # get entry and wf
