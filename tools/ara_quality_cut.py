@@ -178,6 +178,7 @@ class pre_qual_cut_loader:
         rf_read_bools = np.logical_and(rf_cal_read_bools, trig_sort == 0)
         cal_read_bools = np.logical_and(rf_cal_read_bools, trig_sort == 1)
         soft_read_bools = np.logical_and(blk_len != soft_read_win_len, trig_sort == 2)
+        #soft_read_bools = np.logical_and(blk_len < soft_read_win_len, trig_sort == 2)
         del blk_len, rf_read_win_len, soft_read_win_len, rf_cal_read_bools
 
         if use_smear:
