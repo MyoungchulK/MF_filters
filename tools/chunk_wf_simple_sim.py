@@ -15,7 +15,7 @@ def wf_simple_sim_collector(Data, Station, Year):
 
     # data config
     ara_root = ara_root_loader(Data, Station, Year)
-    ara_root.get_sub_info(Data, get_angle_info = False)
+    ara_root.get_sub_info(Data, get_angle_info = True)
     num_evts = ara_root.num_evts
     entry_num = ara_root.entry_num
     dt = ara_root.time_step
@@ -31,9 +31,9 @@ def wf_simple_sim_collector(Data, Station, Year):
     elast_y = ara_root.elast_y
     posnu = ara_root.posnu
     nnu = ara_root.nnu
-    #rec_ang = ara_root.rec_ang
-    #view_ang = ara_root.view_ang
-    #arrival_time = ara_root.arrival_time
+    rec_ang = ara_root.rec_ang
+    view_ang = ara_root.view_ang
+    arrival_time = ara_root.arrival_time
  
     # wf arr
     wf = np.full((wf_len, num_ants, num_evts), np.nan, dtype = float)
@@ -61,9 +61,9 @@ def wf_simple_sim_collector(Data, Station, Year):
             'elast_y':elast_y,
             'posnu':posnu,
             'nnu':nnu,
-            #'rec_ang':rec_ang,
-            #'view_ang':view_ang,
-            #'arrival_time':arrival_time,
+            'rec_ang':rec_ang,
+            'view_ang':view_ang,
+            'arrival_time':arrival_time,
             'wf':wf}
     
 

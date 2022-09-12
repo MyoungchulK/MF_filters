@@ -320,6 +320,7 @@ def get_combine_smear_cut(sub_025, sub_0125, unix_time, trig_type, cw_rf_025, cw
 path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_cut/'
 if not os.path.exists(path):
     os.makedirs(path)
+os.chdir(path)
 
 for r in tqdm(range(len(d_run_tot))):
     
@@ -343,32 +344,10 @@ for r in tqdm(range(len(d_run_tot))):
     sub_04 = sub_r_t[2]
     sub_025 = sub_r_t[1]
     sub_0125 = sub_r_t[0]
+    del hf
 
     cut_04_idx, pass_04_idx = get_smear_cut(sub_r[2], unix_time, trig_type, cw_rf_04[:, g_idx], cw_cal_04[:, g_idx], cw_soft_04[:, g_idx])
     cut_025_idx, pass_025_idx = get_combine_smear_cut(sub_r[1], sub_r[0], unix_time, trig_type, cw_rf_025[:, g_idx], cw_cal_025[:, g_idx], cw_soft_025[:, g_idx], cw_rf_0125[:, g_idx], cw_cal_0125[:, g_idx], cw_soft_0125[:, g_idx])
-
-    if trig == 0:
-            evt_num = hf['evt_num'][:]
-            entry_num = hf['entry_num'][:]
-            pps_number = hf['pps_number'][:]
-            cw_qual_cut = np.full((len(evt_num) , 2), 0, dtype = int)
-            cw_qual_cut[:,0] = cut_04_idx.astype(int)
-            cw_qual_cut[:,1] = cut_025_idx.astype(int)
-            cw_qual_cut_sum = np.nansum(cw_qual_cut, axis = 1)
-            file_name = f'{path}cw_cut_A{Station}_R{d_run_tot[r]}.h5'
-            hf_c = h5py.File(file_name, 'w')
-            hf_c.create_dataset('evt_num', data=evt_num, compression="gzip", compression_opts=9)
-            hf_c.create_dataset('entry_num', data=entry_num, compression="gzip", compression_opts=9)
-            hf_c.create_dataset('trig_type', data=trig_type, compression="gzip", compression_opts=9)
-            hf_c.create_dataset('unix_time', data=unix_time, compression="gzip", compression_opts=9)
-            hf_c.create_dataset('pps_number', data=pps_number, compression="gzip", compression_opts=9)
-            hf_c.create_dataset('time_bins', data=time_bins, compression="gzip", compression_opts=9)
-            hf_c.create_dataset('sec_per_min', data=sec_per_min, compression="gzip", compression_opts=9)
-            hf_c.create_dataset('cw_qual_cut', data=cw_qual_cut, compression="gzip", compression_opts=9)
-            hf_c.create_dataset('cw_qual_cut_sum', data=cw_qual_cut_sum, compression="gzip", compression_opts=9)
-            hf_c.close()
-            del file_name, evt_num, entry_num, pps_number     
-    del hf
 
     trig_unix = np.copy(unix_time)
     trig_unix = trig_unix.astype(float)
