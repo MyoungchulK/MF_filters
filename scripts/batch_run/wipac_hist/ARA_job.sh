@@ -15,7 +15,5 @@ source /home/mkim/analysis/MF_filters/setup.sh
 cd /home/mkim/analysis/MF_filters/scripts/
 
 #python3 /home/mkim/analysis/MF_filters/scripts/cw_hist_livetime_set_cut.py ${station} ${trig} ${run} ${run_w}
-#python3 /home/mkim/analysis/MF_filters/scripts/cw_hist_livetime_test_cut.py ${station} ${trig} ${run} ${run_w}
-#python3 /home/mkim/analysis/MF_filters/scripts/cw_hist_livetime_test_smear_cut.py ${station} ${trig} ${run} ${run_w} ${ant_c} ${smear_l}
 python3 /home/mkim/analysis/MF_filters/scripts/cw_hist_livetime_test_smear_combine_cut.py ${station} ${trig} ${run} ${run_w} ${ant_c} ${smear_l}
 

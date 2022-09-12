@@ -186,8 +186,11 @@ trig = int(sys.argv[2])
 count_i = int(sys.argv[3])
 count_f = int(sys.argv[4])
 
+blined = ''
+blined = '_full'
+
 # sort
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_val/*'
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_val{blined}/*'
 d_list, d_run_tot, d_run_range = file_sorter(d_path)
 del d_path, d_run_range
 
@@ -317,7 +320,7 @@ def get_combine_smear_cut(sub_025, sub_0125, unix_time, trig_type, cw_rf_025, cw
 
     return cut_com_idx, pass_com_idx 
 
-path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_cut/'
+path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_cut{blined}/'
 if not os.path.exists(path):
     os.makedirs(path)
 
@@ -355,7 +358,7 @@ for r in tqdm(range(len(d_run_tot))):
             cw_qual_cut[:,0] = cut_04_idx.astype(int)
             cw_qual_cut[:,1] = cut_025_idx.astype(int)
             cw_qual_cut_sum = np.nansum(cw_qual_cut, axis = 1)
-            file_name = f'{path}cw_cut_A{Station}_R{d_run_tot[r]}.h5'
+            file_name = f'{path}cw_cut{blined}_A{Station}_R{d_run_tot[r]}.h5'
             hf_c = h5py.File(file_name, 'w')
             hf_c.create_dataset('evt_num', data=evt_num, compression="gzip", compression_opts=9)
             hf_c.create_dataset('entry_num', data=entry_num, compression="gzip", compression_opts=9)
@@ -440,7 +443,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'CW_Table_Test_Smear_Combine_Cut_v4_A{Station}_T{trig}_C{ant_c}_S{smear_len}_R{count_i}.h5'
+file_name = f'CW_Table_Test_Smear_Combine_Cut{blined}_v4_A{Station}_T{trig}_C{ant_c}_S{smear_len}_R{count_i}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('tot_sec', data=tot_sec, compression="gzip", compression_opts=9)
 hf.create_dataset('tot_bad_sec_04', data=tot_bad_sec_04, compression="gzip", compression_opts=9)

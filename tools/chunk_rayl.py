@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from tqdm import tqdm
 import csv
@@ -82,7 +83,6 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
         wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_abs = True, use_norm = True)
         soft_len[:, evt] = wf_int.pad_num
         soft_ffts[:, :, evt] = wf_int.pad_fft
-        del num_clean_evts, clean_entry
     del ara_root, num_clean_softs, wf_int, clean_soft_entry
    
     # rayl fit 
@@ -95,7 +95,7 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
     blind_type = ''
     if analyze_blind_dat:
         blind_type = '_full'
-    dat_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{station}/rayl{blind_type}/'
+    dat_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{st}/rayl{blind_type}/'
 
     csv_name = f'rayl{blind_type}_A{st}_R{run}.csv'
     if not os.path.exists(dat_path):

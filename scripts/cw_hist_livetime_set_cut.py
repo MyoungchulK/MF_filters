@@ -24,7 +24,8 @@ count_i = int(sys.argv[3])
 count_f = int(sys.argv[4])
 
 # sort
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_val/*'
+#d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_val/*'
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_val_full/*'
 d_list, d_run_tot, d_run_range = file_sorter(d_path)
 del d_path, d_run_range
 
@@ -190,7 +191,8 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'CW_Table_Set_Cut_A{Station}_{trig}_{count_i}.h5'
+#file_name = f'CW_Table_Set_Cut_A{Station}_{trig}_{count_i}.h5'
+file_name = f'CW_Table_Set_Cut_Full_A{Station}_{trig}_{count_i}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('hrs_in_days', data=hrs_in_days, compression="gzip", compression_opts=9)
 hf.create_dataset('day_in_yrs', data=day_in_yrs, compression="gzip", compression_opts=9)
