@@ -79,11 +79,13 @@ def main(key, station, blind_dat):
        
         hf = h5py.File(d_list[r], 'r')
         soft_len = hf['soft_len'][:]   
-        
-        #rf_len = hf['rf_len'][:]
-        hf_r = h5py.File(f'{l_path}rf_len_A{station}_R{d_run_tot[r]}.h5', 'r')
-        rf_len = hf_r['rf_len'][:]
-        del hf_r
+       
+        try: 
+            rf_len = hf['rf_len'][:]
+        except KeyError:
+            hf_r = h5py.File(f'{l_path}rf_len_A{station}_R{d_run_tot[r]}.h5', 'r')
+            rf_len = hf_r['rf_len'][:]
+            del hf_r
 
         unix_time = hf['unix_time'][0]
         year = int(datetime.utcfromtimestamp(unix_time).strftime('%Y%m%d%H%M%S')[:4])
