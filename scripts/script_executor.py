@@ -47,7 +47,7 @@ def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_overrid
         file_type = 'eventHk'
         return_none = True
         return_dat_only = True
-    elif key == 'blk_len' or key == 'evt_rate' or key == 'run_time' or key == 'ped' or key == 'qual_cut' or key == 'daq_cut' or key == 'ped_cut' or key == 'sub_info' or key == 'cw_time':
+    elif key == 'blk_len' or key == 'rf_len' or key == 'evt_rate' or key == 'run_time' or key == 'ped' or key == 'qual_cut' or key == 'daq_cut' or key == 'ped_cut' or key == 'sub_info' or key == 'cw_time':
         return_dat_only = True
     Data, Ped = run_info.get_data_ped_path(file_type = file_type, return_none = return_none, verbose = verbose, return_dat_only = return_dat_only)
     station, run, Config, Year, Month, Date = run_info.get_data_info()

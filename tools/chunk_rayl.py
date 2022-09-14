@@ -19,6 +19,7 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
     # geom. info.
     ara_const = ara_const()
     num_ants = ara_const.USEFUL_CHAN_PER_STATION 
+    num_ddas = ara_const.DDA_PER_ATRI
     del ara_const
 
     # data config
@@ -31,8 +32,9 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
     trig_type = ara_uproot.get_trig_type()
     st = ara_uproot.station_id
     run = ara_uproot.run
+    blk_len = (ara_uproot.read_win // num_ddas).astype(float)
     ara_root = ara_root_loader(Data, Ped, st, ara_uproot.year)
-    del ara_uproot
+    del ara_uproot, num_ddas
 
     # pre quality cut
     run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
@@ -46,6 +48,7 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
    
     # clean soft trigger 
     tot_cuts = (tot_qual_cut_sum + cw_qual_cut_sum).astype(int)
+    clean_rf_idx = np.logical_and(tot_cuts == 0, trig_type == 0)
     clean_soft_idx = np.logical_and(tot_cuts == 0, trig_type == 2)
     clean_soft_entry = entry_num[clean_soft_idx]
     num_clean_softs = np.count_nonzero(clean_soft_idx)
@@ -59,11 +62,14 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
     freq_range = wf_int.pad_zero_freq 
 
     # output
+    rf_len = (blk_len * 20 / 0.5).astype(int)
+    rf_len = rf_len[clean_rf_idx]
     soft_len = np.full((num_ants, num_clean_softs), np.nan, dtype = float)
     soft_ffts = np.full((fft_len, num_ants, num_clean_softs), np.nan, dtype = float)
     print(f'fft array dim.: {soft_ffts.shape}')
     print(f'fft array size: ~{np.round(soft_ffts.nbytes/1024/1024)} MB')
-   
+    del clean_rf_idx   
+
     # loop over the events
     for evt in tqdm(range(num_clean_softs)):
       #if evt <100:
@@ -145,6 +151,7 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
             'clean_soft_idx':clean_soft_idx,
             'dt':dt,
             'freq_range':freq_range,            
+            'rf_len':rf_len,
             'soft_len':soft_len,
             'soft_rayl':soft_rayl,
             'soft_sc':soft_sc}
