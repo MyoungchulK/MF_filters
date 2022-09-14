@@ -28,11 +28,16 @@ def get_thres(station, year):
     thres_sel = thres_arr[year_idx]
     return thres_sel
 
-def get_dag_statement(st, run):
+def get_dag_statement(st, run, flavors = None):
 
     statements = ""
-    statements += f'JOB job_ARA_S{st}_R{run} ARA_job.sub \n'
-    statements += f'VARS job_ARA_S{st}_R{run} st="{st}" run="{run}"\n\n'
+    if flavors is not None:
+        flavors_int = int(flavors)
+        statements += f'JOB job_ARA_F{flavors_int}_S{st}_R{run} ARA_job.sub \n'
+        statements += f'VARS job_ARA_F{flavors_int}_S{st}_R{run} fla="{flavors_int}" st="{st}" run="{run}"\n\n'
+    else:
+        statements += f'JOB job_ARA_S{st}_R{run} ARA_job.sub \n'
+        statements += f'VARS job_ARA_S{st}_R{run} st="{st}" run="{run}"\n\n'
 
     return statements
 
@@ -65,6 +70,8 @@ def main(key, station, blind_dat):
     wf_len_old = 'WAVEFORM_LENGTH='
     thres_old = 'POWERTHRESHOLD='
     ele_old = 'CUSTOM_ELECTRONICS='
+    if key == 'signal':
+        flavor_old = 'SELECT_FLAVOR='
 
     dag_path = f'/home/mkim/analysis/MF_filters/scripts/batch_run/wipac_sim_{key}/'
     if not os.path.exists(dag_path):
@@ -123,16 +130,33 @@ def main(key, station, blind_dat):
             context = context.replace(wf_len_old, wf_len_new)
             context = context.replace(thres_old, thres_new)
             context = context.replace(ele_old, ele_new)
-        
-        n_path = f'{r_path}{key}_A{station}_R{d_run_tot[r]}.txt'
-        with open(n_path, "w") as f:
-            f.write(context)
-        del n_path, st_new, config_new, run_new, trig_new, wf_len_new, thres_new
+            if key == 'signal':
+                for f in range(3):    
+                    fla_idx_old = int(f)
+                    fla_idx = int(fla_idx_old + 1)
+                    flavor_old_temp = f'{flavor_old}{fla_idx_old}'
+                    flavor_new = f'{flavor_old}{fla_idx}'
+                    context = context.replace(flavor_old_temp, flavor_new)
+                    
+                    n_path = f'{r_path}{key}_F{fla_idx}_A{station}_R{d_run_tot[r]}.txt'
+                    with open(n_path, "w") as f:
+                        f.write(context)   
 
-        statements = get_dag_statement(station, d_run_tot[r])
-        with open(dag_file_name, 'a') as f:
-            f.write(statements)
-        del statements
+                    statements = get_dag_statement(station, d_run_tot[r], flavors = fla_idx)
+                    with open(dag_file_name, 'a') as f:
+                        f.write(statements)
+                    del statements
+
+        if key == 'noise': 
+            n_path = f'{r_path}{key}_A{station}_R{d_run_tot[r]}.txt'
+            with open(n_path, "w") as f:
+                f.write(context)
+
+            statements = get_dag_statement(station, d_run_tot[r])
+            with open(dag_file_name, 'a') as f:
+                f.write(statements)
+            del statements
+        del n_path, st_new, config_new, run_new, trig_new, wf_len_new, thres_new
 
     print('Done!')
 

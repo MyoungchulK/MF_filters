@@ -1,6 +1,6 @@
-log    = /scratch/mkim/wipac_sim_signal/logs/A$(st).C$(config).R$(run).$(flavor).log
-output = /scratch/mkim/wipac_sim_signal/logs/A$(st).C$(config).R$(run).$(flavor).out
-error  = /scratch/mkim/wipac_sim_signal/logs/A$(st).C$(config).R$(run).$(flavor).err
+log    = /scratch/mkim/wipac_sim_signal/logs/A$(st).R$(run).F$(fla).log
+output = /scratch/mkim/wipac_sim_signal/logs/A$(st).R$(run).F$(fla).out
+error  = /scratch/mkim/wipac_sim_signal/logs/A$(st).R$(run).F$(fla).err
 
 request_memory = 1GB
 
@@ -13,6 +13,6 @@ when_to_transfer_output = ON_EXIT
 nice_user = false
 
 executable = ARA_job.sh
-arguments = $(setup) $(run) $(st)
+arguments = $(st) $(run) $(fla)
 
 queue
