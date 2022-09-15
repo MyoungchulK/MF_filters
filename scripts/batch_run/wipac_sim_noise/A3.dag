@@ -12010,9 +12010,6 @@ VARS job_ARA_S3_R10138 st="3" run="10138"
 JOB job_ARA_S3_R10140 ARA_job.sub 
 VARS job_ARA_S3_R10140 st="3" run="10140"
 
-JOB job_ARA_S3_R10141 ARA_job.sub 
-VARS job_ARA_S3_R10141 st="3" run="10141"
-
 JOB job_ARA_S3_R10142 ARA_job.sub 
 VARS job_ARA_S3_R10142 st="3" run="10142"
 
@@ -18288,9 +18285,6 @@ VARS job_ARA_S3_R12750 st="3" run="12750"
 
 JOB job_ARA_S3_R12751 ARA_job.sub 
 VARS job_ARA_S3_R12751 st="3" run="12751"
-
-JOB job_ARA_S3_R12753 ARA_job.sub 
-VARS job_ARA_S3_R12753 st="3" run="12753"
 
 JOB job_ARA_S3_R12754 ARA_job.sub 
 VARS job_ARA_S3_R12754 st="3" run="12754"

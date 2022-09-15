@@ -31,19 +31,20 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
     pps_number = ara_uproot.pps_number
     trig_type = ara_uproot.get_trig_type()
     st = ara_uproot.station_id
+    run = ara_uproot.run
     blk_len = (ara_uproot.read_win // num_ddas).astype(float)
     ara_root = ara_root_loader(Data, Ped, st, ara_uproot.year)
-    del num_ddas
+    del ara_uproot, num_ddas
 
     # pre quality cut
-    run_info = run_info_loader(st, ara_uproot.run, analyze_blind_dat = analyze_blind_dat)
+    run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
     daq_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True)
     daq_hf = h5py.File(daq_dat, 'r')
     tot_qual_cut_sum = daq_hf['tot_qual_cut_sum'][:]
     cw_dat = run_info.get_result_path(file_type = 'cw_cut', verbose = True)
     cw_hf = h5py.File(cw_dat, 'r')
     cw_qual_cut_sum = cw_hf['cw_qual_cut_sum'][:]
-    del daq_dat, daq_hf, cw_dat, cw_hf, run_info, ara_uproot
+    del daq_dat, daq_hf, cw_dat, cw_hf, run_info
    
     # clean soft trigger 
     tot_cuts = (tot_qual_cut_sum + cw_qual_cut_sum).astype(int)
@@ -67,7 +68,7 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
     soft_ffts = np.full((fft_len, num_ants, num_clean_softs), np.nan, dtype = float)
     print(f'fft array dim.: {soft_ffts.shape}')
     print(f'fft array size: ~{np.round(soft_ffts.nbytes/1024/1024)} MB')
-    del clean_rf_idx, blk_len, fft_len   
+    del clean_rf_idx   
 
     # loop over the events
     for evt in tqdm(range(num_clean_softs)):
@@ -95,16 +96,50 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
     del soft_ffts
 
     # csv maker. gonna make seperate def
-    p1 = np.nansum(soft_rayl, axis = 0) / 1e3 * np.sqrt(1e-9) # mV to V and ns to s
+    p1 = np.nansum(soft_rayl, axis = 0) / 1e3 * np.sqrt(1e-9) # mV to V and GHz to Hz
     freq_mhz = freq_range * 1e3 # GHz to MHz
+    blind_type = ''
+    if analyze_blind_dat:
+        blind_type = '_full'
+    dat_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{st}/rayl{blind_type}/'
+
+    csv_name = f'rayl{blind_type}_A{st}_R{run}.csv'
+    if not os.path.exists(dat_path):
+        os.makedirs(dat_path)
+    with open(dat_path + csv_name, 'w', newline='') as rayl_file:
+        writer = csv.writer(rayl_file)
+        writer.writerow(["freqs[MHz]","channel","p1[V/(sqrt(Hz))]", "chi2[TBA]"])
+        for freq in range(fft_len):
+            for ant in range(num_ants):
+                writer.writerow([freq_mhz[freq], ant, p1[freq, ant], 0])
+    print('csv_path:', dat_path + csv_name)  
+ 
+    # txt maker. gonna make seperate def
+    pahse = np.loadtxt(f'../data/sc_info/SC_Phase_from_sim.txt')
+    f = interp1d(pahse[:,0], pahse[:, 1:], axis = 0, fill_value = 'extrapolate')
+    pahse_int = f(freq_mhz)
+    del pahse, f
+
     h_tot = np.loadtxt(f'../data/sc_info/A{st}_Htot.txt')
     f = interp1d(h_tot[:,0], h_tot[:, 1:], axis = 0, fill_value = 'extrapolate')
     h_tot_int = f(freq_mhz)
     Htot = h_tot_int * np.sqrt(dt * 1e-9)
+    del h_tot, f, h_tot_int
+
     Hmeas = p1 * np.sqrt(2) # power symmetry
     Hmeas *= np.sqrt(2) # surf_turf 
     soft_sc = Hmeas / Htot
-    del st, p1, freq_mhz, h_tot, f, h_tot_int, Htot, Hmeas
+
+    sc_table = np.full((fft_len, 2 * num_ants+1), np.nan, dtype = float)
+    sc_table[:,0] = freq_mhz
+    for ant in range(num_ants):
+        sc_table[:, 2 * ant + 1] = soft_sc[:, ant]
+        sc_table[:, 2 * ant + 2] = pahse_int[:, ant]
+
+    sc_name = f'sc{blind_type}_A{st}_R{run}.txt'
+    np.savetxt(dat_path + sc_name, sc_table)    
+    print('sc_path:', dat_path + sc_name)
+    del st, run, p1, freq_mhz, num_ants, fft_len, blind_type, csv_name, sc_name, dat_path, sc_table, Hmeas, Htot
 
     print('Rayl. collecting is done!')
 
