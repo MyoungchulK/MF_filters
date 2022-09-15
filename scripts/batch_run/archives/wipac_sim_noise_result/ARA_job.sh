@@ -1,15 +1,11 @@
 #!/bin/bash
 
 # load in variables
-key=snr
-sim_type=noise
-st=$1
-run=$2
+key=mf
+data=$1
+st=$2
 year=2015
 not_override=0
-user_path=/misc/disk19/users/
-#user_path=/data/user/
-data=${user_path}mkim/OMF_filter/ARA0${st}/sim_${sim_type}/AraOut.${sim_type}_A${st}_R${run}.txt.run0.root
 
 # run the reconstruction script
 export HDF5_USE_FILE_LOCKING='FALSE'
