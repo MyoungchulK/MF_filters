@@ -67,7 +67,7 @@ def main(data_path, output_path):
     one_weight = probability * pnu * (np.log(log_emax) - np.log(log_emin)) * solid_angle * area
 
     ## bin space for effective area
-    energy_bins = np.logspace(log_emin, log_emax, 40 + 1)
+    energy_bins = np.logspace(np.log10(log_emin), np.log10(log_emax), 40 + 1)
     cos_bins = np.linspace(-1, 1, 100 + 1)
 
     ## effective area as function of energy [m^2]
