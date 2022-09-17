@@ -48,10 +48,11 @@ NOISE=2                         //flat thermal noise
 NOISE_CHANNEL_MODE=1            //using different noise temperature for each channel
 TRIG_ANALYSIS_MODE=1            //0 = signal + noise, 1 = signal only, 2 = noise only
 CUSTOM_ELECTRONICS=2            // using custom SC model
+NO_ELECTRONICS=1
 
 //---TRIGGER---
 TRIG_WINDOW=1.1E-7                   //110ns
-POWERTHRESHOLD=-6.6                 //5Hz RF trigger rate with 110ns trigger window 3/8 Hpol/Vpol trigger
+POWERTHRESHOLD=-0.00000001                 //5Hz RF trigger rate with 110ns trigger window 3/8 Hpol/Vpol trigger
 TRIG_MODE=1              //use vpol, hpol separated trigger mode
 N_TRIG_V=3
 N_TRIG_H=3

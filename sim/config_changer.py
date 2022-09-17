@@ -3,11 +3,11 @@ import os, sys
 from tqdm import tqdm
 from glob import glob
 
-d_path = f'/misc/disk19/users/mkim/OMF_filter/ARA03/sim_signal_setup/*'
+d_path = f'/home/mkim/analysis/MF_filters/sim/sim_temp/A*txt'
 d_list = glob(d_path)
 
-old_line = 'NNU_PASSED=10'
-new_line = 'NNU_PASSED=2'
+old_line = 'POWERTHRESHOLD=-0.00001'
+new_line = 'POWERTHRESHOLD=-0.00000001'
 
 for t in tqdm(range(len(d_list))):
 

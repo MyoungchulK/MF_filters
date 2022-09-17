@@ -8,7 +8,7 @@ def mf_sim_collector(Data, Station, Year):
     print('Collecting sim mf starts!')
 
     from tools.ara_sim_load import ara_root_loader
-    from tools.ara_py_interferometers import py_interferometers
+    from tools.ara_run_manager import run_info_loader
     from tools.ara_known_issue import known_issue_loader
     from tools.ara_matched_filter import ara_matched_filter
     from tools.ara_constant import ara_const
@@ -36,43 +36,33 @@ def mf_sim_collector(Data, Station, Year):
     posnu = ara_root.posnu
     nnu = ara_root.nnu
 
-    # interferometers
-    i_idx = Data.find('_C')
-    f_idx = Data.find('_E1', i_idx + 2)
-    config = int(Data[i_idx + 2:f_idx])
-    if config < 6:
-        year = 2015
-        run_arr = np.array([2280, 130, 3500, 50, 7000, 10000], dtype = int)    
-    else:
-        year = 2018
-        run_arr = np.array([1, 500, 4000, 7000, 2000, 11000, 13000], dtype = int)
-    run = run_arr[config - 1]
-    print(config, year, run)
-    del i_idx, f_idx, run_arr
-
+    # config
+    i_key = '_R'
+    i_key_len = len(i_key)
+    i_idx = Data.find(i_key)
+    f_idx = Data.find('_.txt', i_idx + i_key_len)
+    run = int(Data[i_idx + i_key_len:f_idx])
+    ara_run = run_info_loader(Station, run)
+    config = ara_run.get_config_number()
     known_issue = known_issue_loader(Station)
     bad_ant = known_issue.get_bad_antenna(run)
-    del known_issue, run
+    del known_issue, run, i_idx, f_idx, i_key, i_key_len, ara_run
+    print(Station, run, config)
 
     # snr
-    s_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/snr_sim/'
-    slash_idx = Data.rfind('/')
-    dot_idx = Data.rfind('.')
-    s_name = s_path + 'snr_tot_' + Data[slash_idx+1:dot_idx] + '.h5'
-    print('snr_path:', s_name)
-    snr_hf = h5py.File(s_name, 'r')
+    s_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/snr_sim/snr_AraOut.noise_A{Station}_R{run}.txt.run0.h5'
+    print('snr_path:', s_path)
+    snr_hf = h5py.File(s_path, 'r')
     snr_weights = snr_hf['snr'][:]
-    del s_path, slash_idx, dot_idx, s_name, snr_hf
-
     snr_copy = np.copy(snr_weights)
     snr_copy[bad_ant] = np.nan
     v_sum = np.nansum(snr_copy[:8], axis = 0)
     h_sum = np.nansum(snr_copy[8:], axis = 0)
     snr_weights[:8] /= v_sum
     snr_weights[8:] /= h_sum
-    del snr_copy, v_sum, h_sum 
+    del snr_copy, v_sum, h_sum, s_path, snr_hf 
 
-    p_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/rayl_sim/rayl_AraOut.A{Station}_C{config}_E10000_noise_rayl.txt.run0.h5'
+    p_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/rayl/rayl_A{Station}_R{run}.h5'
     ara_mf = ara_matched_filter(Station, config, year, dt, wf_len, bad_ant)
     ara_mf.get_template(p_path)
     del config, year, p_path
