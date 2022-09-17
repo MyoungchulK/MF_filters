@@ -59,6 +59,7 @@ def main(data_path, output_path):
     probability = np.asarray(probability)
 
     ## IceCube oneweight calculation for E-1 spectrum
+    ## related document: https://www.dropbox.com/s/yfl9z55zy4p6njl/effective_area_V1.pdf?dl=0
     solid_angle = 4 * np.pi
     area = np.pi * (radius**2)    
     log_emax = 1e12 # 12 GeV
