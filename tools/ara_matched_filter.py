@@ -7,112 +7,125 @@ from tqdm import tqdm
 
 # custom lib
 from tools.ara_constant import ara_const
+from tools.ara_run_manager import run_info_loader
+from tools.ara_known_issue import known_issue_loader
 
 ara_const = ara_const()
 num_ants = ara_const.USEFUL_CHAN_PER_STATION
 
 class ara_matched_filter:
 
-    def __init__(self, st, config, year, dt, wf_len, bad_ant):
+    def __init__(self, st, run, dt, wf_len, get_sub_file = False):
 
         self.st = st
-        self.config = config
-        self.year = year
+        self.run = run
+        if self.st == 2:
+            if self.run < 4029:
+                self.config = 1
+            elif self.run > 4028 and self.run < 9749:
+                self.config = 5 
+            elif self.run > 9748:
+                self.config = 6
+        elif self.st == 3:
+            if self.run < 3104:
+                self.config = 1
+            elif self.run > 3103 and self.run < 10001:
+                self.config = 3
+            elif self.run > 10000:
+                self.config = 6
+        known_issue = known_issue_loader(self.st)
+        self.bad_ant = known_issue.get_bad_antenna(self.run)
+        print('good chs:', np.arange(num_ants, dtype = int)[~self.bad_ant])
+        self.year = 2015
+        if self.st == 3 and self.run > 10000:
+            self.year = 2018
+        del known_issue
+
         self.dt = dt
-        self.bad_ant = bad_ant
         self.wf_len = wf_len
         self.lag = correlation_lags(self.wf_len, self.wf_len, 'full') * self.dt
         self.lag_len = len(self.lag)
-        print(self.lag_len)
         self.half_pad = 500
         self.sum_lag_pad = self.lag_len + self.half_pad * 2
-        self.wf_freq = np.fft.fftfreq(self.wf_len, self.dt)
+        self.wf_freq = np.fft.rfftfreq(self.wf_len, self.dt)
 
-
-        if self.st == 2:
-            if self.config < 4:
-                self.true_wf_len = int(22*20/0.5)
-            elif self.config > 3 and self.config < 6:
-                self.true_wf_len = int(26*20/0.5)
-            else:
-                self.true_wf_len = int(28*20/0.5)
-        if self.st == 3:
-            if self.config < 3:
-                self.true_wf_len = int(22*20/0.5)
-            elif self.config > 2 and self.config < 5:
-                self.true_wf_len = int(26*20/0.5)
-            elif self.config == 5:
-                self.true_wf_len = int(22*20/0.5)
-            else:
-                self.true_wf_len = int(28*20/0.5) 
-        print(self.true_wf_len)
-
-        self.theta_width = 30
-        self.theta = np.arange(30, 150 + 1, self.theta_width, dtype = int)
+        theta_width = 30
+        self.theta = np.arange(30, 150 + 1, theta_width, dtype = int)
         self.theta_len = len(self.theta)
-        self.phi_width = 60
-        self.phi = np.arange(30, 330 + 1, self.phi_width, dtype = int)
+        self.theta_idx = (np.abs(self.theta - 90) // theta_width).astype(int)
+        phi_width = 60
+        self.phi = np.arange(30, 330 + 1, phi_width, dtype = int)
         self.phi_len = len(self.phi)
-        self.theta_idx = np.array([2, 1, 0, 1, 2], dtype = int)
 
-        self.ant_res_width = np.copy(self.theta_width)
-        self.ant_res = np.arange(0, -60 - 1, -self.ant_res_width, dtype = int)
+        self.ant_res = np.arange(0, -60 - 1, -theta_width, dtype = int)
         self.ant_res_len = len(self.ant_res)
-        self.off_cone_width = 2
-        self.off_cone = np.arange(0, 4+1, self.off_cone_width, dtype = int)
+        off_cone_width = 2
+        self.off_cone = np.arange(0, 4+1, off_cone_width, dtype = int)
         self.off_cone_len = len(self.off_cone)
+        del theta_width, phi_width, off_cone_width
 
+        self.num_sols = 2
+        self.num_temps = self.theta_len * self.phi_len * self.num_sols
         self.roll_win = int(100/self.dt) + 1
         self.em_had_thres = int((num_ants - np.count_nonzero(self.bad_ant)) * self.ant_res_len * self.off_cone_len / 2)
-        self.num_sols = 2
-        self.num_fin_temps = self.theta_len * self.phi_len * self.num_sols
 
-    def get_temp_wfs(self):
+        if get_sub_file:
+            self.get_detector_model()
+            self.get_template(use_sc = True)
+            self.get_arr_table()
+            self.get_norm_factor()
+
+    def get_template(self, use_sc = False):
     
-        t_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{self.st}/temp_sim/temp_AraOut.A{self.st}_C{self.config}_temp_rayl.txt.run0.h5'
-        print('temp_path', t_path)
-        hf_t = h5py.File(t_path, 'r')
-        off_len = len(hf_t['off_cone'][:])
-        test_temp0 = hf_t['temp'][:]
-        temp_len = len(test_temp0[:,0,0,0,0])
-        test_temp1 = np.full((temp_len, num_ants, self.ant_res_len, off_len, self.num_sols), np.nan, dtype = float)
-        test_temp1[:,:,0] = test_temp0[:, :, int(self.ant_res[0]/10)]
-        test_temp1[:,:,1] = test_temp0[:, :, int(-self.ant_res[1]/10)]
-        test_temp1[:,:,2] = test_temp0[:, :, int(-self.ant_res[2]/10)]
-        test_temp = np.full((temp_len, num_ants, self.ant_res_len, self.off_cone_len, self.num_sols), np.nan, dtype = float)
-        test_temp[:,:,:,0] = test_temp1[:,:,:,int(self.off_cone[0]/self.dt)]
-        test_temp[:,:,:,1] = test_temp1[:,:,:,int(self.off_cone[1]/self.dt)]
-        test_temp[:,:,:,2] = test_temp1[:,:,:,int(self.off_cone[2]/self.dt)]
-        
+        temp_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{self.st}/temp_sim/temp_AraOut.A{self.st}_C{self.config}_temp_rayl.txt.run0.h5'
+        print('temp_path', temp_path)
+        temp_hf = h5py.File(temp_path, 'r')
+        temp_arr = temp_hf['temp'][:] 
+        ant_params = temp_hf['ant_res'][:]
+        ant_width = np.diff(ant_params)[0]
+        ant_idx = (ant_params / ant_width).astype(int)
+        off_params = temp_hf['off_cone'][:]
+        off_width = np.diff(off_params)[0]
+        off_idx = (off_params / off_width).astype(int)
+        temp_len = len(temp_arr[:,0,0,0,0])
+        del temp_path, temp_hf, ant_params, off_params
+
+        ant_sel_idx = (self.ant_res / ant_width).astype(int)
+        off_sel_idx = (self.off_cone / off_width).astype(int)
+        del ant_width, off_width
+
+        ant_bool = np.in1d(ant_idx, ant_sel_idx)
+        off_bool = np.in1d(off_idx, off_sel_idx)
+        del ant_idx, ant_sel_idx, off_idx, off_sel_idx
+
+        temp_sort_1st = temp_arr[:, :, ant_bool]
+        temp_sort_2nd = temp_sort_1st[:, :, :, off_bool]
+        del ant_bool, off_bool, temp_arr, temp_sort_1st       
+ 
         nu, de = butter(10, [0.13, 0.85], btype = 'band', fs = 1 / self.dt)
-        temp = filtfilt(nu, de, test_temp, axis = 0)
-        print(temp.shape)
+        self.temp = filtfilt(nu, de, temp_sort_2nd, axis = 0)
+        del nu, de, temp_sort_2nd
         if self.wf_len != temp_len:
-            temp = np.pad(temp, [(0, self.wf_len - len(temp[:,0,0,0,0])), (0, 0), (0, 0), (0, 0), (0, 0)], 'constant', constant_values = 0)
-        del t_path, hf_t, test_temp0, test_temp1, test_temp, nu, de, off_len
-        print(temp.shape)
+            half_pad = int((self.wf_len-temp_len)//2)
+            self.temp = np.pad(self.temp, [(half_pad, half_pad), (0, 0), (0, 0), (0, 0), (0, 0)], 'constant', constant_values = 0)
+            del half_pad
+        del temp_len 
 
-        return temp
+        if use_sc:
+            self.temp = np.fft.rfft(self.temp, axis = 0)
+            self.temp *= self.sc[:, :, np.newaxis, np.newaxis, np.newaxis]
+            self.temp = np.fft.irfft(self.temp, axis = 0)
 
-    def get_psd(self, d_path, corr_fac = None):
+    def get_detector_model(self):
 
-        print('psd_path', d_path)
-        hf_n = h5py.File(d_path, 'r')
-        try:
-            rayl = np.nansum(hf_n['rayl'][:], axis = 0)
-            if corr_fac is not None:
-                rayl *= corr_fac
-            psd = (rayl / np.sqrt(self.dt / self.wf_len))**2
-        except KeyError:
-            rayl = np.nansum(hf_n['soft_rayl'][:], axis = 0)
-            print(rayl.shape)
-            rayl = np.append(rayl[:-1], rayl[1:][::-1], axis = 0)
-            if corr_fac is not None:
-                rayl *= corr_fac
-            psd = (rayl / np.sqrt(self.dt / self.true_wf_len))**2
-        del hf_n, rayl
-
-        return psd
+        run_info = run_info_loader(self.st, self.run)
+        det_dat = run_info.get_result_path(file_type = 'rayl')
+        print('det_model_path', det_dat)
+        det_hf = h5py.File(det_dat, 'r')
+        soft_rayl = np.nansum(det_hf['soft_rayl'][:], axis = 0)
+        self.psd_semi_norm = (soft_rayl / np.sqrt(self.dt)) ** 2
+        self.sc = det_hf['soft_sc'][:]
+        del run_info, det_dat, det_hf, soft_rayl
 
     def get_arr_table(self):
 
@@ -122,54 +135,46 @@ class ara_matched_filter:
         arr_time_table = hf_a['arr_time_table'][:]
         arr_delay_table = arr_time_table - np.nanmean(arr_time_table, axis = 3)[:, :, :, np.newaxis]
         arr_delay_table = arr_delay_table[:,:,1]
-        arr_del_idx = np.full((self.theta_len, self.phi_len, num_ants, self.num_sols), np.nan, dtype = float)
+        self.arr_del_idx = np.full((self.theta_len, self.phi_len, num_ants, self.num_sols), np.nan, dtype = float)
         for t in range(self.theta_len):
             for p in range(self.phi_len):
-                arr_del_idx[t, p] = arr_delay_table[self.theta[t], self.phi[p]] 
-        self.arr_nan = np.isnan(arr_del_idx)
-        arr_del_idx = (arr_del_idx / self.dt).astype(int) + self.half_pad 
-        print(arr_del_idx.shape)
+                self.arr_del_idx[t, p] = arr_delay_table[self.theta[t], self.phi[p]] 
+        self.arr_nan = np.isnan(self.arr_del_idx)
+        self.arr_del_idx = (self.arr_del_idx / self.dt).astype(int) + self.half_pad 
         del a_path, hf_a, arr_time_table, arr_delay_table           
 
-        return arr_del_idx 
+    def get_norm_factor(self):
 
-    def get_template(self, d_path, corr_fac = None):
-
-        self.temp = self.get_temp_wfs()
-        self.psd = self.get_psd(d_path, corr_fac = corr_fac)
-        self.arr_del_idx = self.get_arr_table() 
-
-        # normalization factor
-        temp_fft = np.fft.fft(self.temp, axis = 0)
-        nor_fac = np.abs(temp_fft)**2 / self.psd[:, :, np.newaxis, np.newaxis, np.newaxis]
-        nor_fac = np.sqrt(np.nansum(nor_fac, axis = 0) / (self.dt * self.wf_len))
-        self.temp /= nor_fac[np.newaxis, :, :, :, :]
-        del nor_fac
+        temp_fft = np.fft.rfft(self.temp, axis = 0)
+        norm_fac = np.abs(temp_fft)**2 / self.psd_semi_norm[:, :, np.newaxis, np.newaxis, np.newaxis]
+        norm_fac = np.sqrt(np.nansum(norm_fac, axis = 0) / (self.dt * self.wf_len))
+        self.temp = self.temp[::-1] / norm_fac[np.newaxis, :, :, :, :]
+        del temp_fft, norm_fac
 
     def get_band_pass_filter(self, amp, val = 1e-100): # for temp, lets use brutal method.... for now....
 
         #notch filter
         amp[(self.wf_freq >= 0.43) & (self.wf_freq <= 0.48)] *= val
-        amp[(self.wf_freq <= -0.43) & (self.wf_freq >= -0.48)] *= val
 
         # front/back band
-        amp[(self.wf_freq >= -0.14) & (self.wf_freq <= 0.14)] *= val
-        amp[(self.wf_freq >= 0.75) | (self.wf_freq <= -0.75)] *= val
+        amp[self.wf_freq <= 0.14] *= val
+        amp[self.wf_freq >= 0.75] *= val
 
         return amp
 
-    def get_mf_wfs(self, wf_v):
+    def get_mf_wfs(self, wf_v, pad_num):
 
         # fft and deconvolve psd
-        wf_fft = np.fft.fft(wf_v, axis = 0) / self.psd
+        wf_fft = np.fft.rfft(wf_v, axis = 0) / self.psd_semi_norm / pad_num[np.newaxis, :]
         wf_fft = self.get_band_pass_filter(wf_fft)        
-        wf_v_w = np.real(np.fft.ifft(wf_fft, axis = 0))
+        wf_v_w = np.real(np.fft.irfft(wf_fft, axis = 0))
+        temp_norm = self.temp * np.sqrt(pad_num)[np.newaxis, :, np.newaxis, np.newaxis, np.newaxis]
         del wf_fft
 
         # correlation
-        corr = fftconvolve(self.temp, wf_v_w[:, :, np.newaxis, np.newaxis, np.newaxis], 'full', axes = 0)
+        corr = fftconvolve(temp_norm, wf_v_w[:, :, np.newaxis, np.newaxis, np.newaxis], 'full', axes = 0)
         corr = np.abs(hilbert(corr, axis = 0))
-        del wf_v_w
+        del wf_v_w, temp_norm
 
         return corr
 
@@ -191,8 +196,8 @@ class ara_matched_filter:
         del corr_sort
 
         # sum up by arrival time delay
-        evt_wize_corr = np.full((2, self.sum_lag_pad, self.num_fin_temps), 0, dtype = float)
-        evt_wize_corr_max_ant = np.full((num_ants, self.num_fin_temps), np.nan, dtype = float)
+        evt_wize_corr = np.full((2, self.sum_lag_pad, self.num_temps), 0, dtype = float)
+        evt_wize_corr_max_ant = np.full((num_ants, self.num_temps), np.nan, dtype = float)
         count = 0 
         for t in range(self.theta_len):
             for p in range(self.phi_len):
@@ -217,9 +222,9 @@ class ara_matched_filter:
 
         return evt_wize_corr_max, evt_wize_corr_max_ant 
 
-    def get_evt_wise_snr(self, wf_v, snr = None):
+    def get_evt_wise_snr(self, wf_v, pad_num, snr = None):
 
-        corr = self.get_mf_wfs(wf_v) 
+        corr = self.get_mf_wfs(wf_v, pad_num) 
 
         if snr is not None:
             corr *= snr[np.newaxis, :, np.newaxis, np.newaxis, np.newaxis]

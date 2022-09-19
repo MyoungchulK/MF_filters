@@ -8,7 +8,6 @@ def mf_sim_collector(Data, Station, Year):
     print('Collecting sim mf starts!')
 
     from tools.ara_sim_load import ara_root_loader
-    from tools.ara_run_manager import run_info_loader
     from tools.ara_known_issue import known_issue_loader
     from tools.ara_matched_filter import ara_matched_filter
     from tools.ara_constant import ara_const
@@ -23,7 +22,10 @@ def mf_sim_collector(Data, Station, Year):
     num_evts = ara_root.num_evts
     entry_num = ara_root.entry_num
     dt = ara_root.time_step
-    wf_len = ara_root.waveform_length
+    wf_len_ori = ara_root.waveform_length
+    pad_num = np.full((num_ants), wf_len_ori)
+    wf_len = 2280
+    wf_len_pad = (wf_len - wf_len_ori) // 2
     wf_time = ara_root.wf_time    
     pnu = ara_root.pnu
     inu_thrown = ara_root.inu_thrown
@@ -40,17 +42,22 @@ def mf_sim_collector(Data, Station, Year):
     i_key = '_R'
     i_key_len = len(i_key)
     i_idx = Data.find(i_key)
-    f_idx = Data.find('_.txt', i_idx + i_key_len)
+    f_idx = Data.find('.txt', i_idx + i_key_len)
     run = int(Data[i_idx + i_key_len:f_idx])
-    ara_run = run_info_loader(Station, run)
-    config = ara_run.get_config_number()
     known_issue = known_issue_loader(Station)
     bad_ant = known_issue.get_bad_antenna(run)
-    del known_issue, run, i_idx, f_idx, i_key, i_key_len, ara_run
-    print(Station, run, config)
+    del known_issue, i_idx, f_idx, i_key, i_key_len
+
+    o_key = 'AraOut.'
+    o_key_len = len(o_key)
+    o_idx = Data.find(o_key)
+    f_idx = Data.find('_A', o_idx + o_key_len)
+    sim_type = Data[o_idx + o_key_len:f_idx]
+    print(Station, run, sim_type)
+    del o_key, o_key_len, o_idx, f_idx
 
     # snr
-    s_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/snr_sim/snr_AraOut.noise_A{Station}_R{run}.txt.run0.h5'
+    s_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/snr_sim/snr_AraOut.{sim_type}_A{Station}_R{run}.txt.run0.h5'
     print('snr_path:', s_path)
     snr_hf = h5py.File(s_path, 'r')
     snr_weights = snr_hf['snr'][:]
@@ -60,12 +67,9 @@ def mf_sim_collector(Data, Station, Year):
     h_sum = np.nansum(snr_copy[8:], axis = 0)
     snr_weights[:8] /= v_sum
     snr_weights[8:] /= h_sum
-    del snr_copy, v_sum, h_sum, s_path, snr_hf 
+    del snr_copy, v_sum, h_sum, s_path, snr_hf, sim_type 
 
-    p_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/rayl/rayl_A{Station}_R{run}.h5'
-    ara_mf = ara_matched_filter(Station, config, year, dt, wf_len, bad_ant)
-    ara_mf.get_template(p_path)
-    del config, year, p_path
+    ara_mf = ara_matched_filter(Station, run, dt, wf_len, get_sub_file = True)
 
     # output array
     evt_wise = np.full((2, num_evts), np.nan, dtype = float)
@@ -76,7 +80,9 @@ def mf_sim_collector(Data, Station, Year):
       #if evt <100: # debug 
 
         wf_v = ara_root.get_rf_wfs(evt)
-        evt_wise[:, evt], evt_wise_ant[:, evt] = ara_mf.get_evt_wise_snr(wf_v, snr_weights[:, evt])
+        wf_v = np.pad(wf_v, [(wf_len_pad, wf_len_pad), (0, 0)], 'constant', constant_values = 0)
+        evt_wise[:, evt], evt_wise_ant[:, evt] = ara_mf.get_evt_wise_snr(wf_v, pad_num, snr_weights[:, evt])
+        #print(evt_wise[:, evt], evt_wise_ant[:, evt])
         del wf_v
     del ara_root, num_ants, num_evts, ara_mf
 

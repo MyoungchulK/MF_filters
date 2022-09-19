@@ -39,9 +39,13 @@ def mf_collector(Data, Ped, analyze_blind_dat = False):
     run_info = run_info_loader(ara_uproot.station_id, ara_uproot.run, analyze_blind_dat = analyze_blind_dat)
     daq_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True)
     daq_hf = h5py.File(daq_dat, 'r')
-    daq_qual_cut_sum = daq_hf['daq_qual_cut_sum'][:]
     tot_qual_cut_sum = daq_hf['tot_qual_cut_sum'][:]
-    del daq_dat, daq_hf
+    cw_dat = run_info.get_result_path(file_type = 'cw_cut', verbose = True)
+    cw_hf = h5py.File(cw_dat, 'r')
+    cw_qual_cut_sum = cw_hf['cw_qual_cut_sum'][:]
+    tot_qual_cut_sum += cw_qual_cut_sum
+    tot_qual_cut_sum = tot_qual_cut_sum.astype(int)
+    del daq_dat, daq_hf, cw_dat, cw_hf, cw_qual_cut_sum
 
     # snr info
     snr_dat = run_info.get_result_path(file_type = 'snr', verbose = True)
@@ -59,16 +63,10 @@ def mf_collector(Data, Ped, analyze_blind_dat = False):
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True)
     dt = wf_int.dt
     wf_len = wf_int.pad_len
-    print(wf_len)
 
-    config = run_info.get_config_number()
-    p_path  = run_info.get_result_path(file_type = 'rayl', verbose = True)
-    #p_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{ara_uproot.station_id}/rayl_sim/rayl_AraOut.A{ara_uproot.station_id}_C{config}_E10000_noise_rayl.txt.run0.h5'
-    corr_fac = np.sqrt(dt) / 2
-    ara_mf = ara_matched_filter(ara_uproot.station_id, config, ara_uproot.get_year(use_year = True), dt, wf_len, bad_ant)
-    ara_mf.get_template(p_path, corr_fac)
-    del config, p_path, bad_ant, run_info, dt, wf_len, ara_uproot
-   
+    ara_mf = ara_matched_filter(ara_uproot.station_id, ara_uproot.run, dt, wf_len, get_sub_file = True)
+    del bad_ant, run_info, dt, wf_len, ara_uproot    
+
     evt_wise = np.full((2, num_evts), np.nan, dtype = float)
     evt_wise_ant = np.full((num_ants, num_evts), np.nan, dtype = float)
  
@@ -76,8 +74,6 @@ def mf_collector(Data, Ped, analyze_blind_dat = False):
     for evt in tqdm(range(num_evts)):
       #if evt <100:        
    
-        if daq_qual_cut_sum[evt]:
-            continue
         if tot_qual_cut_sum[evt]:
             continue
         if trig_type[evt] != 0:
@@ -95,8 +91,8 @@ def mf_collector(Data, Ped, analyze_blind_dat = False):
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()   
 
-        evt_wise[:, evt], evt_wise_ant[:, evt] = ara_mf.get_evt_wise_snr(wf_int.pad_v, snr_weights[:, evt]) 
-    del ara_root, num_evts, num_ants, wf_int, ara_mf, daq_qual_cut_sum
+        evt_wise[:, evt], evt_wise_ant[:, evt] = ara_mf.get_evt_wise_snr(wf_int.pad_v, wf_int.pad_num, snr_weights[:, evt]) 
+    del ara_root, num_evts, num_ants, wf_int, ara_mf, tot_qual_cut_sum
 
     print('MF collecting is done!')
 
