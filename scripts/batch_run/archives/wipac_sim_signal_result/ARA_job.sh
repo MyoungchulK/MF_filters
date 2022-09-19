@@ -1,17 +1,11 @@
 #!/bin/bash
 
 # load in variables
-key=snr
-sim_type=signal
-st=$1
-run=$2
-fla=$3
+key=mf
+data=$1
+st=$2
 year=2015
-sim_run=0
 not_override=0
-user_path=/misc/disk19/users/
-#user_path=/data/user/
-data=${user_path}mkim/OMF_filter/ARA0${st}/sim_${sim_type}/AraOut.${sim_type}_F${fla}_A${st}_R${run}.txt.run${sim_run}.root
 
 # run the reconstruction script
 export HDF5_USE_FILE_LOCKING='FALSE'

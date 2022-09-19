@@ -40,6 +40,7 @@ def temp_sim_collector(Data, Station, Year):
 
     # wf arr
     temp = np.full((wf_len, num_ants, len(ant_res), len(off_cone), len(nu_elst)), 0, dtype = float)
+    temp_ori = np.copy(temp)
     print(temp.shape)   
  
     # loop over the events
@@ -64,6 +65,7 @@ def temp_sim_collector(Data, Station, Year):
         temp_wf_nonzero = temp_wf[temp_wf != 0]
 
         temp[:temp_wf_len, ant_idx, res_idx, off_idx, elst_idx] = temp_wf_nonzero
+        temp_ori[:, ant_idx, res_idx, off_idx, elst_idx] = temp_wf
 
     param.close()
     del ara_root, num_evts
@@ -73,6 +75,7 @@ def temp_sim_collector(Data, Station, Year):
     return {'dt':dt,
             'wf_time':wf_time,
             'temp':temp,
+            'temp_ori':temp_ori,
             'nu_elst':nu_elst,
             'off_cone':off_cone,
             'ant_res':ant_res,

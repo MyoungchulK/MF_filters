@@ -1,5 +1,7 @@
+import os
 import numpy as np
 from tqdm import tqdm
+import h5py
 
 def snr_sim_collector(Data, Station, Year):
 
@@ -54,7 +56,20 @@ def snr_sim_collector(Data, Station, Year):
     del ara_root, num_ants, num_evts
 
     rms_mean = np.nanmean(rms, axis = 1)
-    snr = p2p / 2 / rms_mean[:, np.newaxis]
+
+    signal_key = 'signal_F'
+    if Data.find(signal_key) != -1:
+        r_idx = Data.find('_R')
+        e_idx = Data.find('.txt', r_idx + 2)
+        run = int(Data[r_idx + 2:e_idx])
+        n_path =  os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/snr_sim/snr_AraOut.noise_A{Station}_R{run}.txt.run0.h5'
+        print('noise_snr_path:', n_path)
+        n_hf = h5py.File(n_path, 'r')
+        noise_rms_mean = n_hf['rms_mean'][:]
+        snr = p2p / 2 / noise_rms_mean[:, np.newaxis]
+        del r_idx, e_idx, run, n_path, n_hf, noise_rms_mean
+    else:
+        snr = p2p / 2 / rms_mean[:, np.newaxis]
 
     print('Sim snr collecting is done!')
 
