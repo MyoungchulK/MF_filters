@@ -61,6 +61,7 @@ if not os.path.exists(Output_path):
     os.makedirs(Output_path)
 file_name = f'{Output_path}Evt_Rate_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
+hf.create_dataset('run_num', data=run_num, compression="gzip", compression_opts=9)
 hf.create_dataset('time_bins', data=time_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('num_of_secs', data=num_of_secs, compression="gzip", compression_opts=9)
 hf.create_dataset('evt_rate', data=evt_rate, compression="gzip", compression_opts=9)
