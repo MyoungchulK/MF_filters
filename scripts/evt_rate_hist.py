@@ -32,7 +32,7 @@ for d in range(d_len):
 del d_paths
 
 # giant array for storing data
-ops_time_pad = 500 # 1000 minute
+ops_time_pad = 500 # 500 minute
 evt_rate = np.full((ops_time_pad, d_len), np.nan, dtype = float)
 rf_evt_rate = np.copy(evt_rate)
 cal_evt_rate = np.copy(evt_rate)
