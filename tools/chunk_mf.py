@@ -69,7 +69,7 @@ def mf_collector(Data, Ped, analyze_blind_dat = False):
 
     evt_wise = np.full((2, num_evts), np.nan, dtype = float)
     evt_wise_ant = np.full((num_ants, num_evts), np.nan, dtype = float)
- 
+
     # loop over the events
     for evt in tqdm(range(num_evts)):
       #if evt <100:        
@@ -92,6 +92,7 @@ def mf_collector(Data, Ped, analyze_blind_dat = False):
         ara_root.del_usefulEvt()   
 
         evt_wise[:, evt], evt_wise_ant[:, evt] = ara_mf.get_evt_wise_snr(wf_int.pad_v, wf_int.pad_num, snr_weights[:, evt]) 
+       
     del ara_root, num_evts, num_ants, wf_int, ara_mf, tot_qual_cut_sum
 
     print('MF collecting is done!')

@@ -156,7 +156,7 @@ class wf_analyzer:
 
         if use_zero_pad:
             if use_rfft:
-                self.pad_fft = 2 * np.fft.rfft(self.pad_v, axis = 0)
+                self.pad_fft = np.fft.rfft(self.pad_v, axis = 0)# * 2
             else:
                 self.pad_fft = np.fft.fft(self.pad_v, axis = 0)
         else:
@@ -168,7 +168,7 @@ class wf_analyzer:
                     self.pad_freq[:rfft_len[ant], ant] = np.fft.rfftfreq(self.pad_num[ant], self.dt)
                     self.pad_fft[:rfft_len[ant], ant] = np.fft.rfft(self.pad_v[:self.pad_num[ant], ant])
                 del rfft_len
-                self.pad_fft *= 2
+                #self.pad_fft *= 2
             else:
                 for ant in range(self.num_chs):
                     self.pad_freq[:self.pad_num[ant], ant] = np.fft.fftfreq(self.pad_num[ant], self.dt)

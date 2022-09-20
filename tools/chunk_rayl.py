@@ -31,7 +31,7 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
     pps_number = ara_uproot.pps_number
     trig_type = ara_uproot.get_trig_type()
     st = ara_uproot.station_id
-    blk_len = (ara_uproot.read_win // num_ddas).astype(float)
+    blk_len = (ara_uproot.read_win // num_ddas).astype(float) - 1
     ara_root = ara_root_loader(Data, Ped, st, ara_uproot.year)
     del num_ddas
 

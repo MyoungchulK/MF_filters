@@ -33,6 +33,7 @@ class ara_matched_filter:
                 self.config = 3
             elif self.run > 10000:
                 self.config = 6
+                #self.config = 1
         known_issue = known_issue_loader(self.st)
         self.bad_ant = known_issue.get_bad_antenna(self.run)
         print('good chs:', np.arange(num_ants, dtype = int)[~self.bad_ant])

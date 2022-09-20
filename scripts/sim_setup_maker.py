@@ -64,7 +64,6 @@ def main(key, station, blind_dat):
         blind = '_full'
     d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{station}/rayl{blind}/' # rayl path
     d_list, d_run_tot, d_run_range = file_sorter(d_path+'*h5')
-    l_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{station}/rf_len{blind}/' # rf length path
     e_path = f'../sim/sim_setup_example/{key}_rayl.txt' # setup ex path
     r_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{station}/sim_{key}_setup{blind}/' # output path
     if not os.path.exists(r_path):
@@ -110,16 +109,11 @@ def main(key, station, blind_dat):
         del sc_hf, pahse, p_f, h_tot, h_f, h_tot_int, dt, freq, sc, s_f, r_hf, r_freq, rayls, r_f
 
     for r in tqdm(range(len(d_run_tot))):
-      #if d_run_tot[r] == 10141:
+      if d_run_tot[r] == 12001:
 
         hf = h5py.File(d_list[r], 'r')
         soft_len = hf['soft_len'][:]   
-        try: 
-            rf_len = hf['rf_len'][:]
-        except KeyError:
-            hf_r = h5py.File(f'{l_path}rf_len_A{station}_R{d_run_tot[r]}.h5', 'r')
-            rf_len = hf_r['rf_len'][:]
-            del hf_r
+        rf_len = hf['rf_len'][:]
         if soft_len.shape[-1] == 0 or len(rf_len) == 0:
             print(d_list[r], 'empty!!!')
             continue
