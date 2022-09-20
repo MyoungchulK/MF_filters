@@ -17,18 +17,14 @@ if Station == 2:
 if Station == 3:
     config_len = 7
 
-d_type = ''
-d_type = '_sim'
-s_type = ''
-s_type = 'noise_'
-#s_type = 'signal_F1_'
-
 knwon_issue = known_issue_loader(Station)
 bad_runs = knwon_issue.get_knwon_bad_run(use_qual = True)
 del knwon_issue
 
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/mf{d_type}/*{s_type}*'
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/mf/*'
 d_list, d_run_tot, d_run_range = file_sorter(d_path)
+
+c_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_cut/'
 
 mf_bins = np.linspace(0,15,1500+1)
 mf_bin_center = (mf_bins[1:] + mf_bins[:-1]) / 2
@@ -51,6 +47,12 @@ for r in tqdm(range(len(d_run_tot))):
     evt_wise = hf['evt_wise'][:]
     del hf
 
+    hf_c = h5py.File(f'{c_path}cw_cut_A{Station}_R{d_run_tot[r]}.h5', 'r')
+    cuts = hf_c['cw_qual_cut_sum'][:]
+    del hf_c
+    
+    evt_wise[:, cuts != 0] = np.nan
+
     num_evts[c_idx] += np.count_nonzero(~np.isnan(evt_wise))
 
     mf_hist[0, :, c_idx] += np.histogram(evt_wise[0], bins = mf_bins)[0] 
@@ -61,7 +63,7 @@ path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
-file_name = f'MF{d_type}_{s_type}A{Station}.h5'
+file_name = f'MF_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('mf_bins', data=mf_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('mf_bin_center', data=mf_bin_center, compression="gzip", compression_opts=9)

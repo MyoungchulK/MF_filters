@@ -515,8 +515,13 @@ def file_sorter(d_path):
     # make run list
     run_tot=np.full((d_len),-1,dtype=int)
     aa = 0
+
+    i_key = '_R'
+    i_key_len = len(i_key)
     for d in d_list_chaos:
-        run_tot[aa] = int(re.sub("\D", "", d[-8:-1]))
+        i_idx = d.find(i_key)
+        f_idx = d.find('.', i_idx + i_key_len)        
+        run_tot[aa] = int(d[i_idx + i_key_len:f_idx])
         aa += 1
     del aa
 

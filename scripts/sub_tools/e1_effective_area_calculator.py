@@ -28,13 +28,13 @@ def main(data_path, output_path):
     """
    
     ## check the number of sim output
-    tot_file_path = glob(f'{data_path}*root')
+    tot_file_path = glob(f'{data_path}*')
     print(f'total number of sim outputs: {len(tot_file_path)}')
 
     ## load output and save information
-    pnu = [] # Neutrino energy
-    cos_angle = [] # Neutrino zenith angle
-    probability = [] # interaction probability 
+    pnu = np.full((len(tot_file_path) * 2), np.nan, dtype = float) # Neutrino energy
+    cos_angle = np.copy(pnu) # Neutrino zenith angle
+    probability = np.copy(pnu) # interaction probability 
     inu_thrown = 0 # total thrown event
 
     for run in tqdm(range(len(tot_file_path))):
@@ -44,19 +44,15 @@ def main(data_path, output_path):
         if run == 0:
             radius = np.asarray(file['AraTree/settings/POSNU_RADIUS'], dtype = int)[0] # radius of spherical volume [m]
         ara_tree_2 = file['AraTree2/event']
-        pnu_r = np.asarray(ara_tree_2['pnu'], dtype = float)
-        cos_r = np.asarray(ara_tree_2['Nu_Interaction/Nu_Interaction.nnu.theta'], dtype = float)
-        prob_r = np.asarray(ara_tree_2['Nu_Interaction/Nu_Interaction.probability'], dtype = float) 
+        pnu[run*2:run*2+2] = np.asarray(ara_tree_2['pnu'], dtype = float)
+        cos_angle[run*2:run*2+2] = np.asarray(ara_tree_2['Nu_Interaction/Nu_Interaction.nnu.theta'], dtype = float)
+        probability[run*2:run*2+2] = np.asarray(ara_tree_2['Nu_Interaction/Nu_Interaction.probability'], dtype = float) 
         inu_thrown += np.asarray(ara_tree_2['inu_thrown'], dtype = int)[-1]
-        pnu.extend(pnu_r)
-        probability.extend(prob_r)
-        cos_angle.extend(cos_r)
         del file, ara_tree_2
     del tot_file_path
 
-    pnu = np.asarray(pnu) / 1e9 # eV to GeV
-    cos_angle = np.cos(np.asarray(cos_angle)) # degree to radian
-    probability = np.asarray(probability)
+    pnu /= 1e9 # eV to GeV
+    cos_angle = np.cos(cos_angle) # degree to radian
 
     ## IceCube oneweight calculation for E-1 spectrum
     ## related document: https://www.dropbox.com/s/yfl9z55zy4p6njl/effective_area_V1.pdf?dl=0
@@ -81,7 +77,7 @@ def main(data_path, output_path):
     ## create output path
     if not os.path.exists(output_path):
         os.makedirs(output_path)
-    hf_file_name = f'{output_path}Effective_Area.h5'
+    hf_file_name = f'{output_path}'
     hf = h5py.File(hf_file_name, 'w')
     hf.create_dataset('energy_bins', data=energy_bins, compression="gzip", compression_opts=9)
     hf.create_dataset('cos_bins', data=cos_bins, compression="gzip", compression_opts=9)
