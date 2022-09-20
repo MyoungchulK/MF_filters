@@ -109,7 +109,7 @@ def main(key, station, blind_dat):
         del sc_hf, pahse, p_f, h_tot, h_f, h_tot_int, dt, freq, sc, s_f, r_hf, r_freq, rayls, r_f
 
     for r in tqdm(range(len(d_run_tot))):
-      if d_run_tot[r] == 12001:
+      #if d_run_tot[r] == 12001:
 
         hf = h5py.File(d_list[r], 'r')
         soft_len = hf['soft_len'][:]   
