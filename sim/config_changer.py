@@ -3,7 +3,7 @@ import os, sys
 from tqdm import tqdm
 from glob import glob
 
-d_path = f'//data/user/mkim/OMF_filter/ARA02/sim_noise_setup/*txt'
+d_path = f'/data/user/mkim/OMF_filter/ARA02/sim_noise_setup/*txt'
 d_list = glob(d_path)
 
 old_line = 'NNU_PASSED=100'
