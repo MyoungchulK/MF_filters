@@ -108,7 +108,14 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
 
     print('Rayl. collecting is done!')
 
-    return {'clean_soft_idx':clean_soft_idx,
+    return {'evt_num':evt_num,
+            'entry_num':entry_num,
+            'trig_type':trig_type,
+            'unix_time':unix_time,
+            'pps_number':pps_number,
+            'clean_soft_idx':clean_soft_idx,
+            'dt':dt,
+            'freq_range':freq_range,            
             'rf_len':rf_len,
             'soft_len':soft_len,
             'soft_rayl':soft_rayl,
