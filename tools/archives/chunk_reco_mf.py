@@ -20,31 +20,35 @@ def reco_mf_collector(Data, Ped, analyze_blind_dat = False):
 
     # data config
     ara_uproot = ara_uproot_loader(Data)
-    st = ara_uproot.station_id
-    yr = ara_uproot.year
-    run = ara_uproot.run
+    ara_uproot.get_sub_info()
     num_evts = ara_uproot.num_evts
-    ara_root = ara_root_loader(Data, Ped, st, yr)
-    del ara_uproot
+    evt_num = ara_uproot.evt_num
+    entry_num = ara_uproot.entry_num
+    unix_time = ara_uproot.unix_time
+    pps_number = ara_uproot.pps_number
+    trig_type = ara_uproot.get_trig_type()
+    ara_root = ara_root_loader(Data, Ped, ara_uproot.station_id, ara_uproot.year)
 
     # pre quality cut
-    run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
+    run_info = run_info_loader(ara_uproot.station_id, ara_uproot.run, analyze_blind_dat = analyze_blind_dat)
     daq_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True)
     daq_hf = h5py.File(daq_dat, 'r')
     daq_qual_cut_sum = daq_hf['daq_qual_cut_sum'][:]
+    tot_qual_cut_sum = daq_hf['tot_qual_cut_sum'][:]
     del daq_dat, daq_hf
 
     # snr info
     snr_dat = run_info.get_result_path(file_type = 'mf', verbose = True)
     snr_hf = h5py.File(snr_dat, 'r')
     snr = snr_hf['evt_wise_ant'][:]
-    del run_info, snr_dat, snr_hf
+    print(snr.shape)
+    del snr_dat, snr_hf
 
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, add_double_pad = True)
 
     # interferometers
-    ara_int = py_interferometers(wf_int.pad_len, wf_int.dt, st, yr, run)
+    ara_int = py_interferometers(wf_int.pad_len, wf_int.dt, ara_uproot.station_id, ara_uproot.year, ara_uproot.run)
     pairs = ara_int.pairs
     v_pairs_len = ara_int.v_pairs_len
     snr_weights = snr[pairs[:, 0]] * snr[pairs[:, 1]]
@@ -52,7 +56,7 @@ def reco_mf_collector(Data, Ped, analyze_blind_dat = False):
     snr_h_sum = np.nansum(snr_weights[v_pairs_len:], axis = 0)
     snr_weights[:v_pairs_len] /= snr_v_sum[np.newaxis, :]
     snr_weights[v_pairs_len:] /= snr_h_sum[np.newaxis, :] 
-    del st, yr, run, snr, snr_v_sum, snr_h_sum, v_pairs_len, pairs
+    del ara_uproot, snr, snr_v_sum, snr_h_sum, v_pairs_len, pairs
 
     # output array  
     coef = np.full((2, 2, num_evts), np.nan, dtype = float) # pol, rad
@@ -61,10 +65,12 @@ def reco_mf_collector(Data, Ped, analyze_blind_dat = False):
     # loop over the events
     for evt in tqdm(range(num_evts)):
       #if evt <100:        
-  
-        print(snr_weights[:, evt])
-        """
+   
         if daq_qual_cut_sum[evt]:
+            continue
+        if tot_qual_cut_sum[evt]:
+            continue
+        if trig_type[evt] != 0:
             continue
 
         # get entry and wf
@@ -78,15 +84,18 @@ def reco_mf_collector(Data, Ped, analyze_blind_dat = False):
             del raw_t, raw_v
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()   
-
-        print(snr_weights[:, evt]) 
+ 
         coef[:, :, evt], coord[:, :, :, evt] = ara_int.get_sky_map(wf_int.pad_v, weights = snr_weights[:, evt])
-        """
-    del ara_root, num_evts, num_ants, wf_int, ara_int, daq_qual_cut_sum, snr_weights
+    del ara_root, num_evts, num_ants, wf_int, ara_int,daq_qual_cut_sum
 
     print('Reco mf collecting is done!')
 
-    return {'coef':coef,
+    return {'evt_num':evt_num,
+            'entry_num':entry_num,
+            'trig_type':trig_type,
+            'unix_time':unix_time,
+            'pps_number':pps_number,
+            'coef':coef,
             'coord':coord}
 
 

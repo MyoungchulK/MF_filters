@@ -18,9 +18,9 @@ if Station == 3:
     config_len = 7
 
 d_type = ''
-d_type = '_sim'
+#d_type = '_sim'
 s_type = ''
-s_type = 'noise_'
+#s_type = 'noise_'
 #s_type = 'signal_F1_'
 
 knwon_issue = known_issue_loader(Station)

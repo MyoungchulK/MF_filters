@@ -3,7 +3,7 @@ import numpy as np
 from tqdm import tqdm
 import h5py
 
-def mf_collector(Data, Ped, analyze_blind_dat = False):
+def mf_else_collector(Data, Ped, analyze_blind_dat = False):
 
     print('Collecting mf starts!')
 
@@ -22,23 +22,26 @@ def mf_collector(Data, Ped, analyze_blind_dat = False):
 
     # data config
     ara_uproot = ara_uproot_loader(Data)
-    st = ara_uproot.station_id
-    yr = ara_uproot.year
-    run = ara_uproot.run
+    ara_uproot.get_sub_info()
     num_evts = ara_uproot.num_evts
-    ara_root = ara_root_loader(Data, Ped, st, yr)
-    del ara_uproot
+    trig_type = ara_uproot.get_trig_type()
+    ara_root = ara_root_loader(Data, Ped, ara_uproot.station_id, ara_uproot.year)
 
-    known_issue = known_issue_loader(st)
-    bad_ant = known_issue.get_bad_antenna(run)
+    known_issue = known_issue_loader(ara_uproot.station_id)
+    bad_ant = known_issue.get_bad_antenna(ara_uproot.run)
     del known_issue
 
     # pre quality cut
-    run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
+    run_info = run_info_loader(ara_uproot.station_id, ara_uproot.run, analyze_blind_dat = analyze_blind_dat)
     daq_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True)
     daq_hf = h5py.File(daq_dat, 'r')
-    daq_qual_cut_sum = daq_hf['daq_qual_cut_sum'][:]
-    del daq_dat, daq_hf
+    tot_qual_cut_sum = daq_hf['tot_qual_cut_sum'][:]
+    cw_dat = run_info.get_result_path(file_type = 'cw_cut', verbose = True)
+    cw_hf = h5py.File(cw_dat, 'r')
+    cw_qual_cut_sum = cw_hf['cw_qual_cut_sum'][:]
+    tot_qual_cut_sum += cw_qual_cut_sum
+    tot_qual_cut_sum = tot_qual_cut_sum.astype(int)
+    del daq_dat, daq_hf, cw_dat, cw_hf, cw_qual_cut_sum
 
     # snr info
     snr_dat = run_info.get_result_path(file_type = 'snr', verbose = True)
@@ -50,15 +53,15 @@ def mf_collector(Data, Ped, analyze_blind_dat = False):
     h_sum = np.nansum(snr_copy[8:], axis = 0)
     snr_weights[:8] /= v_sum
     snr_weights[8:] /= h_sum
-    del bad_ant, run_info, snr_copy, v_sum, h_sum, snr_dat, snr_hf
+    del snr_copy, v_sum, h_sum, snr_dat, snr_hf
 
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True)
     dt = wf_int.dt
     wf_len = wf_int.pad_len
 
-    ara_mf = ara_matched_filter(st, run, dt, wf_len, get_sub_file = True)
-    del dt, wf_len, st, yr, run
+    ara_mf = ara_matched_filter(ara_uproot.station_id, ara_uproot.run, dt, wf_len, get_sub_file = True)
+    del bad_ant, run_info, dt, wf_len, ara_uproot    
 
     evt_wise = np.full((2, num_evts), np.nan, dtype = float)
     evt_wise_ant = np.full((num_ants, num_evts), np.nan, dtype = float)
@@ -67,7 +70,9 @@ def mf_collector(Data, Ped, analyze_blind_dat = False):
     for evt in tqdm(range(num_evts)):
       #if evt <100:        
    
-        if daq_qual_cut_sum[evt]:
+        if tot_qual_cut_sum[evt]:
+            continue
+        if trig_type[evt] == 0:
             continue
 
         # get entry and wf
@@ -81,16 +86,14 @@ def mf_collector(Data, Ped, analyze_blind_dat = False):
             del raw_t, raw_v
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()   
-      
-        print(snr_weights[:, evt]) 
+
         evt_wise[:, evt], evt_wise_ant[:, evt] = ara_mf.get_evt_wise_snr(wf_int.pad_v, wf_int.pad_num, snr_weights[:, evt]) 
-        print(evt_wise[:, evt], evt_wise_ant[:, evt])
-    del ara_root, num_evts, num_ants, wf_int, ara_mf, daq_qual_cut_sum
+       
+    del trig_type, ara_root, num_evts, num_ants, wf_int, ara_mf, tot_qual_cut_sum, snr_weights
 
     print('MF collecting is done!')
 
-    return {'snr_weights':snr_weights,
-            'evt_wise':evt_wise,
+    return {'evt_wise':evt_wise,
             'evt_wise_ant':evt_wise_ant}
 
 
