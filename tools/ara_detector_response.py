@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from scipy.interpolate import interp1d
 from scipy.stats import rayleigh
@@ -46,53 +47,81 @@ def get_rayl_distribution(dat, binning = 1000):
 
     return rayl_params, rfft_2d, dat_bin_edges
 
-class signal_chain_loader:
+def get_signal_chain_gain(soft_rayl, freq_range, dt, st):
 
-    def __init__(self, st, freq_range):
+    p1 = np.nansum(soft_rayl, axis = 0) / 1e3 * np.sqrt(1e-9) # mV to V and ns to s
+    freq_mhz = freq_range * 1e3 # GHz to MHz
 
-        self.st = st
-        self.freq_range = freq_range
-        self.ohms = 50
+    h_tot_path = f'../data/sc_info/A{st}_Htot.txt'
+    print('h_tot_path:', h_tot_path)
+    h_tot = np.loadtxt(h_tot_path)
+    f = interp1d(h_tot[:,0], h_tot[:, 1:], axis = 0, fill_value = 'extrapolate')
+    h_tot_int = f(freq_mhz)
+    del freq_mhz, h_tot, f 
 
-    def get_mVperSpGHz_to_dBmperHz(self, dat, use_int = False):
+    Htot = h_tot_int * np.sqrt(dt * 1e-9)
+    Hmeas = p1 * np.sqrt(2) # power symmetry
+    Hmeas *= np.sqrt(2) # surf_turf
+    soft_sc = Hmeas / Htot
+    del p1, Htot, Hmeas
 
-        dBmperHz = 10 * np.log10(dat**2 * 1e-9 / self.ohms / 1e3)
-    
-        if use_int:
-            f = interp1d(ntot_freq, dBmperHz, axis = 0)
-            dBmperHz = f(self.freq_range)    
+    return soft_sc
 
-        return dBmperHz
+def get_rayl_bad_run(soft_len, rayl_nan, st, run, analyze_blind_dat = False, verbose = False):
 
-    def get_in_ice_noise_table(self, use_int = False):
+    if analyze_blind_dat:
+        if soft_len == 0 or rayl_nan:
+            if verbose:
+                print(f'A{st} R{run} is bad for noise modeling!!!')
+            bad_path = f'../data/rayl_runs/rayl_run_A{st}.txt'
+            bad_run_info = f'{run}\n'
+            if os.path.exists(bad_path):
+                if verbose:
+                    print(f'There is {bad_path}')
+                bad_run_arr = []
+                with open(bad_path, 'r') as f:
+                    for lines in f:
+                        run_num = int(lines)
+                        bad_run_arr.append(run_num)
+                bad_run_arr = np.asarray(bad_run_arr, dtype = int)
+                if run in bad_run_arr:
+                    if verbose:
+                        print(f'Run{run} is already in {bad_path}!')
+                    else:
+                        pass
+                else:
+                    if verbose:
+                        print(f'Add run{run} in {bad_path}!')
+                    with open(bad_path, 'a') as f:
+                        f.write(bad_run_info)
+                del bad_run_arr
+            else:
+                if verbose:
+                    print(f'There is NO {bad_path}')
+                    print(f'Add run{run} in {bad_path}!')
+                with open(bad_path, 'w') as f:
+                    f.write(bad_run_info)
+            del bad_path, bad_run_info
+            bad_run = np.array([1], dtype = int)
+        else:
+            bad_run = np.array([0], dtype = int)
+    else:
+        bad_run = np.full((1), np.nan, dtype = float)
 
-        ntot_name = f'../data/in_ice_noise_est/A{self.st}_Ntot_Lab_real.txt'
-        print(f'Ntot_path: {ntot_name}')
-        ntot_file = np.loadtxt(ntot_name)
+    return bad_run
 
-        self.ntot_freq = ntot_file[:,0]/1e9
-        ntot_dBmperHz = ntot_file[:, 1:]        
 
-        if use_int:
-            f = interp1d(self.ntot_freq, ntot_dBmperHz, axis = 0, fill_value = "extrapolate")
-            ntot_dBmperHz = f(self.freq_range)
-            self.ntot_freq = np.copy(self.freq_range)                 
-            del f
-        del ntot_name, ntot_file
 
-        return ntot_dBmperHz
 
-    def get_signal_chain(self, dat, use_linear = False):
 
-        psd_dBmperHz = self.get_mVperSpGHz_to_dBmperHz(dat)
-        ntot_dBmperHz = self.get_in_ice_noise_table(use_int = True)
 
-        sc_dB = psd_dBmperHz - ntot_dBmperHz
 
-        if use_linear:
-            sc_dB = np.sqrt(10**(sc_dB / 10))            
-        del psd_dBmperHz, ntot_dBmperHz
 
-        return sc_dB
+
+
+
+
+
+
 
 

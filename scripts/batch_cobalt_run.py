@@ -6,6 +6,7 @@ from subprocess import call
 # custom lib
 curr_path = os.getcwd()
 sys.path.append(curr_path+'/../')
+from tools.ara_run_manager import run_info_loader
 
 def cobalt_run_loader(Station = None, Key = None, Act_Evt = None, analyze_blind_dat = False):
 
@@ -32,10 +33,21 @@ def cobalt_run_loader(Station = None, Key = None, Act_Evt = None, analyze_blind_
     for w in tqdm(lists):
 
         if count >= Act_Evt[0] and count < Act_Evt[1]:
+            if Station == 3 and int(w) == 3429:
+                continue
 
-            CMD_line = f'python3 -W ignore script_executor.py -k {Key} -s {Station} -r {int(w)} -b {int(analyze_blind_dat)} -n 1'
-            print(CMD_line)
-            call(CMD_line.split(' '))
+            #CMD_line = f'python3 -W ignore script_executor.py -k {Key} -s {Station} -r {int(w)} -b {int(analyze_blind_dat)} -n 1'
+            #print(CMD_line)
+            #call(CMD_line.split(' '))
+
+            run_info = run_info_loader(Station, int(w), analyze_blind_dat = analyze_blind_dat)
+            daq_dat = run_info.get_result_path(file_type = Key, verbose = True)
+            if os.path.exists(daq_dat):
+                print(f'{daq_dat} is already there!!')
+            else:
+                print(f'{count} THERE IS NO {daq_dat}!!')
+                break
+                return
 
         count += 1
 

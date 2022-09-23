@@ -1,6 +1,7 @@
 import os
 import numpy as np
 from tqdm import tqdm
+import csv
 import h5py
 from scipy.interpolate import interp1d
 
@@ -14,8 +15,6 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
     from tools.ara_run_manager import run_info_loader
     from tools.ara_wf_analyzer import wf_analyzer
     from tools.ara_detector_response import get_rayl_distribution
-    from tools.ara_detector_response import get_signal_chain_gain
-    from tools.ara_detector_response import get_rayl_bad_run
 
     # geom. info.
     ara_const = ara_const()
@@ -32,23 +31,19 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
     pps_number = ara_uproot.pps_number
     trig_type = ara_uproot.get_trig_type()
     st = ara_uproot.station_id
-    run = ara_uproot.run
     blk_len = (ara_uproot.read_win // num_ddas).astype(float) - 1
     ara_root = ara_root_loader(Data, Ped, st, ara_uproot.year)
-    del num_ddas, ara_uproot
+    del num_ddas
 
     # pre quality cut
-    run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
+    run_info = run_info_loader(st, ara_uproot.run, analyze_blind_dat = analyze_blind_dat)
     daq_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True)
     daq_hf = h5py.File(daq_dat, 'r')
-    tot_qual_cut = daq_hf['tot_qual_cut'][:]
-    tot_qual_cut[:, 10] = 0 # disable bad unix time
-    tot_qual_cut[:, 21] = 0 # disable known bad run
-    tot_qual_cut_sum = np.nansum(tot_qual_cut, axis = 1)
+    tot_qual_cut_sum = daq_hf['tot_qual_cut_sum'][:]
     cw_dat = run_info.get_result_path(file_type = 'cw_cut', verbose = True)
     cw_hf = h5py.File(cw_dat, 'r')
     cw_qual_cut_sum = cw_hf['cw_qual_cut_sum'][:]
-    del daq_dat, daq_hf, cw_dat, cw_hf, run_info, tot_qual_cut
+    del daq_dat, daq_hf, cw_dat, cw_hf, run_info, ara_uproot
    
     # clean soft trigger 
     tot_cuts = (tot_qual_cut_sum + cw_qual_cut_sum).astype(int)
@@ -99,27 +94,25 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
     soft_rayl = get_rayl_distribution(soft_ffts)[0]
     del soft_ffts
 
-    # signal chain gain
-    soft_sc = get_signal_chain_gain(soft_rayl, freq_range, dt, st)
-
-    # set bad run
-    bad_run = get_rayl_bad_run(soft_len.shape[-1], np.any(np.isnan(soft_rayl.flatten())), st, run, analyze_blind_dat = analyze_blind_dat, verbose = True)
-    del st, run
-    print(bad_run)
+    # csv maker. gonna make seperate def
+    p1 = np.nansum(soft_rayl, axis = 0) / 1e3 * np.sqrt(1e-9) # mV to V and ns to s
+    freq_mhz = freq_range * 1e3 # GHz to MHz
+    h_tot = np.loadtxt(f'../data/sc_info/A{st}_Htot.txt')
+    f = interp1d(h_tot[:,0], h_tot[:, 1:], axis = 0, fill_value = 'extrapolate')
+    h_tot_int = f(freq_mhz)
+    Htot = h_tot_int * np.sqrt(dt * 1e-9)
+    Hmeas = p1 * np.sqrt(2) # power symmetry
+    Hmeas *= np.sqrt(2) # surf_turf 
+    soft_sc = Hmeas / Htot
+    del st, p1, freq_mhz, h_tot, f, h_tot_int, Htot, Hmeas
 
     print('Rayl. collecting is done!')
 
-    return {'evt_num':evt_num,
-            'entry_num':entry_num,
-            'trig_type':trig_type,
-            'unix_time':unix_time,
-            'pps_number':pps_number,
-            'clean_soft_idx':clean_soft_idx,
-            'bad_run':bad_run,
-            'dt':dt,
-            'freq_range':freq_range,
+    return {'clean_soft_idx':clean_soft_idx,
             'rf_len':rf_len,
             'soft_len':soft_len,
             'soft_rayl':soft_rayl,
             'soft_sc':soft_sc}
+
+
 
