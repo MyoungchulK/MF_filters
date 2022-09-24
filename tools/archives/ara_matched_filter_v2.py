@@ -35,11 +35,8 @@ class ara_matched_filter:
                 self.config = 6
                 #self.config = 1
         known_issue = known_issue_loader(self.st)
-        self.good_chs = known_issue.get_bad_antenna(self.run, good_ant_true = True, print_ant_idx = True)
-        self.good_ch_len = len(self.good_chs)
-        self.pol_idx = (self.good_chs > 7).astype(int) # vpol: 0, hpol: 1
-        self.num_pols = 2
-        print('good chs:', self.good_chs)
+        self.bad_ant = known_issue.get_bad_antenna(self.run)
+        print('good chs:', np.arange(num_ants, dtype = int)[~self.bad_ant])
         self.year = 2015
         if self.st == 3 and self.run > 10000:
             self.year = 2018
@@ -70,8 +67,8 @@ class ara_matched_filter:
 
         self.num_sols = 2
         self.num_temps = self.theta_len * self.phi_len * self.num_sols
-        self.roll_win = int(120/self.dt) + 1
-        self.em_had_thres = int(self.good_ch_len * self.ant_res_len * self.off_cone_len / 2)
+        self.roll_win = int(100/self.dt) + 1
+        self.em_had_thres = int((num_ants - np.count_nonzero(self.bad_ant)) * self.ant_res_len * self.off_cone_len / 2)
 
         if get_sub_file:
             self.get_detector_model()
@@ -82,7 +79,7 @@ class ara_matched_filter:
     def get_template(self, use_sc = False):
     
         temp_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{self.st}/temp_sim/temp_AraOut.A{self.st}_C{self.config}_temp_rayl.txt.run0.h5'
-        print('temp_path:', temp_path)
+        print('temp_path', temp_path)
         temp_hf = h5py.File(temp_path, 'r')
         temp_arr = temp_hf['temp'][:] 
         ant_params = temp_hf['ant_res'][:]
@@ -115,8 +112,6 @@ class ara_matched_filter:
             del half_pad
         del temp_len 
 
-        self.temp = self.temp[:, self.good_chs]
-        print('template dim:', self.temp.shape)
         if use_sc:
             self.temp = np.fft.rfft(self.temp, axis = 0)
             self.temp *= self.sc[:, :, np.newaxis, np.newaxis, np.newaxis]
@@ -124,28 +119,23 @@ class ara_matched_filter:
 
     def get_detector_model(self):
 
-        run_info = run_info_loader(self.st, self.run, analyze_blind_dat = True)
+        run_info = run_info_loader(self.st, self.run)
         det_dat = run_info.get_result_path(file_type = 'rayl')
-        print('det_model_path:', det_dat)
+        print('det_model_path', det_dat)
         det_hf = h5py.File(det_dat, 'r')
         soft_rayl = np.nansum(det_hf['soft_rayl'][:], axis = 0)
         self.psd_semi_norm = (soft_rayl / np.sqrt(self.dt)) ** 2
         self.sc = det_hf['soft_sc'][:]
         del run_info, det_dat, det_hf, soft_rayl
 
-        self.sc = self.sc[:, self.good_chs]
-        self.psd_semi_norm = self.psd_semi_norm[:, self.good_chs]
-        print('sc dim:', self.sc.shape)
-        print('psd dim:', self.psd_semi_norm.shape)
-
     def get_arr_table(self):
 
         a_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{self.st}/arr_time_table/arr_time_table_A{self.st}_Y{self.year}.h5'
-        print('arr_table_path:', a_path) 
+        print('arr_table_path', a_path) 
         hf_a = h5py.File(a_path, 'r')
         arr_time_table = hf_a['arr_time_table'][:]
         arr_delay_table = arr_time_table - np.nanmean(arr_time_table, axis = 3)[:, :, :, np.newaxis]
-        arr_delay_table = arr_delay_table[:,:,1] # use 300 m
+        arr_delay_table = arr_delay_table[:,:,1]
         self.arr_del_idx = np.full((self.theta_len, self.phi_len, num_ants, self.num_sols), np.nan, dtype = float)
         for t in range(self.theta_len):
             for p in range(self.phi_len):
@@ -153,10 +143,6 @@ class ara_matched_filter:
         self.arr_nan = np.isnan(self.arr_del_idx)
         self.arr_del_idx = (self.arr_del_idx / self.dt).astype(int) + self.half_pad 
         del a_path, hf_a, arr_time_table, arr_delay_table           
-
-        self.arr_nan = self.arr_nan[:, :, self.good_chs]
-        self.arr_del_idx = self.arr_del_idx[:, :, self.good_chs]
-        print('arr time delay dim:', self.arr_del_idx.shape)
 
     def get_norm_factor(self):
 
@@ -180,13 +166,11 @@ class ara_matched_filter:
     def get_mf_wfs(self, wf_v, pad_num):
 
         # fft and deconvolve psd
-        pad_num = pad_num[self.good_chs]
-        wf_v = wf_v[:, self.good_chs]
         wf_fft = np.fft.rfft(wf_v, axis = 0) / self.psd_semi_norm / pad_num[np.newaxis, :]
         wf_fft = self.get_band_pass_filter(wf_fft)        
         wf_v_w = np.real(np.fft.irfft(wf_fft, axis = 0))
         temp_norm = self.temp * np.sqrt(pad_num)[np.newaxis, :, np.newaxis, np.newaxis, np.newaxis]
-        del wf_fft, pad_num, wf_v
+        del wf_fft
 
         # correlation
         corr = fftconvolve(temp_norm, wf_v_w[:, :, np.newaxis, np.newaxis, np.newaxis], 'full', axes = 0)
@@ -195,51 +179,47 @@ class ara_matched_filter:
 
         return corr
 
-    def get_evt_wise_corr(self, corr):
+    def get_evt_wise_corr(self, corr, use_max = False):
 
         # select max corr
         corr_max = np.nanmax(corr, axis = 0)
         em_had_sel = int(np.nansum(np.argmax(corr_max, axis = 3)) > self.em_had_thres) # 1st choose em or had
         corr_off_max = np.argmax(corr_max[:, :, :, em_had_sel], axis = 2) # 2nd choose max off-cone
-        del corr_max
 
-        corr_sort = np.full((self.lag_len, self.good_ch_len, self.ant_res_len), np.nan, dtype = float)
-        for ant in range(self.good_ch_len):
+        corr_sort = np.full((self.lag_len, num_ants, self.ant_res_len), np.nan, dtype = float)
+        for ant in range(num_ants):
             for res in range(self.ant_res_len):
                 corr_sort[:, ant, res] = corr[:, ant, res, corr_off_max[ant, res], em_had_sel]
-        del em_had_sel, corr_off_max
+        del em_had_sel, corr_off_max, corr_max
 
         # rolling max
         corr_sort_roll_max = maximum_filter1d(corr_sort, axis = 0, size = self.roll_win, mode='constant')
         del corr_sort
 
         # sum up by arrival time delay
-        evt_wize_corr = np.full((self.num_pols, self.sum_lag_pad, self.num_temps), 0, dtype = float)
-        evt_wize_corr_ant = np.full((self.good_ch_len, self.num_temps), np.nan, dtype = float)
+        evt_wize_corr = np.full((2, self.sum_lag_pad, self.num_temps), 0, dtype = float)
+        evt_wize_corr_max_ant = np.full((num_ants, self.num_temps), np.nan, dtype = float)
         count = 0 
         for t in range(self.theta_len):
             for p in range(self.phi_len):
                 for s in range(self.num_sols):
-                    for ant in range(self.good_ch_len):
+                    for ant in range(num_ants):
                         if self.arr_nan[t, p, ant, s]:
                             continue
+                        if self.bad_ant[ant]:
+                            continue
+                        pol_idx = int(ant > 7)
                         arr_idx = self.arr_del_idx[t, p, ant, s]
                         corr_ch = corr_sort_roll_max[:, ant, self.theta_idx[t]]
-                        evt_wize_corr[self.pol_idx[ant], arr_idx:arr_idx + self.lag_len, count] += corr_ch
-                        evt_wize_corr_ant[ant, count] = np.nanmax(corr_ch)
-                        del arr_idx, corr_ch
+                        evt_wize_corr[pol_idx, arr_idx:arr_idx + self.lag_len, count] += corr_ch
+                        evt_wize_corr_max_ant[ant, count] = np.nanmax(corr_ch)
+                        del arr_idx, pol_idx, corr_ch
                     count += 1
         del corr_sort_roll_max
 
-        evt_wize_corr_max = np.full((self.num_pols), np.nan, dtype = float)
-        evt_wize_corr_max_ant = np.full((self.num_pols, num_ants), np.nan, dtype = float)
-        for pol in range(self.num_pols):
-            max_pol = np.nanmax(evt_wize_corr[pol])
-            max_pol_idx = np.where(evt_wize_corr[pol] == max_pol)[1][0]
-            evt_wize_corr_max[pol] = max_pol
-            evt_wize_corr_max_ant[pol, self.good_chs] = evt_wize_corr_ant[:, max_pol_idx]
-            del max_pol, max_pol_idx
-        del evt_wize_corr, evt_wize_corr_ant
+        evt_wize_corr_max = np.nanmax(evt_wize_corr, axis = (1,2))
+        evt_wize_corr_max_ant = evt_wize_corr_max_ant[:, np.where(evt_wize_corr == np.nanmax(evt_wize_corr_max))[2][0]]
+        del evt_wize_corr
 
         return evt_wize_corr_max, evt_wize_corr_max_ant 
 
@@ -248,10 +228,10 @@ class ara_matched_filter:
         corr = self.get_mf_wfs(wf_v, pad_num) 
 
         if snr is not None:
-            snr = snr[self.good_chs]
             corr *= snr[np.newaxis, :, np.newaxis, np.newaxis, np.newaxis]
+        corr[:, self.bad_ant] = np.nan
 
-        evt_wize_corr, evt_wize_corr_max_ant = self.get_evt_wise_corr(corr)
+        evt_wize_corr, evt_wize_corr_max_ant = self.get_evt_wise_corr(corr, use_max = True)
         del corr
 
         return evt_wize_corr, evt_wize_corr_max_ant

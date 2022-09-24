@@ -105,7 +105,6 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
     # set bad run
     bad_run = get_rayl_bad_run(soft_len.shape[-1], np.any(np.isnan(soft_rayl.flatten())), st, run, analyze_blind_dat = analyze_blind_dat, verbose = True)
     del st, run
-    print(bad_run)
 
     print('Rayl. collecting is done!')
 
