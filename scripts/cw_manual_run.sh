@@ -1,7 +1,7 @@
-station=3
-trig=$1
-run=$2
-run_w=1000
+station=$1
+trig=$2
+run=$3
+run_w=500
 ant_c=1
 smear_l=20
 

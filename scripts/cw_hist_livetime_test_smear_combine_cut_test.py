@@ -457,15 +457,15 @@ def get_smear_cut(sub_04, unix_time, trig_type, cw_rf_04, cw_cal_04, cw_soft_04)
 
     return cut_04_idx, pass_04_idx
 
-def get_smear_cut_v2(sub_04, ant_c, trig_type, cw_rf_04, cw_cal_04, cw_soft_04):
+def get_smear_cut_v2(sub_04, cuts, ant_c, trig_type, cw_rf_04, cw_cal_04, cw_soft_04):
     sub_04_rf = np.copy(sub_04)
-    sub_04_rf[:, trig_type != 0] = np.nan
+    sub_04_rf[:, np.logical_or(cuts, trig_type != 0)] = np.nan
     rf_04_idx = np.count_nonzero(sub_04_rf > cw_rf_04[:, np.newaxis], axis = 0) > ant_c
     sub_04_cal = np.copy(sub_04)
-    sub_04_cal[:, trig_type != 1] = np.nan
+    sub_04_cal[:, np.logical_or(cuts, trig_type != 1)] = np.nan
     cal_04_idx = np.count_nonzero(sub_04_cal > cw_cal_04[:, np.newaxis], axis = 0) > ant_c
     sub_04_soft = np.copy(sub_04)
-    sub_04_soft[:, trig_type != 2] = np.nan
+    sub_04_soft[:, np.logical_or(cuts, trig_type != 2)] = np.nan
     soft_04_idx = np.count_nonzero(sub_04_soft > cw_soft_04[:, np.newaxis], axis = 0) > ant_c
     cut_04_idx = np.any((rf_04_idx, cal_04_idx, soft_04_idx), axis = 0)
     pass_04_idx = ~cut_04_idx
@@ -517,12 +517,12 @@ def get_combine_smear_cut(sub_025, sub_0125, unix_time, trig_type, cw_rf_025, cw
 
     return cut_com_idx, pass_com_idx 
 
-def get_combine_smear_cut_v2(sub_025, sub_0125, ant_c, trig_type, cw_rf_025, cw_cal_025, cw_soft_025, cw_rf_0125, cw_cal_0125, cw_soft_0125):
+def get_combine_smear_cut_v2(sub_025, sub_0125, cuts, ant_c, trig_type, cw_rf_025, cw_cal_025, cw_soft_025, cw_rf_0125, cw_cal_0125, cw_soft_0125):
 
     sub_025_rf = np.copy(sub_025)
-    sub_025_rf[:, trig_type != 0] = np.nan
+    sub_025_rf[:, np.logical_or(cuts, trig_type != 0)] = np.nan
     sub_0125_rf = np.copy(sub_0125)
-    sub_0125_rf[:, trig_type != 0] = np.nan
+    sub_0125_rf[:, np.logical_or(cuts, trig_type != 0)] = np.nan
     rf_025_idx = sub_025_rf > cw_rf_025[:, np.newaxis]
     rf_0125_idx = sub_0125_rf > cw_rf_0125[:, np.newaxis]
     rf_idx = np.any((rf_025_idx, rf_0125_idx), axis = 0)
@@ -530,9 +530,9 @@ def get_combine_smear_cut_v2(sub_025, sub_0125, ant_c, trig_type, cw_rf_025, cw_
     del sub_025_rf, sub_0125_rf, rf_025_idx, rf_0125_idx, rf_idx
 
     sub_025_cal = np.copy(sub_025)
-    sub_025_cal[:, trig_type != 1] = np.nan
+    sub_025_cal[:, np.logical_or(cuts, trig_type != 1)] = np.nan
     sub_0125_cal = np.copy(sub_0125)
-    sub_0125_cal[:, trig_type != 1] = np.nan
+    sub_0125_cal[:, np.logical_or(cuts, trig_type != 1)] = np.nan
     cal_025_idx = sub_025_cal > cw_cal_025[:, np.newaxis]
     cal_0125_idx = sub_0125_cal > cw_cal_0125[:, np.newaxis]
     cal_idx = np.any((cal_025_idx, cal_0125_idx), axis = 0)
@@ -540,9 +540,9 @@ def get_combine_smear_cut_v2(sub_025, sub_0125, ant_c, trig_type, cw_rf_025, cw_
     del sub_025_cal, sub_0125_cal, cal_025_idx, cal_0125_idx, cal_idx
 
     sub_025_soft = np.copy(sub_025)
-    sub_025_soft[:, trig_type != 2] = np.nan
+    sub_025_soft[:, np.logical_or(cuts, trig_type != 2)] = np.nan
     sub_0125_soft = np.copy(sub_0125)
-    sub_0125_soft[:, trig_type != 2] = np.nan
+    sub_0125_soft[:, np.logical_or(cuts, trig_type != 2)] = np.nan
     soft_025_idx = sub_025_soft > cw_soft_025[:, np.newaxis]
     soft_0125_idx = sub_0125_soft > cw_soft_0125[:, np.newaxis]
     soft_idx = np.any((soft_025_idx, soft_0125_idx), axis = 0)
@@ -586,13 +586,13 @@ for r in tqdm(range(len(d_run_tot))):
     cur_04_rf, cur_025_rf, cur_0125_rf, cur_04_cal, cur_025_cal, cur_0125_cal, cur_04_soft, cur_025_soft, cur_0125_soft = cur_cut(Station, g_idx)
 
     smear_cut_04_idx, smear_pass_04_idx = get_smear_cut(sub_r[2], unix_time, trig_type, cw_rf_04[:, g_idx], cw_cal_04[:, g_idx], cw_soft_04[:, g_idx])
-    cur_cut_04_idx, cur_pass_04_idx = get_smear_cut_v2(sub_r[2], 0, trig_type, cur_04_rf, cur_04_cal, cur_04_soft)
+    cur_cut_04_idx, cur_pass_04_idx = get_smear_cut_v2(sub_r[2], smear_cut_04_idx, 0, trig_type, cur_04_rf, cur_04_cal, cur_04_soft)
     cut_04_idx = np.logical_or(smear_cut_04_idx, cur_cut_04_idx)
     pass_04_idx = ~cut_04_idx
     del smear_cut_04_idx, smear_pass_04_idx, cur_cut_04_idx, cur_pass_04_idx
 
     smear_cut_025_idx, smear_pass_025_idx = get_combine_smear_cut(sub_r[1], sub_r[0], unix_time, trig_type, cw_rf_025[:, g_idx], cw_cal_025[:, g_idx], cw_soft_025[:, g_idx], cw_rf_0125[:, g_idx], cw_cal_0125[:, g_idx], cw_soft_0125[:, g_idx])
-    cur_cut_025_idx, cur_pass_025_idx = get_combine_smear_cut_v2(sub_r[1], sub_r[0], 0, trig_type, cw_rf_025[:, g_idx], cw_cal_025[:, g_idx], cw_soft_025[:, g_idx], cw_rf_0125[:, g_idx], cw_cal_0125[:, g_idx], cw_soft_0125[:, g_idx])
+    cur_cut_025_idx, cur_pass_025_idx = get_combine_smear_cut_v2(sub_r[1], sub_r[0], smear_cut_025_idx, 0, trig_type, cur_025_rf, cur_025_cal, cur_025_soft, cur_0125_rf, cur_0125_cal, cur_0125_soft)
     cut_025_idx = np.logical_or(smear_cut_025_idx, cur_cut_025_idx)
     pass_025_idx = ~cut_025_idx
     del smear_cut_025_idx, smear_pass_025_idx, cur_cut_025_idx, cur_pass_025_idx
@@ -703,7 +703,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'CW_Table_Test_Smear_Combine_Cut{blined}_v5_A{Station}_T{trig}_C{ant_c}_S{smear_len}_R{count_i}.h5'
+file_name = f'CW_Table_Test_Smear_Combine_Cut{blined}_v7_A{Station}_T{trig}_C{ant_c}_S{smear_len}_R{count_i}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('tot_sec', data=tot_sec, compression="gzip", compression_opts=9)
 hf.create_dataset('tot_bad_sec_04', data=tot_bad_sec_04, compression="gzip", compression_opts=9)

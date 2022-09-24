@@ -555,7 +555,7 @@ def get_combine_smear_cut_v2(sub_025, sub_0125, cuts, ant_c, trig_type, cw_rf_02
 
     return cut_com_idx, pass_com_idx
 
-b_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_cut{blined}_temp/'
+b_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_cut{blined}/'
 if not os.path.exists(b_path):
     os.makedirs(b_path)
 f_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_cut_full/'
@@ -592,7 +592,7 @@ for r in tqdm(range(len(d_run_tot))):
     del smear_cut_04_idx, smear_pass_04_idx, cur_cut_04_idx, cur_pass_04_idx
 
     smear_cut_025_idx, smear_pass_025_idx = get_combine_smear_cut(sub_r[1], sub_r[0], unix_time, trig_type, cw_rf_025[:, g_idx], cw_cal_025[:, g_idx], cw_soft_025[:, g_idx], cw_rf_0125[:, g_idx], cw_cal_0125[:, g_idx], cw_soft_0125[:, g_idx])
-    cur_cut_025_idx, cur_pass_025_idx = get_combine_smear_cut_v2(sub_r[1], sub_r[0], smear_cut_025_idx, 0, trig_type, cw_rf_025[:, g_idx], cw_cal_025[:, g_idx], cw_soft_025[:, g_idx], cw_rf_0125[:, g_idx], cw_cal_0125[:, g_idx], cw_soft_0125[:, g_idx])
+    cur_cut_025_idx, cur_pass_025_idx = get_combine_smear_cut_v2(sub_r[1], sub_r[0], smear_cut_025_idx, 0, trig_type, cur_025_rf, cur_025_cal, cur_025_soft, cur_0125_rf, cur_0125_cal, cur_0125_soft)
     cut_025_idx = np.logical_or(smear_cut_025_idx, cur_cut_025_idx)
     pass_025_idx = ~cut_025_idx
     del smear_cut_025_idx, smear_pass_025_idx, cur_cut_025_idx, cur_pass_025_idx
@@ -703,7 +703,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'CW_Table_Test_Smear_Combine_Cut{blined}_v5_A{Station}_T{trig}_C{ant_c}_S{smear_len}_R{count_i}.h5'
+file_name = f'CW_Table_Test_Smear_Combine_Cut{blined}_v7_A{Station}_T{trig}_C{ant_c}_S{smear_len}_R{count_i}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('tot_sec', data=tot_sec, compression="gzip", compression_opts=9)
 hf.create_dataset('tot_bad_sec_04', data=tot_bad_sec_04, compression="gzip", compression_opts=9)
