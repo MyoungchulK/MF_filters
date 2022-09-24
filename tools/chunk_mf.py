@@ -63,7 +63,7 @@ def mf_collector(Data, Ped, analyze_blind_dat = False):
     rayl_hf = h5py.File(rayl_dat, 'r')
     bad_run = rayl_hf['bad_run'][0]
     if bad_run:
-        print('Bad noise modeling for A{st} R{run}! So, no MF results!')
+        print(f'Bad noise modeling for A{st} R{run}! So, no MF results!')
         evt_wise = np.full((2, num_evts), np.nan, dtype = float)
         evt_wise_ant = np.full((num_ants, num_evts), np.nan, dtype = float)
         return {'evt_num':evt_num,
