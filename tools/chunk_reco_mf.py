@@ -118,7 +118,7 @@ def reco_mf_collector(Data, Ped, analyze_blind_dat = False):
 
         coef[:, :, :, evt], coord[:, :, :, :, evt] = ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt])
         #print(coef[:, :, :, evt], coord[:, :, :, :, evt])       
-    del ara_root, num_evts, num_ants, wf_int, ara_int, daq_qual_cut_sum, weights, wei_pairs
+    del ara_root, num_evts, num_ants, wf_int, ara_int, daq_qual_cut_sum, wei_pairs
 
     print('Reco mf collecting is done!')
 

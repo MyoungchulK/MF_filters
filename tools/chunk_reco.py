@@ -47,7 +47,7 @@ def reco_collector(Data, Ped, analyze_blind_dat = False):
             bad_run_arr.append(run_num)
     bad_run_arr = np.asarray(bad_run_arr, dtype = int)
     if run in bad_run_arr:
-        print(f'Bad noise modeling for A{st} R{run}! So, no Reco_MF results!')
+        print(f'Bad noise modeling for A{st} R{run}! So, no Reco results!')
         coef = np.full((2, 2, 2, num_evts), np.nan, dtype = float) # pol, rad
         coord = np.full((2, 2, 2, 2, num_evts), np.nan, dtype = float) # thephi, pol, rad
         return {'evt_num':evt_num,
@@ -121,7 +121,7 @@ def reco_collector(Data, Ped, analyze_blind_dat = False):
 
         coef[:, :, :, evt], coord[:, :, :, :, evt] = ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt])
         #print(coef[:, :, :, evt], coord[:, :, :, :, evt])       
-    del ara_root, num_evts, num_ants, wf_int, ara_int, daq_qual_cut_sum, weights, wei_pairs
+    del ara_root, num_evts, num_ants, wf_int, ara_int, daq_qual_cut_sum, wei_pairs
 
     print('Reco collecting is done!')
 

@@ -58,14 +58,17 @@ def mf_collector(Data, Ped, analyze_blind_dat = False):
     del run_info, snr_dat, snr_hf, snr_copy, v_sum, h_sum
 
     # rayl table check
-    run_info = run_info_loader(st, run, analyze_blind_dat = True)
-    rayl_dat = run_info.get_result_path(file_type = 'rayl', verbose = True)
-    rayl_hf = h5py.File(rayl_dat, 'r')
-    bad_run = rayl_hf['bad_run'][0]
-    if bad_run:
+    bad_path = f'../data/rayl_runs/rayl_run_A{st}.txt'
+    bad_run_arr = []
+    with open(bad_path, 'r') as f:
+        for lines in f:
+            run_num = int(lines)
+            bad_run_arr.append(run_num)
+    bad_run_arr = np.asarray(bad_run_arr, dtype = int)
+    if run in bad_run_arr:
         print(f'Bad noise modeling for A{st} R{run}! So, no MF results!')
         evt_wise = np.full((2, num_evts), np.nan, dtype = float)
-        evt_wise_ant = np.full((num_ants, num_evts), np.nan, dtype = float)
+        evt_wise_ant = np.full((2, num_ants, num_evts), np.nan, dtype = float)
         return {'evt_num':evt_num,
             'entry_num':entry_num,
             'trig_type':trig_type,
@@ -76,7 +79,7 @@ def mf_collector(Data, Ped, analyze_blind_dat = False):
             'evt_wise':evt_wise,
             'evt_wise_ant':evt_wise_ant}
     else:
-        del run_info, rayl_dat, rayl_hf, bad_run
+        del bad_path, bad_run_arr
 
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True)
