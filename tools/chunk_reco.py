@@ -47,7 +47,7 @@ def reco_collector(Data, Ped, analyze_blind_dat = False):
             bad_run_arr.append(run_num)
     bad_run_arr = np.asarray(bad_run_arr, dtype = int)
     if run in bad_run_arr:
-        print(f'Bad noise modeling for A{st} R{run}! So, no Reco_MF results!')
+        print(f'Bad noise modeling for A{st} R{run}! So, no Reco results!')
         coef = np.full((2, 2, 2, num_evts), np.nan, dtype = float) # pol, rad
         coord = np.full((2, 2, 2, 2, num_evts), np.nan, dtype = float) # thephi, pol, rad
         return {'evt_num':evt_num,
