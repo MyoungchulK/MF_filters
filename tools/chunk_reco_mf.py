@@ -2,9 +2,9 @@ import numpy as np
 from tqdm import tqdm
 import h5py
 
-def reco_collector(Data, Ped, analyze_blind_dat = False):
+def reco_mf_collector(Data, Ped, analyze_blind_dat = False):
 
-    print('Collecting reco starts!')
+    print('Collecting reco mf starts!')
 
     from tools.ara_data_load import ara_uproot_loader
     from tools.ara_data_load import ara_root_loader
@@ -48,7 +48,7 @@ def reco_collector(Data, Ped, analyze_blind_dat = False):
             bad_run_arr.append(run_num)
     bad_run_arr = np.asarray(bad_run_arr, dtype = int)
     if run in bad_run_arr:
-        print(f'Bad noise modeling for A{st} R{run}! So, no Reco results!')
+        print(f'Bad noise modeling for A{st} R{run}! So, no Reco_MF results!')
         coef = np.full((2, 2, 2, num_evts), np.nan, dtype = float) # pol, rad
         coord = np.full((2, 2, 2, 2, num_evts), np.nan, dtype = float) # thephi, pol, rad
         return {'evt_num':evt_num,
@@ -70,7 +70,7 @@ def reco_collector(Data, Ped, analyze_blind_dat = False):
     del daq_dat, daq_hf
 
     # snr info
-    wei_key = 'snr'
+    wei_key = 'mf'
     wei_dat = run_info.get_result_path(file_type = wei_key, verbose = True)
     wei_hf = h5py.File(wei_dat, 'r')
     if wei_key == 'mf':
@@ -120,7 +120,7 @@ def reco_collector(Data, Ped, analyze_blind_dat = False):
         #print(coef[:, :, :, evt], coord[:, :, :, :, evt])       
     del ara_root, num_evts, num_ants, wf_int, ara_int, daq_qual_cut_sum, wei_pairs
 
-    print('Reco collecting is done!')
+    print('Reco mf collecting is done!')
 
     return {'evt_num':evt_num,
             'entry_num':entry_num,

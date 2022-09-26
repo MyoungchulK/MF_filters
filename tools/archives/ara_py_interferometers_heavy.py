@@ -94,7 +94,7 @@ class py_interferometers:
 
         self.int_factor = (self.table - self.lags[self.p0_idx])/self.dt
 
-    def get_coval_sample(self, corr, sum_pol = False):
+    def get_coval_sample(self, corr):
 
         corr_diff = corr[1:] - corr[:-1]
 
@@ -104,11 +104,16 @@ class py_interferometers:
         coval[self.bad_arr] = 0
         del corr_diff
 
-        if sum_pol:
-            corr_v_sum = np.nansum(coval[:, :, :, :, :self.v_pairs_len], axis = 4)
-            corr_h_sum = np.nansum(coval[:, :, :, :, self.v_pairs_len:], axis = 4)
+        return coval
 
-            corr_v_max = np.nanmax(corr_v_sum, axis = (0,1))
+    def get_coval_sum(self, coval, use_max = False):
+
+        # coval -> # theta, phi, rad, sol, pairs
+        corr_v_sum = np.nansum(coval[:, :, :, :, :self.v_pairs_len], axis = 4) # theta, phi, rad, sol
+        corr_h_sum = np.nansum(coval[:, :, :, :, self.v_pairs_len:], axis = 4)
+
+        if use_max: 
+            corr_v_max = np.nanmax(corr_v_sum, axis = (0,1)) # rad, sol
             corr_h_max = np.nanmax(corr_h_sum, axis = (0,1))
             coval = np.asarray([corr_v_max, corr_h_max]) # pol, rad, sol
 
@@ -121,6 +126,7 @@ class py_interferometers:
 
             return coval, coord
         else:
+            coval = np.asarray([corr_v_sum, corr_h_sum]) # pol, theta, phi, rad, sol
             return coval
 
     def get_cross_correlation(self, pad_v, return_debug_dat = False):
@@ -145,19 +151,31 @@ class py_interferometers:
             del nor_fac
             return corr
     
-    def get_sky_map(self, pad_v, weights = None):
-        
+    def get_sky_map(self, pad_v, weights = None, ano_weights = None):
+
         # correlation
         corr = self.get_cross_correlation(pad_v)
 
-        if weights is not None:
-           corr *= weights
-
-        #coval
-        coval, coord = self.get_coval_sample(corr, sum_pol = True)
+        # coval
+        coval_pairs = self.get_coval_sample(corr)
         del corr
+    
+        if weights is not None and ano_weights is not None:
+            coval, coord = self.get_coval_sum(coval_pairs * weights[np.newaxis, np.newaxis, np.newaxis, np.newaxis, :], use_max = True)
+            ano_coval, ano_coord = self.get_coval_sum(coval_pairs * ano_weights[np.newaxis, np.newaxis, np.newaxis, np.newaxis, :], use_max = True) 
+        else:
+            if weights is not None and ano_weights is None:
+                coval_pairs *= weights[np.newaxis, np.newaxis, np.newaxis, np.newaxis, :]
+            elif ano_weights is not None and weights is None:
+                coval_pairs *= ano_weights[np.newaxis, np.newaxis, np.newaxis, np.newaxis, :]
+            else:
+                pass
+            coval, coord = self.get_coval_sum(coval_pairs, use_max = True)
+            ano_coval = np.full(coval.shape, np.nan, dtype = float)
+            ano_coord = np.full(coord.shape, np.nan, dtype = float)
+        del coval_pairs
 
-        return coval, coord
+        return coval, coord, ano_coval, ano_coord
 
 def get_products(weights, pairs, v_pairs_len):
    
