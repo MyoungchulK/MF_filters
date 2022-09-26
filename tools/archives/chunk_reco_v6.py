@@ -11,7 +11,6 @@ def reco_collector(Data, Ped, analyze_blind_dat = False):
     from tools.ara_constant import ara_const
     from tools.ara_wf_analyzer import wf_analyzer
     from tools.ara_py_interferometers import py_interferometers
-    from tools.ara_py_interferometers import get_products
     from tools.ara_run_manager import run_info_loader
     from tools.ara_known_issue import known_issue_loader
 
@@ -49,20 +48,16 @@ def reco_collector(Data, Ped, analyze_blind_dat = False):
     bad_run_arr = np.asarray(bad_run_arr, dtype = int)
     if run in bad_run_arr:
         print(f'Bad noise modeling for A{st} R{run}! So, no Reco results!')
-        coef_mf = np.full((2, 2, 2, num_evts), np.nan, dtype = float) # pol, rad
-        coef_snr = np.copy(coef_mf)
-        coord_mf = np.full((2, 2, 2, 2, num_evts), np.nan, dtype = float) # thephi, pol, rad
-        coord_snr = np.copy(coord_mf)
+        coef = np.full((2, 2, 2, num_evts), np.nan, dtype = float) # pol, rad
+        coord = np.full((2, 2, 2, 2, num_evts), np.nan, dtype = float) # thephi, pol, rad
         return {'evt_num':evt_num,
             'entry_num':entry_num,
             'trig_type':trig_type,
             'unix_time':unix_time,
             'pps_number':pps_number,
             'bad_ant':bad_ant,
-            'coef_mf':coef_mf,
-            'coef_snr':coef_snr,
-            'coord_mf':coord_mf,
-            'coord_snr':coord_snr}
+            'coef':coef,
+            'coord':coord}
     else:
         del bad_path, bad_run_arr
 
@@ -73,17 +68,19 @@ def reco_collector(Data, Ped, analyze_blind_dat = False):
     daq_qual_cut_sum = daq_hf['daq_qual_cut_sum'][:]
     del daq_dat, daq_hf
 
-    # weight info
-    mf_dat = run_info.get_result_path(file_type ='mf', verbose = True)
-    mf_hf = h5py.File(mf_dat, 'r')
-    mf_ant = mf_hf['evt_wise_ant'][:]
-    mf_wei = np.full((num_ants, num_evts), np.nan, dtype = float)
-    mf_wei[:8] = mf_ant[0, :8]
-    mf_wei[8:] = mf_ant[1, 8:]
-    snr_dat = run_info.get_result_path(file_type ='snr', verbose = True)
-    snr_hf = h5py.File(snr_dat, 'r')
-    snr_wei = snr_hf['snr'][:]
-    del run_info, mf_dat, mf_hf, mf_ant, snr_dat, snr_hf
+    # snr info
+    wei_key = 'snr'
+    wei_dat = run_info.get_result_path(file_type = wei_key, verbose = True)
+    wei_hf = h5py.File(wei_dat, 'r')
+    if wei_key == 'mf':
+        wei_ant = wei_hf['evt_wise_ant'][:]
+        weights = np.full((num_ants, num_evts), np.nan, dtype = float)
+        weights[:8] = wei_ant[0, :8]
+        weights[8:] = wei_ant[1, 8:]
+        del wei_ant 
+    else:
+        weights = wei_hf['snr'][:]
+    del run_info, wei_key, wei_dat, wei_hf
 
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, add_double_pad = True)
@@ -92,15 +89,16 @@ def reco_collector(Data, Ped, analyze_blind_dat = False):
     ara_int = py_interferometers(wf_int.pad_len, wf_int.dt, st, yr, run = run, get_sub_file = True)
     pairs = ara_int.pairs
     v_pairs_len = ara_int.v_pairs_len
-    mf_pairs = get_products(mf_wei, pairs, v_pairs_len)
-    snr_pairs = get_products(snr_wei, pairs, v_pairs_len)
-    del st, yr, run, pairs, v_pairs_len, mf_wei, snr_wei
+    wei_pairs = weights[pairs[:, 0]] * weights[pairs[:, 1]]
+    wei_v_sum = np.nansum(wei_pairs[:v_pairs_len], axis = 0)
+    wei_h_sum = np.nansum(wei_pairs[v_pairs_len:], axis = 0)
+    wei_pairs[:v_pairs_len] /= wei_v_sum[np.newaxis, :]
+    wei_pairs[v_pairs_len:] /= wei_h_sum[np.newaxis, :] 
+    del st, yr, run, pairs, v_pairs_len, weights, wei_v_sum, wei_h_sum
 
     # output array  
-    coef_mf = np.full((2, 2, 2, num_evts), np.nan, dtype = float) # pol, rad
-    coef_snr = np.copy(coef_mf)
-    coord_mf = np.full((2, 2, 2, 2, num_evts), np.nan, dtype = float) # thephi, pol, rad
-    coord_snr = np.copy(coord_mf)
+    coef = np.full((2, 2, 2, num_evts), np.nan, dtype = float) # pol, rad, sol
+    coord = np.full((2, 2, 2, 2, num_evts), np.nan, dtype = float) # pol, thephi, rad, sol
 
     # loop over the events
     for evt in tqdm(range(num_evts)):
@@ -121,9 +119,9 @@ def reco_collector(Data, Ped, analyze_blind_dat = False):
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()   
 
-        coef_mf[:, :, :, evt], coord_mf[:, :, :, :, evt], coef_snr[:, :, :, evt], coord_snr[:, :, :, :, evt] = ara_int.get_sky_map(wf_int.pad_v, weights = mf_pairs[:, evt], ano_weights = snr_pairs[:, evt])
-        #print(coef_mf[:, :, :, evt], coord_mf[:, :, :, :, evt], coef_snr[:, :, :, evt], coord_snr[:, :, :, :, evt])
-    del ara_root, num_evts, num_ants, wf_int, ara_int, daq_qual_cut_sum, mf_pairs, snr_pairs
+        coef[:, :, :, evt], coord[:, :, :, :, evt] = ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt])
+        #print(coef[:, :, :, evt], coord[:, :, :, :, evt])       
+    del ara_root, num_evts, num_ants, wf_int, ara_int, daq_qual_cut_sum, wei_pairs
 
     print('Reco collecting is done!')
 
@@ -133,10 +131,8 @@ def reco_collector(Data, Ped, analyze_blind_dat = False):
             'unix_time':unix_time,
             'pps_number':pps_number,
             'bad_ant':bad_ant,
-            'coef_mf':coef_mf,
-            'coef_snr':coef_snr,
-            'coord_mf':coord_mf,
-            'coord_snr':coord_snr}
+            'coef':coef,
+            'coord':coord}
 
 
 
