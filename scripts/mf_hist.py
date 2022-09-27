@@ -23,7 +23,7 @@ s_type = ''
 #s_type = 'noise_'
 #s_type = 'signal_F1_'
 
-bad_path = f'../data/rayl_runs/rayl_run_A{station}.txt'
+bad_path = f'../data/rayl_runs/rayl_run_A{Station}.txt'
 bad_run_arr = []
 with open(bad_path, 'r') as f:
     for lines in f:
@@ -71,17 +71,20 @@ for r in tqdm(range(len(d_run_tot))):
 
     if d_type != '_sim':
         q_name = f'{q_path}qual_cut_A{Station}_R{d_run_tot[r]}.h5'
-        c_name = f'{q_path}cw_cut_A{Station}_R{d_run_tot[r]}.h5'
+        c_name = f'{c_path}cw_cut_A{Station}_R{d_run_tot[r]}.h5'
         hf_q = h5py.File(q_name, 'r')
-        q_cut = hf_q['tot_qual_cut_sum'][:]
+        q_cut_tot = hf_q['tot_qual_cut'][:]
+        q_cut_tot[:, 10] = 0 # disable bad unix time
+        q_cut_tot[:, 21] = 0 # disable known bad run
+        q_cut = np.nansum(q_cut_tot, axis = 1) 
         trig_type = hf_q['trig_type'][:]
         hf_c = h5py.File(c_name, 'r')
         q_cut += hf_c['cw_qual_cut_sum'][:]
         q_cut = q_cut.astype(int)
-        del q_name, c_name, hf_q, hf_c
+        del q_name, c_name, hf_q, hf_c, q_cut_tot
         rf_idx = trig_type == 0
         cal_idx = trig_type == 1
-        soft_idx = trig_type == 1
+        soft_idx = trig_type == 2
         rf_c_idx = np.logical_and(rf_idx, q_cut == 0)
         cal_c_idx = np.logical_and(cal_idx, q_cut == 0)
         soft_c_idx = np.logical_and(soft_idx, q_cut == 0)
@@ -129,10 +132,10 @@ for r in tqdm(range(len(d_run_tot))):
             mf_list_rf_clean.append(mf_h_rf_c)
             mf_list_cal_clean.append(mf_h_cal_c)
             mf_list_soft_clean.append(mf_h_soft_c)
+        
+            num_evts[c_idx] += np.count_nonzero(~np.isnan(evt_w_rf_c[0]))
             del evt_w_rf, evt_w_cal, evt_w_soft, evt_w_rf_c, evt_w_cal_c, evt_w_soft_c
             del rf_idx, cal_idx, soft_idx, rf_c_idx, cal_c_idx, soft_c_idx
-
-            num_evts[c_idx] += np.count_nonzero(~np.isnan(evt_w_rf_c[0]))
     else:
             num_evts[c_idx] += np.count_nonzero(~np.isnan(evt_wise[0]))
 
@@ -142,7 +145,6 @@ for r in tqdm(range(len(d_run_tot))):
     mf_hist[:, :, c_idx] += mf_h
     if d_type != '_sim':
         mf_list.append(mf_h)
-    del evt_w_rf, evt_w_cal, evt_w_soft, evt_w_rf_c, evt_w_cal_c, evt_w_soft_c
     del evt_wise, c_idx
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
