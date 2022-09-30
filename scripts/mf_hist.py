@@ -38,7 +38,9 @@ if d_type != '_sim':
     q_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/qual_cut/'
     c_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_cut/'
 
-mf_bins = np.linspace(0,15,1500+1)
+run_num = []
+config = []
+mf_bins = np.linspace(0,5,2000+1)
 mf_bin_center = (mf_bins[1:] + mf_bins[:-1]) / 2
 mf_bin_len = len(mf_bin_center)
 mf_hist = np.full((2, mf_bin_len, config_len), 0, dtype = int)
@@ -68,13 +70,17 @@ for r in tqdm(range(len(d_run_tot))):
     ara_run = run_info_loader(Station, d_run_tot[r])
     c_idx = ara_run.get_config_number() - 1
     del ara_run
+    
+    con_num = int(c_idx + 1)
+    run_num.append(d_run_tot[r])
+    config.append(con_num)
 
     if d_type != '_sim':
         q_name = f'{q_path}qual_cut_A{Station}_R{d_run_tot[r]}.h5'
         c_name = f'{c_path}cw_cut_A{Station}_R{d_run_tot[r]}.h5'
         hf_q = h5py.File(q_name, 'r')
         q_cut_tot = hf_q['tot_qual_cut'][:]
-        q_cut_tot[:, 10] = 0 # disable bad unix time
+        #q_cut_tot[:, 10] = 0 # disable bad unix time
         q_cut_tot[:, 21] = 0 # disable known bad run
         q_cut = np.nansum(q_cut_tot, axis = 1) 
         trig_type = hf_q['trig_type'][:]
@@ -114,12 +120,12 @@ for r in tqdm(range(len(d_run_tot))):
             mf_h_cal_c = np.full((2, mf_bin_len), 0, dtype = int)
             mf_h_soft_c = np.full((2, mf_bin_len), 0, dtype = int)
             for a in range(2):
-                mf_h_rf[a] = np.histogram(evt_w_rf[a], bins = mf_bins)[0]
-                mf_h_cal[a] = np.histogram(evt_w_cal[a], bins = mf_bins)[0]
-                mf_h_soft[a] = np.histogram(evt_w_soft[a], bins = mf_bins)[0]
-                mf_h_rf_c[a] = np.histogram(evt_w_rf_c[a], bins = mf_bins)[0]
-                mf_h_cal_c[a] = np.histogram(evt_w_cal_c[a], bins = mf_bins)[0]
-                mf_h_soft_c[a] = np.histogram(evt_w_soft_c[a], bins = mf_bins)[0]
+                mf_h_rf[a] = np.histogram(evt_w_rf[a], bins = mf_bins)[0].astype(int)
+                mf_h_cal[a] = np.histogram(evt_w_cal[a], bins = mf_bins)[0].astype(int)
+                mf_h_soft[a] = np.histogram(evt_w_soft[a], bins = mf_bins)[0].astype(int)
+                mf_h_rf_c[a] = np.histogram(evt_w_rf_c[a], bins = mf_bins)[0].astype(int)
+                mf_h_cal_c[a] = np.histogram(evt_w_cal_c[a], bins = mf_bins)[0].astype(int)
+                mf_h_soft_c[a] = np.histogram(evt_w_soft_c[a], bins = mf_bins)[0].astype(int)
             mf_hist_rf[:, :, c_idx] += mf_h_rf
             mf_hist_cal[:, :, c_idx] += mf_h_cal
             mf_hist_soft[:, :, c_idx] += mf_h_soft
@@ -151,8 +157,10 @@ path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
-file_name = f'MF{d_type}_{s_type}A{Station}.h5'
+file_name = f'MF{d_type}_{s_type}A{Station}_v1.h5'
 hf = h5py.File(file_name, 'w')
+hf.create_dataset('run_num', data=np.asarray(run_num), compression="gzip", compression_opts=9)
+hf.create_dataset('config', data=np.asarray(config), compression="gzip", compression_opts=9)
 hf.create_dataset('mf_bins', data=mf_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('mf_bin_center', data=mf_bin_center, compression="gzip", compression_opts=9)
 hf.create_dataset('mf_hist', data=mf_hist, compression="gzip", compression_opts=9)
