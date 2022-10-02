@@ -4,76 +4,77 @@ from glob import glob
 import h5py
 from tqdm import tqdm
 
-# argv
-Station = int(sys.argv[1]) # station id
-Data_path = str(sys.argv[2]) # directory that all the event_rate h5 are stored
-Output_path = str(sys.argv[3]) # place that you want to store giant single file
+curr_path = os.getcwd()
+sys.path.append(curr_path+'/../')
+from tools.ara_run_manager import file_sorter
+from tools.ara_utility import size_checker
+#from tools.ara_run_manager import run_info_loader
+#from tools.ara_known_issue import known_issue_loader
 
-# collecting file list
-d_paths = glob(f'{Data_path}*h5')
-d_len = len(d_paths)
-print('Total Runs:',d_len)
+Station = int(sys.argv[1])
 
-# get run numbers from file name
-run_num = np.full((d_len),0,dtype=int)
-i_key = f'_A{Station}_R'
-i_key_len = len(i_key)
-for files in range(d_len):
-    i_idx = d_paths[files].find(i_key)
-    f_idx = d_paths[files].find('.h5', i_idx + i_key_len)
-    run_num[files] = int(d_paths[files][i_idx + i_key_len:f_idx])
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/sub_info_full/*'
+d_list, d_run_tot, d_run_range = file_sorter(d_path)
 
-# resorting data lists by run number
-run_index = np.argsort(run_num)
-run_num = run_num[run_index]
-d_list = []
-for d in range(d_len):
-    d_list.append(d_paths[run_index[d]])
-del d_paths
+time_bins = np.linspace(0, 360, 360 + 1)
+time_bin_center = (time_bins[1:] + time_bins[:-1]) / 2
+evt_bins = np.linspace(0, 200, 200 + 1)
+evt_bin_center = (evt_bins[1:] + evt_bins[:-1]) / 2
 
-# giant array for storing data
-ops_time_pad = 500 # 500 minute
-evt_rate = np.full((ops_time_pad, d_len), np.nan, dtype = float)
-rf_evt_rate = np.copy(evt_rate)
-cal_evt_rate = np.copy(evt_rate)
-soft_evt_rate = np.copy(evt_rate)
-time_bins = np.copy(evt_rate)
-num_of_secs = np.copy(evt_rate)
+evt_map_pps = np.full((len(time_bin_center), len(evt_bin_center)), 0, dtype = int)
+evt_map_pps_rf = np.copy(evt_map_pps)
+evt_map_pps_cal = np.copy(evt_map_pps)
+evt_map_pps_soft = np.copy(evt_map_pps)
+evt_map_unix = np.copy(evt_map_pps)
+evt_map_unix_rf = np.copy(evt_map_pps)
+evt_map_unix_cal = np.copy(evt_map_pps)
+evt_map_unix_soft = np.copy(evt_map_pps)
 
-# open each event rate file and store the result into above giant files
-for r in tqdm(range(d_len)):
+for r in tqdm(range(len(d_run_tot))):
+  #if r < 10:
 
- #if r <10:
+    hf = h5py.File(d_list[r], 'r') 
+    evt_pps = hf['evt_sec_rate_pps'][:]    
+    rf_pps = hf['rf_sec_rate_pps'][:]    
+    cal_pps = hf['cal_sec_rate_pps'][:]    
+    soft_pps = hf['soft_sec_rate_pps'][:]    
+    evt_unix = hf['evt_sec_rate_unix'][:]    
+    rf_unix = hf['rf_sec_rate_unix'][:]    
+    cal_unix = hf['cal_sec_rate_unix'][:]    
+    soft_unix = hf['soft_sec_rate_unix'][:]    
+    pps_len = np.arange(len(evt_pps), dtype = float) / 60
+    unix_len = np.arange(len(evt_unix), dtype = float) / 60
 
-    hf = h5py.File(d_list[r], 'r')
-    t_bins = hf['time_bins'][:]
-    evt_len = len(t_bins) - 1 
-    time_bins[:evt_len+1, r] = t_bins
-    num_of_secs[:evt_len, r] = hf['num_of_secs'][:]
-    evt_rate[:evt_len, r] = hf['evt_rate'][:]
-    rf_evt_rate[:evt_len, r] = hf['rf_evt_rate'][:]
-    cal_evt_rate[:evt_len, r] = hf['cal_evt_rate'][:]
-    soft_evt_rate[:evt_len, r] = hf['soft_evt_rate'][:]
-    del hf, t_bins, evt_len
+    evt_map_pps += np.histogram2d(pps_len, evt_pps, bins = (time_bins, evt_bins))[0].astype(int)
+    evt_map_pps_rf += np.histogram2d(pps_len, rf_pps, bins = (time_bins, evt_bins))[0].astype(int)
+    evt_map_pps_cal += np.histogram2d(pps_len, cal_pps, bins = (time_bins, evt_bins))[0].astype(int)
+    evt_map_pps_soft += np.histogram2d(pps_len, soft_pps, bins = (time_bins, evt_bins))[0].astype(int)
+    evt_map_unix += np.histogram2d(unix_len, evt_unix, bins = (time_bins, evt_bins))[0].astype(int)
+    evt_map_unix_rf += np.histogram2d(unix_len, rf_unix, bins = (time_bins, evt_bins))[0].astype(int)
+    evt_map_unix_cal += np.histogram2d(unix_len, cal_unix, bins = (time_bins, evt_bins))[0].astype(int)
+    evt_map_unix_soft += np.histogram2d(unix_len, soft_unix, bins = (time_bins, evt_bins))[0].astype(int)
 
-# svae result
-if not os.path.exists(Output_path):
-    os.makedirs(Output_path)
-file_name = f'{Output_path}Evt_Rate_A{Station}.h5'
+    del hf, evt_pps, rf_pps, cal_pps, soft_pps, evt_unix, rf_unix, cal_unix, soft_unix, pps_len, unix_len
+
+path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
+if not os.path.exists(path):
+    os.makedirs(path)
+os.chdir(path)
+file_name = f'Evt_Rate_Sec_2d_{Station}.h5'
 hf = h5py.File(file_name, 'w')
-hf.create_dataset('run_num', data=run_num, compression="gzip", compression_opts=9)
 hf.create_dataset('time_bins', data=time_bins, compression="gzip", compression_opts=9)
-hf.create_dataset('num_of_secs', data=num_of_secs, compression="gzip", compression_opts=9)
-hf.create_dataset('evt_rate', data=evt_rate, compression="gzip", compression_opts=9)
-hf.create_dataset('rf_evt_rate', data=rf_evt_rate, compression="gzip", compression_opts=9)
-hf.create_dataset('cal_evt_rate', data=cal_evt_rate, compression="gzip", compression_opts=9)
-hf.create_dataset('soft_evt_rate', data=soft_evt_rate, compression="gzip", compression_opts=9)
+hf.create_dataset('time_bin_center', data=time_bin_center, compression="gzip", compression_opts=9)
+hf.create_dataset('evt_bins', data=evt_bins, compression="gzip", compression_opts=9)
+hf.create_dataset('evt_bin_center', data=evt_bin_center, compression="gzip", compression_opts=9)
+hf.create_dataset('evt_map_pps', data=evt_map_pps, compression="gzip", compression_opts=9)
+hf.create_dataset('evt_map_pps_rf', data=evt_map_pps_rf, compression="gzip", compression_opts=9)
+hf.create_dataset('evt_map_pps_cal', data=evt_map_pps_cal, compression="gzip", compression_opts=9)
+hf.create_dataset('evt_map_pps_soft', data=evt_map_pps_soft, compression="gzip", compression_opts=9)
+hf.create_dataset('evt_map_unix', data=evt_map_unix, compression="gzip", compression_opts=9)
+hf.create_dataset('evt_map_unix_rf', data=evt_map_unix_rf, compression="gzip", compression_opts=9)
+hf.create_dataset('evt_map_unix_cal', data=evt_map_unix_cal, compression="gzip", compression_opts=9)
+hf.create_dataset('evt_map_unix_soft', data=evt_map_unix_soft, compression="gzip", compression_opts=9)
 hf.close()
-print('done!')
-
-
-
-
-
-
-
+print('file is in:',path+file_name)
+# quick size check
+size_checker(path+file_name)

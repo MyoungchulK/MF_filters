@@ -66,6 +66,7 @@ class pre_qual_cut_loader:
         self.evt_sort = self.sub_info_hf['evt_num_sort'][:]
         self.unix_sort = self.sub_info_hf['unix_time_sort'][:]
         self.pps_sort = self.sub_info_hf['pps_number_sort_reset'][:]
+        self.trig_sort = self.sub_info_hf['trig_type_sort'][:]
         del sub_info_dat, run_info
 
         self.ara_known_issue = known_issue_loader(self.st)
@@ -172,13 +173,11 @@ class pre_qual_cut_loader:
 
         rf_read_win_len, soft_read_win_len = self.get_read_win_limit()
         blk_len = self.sub_info_hf['blk_len_sort'][:]
-        trig_sort = self.sub_info_hf['trig_type_sort'][:]
         single_read_bools = blk_len < 2
         rf_cal_read_bools = blk_len < rf_read_win_len
-        rf_read_bools = np.logical_and(rf_cal_read_bools, trig_sort == 0)
-        cal_read_bools = np.logical_and(rf_cal_read_bools, trig_sort == 1)
-        soft_read_bools = np.logical_and(blk_len != soft_read_win_len, trig_sort == 2)
-        #soft_read_bools = np.logical_and(blk_len < soft_read_win_len, trig_sort == 2)
+        rf_read_bools = np.logical_and(rf_cal_read_bools, self.trig_sort == 0)
+        cal_read_bools = np.logical_and(rf_cal_read_bools, self.trig_sort == 1)
+        soft_read_bools = np.logical_and(blk_len != soft_read_win_len, self.trig_sort == 2)
         del blk_len, rf_read_win_len, soft_read_win_len, rf_cal_read_bools
 
         if use_smear:
@@ -186,11 +185,10 @@ class pre_qual_cut_loader:
             cal_smear_bools = np.in1d(self.pps_sort, get_time_smearing(self.pps_sort[cal_read_bools]))
             soft_smear_bools = np.in1d(self.pps_sort, get_time_smearing(self.pps_sort[soft_read_bools]))
             tot_smear_bools = np.any((rf_smear_bools, cal_smear_bools, soft_smear_bools), axis = 0) 
-            rf_read_bools = np.logical_and(tot_smear_bools, trig_sort == 0)
-            cal_read_bools = np.logical_and(tot_smear_bools, trig_sort == 1)
-            soft_read_bools = np.logical_and(tot_smear_bools, trig_sort == 2)
+            rf_read_bools = np.logical_and(tot_smear_bools, self.trig_sort == 0)
+            cal_read_bools = np.logical_and(tot_smear_bools, self.trig_sort == 1)
+            soft_read_bools = np.logical_and(tot_smear_bools, self.trig_sort == 2)
             del rf_smear_bools, cal_smear_bools, soft_smear_bools, tot_smear_bools
-        del trig_sort
 
         bad_single_evts = self.evt_sort[single_read_bools]
         bad_rf_evts = self.evt_sort[rf_read_bools]
@@ -213,16 +211,306 @@ class pre_qual_cut_loader:
 
         return read_win_err
 
+    def get_first_minute_events(self):
+
+        unix_time_full = self.sub_info_hf['unix_time'][:]
+        unix_cut = unix_time_full[0] + 60
+        first_min_evt_bools = (self.unix_time < unix_cut)
+        del unix_cut, unix_time_full
+
+        unix_sort_cut = self.unix_sort[0] + 60
+        first_min_evt_sort = self.evt_sort[self.unix_sort < unix_sort_cut]
+        first_min_evt_sort_bools = np.in1d(self.evt_num, first_min_evt_sort)
+        del unix_sort_cut, first_min_evt_sort
+
+        first_min_evts = np.logical_or(first_min_evt_bools, first_min_evt_sort_bools).astype(int)
+        del first_min_evt_bools, first_min_evt_sort_bools
+
+        if self.verbose:
+            quick_qual_check(first_min_evts != 0, 'first minute events', self.evt_num)
+
+        return first_min_evts
+
+    def get_bias_voltage_events(self, volt_cut = [3, 3.5], use_smear = False):
+
+        volt_cut = np.asarray(volt_cut, dtype = float)
+        bias_volt_evts = np.full((self.num_evts), 0, dtype = int)
+
+        sensor_unix = self.sub_info_hf['sensor_unix_time'][:]
+        if any(np.isnan(sensor_unix)):
+            print('There is empty sensorHk file!')
+            return bias_volt_evts
+        sensor_unix_len = len(sensor_unix)
+        if sensor_unix_len == 0:
+            print('There is empty sensorHk file!')
+            bias_volt_evts[:] = 1
+            if self.verbose:
+                quick_qual_check(bias_volt_evts != 0, 'bias voltage events', self.evt_num)
+            return bias_volt_evts
+
+        sort_idx = np.argsort(sensor_unix)
+        sensor_unix = sensor_unix[sort_idx]
+        dda_volt = self.sub_info_hf['dda_volt'][:]
+        dda_volt = dda_volt[sort_idx]
+        del sort_idx
+
+        bad_dda_bool = np.logical_or(dda_volt < volt_cut[0], dda_volt > volt_cut[1])
+        if use_smear:
+            semar_arr = np.arange(-1, 1 + 1, 1, dtype = int)
+            sensor_idx = np.arange(sensor_unix_len, dtype = int)
+            good_dda_bool = np.full((sensor_unix_len, num_ddas), False, dtype = bool)
+            for dda in range(num_ddas):
+                bad_sensor_idx = sensor_idx[bad_dda_bool[:, dda]]
+                bad_sensor_idx = get_time_smearing(bad_sensor_idx, smear_arr = semar_arr)
+                good_dda_bool[:, dda] = np.in1d(sensor_idx, bad_sensor_idx, invert =True)
+                del bad_sensor_idx
+            del sensor_idx, semar_arr
+        else:
+            good_dda_bool = ~bad_dda_bool
+        del bad_dda_bool
+
+        if sensor_unix_len == 1:
+            print('There is single sensorHk values!')
+            dda_digi_idx = np.array([0], dtype = int)
+            good_digi_bool = np.copy(good_dda_bool)
+        else:
+            dda_digi_idx = np.arange(sensor_unix_len, dtype = int)[1:]
+            good_digi_bool = np.logical_and(good_dda_bool[1:], good_dda_bool[:-1])
+        del dda_volt, good_dda_bool
+ 
+        unix_digi = np.digitize(self.unix_time, sensor_unix) 
+        for dda in range(num_ddas):
+            good_digi_idx = dda_digi_idx[good_digi_bool[:, dda]]
+            bias_volt_evts[:] += np.in1d(unix_digi, good_digi_idx, invert =True).astype(int)
+            del good_digi_idx
+        bias_volt_evts[bias_volt_evts != 0] = 1
+        del volt_cut, sensor_unix, sensor_unix_len, unix_digi, dda_digi_idx, good_digi_bool
+
+        if self.verbose:
+            quick_qual_check(bias_volt_evts != 0, 'bias voltage events', self.evt_num)
+
+        return bias_volt_evts
+  
+    def get_bad_trig_rate_events(self, rate_bins, rate, smear_val = 0, sec_val = 60, lower_cut = None, upper_cut = None, use_pps = False):
+
+        if lower_cut is not None and upper_cut == None:
+            bad_rate_idx = rate < lower_cut
+        elif upper_cut is not None and lower_cut == None:
+            bad_rate_idx = rate > upper_cut
+        elif lower_cut is not None and upper_cut is not None:
+            bad_rate_idx = np.logical_or(rate < lower_cut, rate > upper_cut)
+        else:
+            print('event rate cut value is not defined!')
+            sys.exit(1)
+
+        sec_arr = np.arange(sec_val, dtype = int)
+        smear_arr = np.arange(-1* smear_val * len(sec_arr), (smear_val + 1) * len(sec_arr), 1, dtype = int)        
+
+        bad_sec = get_time_smearing(rate_bins[bad_rate_idx], smear_arr = smear_arr, smear_arr_2nd = sec_arr) 
+        del smear_arr, sec_arr, bad_rate_idx
+
+        if use_pps:
+            time_arr = self.pps_sort
+        else:
+            time_arr = self.unix_sort
+        bad_time_idx = np.in1d(time_arr, bad_sec)
+        bad_evt_sort = self.evt_sort[bad_time_idx]
+        del time_arr, bad_time_idx, bad_sec
+
+        return bad_evt_sort
+
+    def get_bad_evt_rate_events(self, use_sec = False):
+
+        if use_sec:
+            rf_lower_cut = 0
+            if self.st == 2 and self.run < 1756:
+                rf_upper_cut = 38.5
+            if self.st == 2 and self.run > 1755:
+                rf_upper_cut = 19.5
+            if self.st == 3 and self.run < 800:
+                rf_upper_cut = 23.5
+            if self.st == 3 and (self.run > 799 and self.run < 10001):
+                rf_upper_cut = 17.5
+            if self.st == 3 and (self.run > 10000 and self.run < 13011):
+                rf_upper_cut = 18.5
+            if self.st == 3 and self.run > 13010:
+                rf_upper_cut = 26.5
+            cal_lower_cut = 0
+            cal_upper_cut = 1
+            soft_upper_cut = 2
+            no_cal_rf_cut = 1
+    
+            sec_val = 1
+            smear_rf_val = 5
+            arr_dim = 4
+            bin_type = 'sec'
+        else:
+            rf_lower_cut = 2.8
+            rf_upper_cut = 100000
+            cal_lower_cut = 0.85
+            cal_upper_cut = 1.1
+            if self.st == 2 and (self.run > 6499 and self.run < 7175):
+                cal_lower_cut = 0.75
+                rf_lower_cut = 2.6
+            if self.st == 3 and self.run < 10001:
+                rf_lower_cut = 4
+            if self.st == 3 and self.run > 10000:
+                rf_lower_cut = 2
+            if self.st == 3 and (self.run > 6001 and self.run < 6678):
+                cal_lower_cut = 0.8
+
+            sec_val = 60
+            smear_rf_val = 0
+            arr_dim = 2
+            bin_type = 'min'
+
+        pps_rate_bins = (self.sub_info_hf[f'pps_{bin_type}_bins'][:-1] + 0.5).astype(int)
+        rf_evt_rate = self.sub_info_hf[f'rf_{bin_type}_rate_pps'][:]
+        cal_evt_rate = self.sub_info_hf[f'cal_{bin_type}_rate_pps'][:]
+        if use_sec:
+            unix_rate_bins = (self.sub_info_hf[f'unix_{bin_type}_bins'][:-1] + 0.5).astype(int)
+            soft_evt_rate = self.sub_info_hf[f'soft_{bin_type}_rate_unix'][:]
+
+        bad_rf_sort = self.get_bad_trig_rate_events(pps_rate_bins, rf_evt_rate, lower_cut = rf_lower_cut, upper_cut = rf_upper_cut, smear_val = smear_rf_val, sec_val = sec_val, use_pps = True)
+        bad_cal_sort = self.get_bad_trig_rate_events(pps_rate_bins, cal_evt_rate, lower_cut = cal_lower_cut, upper_cut = cal_upper_cut, sec_val = sec_val, use_pps = True)
+        if use_sec:
+            cal_idx = np.in1d(self.evt_sort, bad_cal_sort)
+            trig_cal = self.trig_sort[cal_idx]
+            bad_cal_sort = bad_cal_sort[trig_cal == 1]         
+            bad_soft_sort = self.get_bad_trig_rate_events(unix_rate_bins, soft_evt_rate, upper_cut = soft_upper_cut, sec_val = 1)
+            no_cal_rf_sort = self.get_bad_trig_rate_events(pps_rate_bins, (cal_evt_rate + rf_evt_rate).astype(int), lower_cut = no_cal_rf_cut, sec_val = 1, use_pps = True)
+            del soft_upper_cut, no_cal_rf_cut, unix_rate_bins, soft_evt_rate, cal_idx, trig_cal 
+        del rf_lower_cut, rf_upper_cut, cal_lower_cut, cal_upper_cut, sec_val, smear_rf_val, pps_rate_bins, rf_evt_rate, cal_evt_rate 
+
+        bad_evt_rate_evts = np.full((self.num_evts, arr_dim), 0, dtype = int)
+        bad_evt_rate_evts[:, 0] = np.in1d(self.evt_num, bad_rf_sort).astype(int)
+        bad_evt_rate_evts[:, 1] = np.in1d(self.evt_num, bad_cal_sort).astype(int) 
+        if use_sec:
+            bad_evt_rate_evts[:, 2] = np.in1d(self.evt_num, bad_soft_sort).astype(int)
+            bad_evt_rate_evts[:, 3] = np.in1d(self.evt_num, no_cal_rf_sort).astype(int)
+            del bad_soft_sort, no_cal_rf_sort
+        del arr_dim, bad_rf_sort, bad_cal_sort 
+ 
+        if bin_type == 'min' and self.st == 3 and (self.run > 1124 and self.run < 1429):
+            bad_evt_rate_evts[:, 1] = 0
+
+        if self.verbose:
+            quick_qual_check(bad_evt_rate_evts[:, 0] != 0, f'bad rf {bin_type} rate events', self.evt_num)
+            quick_qual_check(bad_evt_rate_evts[:, 1] != 0, f'bad calpulser {bin_type} rate events', self.evt_num)
+            if use_sec:
+                quick_qual_check(bad_evt_rate_evts[:, 2] != 0, f'bad software {bin_type} rate events', self.evt_num)
+                quick_qual_check(bad_evt_rate_evts[:, 3] != 0, f'no calpulser rf {bin_type} rate events', self.evt_num)
+        del bin_type
+
+        return bad_evt_rate_evts
+
+    def get_short_run_events(self, rf_soft_cut = 10000, time_cut = 1800):
+
+        ops_time = np.abs(np.nanmax(self.unix_sort) - np.nanmin(self.unix_sort)).astype(int)
+        time_flag = ops_time < time_cut
+        del ops_time
+
+        num_rfs_softs = np.count_nonzero(self.trig_sort != 1) 
+        evt_flag = num_rfs_softs < rf_soft_cut
+        del num_rfs_softs
+
+        tot_flag = np.logical_or(time_flag, evt_flag)
+        del time_flag, evt_flag
+
+        short_run_events = np.full((self.num_evts), int(tot_flag), dtype = int)
+        del tot_flag   
+     
+        if self.verbose:
+            quick_qual_check(short_run_events != 0, 'short run events', self.evt_num)
+
+        return short_run_events
+
+    def get_known_bad_unix_time_events(self, add_unchecked_unix_time = False):
+
+        bad_unix_evts = np.full((self.num_evts), 0, dtype = int)
+        for evt in range(self.num_evts):
+            bad_unix_evts[evt] = self.ara_known_issue.get_bad_unixtime(self.unix_time[evt])
+
+        if add_unchecked_unix_time:
+            for evt in range(self.num_evts):
+                if self.ara_known_issue.get_unchecked_unixtime(self.unix_time[evt]):
+                   bad_unix_evts[evt] = 1
+
+        if self.verbose:
+            quick_qual_check(bad_unix_evts != 0, 'bad unix time', self.evt_num)
+
+        return bad_unix_evts
+
+    def get_known_bad_run_events(self):
+
+        bad_surface_run = self.ara_known_issue.get_bad_surface_run()
+        bad_run = self.ara_known_issue.get_bad_run()
+        L0_to_L1_Processing = self.ara_known_issue.get_L0_to_L1_Processing_run()
+        ARARunLogDataBase = self.ara_known_issue.get_ARARunLogDataBase()
+        software_dominant_run = self.ara_known_issue.get_software_dominant_run()
+        bad_runs = np.concatenate((bad_surface_run, bad_run, L0_to_L1_Processing, ARARunLogDataBase, software_dominant_run), axis = None, dtype = int)
+        bad_runs = np.unique(bad_runs).astype(int)
+        del bad_surface_run, bad_run, L0_to_L1_Processing, ARARunLogDataBase, software_dominant_run
+
+        run_flag = int(self.run in bad_runs)
+
+        known_bad_run_evetns = np.full((self.num_evts), run_flag, dtype = int)
+        del bad_runs, run_flag
+        if self.verbose:
+            quick_qual_check(known_bad_run_evetns != 0, 'known bad run events', self.evt_num)
+
+        return known_bad_run_evetns
+
+    def get_cw_log_events(self):
+
+        cw_log_dat = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/radiosonde_data/weather_balloon/radius_tot/A{self.st}_balloon_distance.h5'
+        cw_log_hf = h5py.File(cw_log_dat, 'r')
+        cw_unix = cw_log_hf['bad_unix_time'][:]
+        cw_log_events = np.in1d(self.unix_time, cw_unix).astype(int)
+        del cw_log_dat, cw_log_hf, cw_unix
+
+        if self.verbose:
+            quick_qual_check(cw_log_events != 0, 'cw log events', self.evt_num)
+
+        return cw_log_events
+
+    """
+    def get_no_calpulser_events(self, ratio_cut = 0.02, apply_bias_volt = None):
+
+        no_cal_evts = np.full((self.num_evts), 0, dtype = int)
+        if self.st == 3 and (self.run > 1124 and self.run < 1429):
+            return no_cal_evts
+
+        if apply_bias_volt is not None:
+            trig_type_evt = self.trig_type[apply_bias_volt == 0]
+        else:
+            trig_type_evt = self.trig_type
+
+        num_evts = len(trig_type_evt)
+        if len(trig_type_evt) != 0:
+            num_cal_evts = np.count_nonzero(trig_type_evt == 1)
+            cal_evt_ratio = num_cal_evts / len(trig_type_evt)
+        else:
+            cal_evt_ratio = np.nan
+
+        if cal_evt_ratio < ratio_cut:
+            no_cal_evts[:] = 1
+
+        if self.verbose:
+            quick_qual_check(no_cal_evts != 0, 'no calpulser events', self.evt_num)
+
+        return no_cal_evts
+    
     def get_bad_unix_time_sequence(self):
 
         bad_unix_sequence = np.full((self.num_evts), 0, dtype = int)
-        
+
         if self.st == 3 and self.run == 3461: # condamn this run...
             bad_unix_sequence[:] = 1
             if self.verbose:
                 quick_qual_check(bad_unix_sequence != 0, 'bad unix sequence', self.evt_num)
             return bad_unix_sequence
-        
+
         n_idxs = np.where(np.diff(self.unix_sort) < 0)[0]
         if len(n_idxs):
             tot_bad_evts = []
@@ -246,265 +534,23 @@ class pre_qual_cut_loader:
             quick_qual_check(bad_unix_sequence != 0, 'bad unix sequence', self.evt_num)
 
         return bad_unix_sequence
-
-    def get_bad_unix_time_events(self, add_unchecked_unix_time = False):
-
-        bad_unix_evts = np.full((self.num_evts), 0, dtype = int)
-        for evt in range(self.num_evts):
-            bad_unix_evts[evt] = self.ara_known_issue.get_bad_unixtime(self.unix_time[evt])
-        
-        if add_unchecked_unix_time == True:
-            for evt in range(self.num_evts):
-                if self.ara_known_issue.get_unchecked_unixtime(self.unix_time[evt]):
-                   bad_unix_evts[evt] = 1 
-        
-        if self.verbose:
-            quick_qual_check(bad_unix_evts != 0, 'bad unix time', self.evt_num)
-
-        return bad_unix_evts
-        
-    def get_first_minute_events(self, first_evt_limit = 7):
-
-        unix_time_full = self.sub_info_hf['unix_time'][:]
-        unix_cut = unix_time_full[0] + 60
-        first_min_evt_bools = (self.unix_time < unix_cut)
-        del unix_cut, unix_time_full
-
-        unix_sort_cut = self.unix_sort[0] + 60
-        first_min_evt_sort = self.evt_sort[self.unix_sort < unix_sort_cut]
-        first_min_evt_sort_bools = np.in1d(self.evt_num, first_min_evt_sort)
-        del unix_sort_cut, first_min_evt_sort
-
-        first_min_evts = np.logical_or(first_min_evt_bools, first_min_evt_sort_bools).astype(int)
-        del first_min_evt_bools, first_min_evt_sort_bools
-
-        if self.verbose:
-            quick_qual_check(first_min_evts != 0, 'first minute events', self.evt_num)
-
-        return first_min_evts
-
-    def get_bias_voltage_events(self, volt_cut = [3, 3.5]):
-
-        volt_cut = np.asarray(volt_cut, dtype = float)
-        bias_volt_evts = np.full((self.num_evts), 0, dtype = int)
-
-        sensor_unix = self.sub_info_hf['sensor_unix_time'][:]
-        if any(np.isnan(sensor_unix)):
-            print('There is empty sensorHk file!')
-            return bias_volt_evts
-        sensor_unix_len = len(sensor_unix)
-        if sensor_unix_len == 0:
-            print('There is empty sensorHk file!')
-            bias_volt_evts[:] = 1
-            if self.verbose:
-                quick_qual_check(bias_volt_evts != 0, 'bias voltage events', self.evt_num)
-            return bias_volt_evts
-
-        dda_volt = self.sub_info_hf['dda_volt'][:]
-        good_dda_bool = np.logical_and(dda_volt > volt_cut[0], dda_volt < volt_cut[1])
-        if sensor_unix_len == 1:
-            print('There is single sensorHk values!')
-            dda_digi_idx = np.array([0], dtype = int)
-            good_digi_bool = np.copy(good_dda_bool)
-        else:
-            dda_digi_idx = np.arange(sensor_unix_len, dtype = int)[1:]
-            good_digi_bool = np.logical_and(good_dda_bool[1:], good_dda_bool[:-1])
-        del dda_volt, good_dda_bool
- 
-        unix_digi = np.digitize(self.unix_time, sensor_unix) 
-        for dda in range(num_ddas):
-            good_digi_idx = dda_digi_idx[good_digi_bool[:, dda]]
-            bias_volt_evts += np.in1d(unix_digi, good_digi_idx, invert =True).astype(int)
-            del good_digi_idx
-        bias_volt_evts[bias_volt_evts != 0] = 1
-        del volt_cut, sensor_unix, sensor_unix_len, unix_digi, dda_digi_idx, good_digi_bool
-
-        if self.verbose:
-            quick_qual_check(bias_volt_evts != 0, 'bias voltage events', self.evt_num)
-
-        return bias_volt_evts
-   
-    def get_no_calpulser_events(self, ratio_cut = 0.02, apply_bias_volt = None):
-     
-        no_cal_evts = np.full((self.num_evts), 0, dtype = int)
-        if self.st == 3 and (self.run > 1124 and self.run < 1429):
-            return no_cal_evts
-
-        if apply_bias_volt is not None:
-            trig_type_evt = self.trig_type[apply_bias_volt == 0]
-        else:
-            trig_type_evt = self.trig_type
-       
-        num_evts = len(trig_type_evt)
-        if len(trig_type_evt) != 0:
-            num_cal_evts = np.count_nonzero(trig_type_evt == 1)
-            cal_evt_ratio = num_cal_evts / len(trig_type_evt)
-        else:
-            cal_evt_ratio = np.nan
-
-        if cal_evt_ratio < ratio_cut:
-            no_cal_evts[:] = 1
-
-        if self.verbose:
-            quick_qual_check(no_cal_evts != 0, 'no calpulser events', self.evt_num)
-
-        return no_cal_evts
-
-    def get_bad_trig_rate_events(self, rate, smear_val = 5, lower_cut = None, upper_cut = None, use_sec = False, use_smear = False):
-
-        if lower_cut is not None and upper_cut == None:
-            bad_rate_idx = rate < lower_cut
-        elif upper_cut is not None and lower_cut == None:
-            bad_rate_idx = rate > upper_cut
-        elif lower_cut is not None and upper_cut is not None:
-            bad_rate_idx = np.logical_or(rate < lower_cut, rate > upper_cut)
-        else:
-            print('event rate cut value is not defined!')
-            sys.exit(1)
-
-        if use_sec:
-            sec_arr = np.arange(1, dtype = int)
-        else:   
-            sec_arr = np.arange(60, dtype = int)
-       
-        if use_smear:
-            smear_arr = np.arange(-1* smear_val * len(sec_arr), (smear_val + 1) * len(sec_arr), 1, dtype = int)
-        else:
-            smear_arr = np.arange(1, dtype = int)
-
-        bad_sec = get_time_smearing(self.rate_bins[bad_rate_idx], smear_arr = smear_arr, smear_arr_2nd = sec_arr) 
-        del smear_arr, sec_arr, bad_rate_idx
-
-        bad_pps_idx = np.in1d(self.pps_sort, bad_sec)
-        bad_evt_sort = self.evt_sort[bad_pps_idx]
-        del bad_pps_idx, bad_sec
-
-        return bad_evt_sort
-
-    def get_bad_rate_events(self, use_sec = False):
-    
-        if use_sec:
-            bin_type = 'sec'
-            rf_rate_cut = 1
-            cal_rate_cut = 0
-            cal_upper_cut = 1
-            soft_rate_cut = 0
-            soft_upper_cut = 2
-        else:
-            bin_type = 'min'
-            rf_rate_cut = 2.8 
-            cal_rate_cut = 0.85
-            cal_upper_cut = 1.1
-            soft_rate_cut = 0.75
-            soft_upper_cut = 1.1
-            if self.st == 3 and self.run < 10001:
-                rf_rate_cut = 4
-            if self.st == 3 and self.run > 10000:
-                rf_rate_cut = 2
-            if self.st == 2 and (self.run > 6499 and self.run < 7175):
-                cal_rate_cut = 0.75
-                rf_rate_cut = 2.6
-            if self.st == 3 and (self.run > 6001 and self.run < 6678):
-                cal_rate_cut = 0.8 
-
-        self.rate_bins = (self.sub_info_hf[f'pps_{bin_type}_bins'][:-1] + 0.5).astype(int) # bin edge to corresponding minute
-        rf_evt_rate = self.sub_info_hf[f'rf_{bin_type}_rate_pps'][:]
-        cal_evt_rate = self.sub_info_hf[f'cal_{bin_type}_rate_pps'][:]
-        soft_evt_rate = self.sub_info_hf[f'soft_{bin_type}_rate_pps'][:]
-
-        bad_rf_sort = self.get_bad_trig_rate_events(rf_evt_rate, lower_cut = rf_rate_cut, use_sec = use_sec)
-        bad_cal_sort = self.get_bad_trig_rate_events(cal_evt_rate, lower_cut = cal_rate_cut, upper_cut = cal_upper_cut, use_sec = use_sec)
-        bad_soft_sort = self.get_bad_trig_rate_events(soft_evt_rate, lower_cut = soft_rate_cut, upper_cut = soft_upper_cut, use_sec = use_sec)
-        del rf_evt_rate, cal_evt_rate, soft_evt_rate
-
-        bad_rate_evts = np.full((self.num_evts, 3), 0, dtype = int)
-        bad_rate_evts[:, 0] = np.in1d(self.evt_num, bad_rf_sort).astype(int)
-        bad_rate_evts[:, 1] = np.in1d(self.evt_num, bad_cal_sort).astype(int)
-        bad_rate_evts[:, 2] = np.in1d(self.evt_num, bad_soft_sort).astype(int)
-        del bad_rf_sort, bad_cal_sort, bad_soft_sort, self.rate_bins
-
-        if self.st == 3 and (self.run > 1124 and self.run < 1429):
-            bad_rate_evts[:, 1] = 0
-
-        if self.verbose:
-            quick_qual_check(bad_rate_evts[:, 0] != 0, f'bad rf {bin_type} rate events', self.evt_num)
-            quick_qual_check(bad_rate_evts[:, 1] != 0, f'bad calpulser {bin_type} rate events', self.evt_num)
-            quick_qual_check(bad_rate_evts[:, 2] != 0, f'bad software {bin_type} rate events', self.evt_num)
-
-        return bad_rate_evts
-
-    def get_high_rf_rate_events(self, use_smear = False):
-
-        if self.st == 2 and self.run < 1756:
-            rf_rate_cut = 38.5 
-        if self.st == 2 and self.run > 1755:
-            rf_rate_cut = 19.5
-
-        if self.st == 3 and self.run < 800: 
-            rf_rate_cut = 23.5
-        if self.st == 3 and (self.run > 799 and self.run < 10001):
-            rf_rate_cut = 17.5
-        if self.st == 3 and (self.run > 10000 and self.run < 13011):
-            rf_rate_cut = 18.5
-        if self.st == 3 and self.run > 13010:
-            rf_rate_cut = 26.5
-
-        self.rate_bins = (self.sub_info_hf[f'pps_sec_bins'][:-1] + 0.5).astype(int) # bin edge to corresponding minute
-        rf_evt_rate = self.sub_info_hf[f'rf_sec_rate_pps'][:]
-
-        bad_rf_sort = self.get_bad_trig_rate_events(rf_evt_rate, upper_cut = rf_rate_cut, use_sec = True, use_smear = use_smear)
-        del rf_evt_rate
-
-        high_rf_rate_evts = np.in1d(self.evt_num, bad_rf_sort).astype(int)
-        del bad_rf_sort, self.rate_bins
-
-        if self.verbose:
-            quick_qual_check(high_rf_rate_evts != 0, 'high rf sec rate events', self.evt_num)
-    
-        return high_rf_rate_evts
-
-    def get_known_bad_run_events(self):
-    
-        bad_runs = self.ara_known_issue.get_knwon_bad_run()
-        run_flag = int(self.run in bad_runs)
-
-        known_bad_run_evetns = np.full((self.num_evts), run_flag, dtype = int)
-        del bad_runs, run_flag
-        if self.verbose:
-            quick_qual_check(known_bad_run_evetns != 0, 'known bad run events', self.evt_num)
-    
-        return known_bad_run_evetns
-
-    def get_cw_log_events(self):
-
-        cw_log_dat = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/radiosonde_data/weather_balloon/radius_tot/A{self.st}_balloon_distance.h5'
-        cw_log_hf = h5py.File(cw_log_dat, 'r')
-        cw_unix = cw_log_hf['bad_unix_time'][:]
-        cw_log_events = np.in1d(self.unix_time, cw_unix).astype(int)
-        del cw_log_dat, cw_log_hf, cw_unix
-
-        if self.verbose:
-            quick_qual_check(cw_log_events != 0, 'cw log events', self.evt_num)
-
-        return cw_log_events
+    """
 
     def run_pre_qual_cut(self):
 
-        tot_pre_qual_cut = np.full((self.num_evts, 23), 0, dtype = int)
+        tot_pre_qual_cut = np.full((self.num_evts, 21), 0, dtype = int)
         tot_pre_qual_cut[:, :5] = self.get_daq_structure_errors()
-        tot_pre_qual_cut[:, 5:9] = self.get_readout_window_errors(use_smear =True)
-        tot_pre_qual_cut[:, 9] = self.get_bad_unix_time_sequence()
-        tot_pre_qual_cut[:, 10] = self.get_bad_unix_time_events(add_unchecked_unix_time = True)
-        tot_pre_qual_cut[:, 11] = self.get_first_minute_events()
-        tot_pre_qual_cut[:, 12] = self.get_bias_voltage_events()
-        tot_pre_qual_cut[:, 13] = self.get_no_calpulser_events(apply_bias_volt = tot_pre_qual_cut[:,12])
-        tot_pre_qual_cut[:, 14:17] = self.get_bad_rate_events()
-        tot_pre_qual_cut[:, 17:20] = self.get_bad_rate_events(use_sec = True)
-        tot_pre_qual_cut[:, 20] = self.get_high_rf_rate_events(use_smear = True)
-        tot_pre_qual_cut[:, 21] = self.get_known_bad_run_events()
-        tot_pre_qual_cut[:, 22] = self.get_cw_log_events()
+        tot_pre_qual_cut[:, 5:9] = self.get_readout_window_errors()
+        tot_pre_qual_cut[:, 9] = self.get_first_minute_events()
+        tot_pre_qual_cut[:, 10] = self.get_bias_voltage_events(use_smear = True)
+        tot_pre_qual_cut[:, 11:13] = self.get_bad_evt_rate_events()
+        tot_pre_qual_cut[:, 13:17] = self.get_bad_evt_rate_events(use_sec = True)
+        tot_pre_qual_cut[:, 17] = self.get_short_run_events()
+        tot_pre_qual_cut[:, 18] = self.get_known_bad_unix_time_events()
+        tot_pre_qual_cut[:, 19] = self.get_known_bad_run_events()
+        tot_pre_qual_cut[:, 20] = self.get_cw_log_events()
 
-        self.daq_qual_cut_sum = np.nansum(tot_pre_qual_cut[:, :6], axis = 1)
+        self.daq_qual_cut_sum = np.nansum(tot_pre_qual_cut[:, :9], axis = 1)
         self.pre_qual_cut_sum = np.nansum(tot_pre_qual_cut, axis = 1)
 
         if self.verbose:
@@ -797,7 +843,8 @@ class ped_qual_cut_loader:
         self.evt_num = ara_uproot.evt_num
         self.st = self.ara_uproot.station_id
         self.run = self.ara_uproot.run
-        self.total_qual_cut = total_qual_cut
+        self.total_qual_cut = np.copy(total_qual_cut)
+        self.total_qual_cut[:, 16] = 0
         self.daq_cut_sum = daq_cut_sum
         self.num_qual_type = 4
         self.minimum_usage = 20 # from pedestalSamples#I1=
@@ -810,40 +857,38 @@ class ped_qual_cut_loader:
         # 0~4 daq error
         # 5 single block
         # 6~8 readout window
-        # 9 bad unix sequence
-        # 10 bad unix time
-        # 11 first minute
-        # 12 dda voltage
-        # 13 bad cal ratio
-        # 14 bad rf min rate
-        # 15 bad cal min rate
-        # 16 bad soft min rate
-        # 17 bad rf sec rate
-        # 18 bad cal sec rate
-        # 19 bad soft sec rate
-        # 20 high rf sec rate
-        # 21 bad run
-        # 22 cw log cut
-        # 23 unlock calpulser
+        # 9 first minute
+        # 10 dda voltage
+        # 11 bad rf min rate
+        # 12 bad cal min rate -> dda voltage
+        # 13 bad rf sec rate -> high signal
+        # 14 bad cal sec rate -> early error
+        # 15 bad soft sec rate -> early error
+        # 16 no cal rf sec rate -> already excluded at the __init__()
+        # 17 short run
+        # 18 bad unix time
+        # 19 bad run
+        # 20 cw log cut
+        # 21 unlock calpulser
 
         # turn on all cuts
         clean_evts_qual_type[:, 0] = 1
         clean_evts[:, 0] = np.logical_and(np.nansum(self.total_qual_cut, axis = 1) == 0, self.trig_type != 1).astype(int)
 
-        # not use 1) 10 bad unix time, 2) 21 bad run
-        qual_type = np.array([0,1,2,3,4,5,6,7,8,9,11,12,13,14,15,16,17,18,19,20,22,23], dtype = int)
+        # not use 1) 17 short run, 2) 11 bad rf min rate
+        qual_type = np.array([0,1,2,3,4,5,6,7,8,9,10,12,13,14,15,16,18,19,20,21], dtype = int)
         clean_evts_qual_type[qual_type, 1] = 1
         clean_evts[:, 1] = np.logical_and(np.nansum(self.total_qual_cut[:, qual_type], axis = 1) == 0, self.trig_type != 1).astype(int)
         del qual_type
 
-        # hardware error only. not use 1) 10 bad unix time, 3) 13 bad cal ratio, and 4) 14 bad rf rate 5) 21 bad run 6) 23 cw cut
-        qual_type = np.array([0,1,2,3,4,5,6,7,8,9,11,12,15,16,17,18,19,20,23], dtype = int)
+        # hardware error only. not use  1) 17 short run 2) 18 bad unix time, 3) 19 bad run, 4) 20 cw log cut, 5) 11 bad rf min rate, 6) 13 bad rf sec rate
+        qual_type = np.array([0,1,2,3,4,5,6,7,8,9,10,12,14,15,16,21], dtype = int)
         clean_evts_qual_type[qual_type, 2] = 1
         clean_evts[:, 2] = np.logical_and(np.nansum(self.total_qual_cut[:, qual_type], axis = 1) == 0, self.trig_type != 1).astype(int)
         del qual_type
 
         # only rf/software
-        qual_type = np.array([0,1,2,3,4,5], dtype = int)
+        qual_type = np.array([0,1,2,3,4,5,21], dtype = int)
         clean_evts_qual_type[qual_type, 3] = 1
         clean_evts[:, 3] = np.logical_and(np.nansum(self.total_qual_cut[:, qual_type], axis = 1) == 0, self.trig_type != 1).astype(int)
         del qual_type
@@ -981,12 +1026,13 @@ class run_qual_cut_loader:
         self.verbose = verbose
         self.st = st
         self.run = run
-
-        self.known_flag = np.all(tot_cut[:, 21] != 0)
+        
+        self.known_flag = np.all(tot_cut[:, 19] != 0)
         self.ped_flag = np.all(tot_cut[:, -1] != 0)       
         cut_copy = np.copy(tot_cut)
-        cut_copy[:,21] = 0
-        cut_copy[:,-1] = 0
+        cut_copy[:, 16] = 0
+        cut_copy[:, 19] = 0
+        cut_copy[:, -1] = 0
         cut_copy = np.nansum(cut_copy, axis = 1)
         self.qual_flag = np.all(cut_copy != 0)
         del cut_copy
@@ -1007,9 +1053,9 @@ class run_qual_cut_loader:
         if self.analyze_blind_dat:
             if self.qual_flag or self.ped_flag:
                 if self.verbose:
-                    print(f'A{self.st} R{self.run} is bad!!! Bad type: {int(self.qual_flag)}, {int(self.ped_flag)}')
+                    print(f'A{self.st} R{self.run} is bad!!! Bad type 1) qual: {int(self.qual_flag)}, 2) bad: {int(self.ped_flag)}, 3) known: {int(self.known_flag)}')
                 bad_path = f'../data/qual_runs/qual_run_A{self.st}.txt'
-                bad_run_info = f'{self.run} {int(self.qual_flag)} {int(self.ped_flag)}\n'
+                bad_run_info = f'{self.run} {int(self.qual_flag)} {int(self.ped_flag)} {int(self.known_flag)}\n'
                 if os.path.exists(bad_path):
                     if self.verbose:
                         print(f'There is {bad_path}')
@@ -1047,8 +1093,6 @@ def get_bad_live_time(trig_type, unix_time, time_bins, sec_per_min, cuts, verbos
     rc_trig_flag[rc_trig_flag < 0.5] = np.nan
     rc_trig_flag *= unix_time
     tot_evt_per_min = np.histogram(rc_trig_flag, bins = time_bins)[0]
-    trig_live_time = (tot_evt_per_min > 0.5).astype(int)
-    trig_live_time = trig_live_time.astype(float) * sec_per_min
     del rc_trig_flag
 
     cut_flag = (cuts != 0).astype(int)
@@ -1072,17 +1116,19 @@ def get_bad_live_time(trig_type, unix_time, time_bins, sec_per_min, cuts, verbos
         bad_live_time = bad_evt_per_min / tot_evt_per_min[:, np.newaxis] * sec_per_min[:, np.newaxis]
         rough_tot_bad_time = np.nansum(bad_live_time, axis = 0)
         del num_cuts
-    del cut_flag, tot_evt_per_min, dim_len, bad_evt_per_min
+    del cut_flag, tot_evt_per_min, bad_evt_per_min
 
     total_live_time = np.copy(sec_per_min)
 
     if verbose:
-        print(f'bad live time: ~{np.round(rough_tot_bad_time/60, 1)} min.')
-        print(f'trig live time: ~{np.round(np.nansum(trig_live_time)/60, 1)} min.')
-        print(f'total live time: ~{np.round(np.nansum(total_live_time)/60, 1)} min.')
-    del rough_tot_bad_time
+        if dim_len == 1:
+            print(f'total bad live time: ~{np.round(rough_tot_bad_time/60, 1)} min.')
+        else:
+            print(f'bad live time: ~{np.round(rough_tot_bad_time/60, 1)} min.')
+            print(f'total live time: ~{np.round(np.nansum(total_live_time)/60, 1)} min.')
+    del rough_tot_bad_time, dim_len
 
-    return total_live_time, trig_live_time, bad_live_time
+    return total_live_time, bad_live_time
 
 class qual_cut_loader:
 
