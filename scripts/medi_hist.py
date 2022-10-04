@@ -1,6 +1,5 @@
 import numpy as np
 import os, sys
-import re
 from glob import glob
 import h5py
 from tqdm import tqdm
@@ -9,200 +8,128 @@ curr_path = os.getcwd()
 sys.path.append(curr_path+'/../')
 from tools.ara_run_manager import file_sorter
 from tools.ara_utility import size_checker
-from tools.ara_known_issue import known_issue_loader
+#from tools.ara_run_manager import run_info_loader
+#from tools.ara_known_issue import known_issue_loader
 
 Station = int(sys.argv[1])
 
-knwon_issue = known_issue_loader(Station)
-bad_runs = knwon_issue.get_knwon_bad_run()
-
-# sort
 d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/medi/*'
-print(d_path)
 d_list, d_run_tot, d_run_range = file_sorter(d_path)
-del d_run_range
 
-# config array
-config_arr = []
-config_arr_cut = []
-run_arr = []
-run_arr_cut = []
+g_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/'
 
-sub_init = []
-sub_rf_init = []
-sub_rf_cut_init = []
-sub_std = []
-sub_rf_std = []
-sub_rf_cut_std = []
-sub_mm = []
-sub_rf_mm = []
-sub_rf_cut_mm = []
-sub_diff = []
-sub_rf_diff = []
-sub_rf_cut_diff = []
-dda_temp_std = []
-dda_temp_cut_std = []
-dda_temp_mm = []
-dda_temp_cut_mm = []
-sub_hist = []
-sub_rf_hist = []
-sub_rf_cut_hist = []
-sub_range = np.arange(-200, 200)
-sub_bins = np.linspace(-200, 200, 200*2 + 1)
-sub_bin_center = (sub_bins[1:] + sub_bins[:-1]) / 2
-sub_len = len(sub_bin_center)
-dda_temp_range = np.arange(-40, 40)
-dda_temp_bins = np.linspace(-40, 40, 80+1)
-dda_temp_bin_center = (dda_temp_bins[1:] + dda_temp_bins[:-1]) / 2
-dda_temp_len = len(dda_temp_bin_center)
-dda_temp_hist = []
-dda_temp_cut_hist = []
+run_num = []
+#sensors = []
+
+medi_bins = np.linspace(0, 2500, 250 + 1)
+medi_bin_center = (medi_bins[1:] + medi_bins[:-1]) / 2
+medi_len = len(medi_bin_center)
+#sen_bins = np.linspace(0, 4, 40 + 1)
+#sen_bin_center = (sen_bins[1:] + sen_bins[:-1]) / 2
+#sen_len = len(sen_bin_center)
+#cal_bins = np.linspace(0, 4, 40 + 1)
+#cal_bin_center = (cal_bins[1:] + cal_bins[:-1]) / 2
+
+medi = []
+#medi_1st = []
+#medi_vol = []
+#medi_cal = []
+#sen = []
+#cal_min = []
+#cal_sec = []
+
+q_idx = np.array([11, 12, 15], dtype = int)
 
 for r in tqdm(range(len(d_run_tot))):
-    
-  #if r <10:
+  #if r < 10:
 
-    hf = h5py.File(d_list[r], 'r')
-    config = hf['config'][2]
-    config_arr.append(config)
-    run_arr.append(d_run_tot[r])
+    qual_dat = f'{g_path}qual_cut/qual_cut_A{Station}_R{d_run_tot[r]}.h5'
+    qual_f = h5py.File(qual_dat, 'r')
+    qual = qual_f['tot_qual_cut'][:, q_idx]
+    del qual_dat, qual_f 
 
-    unix = hf['unix_time'][:]
-    unix = np.logical_and(unix > unix[0] + 59, unix < unix[0] + 180)
-    trig_type = hf['trig_type'][:]
-    rf_cut = np.logical_and(unix, trig_type == 0)
-    sub_medi = hf['sub_medi'][:]
-    sub_medi_init = np.copy(sub_medi)
-    sub_medi_init[:, ~unix] = np.nan
-    sub_i = np.nanmax(sub_medi_init, axis = 1)
-    sub_init.append(sub_i)
-    sub_medi_rf_init = np.copy(sub_medi)
-    sub_medi_rf_init[:, ~rf_cut] = np.nan
-    sub_rf_i = np.nanmax(sub_medi_rf_init, axis = 1)
-    sub_rf_init.append(sub_rf_i)
-    del trig_type, unix, sub_medi_init, sub_medi_rf_init
+    sub_dat = f'{g_path}sub_info_full/sub_info_full_A{Station}_R{d_run_tot[r]}.h5'
+    sub_f = h5py.File(sub_dat, 'r')
+    sen_u = np.any(np.isnan(sub_f['sensor_unix_time'][:]))#.astype(int)
+    #sen_v = sub_f['dda_volt'][:]
+    #cal_r_min = sub_f['cal_min_rate_pps'][:]
+    #cal_r_sec = sub_f['cal_sec_rate_pps'][:]
+    del sub_dat, sub_f
 
-    sub_s = hf['sub_std'][:]
-    sub_std.append(sub_s)
-    sub_rf_s = hf['sub_rf_std'][:]
-    sub_rf_std.append(sub_rf_s)
-    sub_d = hf['sub_diff'][:]
-    sub_diff.append(sub_d)
-    sub_rf_d = hf['sub_rf_diff'][:]
-    sub_rf_diff.append(sub_rf_d)
-    sub_m = hf['sub_mm'][:]
-    sub_m = np.abs(sub_m[0] - sub_m[1])
-    sub_mm.append(sub_m)
-    sub_rf_m = hf['sub_rf_mm'][:]
-    sub_rf_m = np.abs(sub_rf_m[0] - sub_rf_m[1])
-    sub_rf_mm.append(sub_rf_m) 
-    sub_h = hf['sub_hist'][:]
-    sub_hist.append(sub_h)
-    sub_rf_h = hf['sub_rf_hist'][:]
-    sub_rf_hist.append(sub_rf_h)
+    if ~sen_u:
+        qual[:, -1] = 0
+    qual = np.nansum(qual, axis = 1) != 0
+    del sen_u
 
-    dda_std = hf['dda_temp_std'][:]
-    dda_mm = hf['dda_temp_mm'][:]
-    dda_mm = np.abs(dda_mm[0] - dda_mm[1])
-    dda_temp_std.append(dda_std)
-    dda_temp_mm.append(dda_mm)
+    #cal_m_hist = np.histogram(cal_r_min, bins = cal_bins)[0].astype(int)
+    #cal_s_hist = np.histogram(cal_r_sec, bins = cal_bins)[0].astype(int)
+    #del cal_r_min, cal_r_sec
+    #cal_min.append(cal_m_hist)
+    #cal_sec.append(cal_s_hist)
 
-    dda_t = hf['dda_temp'][:]
-    dda_h = np.full((dda_temp_len, 4), 0, dtype = int)
-    for d in range(4):
-        dda_h[:, d] = np.histogram(dda_t[:, d], bins = dda_temp_bins)[0].astype(int)
-    dda_temp_hist.append(dda_h)
+    #sen_hist = np.full((sen_len, 4), 0, dtype = int)
+    #for d in range(4):
+    #    sen_hist[:, d] = np.histogram(sen_v[:, d], bins = sen_bins)[0].astype(int)
+    #del sen_v 
+    #sen.append(sen_hist)
 
-    if d_run_tot[r] in bad_runs:
-        #print('bad run:', d_list[r], d_run_tot[r])
-    
-        sub_rf_cut_h = np.full((16, sub_len), 0, dtype = int)
-        sub_rf_cut_hist.append(sub_rf_cut_h)
-        dda_cut_h = np.full((dda_temp_len, 4), 0, dtype = int)
-        dda_temp_cut_hist.append(dda_cut_h)
+    run_num.append(d_run_tot[r])
+    #sensors.append(sen_u)
 
-        continue
+    medi_f = h5py.File(d_list[r], 'r') 
+    medi_r = medi_f['medi'][:]
+    trig = medi_f['trig_type'][:]
+    trig = trig != 0
+    medi_r[:, qual] = np.nan
+    medi_r[:, trig] = np.nan
+    del medi_f
 
-    config_arr_cut.append(config)
-    run_arr_cut.append(d_run_tot[r])
+    #medi_r_1st = np.copy(medi_r)
+    #medi_r_1st[:, qual[:, 0] != 0] = np.nan
+    #medi_r_vol = np.copy(medi_r)
+    #medi_r_vol[:, qual[:, 1] != 0] = np.nan
+    #medi_r_cal = np.copy(medi_r)
+    #medi_r_cal[:, qual[:, 2] != 0] = np.nan
+    del qual
 
-    tot_qual = hf['total_qual_cut'][:]
-    tot_qual = np.nansum(tot_qual, axis = 1)
-    qual_cut = np.logical_and(rf_cut, tot_qual == 0)
-    sub_medi_rf_cut_init = np.copy(sub_medi)
-    sub_medi_rf_cut_init[:, ~qual_cut] = np.nan
-    sub_rf_cut_i = np.nanmax(sub_medi_rf_cut_init, axis = 1)
-    sub_rf_cut_init.append(sub_rf_cut_i) 
-    del sub_medi, rf_cut, sub_medi_rf_cut_init, tot_qual
+    medi_hist = np.full((medi_len, 16), 0, dtype = int)
+    #medi_hist_1st = np.copy(medi_hist)
+    #medi_hist_vol = np.copy(medi_hist)
+    #medi_hist_cal = np.copy(medi_hist)
+    for m in range(16):    
+        medi_hist[:, m] = np.histogram(medi_r[m], bins = medi_bins)[0].astype(int)
+        #medi_hist_1st[:, m] = np.histogram(medi_r_1st[m], bins = medi_bins)[0].astype(int)
+        #medi_hist_vol[:, m] = np.histogram(medi_r_vol[m], bins = medi_bins)[0].astype(int)
+        #medi_hist_cal[:, m] = np.histogram(medi_r_cal[m], bins = medi_bins)[0].astype(int)
+    medi.append(medi_hist)
+    #medi_1st.append(medi_hist_1st)
+    #medi_vol.append(medi_hist_vol)
+    #medi_cal.append(medi_hist_cal)
+    del medi_r#, medi_r_1st, medi_r_vol, medi_r_cal
 
-    sub_rf_cut_s = hf['sub_rf_cut_std'][:]
-    sub_rf_cut_std.append(sub_rf_cut_s)
-    sub_rf_cut_d = hf['sub_rf_cut_diff'][:]
-    sub_rf_cut_diff.append(sub_rf_cut_d)
-    sub_rf_cut_m = hf['sub_rf_cut_mm'][:]
-    sub_rf_cut_m = np.abs(sub_rf_cut_m[0] - sub_rf_cut_m[1])
-    sub_rf_cut_mm.append(sub_rf_cut_m)
-    sub_rf_cut_h = hf['sub_rf_cut_hist'][:]
-    sub_rf_cut_hist.append(sub_rf_cut_h)
-
-    dda_cut_std = hf['dda_temp_cut_std'][:]
-    dda_cut_mm = hf['dda_temp_cut_mm'][:]    
-    dda_cut_mm = np.abs(dda_cut_mm[0] - dda_cut_mm[1])
-    dda_temp_cut_std.append(dda_cut_std)
-    dda_temp_cut_mm.append(dda_cut_mm)
-
-    dda_cut_t = hf['dda_temp_cut'][:]
-    dda_cut_h = np.full((dda_temp_len, 4), 0, dtype = int)
-    for d in range(4):
-        dda_cut_h[:, d] = np.histogram(dda_cut_t[:, d], bins = dda_temp_bins)[0].astype(int)
-    dda_temp_cut_hist.append(dda_cut_h)
-    del hf
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
-
-file_name = f'Medi_A{Station}.h5'
+file_name = f'Medi_A{Station}_v3.h5'
 hf = h5py.File(file_name, 'w')
-hf.create_dataset('config_arr', data=np.asarray(config_arr), compression="gzip", compression_opts=9)
-hf.create_dataset('config_arr_cut', data=np.asarray(config_arr_cut), compression="gzip", compression_opts=9)
-hf.create_dataset('run_arr', data=np.asarray(run_arr), compression="gzip", compression_opts=9)
-hf.create_dataset('run_arr_cut', data=np.asarray(run_arr_cut), compression="gzip", compression_opts=9)
-hf.create_dataset('sub_init', data=np.asarray(sub_init), compression="gzip", compression_opts=9)
-hf.create_dataset('sub_rf_init', data=np.asarray(sub_rf_init), compression="gzip", compression_opts=9)
-hf.create_dataset('sub_rf_cut_init', data=np.asarray(sub_rf_cut_init), compression="gzip", compression_opts=9)
-hf.create_dataset('sub_std', data=np.asarray(sub_std), compression="gzip", compression_opts=9)
-hf.create_dataset('sub_rf_std', data=np.asarray(sub_rf_std), compression="gzip", compression_opts=9)
-hf.create_dataset('sub_rf_cut_std', data=np.asarray(sub_rf_cut_std), compression="gzip", compression_opts=9)
-hf.create_dataset('sub_mm', data=np.asarray(sub_mm), compression="gzip", compression_opts=9)
-hf.create_dataset('sub_rf_mm', data=np.asarray(sub_rf_mm), compression="gzip", compression_opts=9)
-hf.create_dataset('sub_rf_cut_mm', data=np.asarray(sub_rf_cut_mm), compression="gzip", compression_opts=9)
-hf.create_dataset('sub_diff', data=np.asarray(sub_diff), compression="gzip", compression_opts=9)
-hf.create_dataset('sub_rf_diff', data=np.asarray(sub_rf_diff), compression="gzip", compression_opts=9)
-hf.create_dataset('sub_rf_cut_diff', data=np.asarray(sub_rf_cut_diff), compression="gzip", compression_opts=9)
-hf.create_dataset('sub_range', data=sub_range, compression="gzip", compression_opts=9)
-hf.create_dataset('sub_bins', data=sub_bins, compression="gzip", compression_opts=9)
-hf.create_dataset('sub_bin_center', data=sub_bin_center, compression="gzip", compression_opts=9)
-hf.create_dataset('sub_hist', data=np.asarray(sub_hist), compression="gzip", compression_opts=9)
-hf.create_dataset('sub_rf_hist', data=np.asarray(sub_rf_hist), compression="gzip", compression_opts=9)
-hf.create_dataset('sub_rf_cut_hist', data=np.asarray(sub_rf_cut_hist), compression="gzip", compression_opts=9)
-hf.create_dataset('dda_temp_std', data=np.asarray(dda_temp_std), compression="gzip", compression_opts=9)
-hf.create_dataset('dda_temp_cut_std', data=np.asarray(dda_temp_cut_std), compression="gzip", compression_opts=9)
-hf.create_dataset('dda_temp_mm', data=np.asarray(dda_temp_mm), compression="gzip", compression_opts=9)
-hf.create_dataset('dda_temp_cut_mm', data=np.asarray(dda_temp_cut_mm), compression="gzip", compression_opts=9)
-hf.create_dataset('dda_temp_range', data=dda_temp_range, compression="gzip", compression_opts=9)
-hf.create_dataset('dda_temp_bins', data=dda_temp_bins, compression="gzip", compression_opts=9)
-hf.create_dataset('dda_temp_bin_center', data=dda_temp_bin_center, compression="gzip", compression_opts=9)
-hf.create_dataset('dda_temp_hist', data=np.asarray(dda_temp_hist), compression="gzip", compression_opts=9)
-hf.create_dataset('dda_temp_cut_hist', data=np.asarray(dda_temp_cut_hist), compression="gzip", compression_opts=9)
+hf.create_dataset('medi_bins', data=medi_bins, compression="gzip", compression_opts=9)
+hf.create_dataset('medi_bin_center', data=medi_bin_center, compression="gzip", compression_opts=9)
+#hf.create_dataset('sen_bins', data=sen_bins, compression="gzip", compression_opts=9)
+#hf.create_dataset('sen_bin_center', data=sen_bin_center, compression="gzip", compression_opts=9)
+#hf.create_dataset('cal_bins', data=cal_bins, compression="gzip", compression_opts=9)
+#hf.create_dataset('cal_bin_center', data=cal_bin_center, compression="gzip", compression_opts=9)
+hf.create_dataset('run_num', data=np.asarray(run_num), compression="gzip", compression_opts=9)
+#hf.create_dataset('sensors', data=np.asarray(sensors), compression="gzip", compression_opts=9)
+hf.create_dataset('medi', data=np.asarray(medi), compression="gzip", compression_opts=9)
+#hf.create_dataset('medi_1st', data=np.asarray(medi_1st), compression="gzip", compression_opts=9)
+#hf.create_dataset('medi_vol', data=np.asarray(medi_vol), compression="gzip", compression_opts=9)
+#hf.create_dataset('medi_cal', data=np.asarray(medi_cal), compression="gzip", compression_opts=9)
+#hf.create_dataset('sen', data=np.asarray(sen), compression="gzip", compression_opts=9)
+#hf.create_dataset('cal_min', data=np.asarray(cal_min), compression="gzip", compression_opts=9)
+#hf.create_dataset('cal_sec', data=np.asarray(cal_sec), compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name)
 # quick size check
 size_checker(path+file_name)
-
-
-
-
-
-

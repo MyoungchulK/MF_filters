@@ -64,7 +64,10 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
 
     # total quality cut
     tot_qual_cut = np.append(pre_qual_cut, ped_qual_cut, axis = 1)
-    tot_qual_cut_sum = np.nansum(tot_qual_cut, axis = 1)
+    tot_qual_cut_copy = np.copy(tot_qual_cut)
+    tot_qual_cut_copy[:, 16] = 0
+    tot_qual_cut_sum = np.nansum(tot_qual_cut_copy, axis = 1)
+    del tot_qual_cut_copy
 
     # run quality cut
     run_qual = run_qual_cut_loader(ara_uproot.station_id, ara_uproot.run, tot_qual_cut, analyze_blind_dat = analyze_blind_dat, verbose = True)
@@ -73,8 +76,8 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
     del run_qual, ara_uproot
 
     # live time
-    tot_qual_live_time, tot_qual_trig_live_time, tot_qual_bad_live_time = get_bad_live_time(trig_type, unix_time, time_bins, sec_per_min, tot_qual_cut, verbose = True)
-    tot_qual_sum_bad_live_time = get_bad_live_time(trig_type, unix_time, time_bins, sec_per_min, tot_qual_cut_sum, verbose = True)[2]
+    tot_qual_live_time, tot_qual_bad_live_time = get_bad_live_time(trig_type, unix_time, time_bins, sec_per_min, tot_qual_cut, verbose = True)
+    tot_qual_sum_bad_live_time = get_bad_live_time(trig_type, unix_time, time_bins, sec_per_min, np.nansum(tot_qual_cut, axis = 1), verbose = True)[1]
  
     print('Quality cut is done!')
 
@@ -102,7 +105,6 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
             'ped_final_type':ped_final_type,
             'bad_run':bad_run,
             'tot_qual_live_time':tot_qual_live_time,
-            'tot_qual_trig_live_time':tot_qual_trig_live_time,
             'tot_qual_bad_live_time':tot_qual_bad_live_time,
             'tot_qual_sum_bad_live_time':tot_qual_sum_bad_live_time}
 
