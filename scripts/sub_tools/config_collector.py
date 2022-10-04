@@ -104,7 +104,7 @@ def main(station, output):
     run_stop_list = [] # savinf for all runStop.run[xxxxxx].dat paths
 
     ## Seach the config files by loop over all L1 data path (2013 ~ 2019) and save it into lists
-    for y in tqdm(range(2013, 2019 + 1)):
+    for y in tqdm(range(2013, 2020 + 1)):
         if int(y) == 2013: # 2013 has different file path 
             #g_path = f'/data/exp/ARA/{int(y)}/filtered/unzippedTGZFiles/ARA0{station}/run_[0-9]*/logs/' # alternate path
             g_path = f'/data/exp/ARA/{int(y)}/raw/ARA0{station}-SPS-ARA/run_[0-9]*/logs/'
@@ -124,7 +124,7 @@ def main(station, output):
     print('Collecting information. 3 for loop')
     ## giant numpy array pad for storing all the configuration from each run's config files
     ## if there is no run config for corresponding run number. array element would be Nan
-    run_num = np.arange(20000, dtype = int) 
+    run_num = np.arange(22000, dtype = int) 
     run_num_len = len(run_num) 
     unix_time = np.full((2, run_num_len), np.nan, dtype = float) # array for unix time stored in runStart.run[xxxxxx].dat and runStop.run[xxxxxx].dat
     date_time = np.copy(unix_time) # array for UTC date time converted from unix time

@@ -4,7 +4,7 @@ from tqdm import tqdm
 import h5py
 from scipy.interpolate import interp1d
 
-def rayl_collector(Data, Ped, analyze_blind_dat = False):
+def rayl_collector(Data, Ped, st = None, run = None, analyze_blind_dat = False):
 
     print('Collecting rayl. starts!')
 
@@ -16,6 +16,25 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
     from tools.ara_detector_response import get_rayl_distribution
     from tools.ara_detector_response import get_signal_chain_gain
     from tools.ara_detector_response import get_rayl_bad_run
+
+    emer = True
+    if emer:
+        run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
+        rayl_dat = run_info.get_result_path(file_type = 'rayl', verbose = True, return_none = True)
+        if rayl_dat is None:
+            del run_info, rayl_dat
+            pass
+        else:
+            rayl_hf = h5py.File(rayl_dat, 'r')
+            soft_len = rayl_hf['soft_len'][:]
+            soft_rayl = rayl_hf['soft_rayl'][:]
+            print(f'length: {soft_len.shape[-1]}, nan: {np.any(np.isnan(soft_rayl.flatten()))}')
+            if soft_len.shape[-1] == 0:
+                pass
+            elif np.any(np.isnan(soft_rayl.flatten())):
+                pass
+            else:
+                return True
 
     # geom. info.
     ara_const = ara_const()
@@ -41,14 +60,11 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False):
     run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
     daq_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True)
     daq_hf = h5py.File(daq_dat, 'r')
-    tot_qual_cut = daq_hf['tot_qual_cut'][:]
-    tot_qual_cut[:, 10] = 0 # disable bad unix time
-    tot_qual_cut[:, 21] = 0 # disable known bad run
-    tot_qual_cut_sum = np.nansum(tot_qual_cut, axis = 1)
+    tot_qual_cut_sum = daq_hf['tot_qual_cut_sum'][:]
     cw_dat = run_info.get_result_path(file_type = 'cw_cut', verbose = True)
     cw_hf = h5py.File(cw_dat, 'r')
     cw_qual_cut_sum = cw_hf['cw_qual_cut_sum'][:]
-    del daq_dat, daq_hf, cw_dat, cw_hf, run_info, tot_qual_cut
+    del daq_dat, daq_hf, cw_dat, cw_hf, run_info
    
     # clean soft trigger 
     tot_cuts = (tot_qual_cut_sum + cw_qual_cut_sum).astype(int)

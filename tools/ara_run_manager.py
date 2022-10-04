@@ -312,11 +312,13 @@ class run_info_loader:
                 config=4
             elif self.run>=9505 and self.run<=9748:
                 config=5
-            elif self.run>=9749:
+            elif self.run>=9749 and self.run<=15526:
                 config=6
+            elif self.run>=15527:
+                config=7
             else:
                 pass
-            self.num_configs = 6
+            self.num_configs = 7
 
         elif self.st == 3:
             if self.run>=0 and self.run<=4:
@@ -337,11 +339,13 @@ class run_info_loader:
             elif self.run>=10001 and self.run<=12878:
                 config=6
             #elif (self.run>=12864 and self.run<=12871) or self.run>=13085:
-            elif self.run>=12879:
+            elif self.run>=12879 and self.run<=14990:
                 config=7
+            elif self.run>=14991:
+                config=8
             else:
                 pass
-            self.num_configs = 7
+            self.num_configs = 8
 
         elif self.st == 5:
             pass
@@ -446,6 +450,8 @@ class batch_info_loader:
 
             if self.st == 3 and int(yrs) == 2018:
                 wrong_idx = run_yrs_sort < 10000
+            elif self.st == 3 and int(yrs) == 2016:
+                wrong_idx = np.logical_or(run_yrs_sort == 17052, run_yrs_sort == 18031)
             else:
                 wrong_idx = run_yrs_sort < 100
             bad_run = run_yrs_sort[wrong_idx]

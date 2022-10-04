@@ -1054,7 +1054,11 @@ class run_qual_cut_loader:
             if self.qual_flag or self.ped_flag:
                 if self.verbose:
                     print(f'A{self.st} R{self.run} is bad!!! Bad type 1) qual: {int(self.qual_flag)}, 2) bad: {int(self.ped_flag)}, 3) known: {int(self.known_flag)}')
-                bad_path = f'../data/qual_runs/qual_run_A{self.st}.txt'
+                bad_dir = f'../data/qual_runs/'
+                if not os.path.exists(bad_dir):
+                    os.makedirs(bad_dir)
+                bad_name = f'qual_run_A{self.st}.txt'
+                bad_path = f'{bad_dir}{bad_name}'
                 bad_run_info = f'{self.run} {int(self.qual_flag)} {int(self.ped_flag)} {int(self.known_flag)}\n'
                 if os.path.exists(bad_path):
                     if self.verbose:
@@ -1082,7 +1086,7 @@ class run_qual_cut_loader:
                         print(f'Add run{self.run} in {bad_path}!')
                     with open(bad_path, 'w') as f:
                         f.write(bad_run_info)
-                del bad_path, bad_run_info
+                del bad_path, bad_run_info, bad_dir, bad_name
 
 def get_bad_live_time(trig_type, unix_time, time_bins, sec_per_min, cuts, verbose = False):
 

@@ -26,8 +26,13 @@ def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_overrid
         if blind_dat:
             blind_type = '_full'
         true_output_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{station}/{key}{blind_type}/'
-        h5_file_name = f'{key}{blind_type}_A{station}_R{run}'
-        done_path = f'{true_output_path}{h5_file_name}.h5'
+        file_format = '.h5'
+        sub_key = ''
+        if key == 'ped':
+            file_format = '.dat'
+            sub_key = '_values'
+        h5_file_name = f'{key}{blind_type}{sub_key}_A{station}_R{run}'
+        done_path = f'{true_output_path}{h5_file_name}{file_format}'
         if os.path.exists(done_path):
             print(f'{done_path} is already there!!')
             return
@@ -47,7 +52,7 @@ def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_overrid
         file_type = 'eventHk'
         return_none = True
         return_dat_only = True
-    elif key == 'blk_len' or key == 'rf_len' or key == 'evt_rate' or key == 'run_time' or key == 'ped' or key == 'qual_cut' or key == 'daq_cut' or key == 'ped_cut' or key == 'sub_info' or key == 'cw_time':
+    elif key == 'blk_len' or key == 'rf_len' or key == 'evt_rate' or key == 'run_time' or key == 'ped' or key == 'qual_cut' or key == 'ped' or key == 'medi' or key == 'sub_info' or key == 'cw_time':
         return_dat_only = True
     Data, Ped = run_info.get_data_ped_path(file_type = file_type, return_none = return_none, verbose = verbose, return_dat_only = return_dat_only)
     station, run, Config, Year, Month, Date = run_info.get_data_info()
@@ -67,6 +72,14 @@ def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_overrid
         results = method(Data, Ped, station, Year, analyze_blind_dat = blind_dat)
     elif key == 'l1':
         results = method(Data, Ped, station, run, Year, analyze_blind_dat = blind_dat)
+    elif key == 'ped':
+        results = method(Data, station, run, analyze_blind_dat = blind_dat)
+        return
+    elif key == 'rayl':
+        results = method(Data, Ped, station, run, analyze_blind_dat = blind_dat)
+        if results == True:
+            print(f'Rayl A{station} R{run} is okay!')
+            return
     elif key == 'cw_time':
         results = method(station, run, analyze_blind_dat = blind_dat)
         return

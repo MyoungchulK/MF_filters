@@ -14,8 +14,8 @@ from tools.ara_run_manager import run_info_loader
 
 Station = int(sys.argv[1])
 
-if Station == 2:num_configs = 6
-if Station == 3:num_configs = 7
+if Station == 2:num_configs = 7
+if Station == 3:num_configs = 8
 num_ants = 16
 
 trig = int(sys.argv[2])
@@ -24,7 +24,7 @@ count_i = int(sys.argv[3])
 count_f = int(sys.argv[4])
 
 blined = ''
-blined = '_full'
+#blined = '_full'
 
 # sort
 d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_val{blined}/*'
@@ -35,7 +35,7 @@ del d_path, d_run_range
 md_2013 = datetime(2013, 1, 1, 0, 0)
 md_2013_r = md_2013.replace(tzinfo=timezone.utc)
 unix_2013 = int(md_2013_r.timestamp())
-md_2020 = datetime(2020, 1, 1, 0, 0)
+md_2020 = datetime(2021, 1, 1, 0, 0)
 md_2020_r = md_2020.replace(tzinfo=timezone.utc)
 unix_2020 = int(md_2020_r.timestamp())
 unix_min_bins = np.linspace(unix_2013, unix_2020, (unix_2020 - unix_2013) // 60 + 1, dtype = int)
@@ -54,7 +54,7 @@ print(len(wb_table))
 del hf, cw_h5_path, txt_name
 
 # pole
-yrs_range = np.arange(2013, 2020+1, 1, dtype = int)
+yrs_range = np.arange(2013, 2021+1, 1, dtype = int)
 yrs_len = len(yrs_range)
 mon_2_sec = 60 * 60 * 24 * 31 * 2
 pole_table = np.full((mon_2_sec * 2 + 1, yrs_len), 0, dtype = int)

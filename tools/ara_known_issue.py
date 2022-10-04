@@ -40,7 +40,7 @@ class known_issue_loader:
             if run > 12865:
                 st_idx = 0
                 bad_ant[st_idx::num_ddas] = True # all D1 antennas, dead bit issue
-                #bad_ant[3::4] = 1 # all D4 antennas, duplication issue
+                bad_ant[3::4] = 1 # all D4 antennas, duplication issue
 
         if good_ant_true:
             bad_ant = ~bad_ant
@@ -827,6 +827,7 @@ class known_issue_loader:
 
             ## 2013 ##
             # L1 data is already excluded the calibration run written in wiki
+            bad_run = np.append(bad_run, 1918) # burn samples.....
 
             ## 2014 ##
             # 2014 rooftop pulsing, http://ara.icecube.wisc.edu/wiki/index.php/Run_Log_2014

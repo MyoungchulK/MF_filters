@@ -66,18 +66,18 @@ class py_interferometers:
         phi = table_hf['phi_bin'][:]
         radius_arr = table_hf['radius_bin'][:]
         num_ray_sol = table_hf['num_ray_sol'][0]
-        arr_table = table_hf['arr_time_table'][:, :, :, :, 0]
+        arr_table = table_hf['arr_time_table'][:]
         del table_path, table_name, table_hf
  
-        self.table = np.full((len(theta), len(phi), len(radius_arr), self.pair_len), np.nan, dtype = float)
+        self.table = np.full((len(theta), len(phi), len(radius_arr), num_ray_sol, self.pair_len), np.nan, dtype = float)
         table_p1 = np.copy(self.table)
         table_p2 = np.copy(self.table)
         for p in range(self.pair_len):
             p_1st = self.pairs[p, 0]
             p_2nd = self.pairs[p, 1]
-            self.table[:, :, :, p] = arr_table[:, :, :, p_1st] - arr_table[:, :, :, p_2nd]
-            table_p1[:, :, :, p] = arr_table[:, :, :, p_1st]
-            table_p2[:, :, :, p] = arr_table[:, :, :, p_2nd]
+            self.table[:, :, :, :, p] = arr_table[:, :, :, p_1st, :] - arr_table[:, :, :, p_2nd, :]
+            table_p1[:, :, :, :, p] = arr_table[:, :, :, p_1st, :]
+            table_p2[:, :, :, :, p] = arr_table[:, :, :, p_2nd, :]
             del p_1st, p_2nd
         del theta, phi, radius_arr, num_ray_sol, arr_table
 
@@ -100,22 +100,23 @@ class py_interferometers:
 
         coval = np.full(self.table_shape, 0, dtype=float)
         for p in range(self.pair_len):
-            coval[:, :, :, p] = corr_diff[:, p][self.p0_idx[:, :, :, p]] * self.int_factor[:, :, :, p] + corr[:, p][self.p0_idx[:, :, :, p]]
+            coval[:, :, :, :, p] = corr_diff[:, p][self.p0_idx[:, :, :, :, p]] * self.int_factor[:, :, :, :, p] + corr[:, p][self.p0_idx[:, :, :, :, p]]
         coval[self.bad_arr] = 0
         del corr_diff
 
         if sum_pol:
-            corr_v_sum = np.nansum(coval[:, :, :, :self.v_pairs_len], axis = 3)
-            corr_h_sum = np.nansum(coval[:, :, :, self.v_pairs_len:], axis = 3)
+            corr_v_sum = np.nansum(coval[:, :, :, :, :self.v_pairs_len], axis = 4)
+            corr_h_sum = np.nansum(coval[:, :, :, :, self.v_pairs_len:], axis = 4)
 
             corr_v_max = np.nanmax(corr_v_sum, axis = (0,1))
             corr_h_max = np.nanmax(corr_h_sum, axis = (0,1))
-            coval = np.asarray([corr_v_max, corr_h_max]) # pol, rad
+            coval = np.asarray([corr_v_max, corr_h_max]) # pol, rad, sol
 
-            coord = np.full((2, 2, 2), np.nan, dtype = float) # pol, thetapi, rad
+            coord = np.full((2, 2, 2, 2), np.nan, dtype = float) # pol, thetapi, rad, sol
             for r in range(2):
-                coord[0, :, r] = np.asarray(np.where(corr_v_sum[:, :, r] == corr_v_max[r]), dtype = float).flatten()                 
-                coord[1, :, r] = np.asarray(np.where(corr_h_sum[:, :, r] == corr_h_max[r]), dtype = float).flatten()
+                for s in range(2):
+                    coord[0, :, r, s] = np.asarray(np.where(corr_v_sum[:, :, r, s] == corr_v_max[r, s]), dtype = float).flatten()                 
+                    coord[1, :, r, s] = np.asarray(np.where(corr_h_sum[:, :, r, s] == corr_h_max[r, s]), dtype = float).flatten()
             del corr_v_sum, corr_h_sum
 
             return coval, coord

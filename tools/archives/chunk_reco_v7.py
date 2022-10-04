@@ -49,8 +49,8 @@ def reco_collector(Data, Ped, analyze_blind_dat = False):
     bad_run_arr = np.asarray(bad_run_arr, dtype = int)
     if run in bad_run_arr:
         print(f'Bad noise modeling for A{st} R{run}! So, no Reco results!')
-        coef = np.full((2, 2, num_evts), np.nan, dtype = float) # pol, rad
-        coord = np.full((2, 2, 2, num_evts), np.nan, dtype = float) # thephi, pol, rad
+        coef = np.full((2, 2, 2, num_evts), np.nan, dtype = float) # pol, rad
+        coord = np.full((2, 2, 2, 2, num_evts), np.nan, dtype = float) # thephi, pol, rad
         return {'evt_num':evt_num,
             'entry_num':entry_num,
             'trig_type':trig_type,
@@ -94,8 +94,8 @@ def reco_collector(Data, Ped, analyze_blind_dat = False):
     del st, yr, run, pairs, v_pairs_len, weights
 
     # output array  
-    coef = np.full((2, 2, num_evts), np.nan, dtype = float) # pol, rad
-    coord = np.full((2, 2, 2, num_evts), np.nan, dtype = float) # pol, thephi, rad
+    coef = np.full((2, 2, 2, num_evts), np.nan, dtype = float) # pol, rad, sol
+    coord = np.full((2, 2, 2, 2, num_evts), np.nan, dtype = float) # pol, thephi, rad, sol
 
     # loop over the events
     for evt in tqdm(range(num_evts)):
@@ -116,8 +116,8 @@ def reco_collector(Data, Ped, analyze_blind_dat = False):
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()   
 
-        coef[:, :, evt], coord[:, :, :, evt] = ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt])
-        #print(coef[:, :, evt], coord[:, :, :, evt])       
+        coef[:, :, :, evt], coord[:, :, :, :, evt] = ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt])
+        #print(coef[:, :, :, evt], coord[:, :, :, :, evt])       
     del ara_root, num_evts, num_ants, wf_int, ara_int, daq_qual_cut_sum, wei_pairs
 
     print('Reco collecting is done!')
