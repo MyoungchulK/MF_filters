@@ -24,16 +24,16 @@ def snr_sim_collector(Data, Station, Year):
     dt = ara_root.time_step
     wf_len = ara_root.waveform_length
     wf_time = ara_root.wf_time    
-    pnu = ara_root.pnu
-    inu_thrown = ara_root.inu_thrown
-    weight = ara_root.weight
-    probability = ara_root.probability
-    nuflavorint = ara_root.nuflavorint
-    nu_nubar = ara_root.nu_nubar
-    currentint = ara_root.currentint
-    elast_y = ara_root.elast_y
-    posnu = ara_root.posnu
-    nnu = ara_root.nnu
+    #pnu = ara_root.pnu
+    #inu_thrown = ara_root.inu_thrown
+    #weight = ara_root.weight
+    #probability = ara_root.probability
+    #nuflavorint = ara_root.nuflavorint
+    #nu_nubar = ara_root.nu_nubar
+    #currentint = ara_root.currentint
+    #elast_y = ara_root.elast_y
+    #posnu = ara_root.posnu
+    #nnu = ara_root.nnu
 
     # wf analyzer
     wf_int = wf_analyzer(dt = dt)
@@ -76,16 +76,16 @@ def snr_sim_collector(Data, Station, Year):
     return {'entry_num':entry_num,
             'dt':dt,
             'wf_time':wf_time,
-            'pnu':pnu,
-            'inu_thrown':inu_thrown,
-            'weight':weight,
-            'probability':probability,
-            'nuflavorint':nuflavorint,
-            'nu_nubar':nu_nubar,
-            'currentint':currentint,
-            'elast_y':elast_y,
-            'posnu':posnu,
-            'nnu':nnu,
+            #'pnu':pnu,
+            #'inu_thrown':inu_thrown,
+            #'weight':weight,
+            #'probability':probability,
+            #'nuflavorint':nuflavorint,
+            #'nu_nubar':nu_nubar,
+            #'currentint':currentint,
+            #'elast_y':elast_y,
+            #'posnu':posnu,
+            #'nnu':nnu,
             'snr':snr,
             'p2p':p2p,
             'rms':rms,
