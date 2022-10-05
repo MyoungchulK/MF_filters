@@ -73,33 +73,6 @@ def reco_sim_collector(Data, Station, Year):
     coef = np.full((2, 2, 2, num_evts), np.nan, dtype = float) # pol, rad, sol
     coord = np.full((2, 2, 2, 2, num_evts), np.nan, dtype = float) # thephi, pol, rad, sol
 
-    # rayl table check
-    bad_path = f'../data/rayl_runs/rayl_run_A{Station}.txt'
-    bad_run_arr = []
-    with open(bad_path, 'r') as f:
-        for lines in f:
-            run_num = int(lines)
-            bad_run_arr.append(run_num)
-    bad_run_arr = np.asarray(bad_run_arr, dtype = int)
-    if run in bad_run_arr:
-        print(f'Bad noise modeling for A{Station} R{run}! So, no Reco sim results!')
-        return {'entry_num':entry_num,
-            'dt':dt,
-            'wf_time':wf_time,
-            'pnu':pnu,
-            'inu_thrown':inu_thrown,
-            'weight':weight,
-            'probability':probability,
-            'nuflavorint':nuflavorint,
-            'nu_nubar':nu_nubar,
-            'currentint':currentint,
-            'elast_y':elast_y,
-            'posnu':posnu,
-            'nnu':nnu,
-            'snr_weights':snr_weights,
-            'coef':coef,
-            'coord':coord}
-
     # loop over the events
     for evt in tqdm(range(num_evts)):
       #if evt <100: # debug 
