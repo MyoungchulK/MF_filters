@@ -24,7 +24,7 @@ count_i = int(sys.argv[3])
 count_f = int(sys.argv[4])
 
 blined = ''
-#blined = '_full'
+blined = '_full'
 
 # sort
 d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_val{blined}/*'
