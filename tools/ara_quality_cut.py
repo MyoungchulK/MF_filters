@@ -59,15 +59,16 @@ class pre_qual_cut_loader:
         self.irs_block_number = ara_uproot.irs_block_number
         self.channel_mask = ara_uproot.channel_mask
         self.verbose = verbose
+        self.analyze_blind_dat = analyze_blind_dat
 
-        run_info = run_info_loader(self.st, self.run, analyze_blind_dat = analyze_blind_dat)
-        sub_info_dat = run_info.get_result_path(file_type = 'sub_info', verbose = self.verbose, force_blind = True)
+        self.run_info = run_info_loader(self.st, self.run, analyze_blind_dat = self.analyze_blind_dat)
+        sub_info_dat = self.run_info.get_result_path(file_type = 'sub_info', verbose = self.verbose, force_blind = True)
         self.sub_info_hf = h5py.File(sub_info_dat, 'r')
         self.evt_sort = self.sub_info_hf['evt_num_sort'][:]
         self.unix_sort = self.sub_info_hf['unix_time_sort'][:]
         self.pps_sort = self.sub_info_hf['pps_number_sort_reset'][:]
         self.trig_sort = self.sub_info_hf['trig_type_sort'][:]
-        del sub_info_dat, run_info
+        del sub_info_dat
 
         self.ara_known_issue = known_issue_loader(self.st)
 
@@ -474,71 +475,141 @@ class pre_qual_cut_loader:
 
         return cw_log_events
 
-    """
-    def get_no_calpulser_events(self, ratio_cut = 0.02, apply_bias_volt = None):
+    def get_cw_threshold_events(self):
 
-        no_cal_evts = np.full((self.num_evts), 0, dtype = int)
-        if self.st == 3 and (self.run > 1124 and self.run < 1429):
-            return no_cal_evts
+        cw_thres_evts = np.full((self.num_evts, 2), 0, dtype = int)
 
-        if apply_bias_volt is not None:
-            trig_type_evt = self.trig_type[apply_bias_volt == 0]
+        if self.analyze_blind_dat:
+            c_idx = self.run_info.get_config_number() - 1
+            num_configs = self.run_info.num_configs
+            cur_04_rf, cur_025_rf, cur_0125_rf, cur_04_cal, cur_025_cal, cur_0125_cal, cur_04_soft, cur_025_soft, cur_0125_soft = get_cw_high_cut(self.st, c_idx, num_configs)
+            cut_04_rf, cut_025_rf, cut_0125_rf, cut_04_cal, cut_025_cal, cut_0125_cal, cut_04_soft, cut_025_soft, cut_0125_soft = get_cw_cut(self.st, c_idx, num_configs)
+            smear_arr = np.arange(-10, 10, 1, dtype = int)
+            del c_idx, num_configs
+
+            cw_dat = self.run_info.get_result_path(file_type = 'cw_val', verbose = self.verbose)
+            cw_hf = h5py.File(cw_dat, 'r')
+            cw_unix = cw_hf['unix_time'][:]
+            cw_trig = cw_hf['trig_type'][:]
+            sub_r = cw_hf['sub_ratios'][:]    
+
+            smear_cut_04_idx = self.get_smear_cut(sub_r[2], cw_trig, cut_04_rf, cut_04_cal, cut_04_soft, 1, unix_time = cw_unix, smear_arr = smear_arr)
+            cur_cut_04_idx = self.get_smear_cut(sub_r[2], cw_trig, cur_04_rf, cur_04_cal, cur_04_soft, 0, pre_cut = smear_cut_04_idx)
+            cut_04_idx = np.logical_or(smear_cut_04_idx, cur_cut_04_idx)
+            del smear_cut_04_idx           
+ 
+            smear_cut_025_idx = self.get_combine_smear_cut(sub_r[1], sub_r[0], cw_trig, cut_025_rf, cut_025_cal, cut_025_soft, cut_0125_rf, cut_0125_cal, cut_0125_soft, 1, unix_time = cw_unix, smear_arr = smear_arr)
+            cur_cut_025_idx = self.get_combine_smear_cut(sub_r[1], sub_r[0], cw_trig, cur_025_rf, cur_025_cal, cur_025_soft, cur_0125_rf, cur_0125_cal, cur_0125_soft, 0, pre_cut = smear_cut_025_idx)
+            cut_025_idx = np.logical_or(smear_cut_025_idx, cur_cut_025_idx)
+            del smear_cut_025_idx
+
+            cw_thres_evts[:, 0] = cut_04_idx.astype(int)
+            cw_thres_evts[:, 1] = cut_025_idx.astype(int)
+            del cw_dat, cw_hf, sub_r, cut_04_idx, cut_025_idx, cw_trig, cur_cut_04_idx, cur_cut_025_idx, smear_arr
+            del cur_04_rf, cur_025_rf, cur_0125_rf, cur_04_cal, cur_025_cal, cur_0125_cal, cur_04_soft, cur_025_soft, cur_0125_soft
+            del cut_04_rf, cut_025_rf, cut_0125_rf, cut_04_cal, cut_025_cal, cut_0125_cal, cut_04_soft, cut_025_soft, cut_0125_soft
         else:
-            trig_type_evt = self.trig_type
-
-        num_evts = len(trig_type_evt)
-        if len(trig_type_evt) != 0:
-            num_cal_evts = np.count_nonzero(trig_type_evt == 1)
-            cal_evt_ratio = num_cal_evts / len(trig_type_evt)
-        else:
-            cal_evt_ratio = np.nan
-
-        if cal_evt_ratio < ratio_cut:
-            no_cal_evts[:] = 1
+            cw_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = self.verbose, force_blind = True)
+            cw_hf = h5py.File(cw_dat, 'r')
+            evt_num_full = cw_hf['evt_num'][:]
+            evt_idx = np.in1d(evt_num_full, self.evt_num)
+            tot_cuts = cw_hf['tot_qual_cut'][:]
+            cw_thres_evts[:, 0] = tot_cuts[:, 21][evt_idx]
+            cw_thres_evts[:, 1] = tot_cuts[:, 22][evt_idx]
+            del tot_cuts, evt_idx, evt_num_full, cw_hf, cw_dat 
 
         if self.verbose:
-            quick_qual_check(no_cal_evts != 0, 'no calpulser events', self.evt_num)
+            quick_qual_check(cw_thres_evts[:, 0] != 0, 'cw threshold 0.4 GHz events', self.evt_num)
+            quick_qual_check(cw_thres_evts[:, 1] != 0, 'cw threshold 0.125 / 0.25 GHz events', self.evt_num)
 
-        return no_cal_evts
+        return cw_thres_evts
+
+    def get_smear_cut(self, sub_04, trig_type, cw_rf_04, cw_cal_04, cw_soft_04, ant_c, unix_time = None, smear_arr = None, pre_cut = None):
+
+        sub_04_rf = np.copy(sub_04)
+        sub_04_cal = np.copy(sub_04)
+        sub_04_soft = np.copy(sub_04)
     
-    def get_bad_unix_time_sequence(self):
-
-        bad_unix_sequence = np.full((self.num_evts), 0, dtype = int)
-
-        if self.st == 3 and self.run == 3461: # condamn this run...
-            bad_unix_sequence[:] = 1
-            if self.verbose:
-                quick_qual_check(bad_unix_sequence != 0, 'bad unix sequence', self.evt_num)
-            return bad_unix_sequence
-
-        n_idxs = np.where(np.diff(self.unix_sort) < 0)[0]
-        if len(n_idxs):
-            tot_bad_evts = []
-            for n_idx in n_idxs:
-                n_idx = int(n_idx)
-                unix_peak = self.unix_sort[:-1][n_idx]
-                bad_idx = np.where(self.unix_sort[n_idx + 1:] < unix_peak + 1)
-                bad_evts = self.evt_sort[n_idx + 1:][bad_idx]
-                tot_bad_evts.extend(bad_evts)
-                del unix_peak, bad_idx
-
-            tot_bad_evts = np.asarray(tot_bad_evts)
-            tot_bad_evts = np.unique(tot_bad_evts)
-            bad_unix_sequence[:] = np.in1d(self.evt_num, tot_bad_evts).astype(int)
-            del tot_bad_evts
+        if pre_cut is not None:
+            sub_04_rf[:, np.logical_or(pre_cut, trig_type != 0)] = np.nan
+            sub_04_cal[:, np.logical_or(pre_cut, trig_type != 1)] = np.nan
+            sub_04_soft[:, np.logical_or(pre_cut, trig_type != 2)] = np.nan    
         else:
-            return bad_unix_sequence
-        del n_idxs
+            sub_04_rf[:, trig_type != 0] = np.nan
+            sub_04_cal[:, trig_type != 1] = np.nan
+            sub_04_soft[:, trig_type != 2] = np.nan
 
-        if self.verbose:
-            quick_qual_check(bad_unix_sequence != 0, 'bad unix sequence', self.evt_num)
+        rf_04_idx = np.count_nonzero(sub_04_rf > cw_rf_04[:, np.newaxis], axis = 0) > ant_c
+        cal_04_idx = np.count_nonzero(sub_04_cal > cw_cal_04[:, np.newaxis], axis = 0) > ant_c
+        soft_04_idx = np.count_nonzero(sub_04_soft > cw_soft_04[:, np.newaxis], axis = 0) > ant_c
+        tot_04_idx = np.any((rf_04_idx, cal_04_idx, soft_04_idx), axis = 0)
 
-        return bad_unix_sequence
-    """
+        if smear_arr is not None:
+            unix_04 = np.repeat(unix_time[tot_04_idx][:, np.newaxis], len(smear_arr), axis = 1)
+            unix_04 += smear_arr[np.newaxis, :]
+            unix_04 = np.unique(unix_04.flatten()).astype(int)
+            cut_04_idx = np.in1d(unix_time, unix_04)
+            del unix_04
+        else:
+            cut_04_idx = np.copy(tot_04_idx)
+        del sub_04_rf, rf_04_idx, sub_04_cal, cal_04_idx, sub_04_soft, soft_04_idx, tot_04_idx
+
+        return cut_04_idx
+
+    def get_combine_smear_cut(self, sub_025, sub_0125, trig_type, cw_rf_025, cw_cal_025, cw_soft_025, cw_rf_0125, cw_cal_0125, cw_soft_0125, ant_c, unix_time = None, smear_arr = None, pre_cut = None):
+
+        sub_025_rf = np.copy(sub_025)
+        sub_0125_rf = np.copy(sub_0125)
+        sub_025_cal = np.copy(sub_025)
+        sub_0125_cal = np.copy(sub_0125)
+        sub_025_soft = np.copy(sub_025)
+        sub_0125_soft = np.copy(sub_0125)
+
+        if pre_cut is not None:
+            sub_025_rf[:, np.logical_or(pre_cut, trig_type != 0)] = np.nan
+            sub_0125_rf[:, np.logical_or(pre_cut, trig_type != 0)] = np.nan
+            sub_025_cal[:, np.logical_or(pre_cut, trig_type != 1)] = np.nan
+            sub_0125_cal[:, np.logical_or(pre_cut, trig_type != 1)] = np.nan
+            sub_025_soft[:, np.logical_or(pre_cut, trig_type != 2)] = np.nan
+            sub_0125_soft[:, np.logical_or(pre_cut, trig_type != 2)] = np.nan
+        else:
+            sub_025_rf[:, trig_type != 0] = np.nan
+            sub_0125_rf[:, trig_type != 0] = np.nan
+            sub_025_cal[:, trig_type != 1] = np.nan
+            sub_0125_cal[:, trig_type != 1] = np.nan
+            sub_025_soft[:, trig_type != 2] = np.nan
+            sub_0125_soft[:, trig_type != 2] = np.nan
+
+        rf_025_idx = sub_025_rf > cw_rf_025[:, np.newaxis]
+        rf_0125_idx = sub_0125_rf > cw_rf_0125[:, np.newaxis]
+        rf_idx = np.any((rf_025_idx, rf_0125_idx), axis = 0)
+        rf_com_idx = np.count_nonzero(rf_idx, axis = 0) > ant_c
+        cal_025_idx = sub_025_cal > cw_cal_025[:, np.newaxis]
+        cal_0125_idx = sub_0125_cal > cw_cal_0125[:, np.newaxis]
+        cal_idx = np.any((cal_025_idx, cal_0125_idx), axis = 0)
+        cal_com_idx = np.count_nonzero(cal_idx, axis = 0) > ant_c
+        soft_025_idx = sub_025_soft > cw_soft_025[:, np.newaxis]
+        soft_0125_idx = sub_0125_soft > cw_soft_0125[:, np.newaxis]
+        soft_idx = np.any((soft_025_idx, soft_0125_idx), axis = 0)
+        soft_com_idx = np.count_nonzero(soft_idx, axis = 0) > ant_c
+        tot_com_idx = np.any((rf_com_idx, cal_com_idx, soft_com_idx), axis = 0)
+
+        if smear_arr is not None:
+            unix_com = np.repeat(unix_time[tot_com_idx][:, np.newaxis], len(smear_arr), axis = 1)
+            unix_com += smear_arr[np.newaxis, :]
+            unix_com = np.unique(unix_com.flatten()).astype(int)
+            cut_com_idx = np.in1d(unix_time, unix_com)
+            del unix_com
+        else:
+            cut_com_idx = np.copy(tot_com_idx)
+        del sub_025_rf, sub_0125_rf, sub_025_cal, sub_0125_cal, sub_025_soft, sub_0125_soft
+        del rf_025_idx, rf_0125_idx, rf_idx, rf_com_idx, cal_025_idx, cal_0125_idx, cal_idx, cal_com_idx, soft_025_idx, soft_0125_idx, soft_idx, soft_com_idx, tot_com_idx 
+
+        return cut_com_idx
 
     def run_pre_qual_cut(self):
 
-        tot_pre_qual_cut = np.full((self.num_evts, 21), 0, dtype = int)
+        tot_pre_qual_cut = np.full((self.num_evts, 23), 0, dtype = int)
         tot_pre_qual_cut[:, :5] = self.get_daq_structure_errors()
         tot_pre_qual_cut[:, 5:9] = self.get_readout_window_errors()
         tot_pre_qual_cut[:, 9] = self.get_first_minute_events()
@@ -549,6 +620,7 @@ class pre_qual_cut_loader:
         tot_pre_qual_cut[:, 18] = self.get_known_bad_unix_time_events()
         tot_pre_qual_cut[:, 19] = self.get_known_bad_run_events()
         tot_pre_qual_cut[:, 20] = self.get_cw_log_events()
+        tot_pre_qual_cut[:, 21:] = self.get_cw_threshold_events()
 
         self.daq_qual_cut_sum = np.nansum(tot_pre_qual_cut[:, :9], axis = 1)
         self.pre_qual_cut_sum = np.nansum(tot_pre_qual_cut, axis = 1)
@@ -561,7 +633,7 @@ class pre_qual_cut_loader:
 
 class post_qual_cut_loader:
 
-    def __init__(self, ara_root, ara_uproot, daq_cut_sum, dt = 0.5, sol_pad = None, pre_cut = None, use_unlock_cal = False, use_cw_cut = False, use_cw_val =False, verbose = False):
+    def __init__(self, ara_root, ara_uproot, daq_cut_sum, dt = 0.5, sol_pad = None, pre_cut = None, use_unlock_cal = False, use_cw_cut = False, verbose = False):
 
         self.verbose = verbose
         self.ara_root = ara_root
@@ -592,10 +664,6 @@ class post_qual_cut_loader:
             self.wf_int = wf_analyzer(dt = dt, use_time_pad = True, use_band_pass = True)
 
             num_params, cw_thres, cw_freq = self.get_cw_params()
-            if use_cw_val:
-                cut_val = 0.02
-                print(f'This is cw value run! All the cut ratio value is {cut_val}')
-                cw_thres = np.full(cw_thres.shape, cut_val, dtype = float)
             from tools.ara_data_load import sin_subtract_loader
             self.sin_sub = sin_subtract_loader(cw_freq, cw_thres, 3, num_params, dt, self.sol_pad)
             del cw_thres, cw_freq
@@ -646,89 +714,15 @@ class post_qual_cut_loader:
                     self.ara_root.del_TGraph()
                 self.ara_root.del_usefulEvt()
 
-    def get_pre_cut_for_cw(self, pre_cut, trig_type):
-
-        pre_cut_cw = np.copy(pre_cut)
-        pre_cut_cw[:, 10] = 0 # disable bad unix time
-        pre_cut_cw[:, 21] = 0 # disable known bad run
-        pre_cut_sum = np.nansum(pre_cut_cw, axis = 1)
-        pre_cut_evts = np.logical_and(pre_cut_sum == 0, trig_type != 1)
-        del pre_cut_cw, pre_cut_sum
-
-        if self.verbose:
-            print(f'number of clean events for cw cut: {np.nansum(pre_cut_evts)}')
-
-        return pre_cut_evts
-
     def get_cw_params(self):
-
-        run_info = run_info_loader(self.st, self.run)    
-        config_idx = int(run_info.get_config_number() - 1) 
-        num_configs = run_info.num_configs
-        del run_info
-
-        if self.st == 2:
-            cw_arr_04 = np.full((num_ants, num_configs), np.nan, dtype = float) 
-            cw_arr_04[:,0] = np.array([0.06, 0.06, 0.04, 0.04, 0.06, 0.04, 0.04, 0.06, 0.06, 0.04, 0.04, 0.04, 0.04, 0.06, 0.04, 1000], dtype = float)
-            cw_arr_04[:,1] = np.array([0.06, 0.08, 0.04, 0.04, 0.06, 0.06, 0.04, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 1000], dtype = float)
-            cw_arr_04[:,2] = np.array([0.06, 0.08, 0.04, 0.04, 0.06, 0.06, 0.04, 0.06, 0.06, 0.04, 0.06, 0.06, 0.06, 0.06, 0.06, 1000], dtype = float)
-            cw_arr_04[:,3] = np.array([0.04, 0.04, 0.04, 0.04, 0.06, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 1000], dtype = float)
-            cw_arr_04[:,4] = np.array([0.04, 0.04, 0.04, 0.04, 0.06, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 1000], dtype = float)
-            cw_arr_04[:,5] = np.array([0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 1000], dtype = float)
-
-            cw_arr_025 = np.full((num_ants, num_configs), np.nan, dtype = float)
-            cw_arr_025[:,0] = np.array([0.16, 0.16, 0.16, 0.16, 0.14, 0.14, 0.14, 0.14, 0.18,  0.2, 0.16, 0.24, 0.16, 0.16, 0.16, 1000], dtype = float)
-            cw_arr_025[:,1] = np.array([0.16, 0.16, 0.16,  0.2, 0.14, 0.12, 0.24, 0.14,  0.2,  0.2, 0.18, 0.24, 0.16, 0.18, 0.16, 1000], dtype = float)
-            cw_arr_025[:,2] = np.array([0.14, 0.16, 0.14, 0.14,  0.1,  0.1, 0.14, 0.14, 0.18, 0.18, 0.18, 0.26, 0.16, 0.16, 0.16, 1000], dtype = float)
-            cw_arr_025[:,3] = np.array([0.12, 0.14,  0.1, 0.12,  0.1,  0.1, 0.18,  0.1, 0.14, 0.16, 0.16, 0.26, 0.14, 0.14, 0.14, 1000], dtype = float)
-            cw_arr_025[:,4] = np.array([0.12, 0.14,  0.1, 0.12,  0.1,  0.1, 0.18,  0.1, 0.14, 0.16, 0.14, 0.18, 0.14, 0.12, 0.14, 1000], dtype = float)
-            cw_arr_025[:,5] = np.array([0.12, 0.12,  0.1, 0.12,  0.1,  0.1,  0.1,  0.1, 0.14, 0.16, 0.14, 0.18, 0.12, 0.12, 0.12, 1000], dtype = float)
-
-            cw_arr_0125 = np.full((num_ants, num_configs), np.nan, dtype = float)
-            cw_arr_0125[:,0] = np.array([0.06, 0.18, 0.06, 0.14, 0.12, 0.08, 0.08, 0.08,  0.1,  0.1, 0.08,  0.1, 0.08,  0.2,  0.1, 1000], dtype = float)
-            cw_arr_0125[:,1] = np.array([0.06,  0.2, 0.06, 0.18,  0.2, 0.08,  0.1, 0.08,  0.1,  0.1, 0.08,  0.1, 0.08, 0.16,  0.1, 1000], dtype = float)
-            cw_arr_0125[:,2] = np.array([0.08, 0.16, 0.06, 0.12, 0.14,  0.1,  0.1, 0.08,  0.1,  0.1, 0.08,  0.1, 0.08, 0.16,  0.1, 1000], dtype = float)
-            cw_arr_0125[:,3] = np.array([0.08, 0.14, 0.04, 0.08, 0.22, 0.08, 0.06, 0.06,  0.1,  0.1, 0.08, 0.08, 0.06, 0.14, 0.08, 1000], dtype = float)
-            cw_arr_0125[:,4] = np.array([0.04, 0.14, 0.04, 0.06, 0.22, 0.08, 0.06, 0.06,  0.1, 0.08, 0.06, 0.06, 0.06, 0.14, 0.06, 1000], dtype = float)
-            cw_arr_0125[:,5] = np.array([0.04, 0.08, 0.04, 0.06, 0.14, 0.08, 0.06, 0.06,  0.1, 0.08, 0.06, 0.08, 0.06, 0.12, 0.08, 1000], dtype = float)
-
-        if self.st == 3:
-            cw_arr_04 = np.full((num_ants, num_configs), np.nan, dtype = float)
-            cw_arr_04[:,0] = np.array([0.06, 0.06, 0.06, 0.06, 0.04, 0.04, 0.04, 0.04, 0.06, 0.06, 0.04, 0.04, 0.04, 0.04, 0.06, 0.04], dtype = float)
-            cw_arr_04[:,1] = np.array([0.06, 0.06, 0.06, 0.06, 0.06, 0.04, 0.04, 0.04, 0.06, 0.06, 0.06, 0.04, 0.04, 0.06, 0.06, 0.04], dtype = float)
-            cw_arr_04[:,2] = np.array([0.06, 0.04, 0.04, 1000, 0.04, 0.04, 0.06, 1000, 0.04, 0.04, 0.04, 1000, 0.04, 0.04, 0.04, 1000], dtype = float)
-            cw_arr_04[:,3] = np.array([0.06, 0.04, 0.04, 1000, 0.04, 0.04, 0.06, 1000, 0.04, 0.04, 0.06, 1000, 0.04, 0.04, 0.04, 1000], dtype = float)
-            cw_arr_04[:,4] = np.array([0.08, 0.06, 0.06, 1000, 0.04, 0.04, 0.06, 1000, 0.06, 0.06, 0.06, 1000, 0.04, 0.04, 0.06, 1000], dtype = float)
-            cw_arr_04[:,5] = np.array([0.04, 0.04, 0.04,  0.1, 0.04, 0.04,  0.1, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.08, 0.04], dtype = float)
-            cw_arr_04[:,6] = np.array([1000, 0.04, 0.04, 0.06, 1000, 0.04,  0.1, 0.02, 1000, 0.04, 0.04, 0.04, 1000, 0.04, 0.06, 0.04], dtype = float)
-
-            cw_arr_025 = np.full((num_ants, num_configs), np.nan, dtype = float)
-            cw_arr_025[:,0] = np.array([0.16, 0.12, 0.12, 0.12, 0.16, 0.12, 0.14, 0.14, 0.14, 0.14, 0.14, 0.16, 0.16, 0.16, 0.16, 0.14], dtype = float)
-            cw_arr_025[:,1] = np.array([0.16, 0.12, 0.12, 0.14, 0.16, 0.14, 0.14, 0.16, 0.16, 0.14,  0.2, 0.14, 0.14, 0.14, 0.16, 0.16], dtype = float)
-            cw_arr_025[:,2] = np.array([0.12,  0.1,  0.1, 1000, 0.12, 0.12,  0.1, 1000, 0.14, 0.12, 0.14, 1000, 0.12, 0.14, 0.16, 1000], dtype = float)
-            cw_arr_025[:,3] = np.array([0.12,  0.1,  0.1, 1000, 0.12, 0.12,  0.1, 1000, 0.14, 0.14, 0.14, 1000, 0.14, 0.14, 0.14, 1000], dtype = float)
-            cw_arr_025[:,4] = np.array([0.14, 0.12, 0.12, 1000, 0.16, 0.16, 0.12, 1000, 0.18, 0.14, 0.16, 1000, 0.16, 0.16, 0.16, 1000], dtype = float)
-            cw_arr_025[:,5] = np.array([ 0.1, 0.08, 0.12, 0.08,  0.1, 0.12, 0.08, 0.12, 0.12,  0.1, 0.12, 0.12,  0.1, 0.14, 0.14, 0.12], dtype = float)
-            cw_arr_025[:,6] = np.array([1000, 0.06,  0.1, 0.08, 1000,  0.1, 0.06, 0.08, 1000, 0.12, 0.14,  0.1, 1000, 0.14, 0.12,  0.1], dtype = float)
-
-            cw_arr_0125 = np.full((num_ants, num_configs), np.nan, dtype = float)
-            cw_arr_0125[:,0] = np.array([ 0.1, 0.06, 0.06, 0.06, 0.06, 0.08, 0.08, 0.12,  0.1, 0.08, 0.16, 0.06,  0.1, 0.14,  0.1,  0.1], dtype = float)
-            cw_arr_0125[:,1] = np.array([0.14, 0.06, 0.06, 0.06,  0.1,  0.1, 0.14, 0.12, 0.12, 0.08, 0.16, 0.08,  0.1, 0.14, 0.12,  0.1], dtype = float)
-            cw_arr_0125[:,2] = np.array([0.08, 0.06, 0.04, 1000, 0.06, 0.08, 0.06, 1000,  0.1, 0.06,  0.1, 1000,  0.1,  0.1,  0.1, 1000], dtype = float)
-            cw_arr_0125[:,3] = np.array([0.08, 0.06, 0.04, 1000, 0.06, 0.08, 0.06, 1000,  0.1, 0.06,  0.1, 1000, 0.08,  0.1, 0.08, 1000], dtype = float)
-            cw_arr_0125[:,4] = np.array([0.08, 0.06, 0.06, 1000, 0.08,  0.1, 0.08, 1000,  0.1, 0.08,  0.1, 1000,  0.1, 0.12,  0.1, 1000], dtype = float)
-            cw_arr_0125[:,5] = np.array([0.06, 0.04, 0.06, 0.04, 0.08, 0.08, 0.04,  0.1, 0.12, 0.06, 0.08, 0.06, 0.08,  0.1,  0.1, 0.08], dtype = float)
-            cw_arr_0125[:,6] = np.array([1000, 0.04, 0.06,  0.2, 1000, 0.06, 0.04, 0.18, 1000, 0.06, 0.08, 0.18, 1000,  0.1, 0.08, 0.18], dtype = float)
 
         num_params = 3
 
-        cw_thres = np.full((num_params, num_ants), np.nan, dtype = float)
-        cw_thres[0] = cw_arr_0125[:, config_idx]
-        cw_thres[1] = cw_arr_025[:, config_idx]
-        cw_thres[2] = cw_arr_04[:, config_idx]
+        cut_val = 0.02
+        cw_thres = np.full((num_params, num_ants), cut_val, dtype = float)
 
         cw_freq = np.full((num_params, 2), np.nan, dtype = float)
-        cw_freq[0, 0] = 0.115 
+        cw_freq[0, 0] = 0.115
         cw_freq[0, 1] = 0.135
         cw_freq[1, 0] = 0.24
         cw_freq[1, 1] = 0.26
@@ -736,69 +730,12 @@ class post_qual_cut_loader:
         cw_freq[2, 1] = 0.415
 
         if self.verbose:
-            print(f'run config: {config_idx + 1}')
             print(f'cw params {cw_freq[0, 0]} ~ {cw_freq[0, 1]} GHz: {cw_thres[0]}')
             print(f'cw params {cw_freq[1, 0]} ~ {cw_freq[1, 1]} GHz: {cw_thres[1]}')
             print(f'cw params {cw_freq[2, 0]} ~ {cw_freq[2, 1]} GHz: {cw_thres[2]}')
         del config_idx, num_configs
 
         return num_params, cw_thres, cw_freq
-
-    def get_cw_events(self, cut_val = 1, smear_val = 5, use_rf = False,  use_smear = False):
-
-        ## 0.4 GHz WB                                               # sol_pad, num_params, num_ants, num_evts -> original array dim
-        wb_arr = np.copy(self.sub_ratios[1:, 2])                     # sol_pad,             num_ants, num_evts -> wb flag only
-        wb_flag = np.any(~np.isnan(wb_arr), axis = 0)               #                      num_ants, num_evts -> check indi ch flag
-        wb_evts = np.count_nonzero(wb_flag, axis = 0) > cut_val     #                                num_evts -> check num of chs flag. at least bigger than cut_val
-        del wb_arr       
- 
-        ## 0.125 and 0.25 GHz unknown                               # sol_pad, num_params, num_ants, num_evts -> original array dim
-        uk_arr = np.copy(self.sub_ratios[1:, :2])                    # sol_pad, num_params, num_ants, num_evts -> unknown flags
-        uk_flag = np.any(~np.isnan(uk_arr), axis = 0)               #          num_params, num_ants, num_evts -> check indi ch flag
-        uk_flag_sum = np.logical_or(uk_flag[0], uk_flag[1])         #                      num_ants, num_evts -> sum up two flags
-        uk_evts = np.count_nonzero(uk_flag_sum, axis = 0) > cut_val #                                num_evts -> check num of chs flag. at least bigger than cut_val
-        del uk_arr, uk_flag_sum
-
-        self.cw_wb_evts = np.copy(wb_evts).astype(int)
-        self.cw_uk_evts = np.copy(uk_evts).astype(int)
-
-        if use_rf:
-            wb_evts[self.trig_type != 0] = False
-            wb_evts[self.trig_type != 0] = False
-
-        if use_smear:
-            smear_arr = np.arange(-1* smear_val, smear_val + 1, 1, dtype = int)
-            wb_unix = get_time_smearing(self.unix_time[wb_evts], smear_arr = smear_arr)
-            wb_evts = np.in1d(self.unix_time, wb_unix)
-            uk_unix = get_time_smearing(self.unix_time[uk_evts], smear_arr = smear_arr)
-            uk_evts = np.in1d(self.unix_time, uk_unix)
-            del smear_arr, wb_unix, uk_unix
-
-        self.rp_ants = np.full((self.sub_ratios.shape[1], self.sub_ratios.shape[2], self.sub_ratios.shape[3]), 0, dtype = int)
-        if cut_val > 0:
-            self.rp_ants[:2] = uk_flag.astype(int)
-            self.rp_ants[2] = wb_flag.astype(int)
-            self.rp_ants[:2, :, uk_evts] = 0
-            self.rp_ants[2, :, wb_evts] = 0
-        else:
-            pass
-        del wb_flag, uk_flag 
-
-        cw_evts = np.full((self.num_evts, 2), 0, dtype = int)
-        cw_evts[:, 0] = wb_evts.astype(int)
-        cw_evts[:, 1] = uk_evts.astype(int)
-        del wb_evts, uk_evts
-
-        if self.verbose:
-            rp_ants_sum = np.nansum(self.rp_ants, axis = (0,1))
-            quick_qual_check(self.cw_wb_evts != 0, 'original cw wb events!', self.evt_num)
-            quick_qual_check(cw_evts[:, 0] != 0, 'cw wb events!', self.evt_num)
-            quick_qual_check(self.cw_uk_evts != 0, 'original cw unknown events!', self.evt_num)
-            quick_qual_check(cw_evts[:, 1] != 0, 'cw unknown events!', self.evt_num)
-            quick_qual_check(rp_ants_sum != 0, 'repair required events!', self.evt_num)
-            del rp_ants_sum        
-
-        return cw_evts
 
     def get_unlocked_calpulser_events(self, raw_v, cal_amp_limit = 2200):
 
@@ -810,20 +747,13 @@ class post_qual_cut_loader:
  
     def get_post_qual_cut(self):
 
-        if self.use_cw_cut:
-            num_cw_cut_type = 2
-        else:
-            num_cw_cut_type = 0
-        tot_post_qual_cut = np.full((self.num_evts, int(self.use_unlock_cal) + num_cw_cut_type), 0, dtype = int)
+        tot_post_qual_cut = np.full((self.num_evts, int(self.use_unlock_cal)), 0, dtype = int)
         if self.use_unlock_cal:
             col_idx = int(self.use_unlock_cal) - 1
             tot_post_qual_cut[:, col_idx] = self.unlock_cal_evts
             if self.verbose:
                 quick_qual_check(tot_post_qual_cut[:, 0] != 0, 'unlocked calpulser events!', self.evt_num)
-        if self.use_cw_cut:
-            col_idx = int(self.use_unlock_cal) + int(self.use_cw_cut) - 1
-            tot_post_qual_cut[:, col_idx:] = self.get_cw_events(smear_val = 10, use_rf = True, use_smear = True)
-
+        
         self.post_qual_cut_sum = np.nansum(tot_post_qual_cut, axis = 1)
 
         if self.verbose:
@@ -869,26 +799,28 @@ class ped_qual_cut_loader:
         # 18 bad unix time
         # 19 bad run
         # 20 cw log cut
-        # 21 unlock calpulser
+        # 21 cw 04 cut
+        # 22 cw 0125/025 cut
+        # 23 unlock calpulser
 
         # turn on all cuts
         clean_evts_qual_type[:, 0] = 1
         clean_evts[:, 0] = np.logical_and(np.nansum(self.total_qual_cut, axis = 1) == 0, self.trig_type != 1).astype(int)
 
         # not use 1) 17 short run, 2) 11 bad rf min rate
-        qual_type = np.array([0,1,2,3,4,5,6,7,8,9,10,12,13,14,15,16,18,19,20,21], dtype = int)
+        qual_type = np.array([0,1,2,3,4,5,6,7,8,9,10,12,13,14,15,16,18,19,20,21,22,23], dtype = int)
         clean_evts_qual_type[qual_type, 1] = 1
         clean_evts[:, 1] = np.logical_and(np.nansum(self.total_qual_cut[:, qual_type], axis = 1) == 0, self.trig_type != 1).astype(int)
         del qual_type
 
-        # hardware error only. not use  1) 17 short run 2) 18 bad unix time, 3) 19 bad run, 4) 20 cw log cut, 5) 11 bad rf min rate, 6) 13 bad rf sec rate
-        qual_type = np.array([0,1,2,3,4,5,6,7,8,9,10,12,14,15,16,21], dtype = int)
+        # hardware error only. not use  1) 11 bad rf min rate, 2) 13 bad rf sec rate, 3) 17 short run 4) 18 bad unix time, 5) 19 bad run, 6) 20 cw log cut, 7) 21 cw 04 cut, 8) 22 cw 0125/025 cut
+        qual_type = np.array([0,1,2,3,4,5,6,7,8,9,10,12,14,15,16,23], dtype = int)
         clean_evts_qual_type[qual_type, 2] = 1
         clean_evts[:, 2] = np.logical_and(np.nansum(self.total_qual_cut[:, qual_type], axis = 1) == 0, self.trig_type != 1).astype(int)
         del qual_type
 
         # only rf/software
-        qual_type = np.array([0,1,2,3,4,5,21], dtype = int)
+        qual_type = np.array([0,1,2,3,4,5,23], dtype = int)
         clean_evts_qual_type[qual_type, 3] = 1
         clean_evts[:, 3] = np.logical_and(np.nansum(self.total_qual_cut[:, qual_type], axis = 1) == 0, self.trig_type != 1).astype(int)
         del qual_type
@@ -1215,20 +1147,379 @@ class qual_cut_loader:
         return total_qual_cut
     """
 
+def get_cw_high_cut(Station, g_idx, num_configs):
 
+    if Station == 2:
+            cw_rf_04 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_rf_04[:,0] = np.array([0.16, 0.12, 0.12, 0.14, 0.18, 0.16, 0.14, 0.18, 0.10, 0.10, 0.10, 0.16, 0.10, 0.12, 0.14, 1000], dtype = float)
+            cw_rf_04[:,1] = np.array([0.16, 0.18, 0.16, 0.12, 0.26, 0.18, 0.18, 0.20, 0.16, 0.14, 0.16, 0.18, 0.18, 0.18, 0.16, 1000], dtype = float)
+            cw_rf_04[:,2] = np.array([0.14, 0.14, 0.12, 0.12, 0.18, 0.16, 0.14, 0.16, 0.10, 0.10, 0.08, 0.12, 0.12, 0.08, 0.10, 1000], dtype = float)
+            cw_rf_04[:,3] = np.array([0.14, 0.12, 0.10, 0.12, 0.16, 0.14, 0.14, 0.16, 0.10, 0.12, 0.10, 0.12, 0.12, 0.10, 0.10, 1000], dtype = float)
+            cw_rf_04[:,4] = np.array([0.12, 0.10, 0.10, 0.12, 0.18, 0.12, 0.12, 0.16, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08, 1000], dtype = float)
+            cw_rf_04[:,5] = np.array([0.14, 0.10, 0.12, 0.12, 0.16, 0.14, 0.12, 0.18, 0.10, 0.08, 0.08, 0.10, 0.10, 0.16, 0.08, 1000], dtype = float)
+            cw_rf_04[:,6] = np.array([0.14, 0.10, 0.12, 0.12, 0.16, 0.14, 0.12, 0.18, 0.10, 0.08, 0.08, 0.10, 0.10, 0.16, 0.08, 1000], dtype = float)
 
+            cw_rf_025 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_rf_025[:,0] = np.array([0.18, 0.20, 0.18, 0.22, 0.18, 0.18, 0.14, 0.16, 0.22, 0.22, 0.24, 0.36, 0.20, 0.22, 0.22, 1000], dtype = float)
+            cw_rf_025[:,1] = np.array([0.20, 0.20, 0.18, 0.24, 0.18, 0.16, 0.30, 0.16, 0.24, 0.24, 0.22, 0.34, 0.20, 0.22, 0.22, 1000], dtype = float)
+            cw_rf_025[:,2] = np.array([0.18, 0.20, 0.16, 0.24, 0.16, 0.16, 0.14, 0.16, 0.22, 0.22, 0.20, 0.34, 0.20, 0.22, 0.18, 1000], dtype = float)
+            cw_rf_025[:,3] = np.array([0.20, 0.20, 0.16, 0.18, 0.14, 0.14, 0.26, 0.16, 0.26, 0.20, 0.18, 0.38, 0.18, 0.22, 0.20, 1000], dtype = float)
+            cw_rf_025[:,4] = np.array([0.18, 0.16, 0.16, 0.16, 0.14, 0.16, 0.22, 0.14, 0.24, 0.18, 0.20, 0.30, 0.20, 0.18, 0.16, 1000], dtype = float)
+            cw_rf_025[:,5] = np.array([0.18, 0.16, 0.14, 0.16, 0.16, 0.14, 0.14, 0.14, 0.24, 0.20, 0.18, 0.30, 0.18, 0.20, 0.18, 1000], dtype = float)
+            cw_rf_025[:,6] = np.array([0.18, 0.16, 0.14, 0.16, 0.16, 0.14, 0.14, 0.14, 0.24, 0.20, 0.18, 0.30, 0.18, 0.20, 0.18, 1000], dtype = float)
 
+            cw_rf_0125 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_rf_0125[:,0] = np.array([0.04, 0.14, 0.06, 0.12, 0.14, 0.08, 0.08, 0.10, 0.08, 0.06, 0.04, 0.10, 0.08, 0.18, 0.08, 1000], dtype = float)
+            cw_rf_0125[:,1] = np.array([0.04, 0.18, 0.08, 0.14, 0.30, 0.08, 0.08, 0.08, 0.10, 0.08, 0.02, 0.10, 0.06, 0.12, 0.06, 1000], dtype = float)
+            cw_rf_0125[:,2] = np.array([0.04, 0.12, 0.06, 0.10, 0.18, 0.08, 0.10, 0.08, 0.08, 0.06, 0.02, 0.08, 0.06, 0.14, 0.06, 1000], dtype = float)
+            cw_rf_0125[:,3] = np.array([0.04, 0.10, 0.10, 0.10, 0.36, 0.06, 0.08, 0.08, 0.10, 0.10, 0.04, 0.14, 0.06, 0.08, 0.04, 1000], dtype = float)
+            cw_rf_0125[:,4] = np.array([0.04, 0.06, 0.08, 0.06, 0.30, 0.08, 0.04, 0.08, 0.06, 0.04, 0.02, 0.10, 0.06, 0.12, 0.04, 1000], dtype = float)
+            cw_rf_0125[:,5] = np.array([0.04, 0.06, 0.10, 0.08, 0.26, 0.06, 0.06, 0.06, 0.10, 0.06, 0.06, 0.12, 0.04, 0.10, 0.08, 1000], dtype = float)
+            cw_rf_0125[:,6] = np.array([0.04, 0.06, 0.10, 0.08, 0.26, 0.06, 0.06, 0.06, 0.10, 0.06, 0.06, 0.12, 0.04, 0.10, 0.08, 1000], dtype = float)
 
+            cw_cal_04 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_cal_04[:,0] = np.array([0.12, 0.08, 0.06, 0.06, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08, 0.12, 0.10, 0.08, 0.08, 1000], dtype = float)
+            cw_cal_04[:,1] = np.array([0.10, 0.10, 0.10, 0.10, 0.12, 0.12, 0.10, 0.12, 0.10, 0.10, 0.08, 0.16, 0.10, 0.08, 0.08, 1000], dtype = float)
+            cw_cal_04[:,2] = np.array([0.10, 0.08, 0.06, 0.06, 0.10, 0.08, 0.06, 0.08, 0.08, 0.06, 0.06, 0.08, 0.10, 0.08, 0.08, 1000], dtype = float)
+            cw_cal_04[:,3] = np.array([0.08, 0.08, 0.08, 0.08, 0.12, 0.08, 0.08, 0.10, 0.08, 0.10, 0.08, 0.08, 0.08, 0.08, 0.08, 1000], dtype = float)
+            cw_cal_04[:,4] = np.array([0.10, 0.10, 0.10, 0.08, 0.12, 0.08, 0.10, 0.10, 0.06, 0.08, 0.08, 0.08, 0.08, 0.06, 0.08, 1000], dtype = float)
+            cw_cal_04[:,5] = np.array([0.10, 0.08, 0.08, 0.10, 0.12, 0.08, 0.08, 0.10, 0.08, 0.06, 0.06, 0.08, 0.08, 0.08, 0.08, 1000], dtype = float)
+            cw_cal_04[:,6] = np.array([0.10, 0.08, 0.08, 0.10, 0.12, 0.08, 0.08, 0.10, 0.08, 0.06, 0.06, 0.08, 0.08, 0.08, 0.08, 1000], dtype = float)
 
+            cw_cal_025 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_cal_025[:,0] = np.array([0.14, 0.12, 0.08, 0.12, 0.06, 0.10, 0.08, 0.10, 0.18, 0.18, 0.18, 0.26, 0.16, 0.20, 0.18, 1000], dtype = float)
+            cw_cal_025[:,1] = np.array([0.16, 0.16, 0.16, 0.18, 0.12, 0.12, 0.26, 0.14, 0.22, 0.18, 0.20, 0.30, 0.18, 0.18, 0.18, 1000], dtype = float)
+            cw_cal_025[:,2] = np.array([0.12, 0.12, 0.08, 0.12, 0.08, 0.08, 0.08, 0.10, 0.16, 0.16, 0.16, 0.26, 0.16, 0.16, 0.16, 1000], dtype = float)
+            cw_cal_025[:,3] = np.array([0.12, 0.14, 0.12, 0.16, 0.10, 0.10, 0.16, 0.12, 0.20, 0.18, 0.18, 0.34, 0.16, 0.16, 0.16, 1000], dtype = float)
+            cw_cal_025[:,4] = np.array([0.14, 0.14, 0.12, 0.16, 0.12, 0.12, 0.20, 0.12, 0.18, 0.20, 0.18, 0.28, 0.16, 0.18, 0.18, 1000], dtype = float)
+            cw_cal_025[:,5] = np.array([0.14, 0.14, 0.14, 0.16, 0.12, 0.10, 0.10, 0.14, 0.22, 0.18, 0.16, 0.28, 0.16, 0.18, 0.18, 1000], dtype = float)
+            cw_cal_025[:,6] = np.array([0.14, 0.14, 0.14, 0.16, 0.12, 0.10, 0.10, 0.14, 0.22, 0.18, 0.16, 0.28, 0.16, 0.18, 0.18, 1000], dtype = float)
 
+            cw_cal_0125 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_cal_0125[:,0] = np.array([0.06, 0.06, 0.04, 0.04, 0.06, 0.04, 0.04, 0.04, 0.06, 0.04, 0.04, 0.08, 0.04, 0.14, 0.04, 1000], dtype = float)
+            cw_cal_0125[:,1] = np.array([0.04, 0.10, 0.06, 0.08, 0.10, 0.04, 0.04, 0.04, 0.08, 0.04, 0.02, 0.08, 0.06, 0.10, 0.04, 1000], dtype = float)
+            cw_cal_0125[:,2] = np.array([0.06, 0.08, 0.06, 0.08, 0.08, 0.06, 0.04, 0.04, 0.06, 0.04, 0.02, 0.06, 0.06, 0.08, 0.04, 1000], dtype = float)
+            cw_cal_0125[:,3] = np.array([0.04, 0.06, 0.04, 0.04, 0.14, 0.04, 0.04, 0.04, 0.04, 0.04, 0.02, 0.06, 0.04, 0.08, 0.04, 1000], dtype = float)
+            cw_cal_0125[:,4] = np.array([0.02, 0.04, 0.04, 0.04, 0.16, 0.02, 0.04, 0.04, 0.06, 0.04, 0.02, 0.06, 0.04, 0.08, 0.04, 1000], dtype = float)
+            cw_cal_0125[:,5] = np.array([0.04, 0.02, 0.04, 0.04, 0.16, 0.04, 0.04, 0.04, 0.04, 0.06, 0.04, 0.10, 0.04, 0.06, 0.04, 1000], dtype = float)
+            cw_cal_0125[:,6] = np.array([0.04, 0.02, 0.04, 0.04, 0.16, 0.04, 0.04, 0.04, 0.04, 0.06, 0.04, 0.10, 0.04, 0.06, 0.04, 1000], dtype = float)
 
+            cw_soft_04 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_soft_04[:,0] = np.array([0.28, 0.28, 0.24, 0.24, 0.34, 0.28, 0.26, 0.30, 0.22, 0.20, 0.24, 0.28, 0.24, 0.24, 0.26, 1000], dtype = float)
+            cw_soft_04[:,1] = np.array([0.28, 0.30, 0.26, 0.22, 0.32, 0.28, 0.26, 0.30, 0.20, 0.22, 0.20, 0.34, 0.22, 0.22, 0.22, 1000], dtype = float)
+            cw_soft_04[:,2] = np.array([0.28, 0.28, 0.26, 0.22, 0.32, 0.26, 0.24, 0.28, 0.22, 0.20, 0.22, 0.34, 0.22, 0.20, 0.24, 1000], dtype = float)
+            cw_soft_04[:,3] = np.array([0.26, 0.30, 0.26, 0.24, 0.36, 0.28, 0.26, 0.30, 0.24, 0.22, 0.24, 0.26, 0.26, 0.22, 0.24, 1000], dtype = float)
+            cw_soft_04[:,4] = np.array([0.28, 0.28, 0.26, 0.24, 0.36, 0.28, 0.28, 0.26, 0.22, 0.22, 0.22, 0.24, 0.24, 0.22, 0.24, 1000], dtype = float)
+            cw_soft_04[:,5] = np.array([0.20, 0.18, 0.18, 0.20, 0.28, 0.20, 0.20, 0.22, 0.16, 0.14, 0.16, 0.16, 0.16, 0.18, 0.16, 1000], dtype = float)
+            cw_soft_04[:,6] = np.array([0.20, 0.18, 0.18, 0.20, 0.28, 0.20, 0.20, 0.22, 0.16, 0.14, 0.16, 0.16, 0.16, 0.18, 0.16, 1000], dtype = float)
 
+            cw_soft_025 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_soft_025[:,0] = np.array([0.36, 0.44, 0.34, 0.42, 0.40, 0.36, 0.32, 0.32, 0.46, 0.44, 0.44, 0.54, 0.36, 0.40, 0.40, 1000], dtype = float)
+            cw_soft_025[:,1] = np.array([0.34, 0.44, 0.34, 0.42, 0.38, 0.32, 0.48, 0.34, 0.46, 0.42, 0.40, 0.56, 0.40, 0.42, 0.38, 1000], dtype = float)
+            cw_soft_025[:,2] = np.array([0.36, 0.42, 0.32, 0.42, 0.42, 0.34, 0.32, 0.34, 0.42, 0.42, 0.44, 0.54, 0.40, 0.42, 0.40, 1000], dtype = float)
+            cw_soft_025[:,3] = np.array([0.38, 0.46, 0.36, 0.44, 0.44, 0.32, 0.46, 0.36, 0.58, 0.44, 0.44, 0.60, 0.40, 0.44, 0.42, 1000], dtype = float)
+            cw_soft_025[:,4] = np.array([0.38, 0.40, 0.34, 0.42, 0.38, 0.34, 0.46, 0.36, 0.56, 0.46, 0.42, 0.54, 0.40, 0.42, 0.42, 1000], dtype = float)
+            cw_soft_025[:,5] = np.array([0.30, 0.30, 0.26, 0.30, 0.28, 0.26, 0.24, 0.26, 0.54, 0.32, 0.32, 0.48, 0.32, 0.32, 0.30, 1000], dtype = float)
+            cw_soft_025[:,6] = np.array([0.30, 0.30, 0.26, 0.30, 0.28, 0.26, 0.24, 0.26, 0.54, 0.32, 0.32, 0.48, 0.32, 0.32, 0.30, 1000], dtype = float)
 
+            cw_soft_0125 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_soft_0125[:,0] = np.array([0.12, 0.28, 0.24, 0.28, 0.28, 0.16, 0.20, 0.16, 0.24, 0.18, 0.12, 0.24, 0.18, 0.38, 0.22, 1000], dtype = float)
+            cw_soft_0125[:,1] = np.array([0.10, 0.36, 0.20, 0.34, 0.28, 0.14, 0.16, 0.14, 0.26, 0.20, 0.14, 0.22, 0.18, 0.26, 0.24, 1000], dtype = float)
+            cw_soft_0125[:,2] = np.array([0.10, 0.36, 0.18, 0.22, 0.26, 0.18, 0.16, 0.14, 0.22, 0.18, 0.14, 0.18, 0.16, 0.30, 0.22, 1000], dtype = float)
+            cw_soft_0125[:,3] = np.array([0.14, 0.32, 0.20, 0.22, 0.38, 0.20, 0.16, 0.18, 0.32, 0.20, 0.14, 0.24, 0.18, 0.36, 0.24, 1000], dtype = float)
+            cw_soft_0125[:,4] = np.array([0.10, 0.26, 0.18, 0.22, 0.30, 0.18, 0.16, 0.14, 0.28, 0.18, 0.14, 0.22, 0.18, 0.34, 0.24, 1000], dtype = float)
+            cw_soft_0125[:,5] = np.array([0.06, 0.08, 0.10, 0.16, 0.24, 0.12, 0.10, 0.10, 0.18, 0.12, 0.04, 0.18, 0.14, 0.20, 0.10, 1000], dtype = float)
+            cw_soft_0125[:,6] = np.array([0.06, 0.08, 0.10, 0.16, 0.24, 0.12, 0.10, 0.10, 0.18, 0.12, 0.04, 0.18, 0.14, 0.20, 0.10, 1000], dtype = float)
 
+    if Station == 3:
+            cw_rf_04 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_rf_04[:,0] = np.array([0.18, 0.14, 0.12, 0.18, 0.16, 0.12, 0.14, 0.12, 0.12, 0.12, 0.10, 0.12, 0.10, 0.08, 0.12, 0.10], dtype = float)
+            cw_rf_04[:,1] = np.array([0.18, 0.16, 0.16, 0.16, 0.16, 0.16, 0.12, 0.14, 0.16, 0.14, 0.16, 0.12, 0.12, 0.10, 0.12, 0.10], dtype = float)
+            cw_rf_04[:,2] = np.array([0.18, 0.14, 0.16, 1000, 0.20, 0.14, 0.14, 1000, 0.16, 0.10, 0.14, 1000, 0.10, 0.12, 0.12, 1000], dtype = float)
+            cw_rf_04[:,3] = np.array([0.18, 0.14, 0.12, 1000, 0.20, 0.14, 0.12, 1000, 0.16, 0.16, 0.16, 1000, 0.10, 0.14, 0.10, 1000], dtype = float)
+            cw_rf_04[:,4] = np.array([0.24, 0.18, 0.16, 1000, 0.22, 0.14, 0.14, 1000, 0.06, 0.14, 0.14, 1000, 0.12, 0.12, 0.12, 1000], dtype = float)
+            cw_rf_04[:,5] = np.array([0.16, 0.18, 0.22, 0.18, 0.18, 0.16, 0.22, 0.14, 0.18, 0.16, 0.16, 0.18, 0.14, 0.16, 0.18, 0.14], dtype = float)
+            cw_rf_04[:,6] = np.array([1000, 0.16, 0.16, 1000, 1000, 0.18, 0.20, 1000, 1000, 0.16, 0.16, 1000, 1000, 0.12, 0.16, 1000], dtype = float)
+            cw_rf_04[:,7] = np.array([1000, 0.16, 0.16, 1000, 1000, 0.18, 0.20, 1000, 1000, 0.16, 0.16, 1000, 1000, 0.12, 0.16, 1000], dtype = float)
 
+            cw_rf_025 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_rf_025[:,0] = np.array([0.18, 0.16, 0.14, 0.16, 0.20, 0.18, 0.16, 0.18, 0.22, 0.18, 0.20, 0.22, 0.20, 0.22, 0.20, 0.20], dtype = float)
+            cw_rf_025[:,1] = np.array([0.20, 0.18, 0.16, 0.16, 0.20, 0.18, 0.20, 0.20, 0.22, 0.20, 0.28, 0.24, 0.22, 0.20, 0.26, 0.22], dtype = float)
+            cw_rf_025[:,2] = np.array([0.16, 0.16, 0.18, 1000, 0.18, 0.22, 0.12, 1000, 0.22, 0.18, 0.20, 1000, 0.18, 0.20, 0.24, 1000], dtype = float)
+            cw_rf_025[:,3] = np.array([0.20, 0.18, 0.20, 1000, 0.24, 0.22, 0.18, 1000, 0.22, 0.20, 0.24, 1000, 0.26, 0.22, 0.28, 1000], dtype = float)
+            cw_rf_025[:,4] = np.array([0.22, 0.20, 0.20, 1000, 0.22, 0.20, 0.16, 1000, 0.22, 0.20, 0.20, 1000, 0.20, 0.24, 0.22, 1000], dtype = float)
+            cw_rf_025[:,5] = np.array([0.16, 0.10, 0.16, 0.12, 0.18, 0.16, 0.14, 0.20, 0.20, 0.18, 0.18, 0.18, 0.20, 0.16, 0.18, 0.18], dtype = float)
+            cw_rf_025[:,6] = np.array([1000, 0.16, 0.22, 1000, 1000, 0.22, 0.14, 1000, 1000, 0.18, 0.20, 1000, 1000, 0.22, 0.20, 1000], dtype = float)
+            cw_rf_025[:,7] = np.array([1000, 0.16, 0.22, 1000, 1000, 0.22, 0.14, 1000, 1000, 0.18, 0.20, 1000, 1000, 0.22, 0.20, 1000], dtype = float)
 
+            cw_rf_0125 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_rf_0125[:,0] = np.array([0.08, 0.04, 0.06, 0.06, 0.06, 0.08, 0.10, 0.06, 0.04, 0.06, 0.04, 0.08, 0.06, 0.10, 0.06, 0.04], dtype = float)
+            cw_rf_0125[:,1] = np.array([0.08, 0.06, 0.06, 0.06, 0.10, 0.08, 0.12, 0.08, 0.06, 0.06, 0.06, 0.08, 0.08, 0.14, 0.08, 0.04], dtype = float)
+            cw_rf_0125[:,2] = np.array([0.08, 0.08, 0.10, 1000, 0.06, 0.06, 0.10, 1000, 0.08, 0.10, 0.10, 1000, 0.08, 0.14, 0.10, 1000], dtype = float)
+            cw_rf_0125[:,3] = np.array([0.08, 0.08, 0.12, 1000, 0.08, 0.12, 0.12, 1000, 0.10, 0.10, 0.10, 1000, 0.14, 0.14, 0.12, 1000], dtype = float)
+            cw_rf_0125[:,4] = np.array([0.08, 0.06, 0.12, 1000, 0.08, 0.08, 0.08, 1000, 0.10, 0.08, 0.06, 1003, 0.10, 0.12, 0.06, 1000], dtype = float)
+            cw_rf_0125[:,5] = np.array([0.08, 0.06, 0.10, 0.06, 0.06, 0.10, 0.06, 0.06, 0.08, 0.08, 0.08, 0.10, 0.10, 0.14, 0.08, 0.06], dtype = float)
+            cw_rf_0125[:,6] = np.array([1000, 0.10, 0.14, 1000, 1000, 0.06, 0.04, 1000, 1000, 0.10, 0.08, 1000, 1000, 0.10, 0.08, 1000], dtype = float)
+            cw_rf_0125[:,7] = np.array([1000, 0.10, 0.14, 1000, 1000, 0.06, 0.04, 1000, 1000, 0.10, 0.08, 1000, 1000, 0.10, 0.08, 1000], dtype = float)
 
+            cw_cal_04 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_cal_04[:,0] = np.array([0.10, 0.06, 0.10, 0.08, 0.04, 0.06, 0.06, 0.06, 0.12, 0.08, 0.10, 0.10, 0.08, 0.08, 0.08, 0.08], dtype = float)
+            cw_cal_04[:,1] = np.array([0.12, 0.10, 0.10, 0.10, 0.12, 0.08, 0.10, 0.10, 0.12, 0.08, 0.10, 0.12, 0.08, 0.10, 0.08, 0.08], dtype = float)
+            cw_cal_04[:,2] = np.array([0.10, 0.06, 0.06, 1000, 0.06, 0.06, 0.08, 1000, 0.12, 0.08, 0.14, 1000, 0.08, 0.10, 0.06, 1000], dtype = float)
+            cw_cal_04[:,3] = np.array([0.10, 0.08, 0.06, 1000, 0.08, 0.08, 0.08, 1000, 0.12, 0.08, 0.16, 1000, 0.08, 0.06, 0.08, 1000], dtype = float)
+            cw_cal_04[:,4] = np.array([0.12, 0.06, 0.12, 1000, 0.08, 0.08, 0.06, 1000, 0.14, 0.10, 0.10, 1000, 0.08, 0.08, 0.08, 1000], dtype = float)
+            cw_cal_04[:,5] = np.array([0.10, 0.08, 0.10, 0.14, 0.08, 0.06, 0.14, 0.08, 0.14, 0.06, 0.08, 0.08, 0.08, 0.08, 0.12, 0.08], dtype = float)
+            cw_cal_04[:,6] = np.array([1000, 0.10, 0.10, 1000, 1000, 0.08, 0.12, 1000, 1000, 0.08, 0.10, 1000, 1000, 0.08, 0.10, 1000], dtype = float)
+            cw_cal_04[:,7] = np.array([1000, 0.10, 0.10, 1000, 1000, 0.08, 0.12, 1000, 1000, 0.08, 0.10, 1000, 1000, 0.08, 0.10, 1000], dtype = float)
 
+            cw_cal_025 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_cal_025[:,0] = np.array([0.16, 0.10, 0.12, 0.12, 0.08, 0.06, 0.06, 0.08, 0.20, 0.18, 0.18, 0.18, 0.20, 0.18, 0.20, 0.18], dtype = float)
+            cw_cal_025[:,1] = np.array([0.14, 0.10, 0.12, 0.12, 0.14, 0.14, 0.14, 0.14, 0.20, 0.16, 0.26, 0.20, 0.20, 0.18, 0.20, 0.20], dtype = float)
+            cw_cal_025[:,2] = np.array([0.14, 0.12, 0.10, 1000, 0.10, 0.10, 0.08, 1000, 0.18, 0.16, 0.16, 1000, 0.16, 0.18, 0.18, 1000], dtype = float)
+            cw_cal_025[:,3] = np.array([0.12, 0.08, 0.10, 1000, 0.10, 0.10, 0.08, 1000, 0.16, 0.14, 0.16, 1000, 0.14, 0.16, 0.18, 1000], dtype = float)
+            cw_cal_025[:,4] = np.array([0.16, 0.10, 0.12, 1000, 0.12, 0.10, 0.10, 1000, 0.20, 0.18, 0.20, 1000, 0.20, 0.20, 0.24, 1000], dtype = float)
+            cw_cal_025[:,5] = np.array([0.16, 0.10, 0.12, 0.10, 0.12, 0.12, 0.06, 0.12, 0.18, 0.14, 0.14, 0.18, 0.14, 0.18, 0.16, 0.14], dtype = float)
+            cw_cal_025[:,6] = np.array([1000, 0.08, 0.12, 1000, 1000, 0.10, 0.06, 1000, 1000, 0.14, 0.16, 1000, 1000, 0.14, 0.16, 1000], dtype = float)
+            cw_cal_025[:,7] = np.array([1000, 0.08, 0.12, 1000, 1000, 0.10, 0.06, 1000, 1000, 0.14, 0.16, 1000, 1000, 0.14, 0.16, 1000], dtype = float)
+
+            cw_cal_0125 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_cal_0125[:,0] = np.array([0.04, 0.02, 0.06, 0.02, 0.02, 0.02, 0.02, 0.02, 0.04, 0.04, 0.02, 0.06, 0.06, 0.08, 0.04, 0.04], dtype = float)
+            cw_cal_0125[:,1] = np.array([0.04, 0.04, 0.06, 0.04, 0.02, 0.04, 0.08, 0.04, 0.06, 0.06, 0.04, 0.06, 0.06, 0.10, 0.04, 0.04], dtype = float)
+            cw_cal_0125[:,2] = np.array([0.02, 0.02, 0.04, 1000, 0.02, 0.04, 0.02, 1000, 0.04, 0.04, 0.02, 1000, 0.06, 0.06, 0.02, 1000], dtype = float)
+            cw_cal_0125[:,3] = np.array([0.04, 0.02, 0.02, 1000, 0.02, 0.02, 0.06, 1000, 0.04, 0.04, 0.04, 1000, 0.10, 0.06, 0.02, 1000], dtype = float)
+            cw_cal_0125[:,4] = np.array([0.04, 0.02, 0.08, 1000, 0.02, 0.04, 0.06, 1000, 0.06, 0.06, 0.04, 1000, 0.10, 0.08, 0.04, 1000], dtype = float)
+            cw_cal_0125[:,5] = np.array([0.04, 0.02, 0.04, 0.02, 0.04, 0.04, 0.02, 0.02, 0.04, 0.02, 0.02, 0.04, 0.08, 0.04, 0.04, 0.04], dtype = float)
+            cw_cal_0125[:,6] = np.array([1000, 0.02, 0.02, 1000, 1000, 0.06, 0.02, 1000, 1000, 0.04, 0.02, 1000, 1000, 0.08, 0.04, 1000], dtype = float)
+            cw_cal_0125[:,7] = np.array([1000, 0.02, 0.02, 1000, 1000, 0.06, 0.02, 1000, 1000, 0.04, 0.02, 1000, 1000, 0.08, 0.04, 1000], dtype = float)
+
+            cw_soft_04 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_soft_04[:,0] = np.array([0.34, 0.26, 0.26, 0.26, 0.26, 0.24, 0.26, 0.20, 0.26, 0.22, 0.20, 0.22, 0.22, 0.20, 0.28, 0.20], dtype = float)
+            cw_soft_04[:,1] = np.array([0.36, 0.26, 0.26, 0.26, 0.28, 0.24, 0.24, 0.24, 0.26, 0.24, 0.24, 0.22, 0.20, 0.22, 0.22, 0.22], dtype = float)
+            cw_soft_04[:,2] = np.array([0.40, 0.28, 0.26, 1000, 0.34, 0.24, 0.26, 1000, 0.30, 0.24, 0.28, 1000, 0.20, 0.24, 0.30, 1000], dtype = float)
+            cw_soft_04[:,3] = np.array([0.32, 0.26, 0.26, 1000, 0.26, 0.26, 0.26, 1000, 0.28, 0.22, 0.32, 1000, 0.20, 0.24, 0.24, 1000], dtype = float)
+            cw_soft_04[:,4] = np.array([0.38, 0.26, 0.26, 1000, 0.30, 0.22, 0.24, 1000, 0.26, 0.22, 0.22, 1000, 0.22, 0.20, 0.22, 1000], dtype = float)
+            cw_soft_04[:,5] = np.array([0.22, 0.16, 0.18, 0.20, 0.22, 0.16, 0.24, 0.20, 0.26, 0.14, 0.16, 0.18, 0.16, 0.16, 0.24, 0.16], dtype = float)
+            cw_soft_04[:,6] = np.array([1000, 0.16, 0.18, 1000, 1000, 0.24, 0.24, 1000, 1000, 0.14, 0.18, 1000, 1000, 0.16, 0.24, 1000], dtype = float)
+            cw_soft_04[:,7] = np.array([1000, 0.16, 0.18, 1000, 1000, 0.24, 0.24, 1000, 1000, 0.14, 0.18, 1000, 1000, 0.16, 0.24, 1000], dtype = float)
+
+            cw_soft_025 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_soft_025[:,0] = np.array([0.36, 0.28, 0.32, 0.30, 0.40, 0.36, 0.32, 0.40, 0.40, 0.34, 0.40, 0.38, 0.40, 0.40, 0.40, 0.38], dtype = float)
+            cw_soft_025[:,1] = np.array([0.38, 0.30, 0.32, 0.34, 0.38, 0.36, 0.42, 0.38, 0.44, 0.40, 0.48, 0.38, 0.42, 0.38, 0.46, 0.42], dtype = float)
+            cw_soft_025[:,2] = np.array([0.40, 0.34, 0.36, 1000, 0.40, 0.36, 0.30, 1000, 0.42, 0.36, 0.40, 1000, 0.40, 0.42, 0.48, 1000], dtype = float)
+            cw_soft_025[:,3] = np.array([0.38, 0.30, 0.36, 1000, 0.42, 0.38, 0.30, 1000, 0.42, 0.36, 0.40, 1000, 0.40, 0.42, 0.46, 1000], dtype = float)
+            cw_soft_025[:,4] = np.array([0.42, 0.32, 0.34, 1000, 0.38, 0.36, 0.32, 1000, 0.44, 0.38, 0.40, 1000, 0.40, 0.38, 0.46, 1000], dtype = float)
+            cw_soft_025[:,5] = np.array([0.26, 0.20, 0.26, 0.16, 0.28, 0.28, 0.18, 0.26, 0.32, 0.28, 0.30, 0.28, 0.34, 0.32, 0.36, 0.28], dtype = float)
+            cw_soft_025[:,6] = np.array([1000, 0.18, 0.28, 1000, 1000, 0.26, 0.18, 1000, 1000, 0.28, 0.30, 1000, 1000, 0.32, 0.30, 1000], dtype = float)
+            cw_soft_025[:,7] = np.array([1000, 0.18, 0.28, 1000, 1000, 0.26, 0.18, 1000, 1000, 0.28, 0.30, 1000, 1000, 0.32, 0.30, 1000], dtype = float)
+
+            cw_soft_0125 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_soft_0125[:,0] = np.array([0.14, 0.10, 0.12, 0.12, 0.12, 0.18, 0.16, 0.12, 0.16, 0.14, 0.12, 0.16, 0.16, 0.22, 0.16, 0.10], dtype = float)
+            cw_soft_0125[:,1] = np.array([0.20, 0.12, 0.12, 0.12, 0.16, 0.20, 0.22, 0.12, 0.18, 0.16, 0.16, 0.18, 0.18, 0.32, 0.14, 0.12], dtype = float)
+            cw_soft_0125[:,2] = np.array([0.22, 0.14, 0.12, 1000, 0.14, 0.18, 0.18, 1000, 0.24, 0.16, 0.14, 1000, 0.20, 0.28, 0.16, 1000], dtype = float)
+            cw_soft_0125[:,3] = np.array([0.18, 0.10, 0.10, 1000, 0.16, 0.18, 0.14, 1000, 0.24, 0.16, 0.14, 1000, 0.18, 0.30, 0.16, 1000], dtype = float)
+            cw_soft_0125[:,4] = np.array([0.14, 0.12, 0.12, 1000, 0.12, 0.18, 0.16, 1000, 0.18, 0.16, 0.16, 1003, 0.18, 0.24, 0.16, 1000], dtype = float)
+            cw_soft_0125[:,5] = np.array([0.10, 0.08, 0.14, 0.10, 0.10, 0.12, 0.10, 0.08, 0.14, 0.10, 0.08, 0.14, 0.16, 0.20, 0.10, 0.08], dtype = float)
+            cw_soft_0125[:,6] = np.array([1000, 0.08, 0.14, 1000, 1000, 0.12, 0.06, 1000, 1000, 0.10, 0.06, 1000, 1000, 0.16, 0.10, 1000], dtype = float)
+            cw_soft_0125[:,7] = np.array([1000, 0.08, 0.14, 1000, 1000, 0.12, 0.06, 1000, 1000, 0.10, 0.06, 1000, 1000, 0.16, 0.10, 1000], dtype = float)
+
+    cut_04_rf = cw_rf_04[:, g_idx]
+    cut_025_rf = cw_rf_025[:, g_idx]
+    cut_0125_rf = cw_rf_0125[:, g_idx]
+    cut_04_cal = cw_cal_04[:, g_idx]
+    cut_025_cal = cw_cal_025[:, g_idx]
+    cut_0125_cal = cw_cal_0125[:, g_idx]
+    cut_04_soft = cw_soft_04[:, g_idx]
+    cut_025_soft = cw_soft_025[:, g_idx]
+    cut_0125_soft = cw_soft_0125[:, g_idx]
+
+    return cut_04_rf, cut_025_rf, cut_0125_rf, cut_04_cal, cut_025_cal, cut_0125_cal, cut_04_soft, cut_025_soft, cut_0125_soft
+
+def get_cw_cut(Station, g_idx, num_configs):
+
+    if Station == 2:
+            cw_rf_04 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_rf_04[:,0] = np.array([0.07, 0.09, 0.07, 0.07, 0.09, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 1000], dtype = float)
+            cw_rf_04[:,1] = np.array([0.07, 0.17, 0.07, 0.07, 0.09, 0.07, 0.07, 0.07, 0.09, 0.13, 0.09, 0.11, 0.11, 0.11, 0.09, 1000], dtype = float)
+            cw_rf_04[:,2] = np.array([0.07, 0.09, 0.07, 0.07, 0.09, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 1000], dtype = float)
+            cw_rf_04[:,3] = np.array([0.05, 0.07, 0.05, 0.05, 0.07, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 1000], dtype = float)
+            cw_rf_04[:,4] = np.array([0.05, 0.05, 0.05, 0.05, 0.07, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 1000], dtype = float)
+            cw_rf_04[:,5] = np.array([0.05, 0.05, 0.05, 0.05, 0.07, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 1000], dtype = float)
+            cw_rf_04[:,6] = np.array([0.05, 0.05, 0.05, 0.05, 0.07, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 1000], dtype = float)
+
+            cw_rf_025 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_rf_025[:,0] = np.array([0.09, 0.11, 0.09, 0.15, 0.09, 0.09, 0.09, 0.11, 0.11, 0.13, 0.13, 0.25, 0.11, 0.09, 0.11, 1000], dtype = float)
+            cw_rf_025[:,1] = np.array([0.11, 0.11, 0.11, 0.13, 0.11, 0.11, 0.25, 0.11, 0.13, 0.13, 0.13, 0.21, 0.11, 0.13, 0.13, 1000], dtype = float)
+            cw_rf_025[:,2] = np.array([0.17, 0.17, 0.17, 0.23, 0.15, 0.17, 0.15, 0.15, 0.21, 0.19, 0.19, 0.33, 0.19, 0.17, 0.21, 1000], dtype = float)
+            cw_rf_025[:,3] = np.array([0.09, 0.11, 0.09, 0.11, 0.09, 0.09, 0.05, 0.09, 0.13, 0.13, 0.13, 0.29, 0.11, 0.13, 0.13, 1000], dtype = float)
+            cw_rf_025[:,4] = np.array([0.09, 0.15, 0.11, 0.13, 0.09, 0.11, 0.17, 0.11, 0.13, 0.15, 0.15, 0.21, 0.11, 0.11, 0.15, 1000], dtype = float)
+            cw_rf_025[:,5] = np.array([0.09, 0.11, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.13, 0.11, 0.11, 0.19, 0.11, 0.11, 0.11, 1000], dtype = float)
+            cw_rf_025[:,6] = np.array([0.09, 0.11, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.13, 0.11, 0.11, 0.19, 0.11, 0.11, 0.11, 1000], dtype = float)
+
+            cw_rf_0125 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_rf_0125[:,0] = np.array([0.03, 0.09, 0.03, 0.05, 0.07, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.05, 0.03, 0.03, 1000], dtype = float)
+            cw_rf_0125[:,1] = np.array([0.03, 0.07, 0.05, 0.07, 0.23, 0.05, 0.03, 0.05, 0.05, 0.03, 0.03, 0.05, 0.05, 0.07, 0.03, 1000], dtype = float)
+            cw_rf_0125[:,2] = np.array([0.05, 0.11, 0.07, 0.09, 0.15, 0.07, 0.07, 0.07, 0.09, 0.05, 0.03, 0.07, 0.07, 0.11, 0.05, 1000], dtype = float)
+            cw_rf_0125[:,3] = np.array([0.03, 0.03, 0.03, 0.03, 0.23, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.05, 0.03, 0.05, 0.03, 1000], dtype = float)
+            cw_rf_0125[:,4] = np.array([0.03, 0.05, 0.03, 0.03, 0.29, 0.05, 0.03, 0.03, 0.05, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 1000], dtype = float)
+            cw_rf_0125[:,5] = np.array([0.03, 0.03, 0.03, 0.03, 0.19, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 1000], dtype = float)
+            cw_rf_0125[:,6] = np.array([0.03, 0.03, 0.03, 0.03, 0.19, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 1000], dtype = float)
+
+            cw_cal_04 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_cal_04[:,0] = np.array([0.05, 0.05, 0.03, 0.03, 0.05, 0.03, 0.03, 0.03, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 1000], dtype = float)
+            cw_cal_04[:,1] = np.array([0.07, 0.09, 0.07, 0.05, 0.07, 0.05, 0.05, 0.07, 0.11, 0.09, 0.07, 0.11, 0.09, 0.09, 0.07, 1000], dtype = float)
+            cw_cal_04[:,2] = np.array([0.05, 0.09, 0.03, 0.03, 0.05, 0.05, 0.03, 0.05, 0.07, 0.05, 0.05, 0.05, 0.05, 0.07, 0.05, 1000], dtype = float)
+            cw_cal_04[:,3] = np.array([0.05, 0.07, 0.03, 0.03, 0.05, 0.03, 0.03, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 1000], dtype = float)
+            cw_cal_04[:,4] = np.array([0.05, 0.07, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 1000], dtype = float)
+            cw_cal_04[:,5] = np.array([0.07, 0.05, 0.05, 0.07, 0.07, 0.05, 0.05, 0.07, 0.05, 0.05, 0.05, 0.05, 0.07, 0.05, 0.05, 1000], dtype = float)
+            cw_cal_04[:,6] = np.array([0.07, 0.05, 0.05, 0.07, 0.07, 0.05, 0.05, 0.07, 0.05, 0.05, 0.05, 0.05, 0.07, 0.05, 0.05, 1000], dtype = float)
+
+            cw_cal_025 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_cal_025[:,0] = np.array([0.07, 0.11, 0.05, 0.09, 0.07, 0.09, 0.07, 0.07, 0.13, 0.13, 0.13, 0.21, 0.13, 0.11, 0.11, 1000], dtype = float)
+            cw_cal_025[:,1] = np.array([0.13, 0.15, 0.13, 0.15, 0.13, 0.11, 0.25, 0.11, 0.21, 0.19, 0.19, 0.27, 0.15, 0.17, 0.15, 1000], dtype = float)
+            cw_cal_025[:,2] = np.array([0.13, 0.13, 0.07, 0.11, 0.09, 0.09, 0.07, 0.11, 0.15, 0.15, 0.17, 0.21, 0.13, 0.13, 0.15, 1000], dtype = float)
+            cw_cal_025[:,3] = np.array([0.07, 0.11, 0.09, 0.11, 0.09, 0.09, 0.09, 0.09, 0.13, 0.15, 0.15, 0.31, 0.15, 0.13, 0.13, 1000], dtype = float)
+            cw_cal_025[:,4] = np.array([0.13, 0.13, 0.11, 0.13, 0.11, 0.11, 0.17, 0.11, 0.11, 0.15, 0.13, 0.19, 0.15, 0.15, 0.15, 1000], dtype = float)
+            cw_cal_025[:,5] = np.array([0.11, 0.15, 0.11, 0.13, 0.11, 0.09, 0.09, 0.11, 0.17, 0.15, 0.15, 0.23, 0.13, 0.13, 0.15, 1000], dtype = float)
+            cw_cal_025[:,6] = np.array([0.11, 0.15, 0.11, 0.13, 0.11, 0.09, 0.09, 0.11, 0.17, 0.15, 0.15, 0.23, 0.13, 0.13, 0.15, 1000], dtype = float)
+
+            cw_cal_0125 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_cal_0125[:,0] = np.array([0.03, 0.05, 0.03, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03, 0.03, 0.05, 0.03, 0.03, 0.03, 0.03, 1000], dtype = float)
+            cw_cal_0125[:,1] = np.array([0.05, 0.09, 0.05, 0.07, 0.11, 0.05, 0.05, 0.05, 0.07, 0.05, 0.03, 0.07, 0.07, 0.09, 0.05, 1000], dtype = float)
+            cw_cal_0125[:,2] = np.array([0.05, 0.05, 0.05, 0.07, 0.07, 0.05, 0.03, 0.05, 0.07, 0.05, 0.03, 0.07, 0.05, 0.09, 0.03, 1000], dtype = float)
+            cw_cal_0125[:,3] = np.array([0.05, 0.07, 0.03, 0.03, 0.03, 0.03, 0.03, 0.05, 0.03, 0.05, 0.03, 0.05, 0.05, 0.07, 0.03, 1000], dtype = float)
+            cw_cal_0125[:,4] = np.array([0.03, 0.05, 0.05, 0.03, 0.15, 0.03, 0.03, 0.03, 0.05, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 1000], dtype = float)
+            cw_cal_0125[:,5] = np.array([0.03, 0.03, 0.05, 0.03, 0.11, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.05, 0.03, 1000], dtype = float)
+            cw_cal_0125[:,6] = np.array([0.03, 0.03, 0.05, 0.03, 0.11, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.05, 0.03, 1000], dtype = float)
+
+            cw_soft_04 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_soft_04[:,0] = np.array([0.15, 0.23, 0.15, 0.13, 0.19, 0.15, 0.15, 0.15, 0.19, 0.17, 0.17, 0.21, 0.17, 0.17, 0.17, 1000], dtype = float)
+            cw_soft_04[:,1] = np.array([0.17, 0.23, 0.15, 0.13, 0.21, 0.17, 0.15, 0.17, 0.19, 0.21, 0.19, 0.29, 0.21, 0.19, 0.21, 1000], dtype = float)
+            cw_soft_04[:,2] = np.array([0.17, 0.23, 0.15, 0.13, 0.21, 0.17, 0.15, 0.17, 0.19, 0.17, 0.21, 0.27, 0.19, 0.17, 0.21, 1000], dtype = float)
+            cw_soft_04[:,3] = np.array([0.15, 0.23, 0.15, 0.13, 0.19, 0.15, 0.15, 0.15, 0.19, 0.17, 0.19, 0.17, 0.21, 0.19, 0.19, 1000], dtype = float)
+            cw_soft_04[:,4] = np.array([0.15, 0.23, 0.13, 0.13, 0.19, 0.15, 0.15, 0.15, 0.19, 0.17, 0.21, 0.15, 0.19, 0.17, 0.19, 1000], dtype = float)
+            cw_soft_04[:,5] = np.array([0.11, 0.11, 0.09, 0.09, 0.13, 0.11, 0.11, 0.11, 0.11, 0.11, 0.11, 0.09, 0.11, 0.11, 0.11, 1000], dtype = float)
+            cw_soft_04[:,6] = np.array([0.11, 0.11, 0.09, 0.09, 0.13, 0.11, 0.11, 0.11, 0.11, 0.11, 0.11, 0.09, 0.11, 0.11, 0.11, 1000], dtype = float)
+
+            cw_soft_025 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_soft_025[:,0] = np.array([0.25, 0.31, 0.27, 0.35, 0.35, 0.25, 0.21, 0.25, 0.35, 0.39, 0.35, 0.47, 0.29, 0.33, 0.39, 1000], dtype = float)
+            cw_soft_025[:,1] = np.array([0.33, 0.37, 0.31, 0.37, 0.37, 0.31, 0.41, 0.31, 0.35, 0.41, 0.35, 0.51, 0.37, 0.39, 0.35, 1000], dtype = float)
+            cw_soft_025[:,2] = np.array([0.31, 0.37, 0.31, 0.39, 0.35, 0.31, 0.29, 0.31, 0.37, 0.41, 0.35, 0.47, 0.37, 0.39, 0.35, 1000], dtype = float)
+            cw_soft_025[:,3] = np.array([0.29, 0.35, 0.29, 0.31, 0.33, 0.29, 0.35, 0.27, 0.51, 0.41, 0.41, 0.55, 0.37, 0.37, 0.37, 1000], dtype = float)
+            cw_soft_025[:,4] = np.array([0.31, 0.35, 0.31, 0.37, 0.37, 0.31, 0.43, 0.33, 0.41, 0.39, 0.37, 0.51, 0.31, 0.33, 0.33, 1000], dtype = float)
+            cw_soft_025[:,5] = np.array([0.25, 0.31, 0.23, 0.27, 0.23, 0.23, 0.23, 0.19, 0.45, 0.29, 0.29, 0.43, 0.27, 0.27, 0.27, 1000], dtype = float)
+            cw_soft_025[:,6] = np.array([0.25, 0.31, 0.23, 0.27, 0.23, 0.23, 0.23, 0.19, 0.45, 0.29, 0.29, 0.43, 0.27, 0.27, 0.27, 1000], dtype = float)
+
+            cw_soft_0125 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_soft_0125[:,0] = np.array([0.05, 0.25, 0.15, 0.19, 0.19, 0.15, 0.15, 0.11, 0.17, 0.13, 0.11, 0.13, 0.13, 0.23, 0.15, 1000], dtype = float)
+            cw_soft_0125[:,1] = np.array([0.09, 0.33, 0.17, 0.27, 0.27, 0.13, 0.15, 0.13, 0.21, 0.17, 0.13, 0.17, 0.17, 0.25, 0.21, 1000], dtype = float)
+            cw_soft_0125[:,2] = np.array([0.07, 0.31, 0.17, 0.19, 0.27, 0.17, 0.15, 0.13, 0.21, 0.15, 0.11, 0.17, 0.15, 0.27, 0.19, 1000], dtype = float)
+            cw_soft_0125[:,3] = np.array([0.05, 0.27, 0.15, 0.17, 0.25, 0.15, 0.13, 0.13, 0.19, 0.15, 0.13, 0.23, 0.13, 0.27, 0.19, 1000], dtype = float)
+            cw_soft_0125[:,4] = np.array([0.09, 0.23, 0.13, 0.17, 0.25, 0.15, 0.13, 0.13, 0.21, 0.11, 0.13, 0.17, 0.13, 0.27, 0.19, 1000], dtype = float)
+            cw_soft_0125[:,5] = np.array([0.05, 0.07, 0.09, 0.13, 0.15, 0.11, 0.11, 0.09, 0.19, 0.11, 0.07, 0.13, 0.13, 0.17, 0.11, 1000], dtype = float)
+            cw_soft_0125[:,6] = np.array([0.05, 0.07, 0.09, 0.13, 0.15, 0.11, 0.11, 0.09, 0.19, 0.11, 0.07, 0.13, 0.13, 0.17, 0.11, 1000], dtype = float)
+
+    if Station == 3:
+            cw_rf_04 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_rf_04[:,0] = np.array([0.09, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.05, 0.09, 0.07, 0.07, 0.05, 0.07, 0.09, 0.07, 0.07], dtype = float)
+            cw_rf_04[:,1] = np.array([0.11, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.09, 0.07, 0.09, 0.07, 0.07, 0.07, 0.07, 0.07], dtype = float)
+            cw_rf_04[:,2] = np.array([0.09, 0.05, 0.07, 1000, 0.05, 0.05, 0.09, 1000, 0.07, 0.07, 0.09, 1000, 0.05, 0.11, 0.13, 1000], dtype = float)
+            cw_rf_04[:,3] = np.array([0.07, 0.05, 0.05, 1000, 0.05, 0.05, 0.09, 1000, 0.05, 0.07, 0.11, 1000, 0.05, 0.05, 0.07, 1000], dtype = float)
+            cw_rf_04[:,4] = np.array([0.11, 0.07, 0.07, 1000, 0.07, 0.07, 0.09, 1000, 0.09, 0.09, 0.07, 1000, 0.07, 0.11, 0.09, 1000], dtype = float)
+            cw_rf_04[:,5] = np.array([0.05, 0.07, 0.11, 0.15, 0.05, 0.05, 0.15, 0.05, 0.05, 0.11, 0.13, 0.15, 0.05, 0.11, 0.13, 0.07], dtype = float)
+            cw_rf_04[:,6] = np.array([1000, 0.07, 0.05, 1000, 1000, 0.05, 0.13, 1000, 1000, 0.07, 0.13, 1000, 1000, 0.05, 0.11, 1000], dtype = float)
+            cw_rf_04[:,7] = np.array([1000, 0.07, 0.05, 1000, 1000, 0.05, 0.13, 1000, 1000, 0.07, 0.13, 1000, 1000, 0.05, 0.11, 1000], dtype = float)
+
+            cw_rf_025 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_rf_025[:,0] = np.array([0.15, 0.11, 0.11, 0.11, 0.15, 0.13, 0.15, 0.11, 0.11, 0.11, 0.15, 0.09, 0.15, 0.11, 0.15, 0.11], dtype = float)
+            cw_rf_025[:,1] = np.array([0.13, 0.11, 0.11, 0.11, 0.13, 0.13, 0.13, 0.13, 0.15, 0.13, 0.19, 0.13, 0.13, 0.15, 0.15, 0.13], dtype = float)
+            cw_rf_025[:,2] = np.array([0.11, 0.07, 0.09, 1000, 0.13, 0.11, 0.09, 1000, 0.13, 0.13, 0.11, 1000, 0.13, 0.13, 0.15, 1000], dtype = float)
+            cw_rf_025[:,3] = np.array([0.15, 0.07, 0.13, 1000, 0.15, 0.13, 0.13, 1000, 0.13, 0.17, 0.09, 1000, 0.15, 0.19, 0.19, 1000], dtype = float)
+            cw_rf_025[:,4] = np.array([0.15, 0.11, 0.13, 1000, 0.15, 0.15, 0.11, 1000, 0.17, 0.13, 0.15, 1000, 0.15, 0.15, 0.17, 1000], dtype = float)
+            cw_rf_025[:,5] = np.array([0.07, 0.13, 0.13, 0.11, 0.11, 0.11, 0.11, 0.11, 0.15, 0.09, 0.09, 0.07, 0.09, 0.13, 0.09, 0.07], dtype = float)
+            cw_rf_025[:,6] = np.array([1000, 0.07, 0.11, 1000, 1000, 0.11, 0.07, 1000, 1000, 0.11, 0.13, 1000, 1000, 0.13, 0.15, 1000], dtype = float)
+            cw_rf_025[:,7] = np.array([1000, 0.07, 0.11, 1000, 1000, 0.11, 0.07, 1000, 1000, 0.11, 0.13, 1000, 1000, 0.13, 0.15, 1000], dtype = float)
+
+            cw_rf_0125 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_rf_0125[:,0] = np.array([0.05, 0.03, 0.03, 0.03, 0.03, 0.07, 0.05, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.09, 0.03, 0.03], dtype = float)
+            cw_rf_0125[:,1] = np.array([0.05, 0.03, 0.03, 0.03, 0.03, 0.05, 0.05, 0.03, 0.03, 0.05, 0.03, 0.05, 0.05, 0.07, 0.03, 0.03], dtype = float)
+            cw_rf_0125[:,2] = np.array([0.03, 0.03, 0.03, 1000, 0.03, 0.05, 0.07, 1000, 0.03, 0.03, 0.03, 1000, 0.03, 0.07, 0.03, 1000], dtype = float)
+            cw_rf_0125[:,3] = np.array([0.03, 0.11, 0.11, 1000, 0.03, 0.09, 0.05, 1000, 0.03, 0.09, 0.09, 1000, 0.03, 0.13, 0.11, 1000], dtype = float)
+            cw_rf_0125[:,4] = np.array([0.05, 0.03, 0.03, 1000, 0.03, 0.05, 0.05, 1000, 0.05, 0.05, 0.03, 1003, 0.05, 0.07, 0.05, 1000], dtype = float)
+            cw_rf_0125[:,5] = np.array([0.03, 0.11, 0.09, 0.03, 0.03, 0.05, 0.05, 0.03, 0.03, 0.07, 0.09, 0.03, 0.03, 0.07, 0.07, 0.03], dtype = float)
+            cw_rf_0125[:,6] = np.array([1000, 0.07, 0.03, 1000, 1000, 0.03, 0.03, 1000, 1000, 0.03, 0.03, 1000, 1000, 0.03, 0.03, 1000], dtype = float)
+            cw_rf_0125[:,7] = np.array([1000, 0.07, 0.03, 1000, 1000, 0.03, 0.03, 1000, 1000, 0.03, 0.03, 1000, 1000, 0.03, 0.03, 1000], dtype = float)
+
+            cw_cal_04 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_cal_04[:,0] = np.array([0.05, 0.05, 0.07, 0.05, 0.03, 0.03, 0.03, 0.03, 0.09, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.05], dtype = float)
+            cw_cal_04[:,1] = np.array([0.07, 0.11, 0.07, 0.07, 0.07, 0.07, 0.07, 0.05, 0.09, 0.11, 0.09, 0.07, 0.07, 0.11, 0.07, 0.07], dtype = float)
+            cw_cal_04[:,2] = np.array([0.05, 0.05, 0.03, 1000, 0.03, 0.03, 0.05, 1000, 0.07, 0.07, 0.07, 1000, 0.05, 0.05, 0.07, 1000], dtype = float)
+            cw_cal_04[:,3] = np.array([0.05, 0.05, 0.03, 1000, 0.03, 0.03, 0.05, 1000, 0.05, 0.07, 0.09, 1000, 0.05, 0.05, 0.07, 1000], dtype = float)
+            cw_cal_04[:,4] = np.array([0.07, 0.05, 0.07, 1000, 0.03, 0.03, 0.05, 1000, 0.09, 0.09, 0.07, 1000, 0.07, 0.07, 0.07, 1000], dtype = float)
+            cw_cal_04[:,5] = np.array([0.05, 0.05, 0.03, 0.13, 0.03, 0.03, 0.13, 0.03, 0.05, 0.07, 0.05, 0.07, 0.05, 0.05, 0.09, 0.05], dtype = float)
+            cw_cal_04[:,6] = np.array([1000, 0.05, 0.03, 1000, 1000, 0.03, 0.11, 1000, 1000, 0.07, 0.11, 1000, 1000, 0.05, 0.11, 1000], dtype = float)
+            cw_cal_04[:,7] = np.array([1000, 0.05, 0.03, 1000, 1000, 0.03, 0.11, 1000, 1000, 0.07, 0.11, 1000, 1000, 0.05, 0.11, 1000], dtype = float)
+
+            cw_cal_025 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_cal_025[:,0] = np.array([0.11, 0.09, 0.09, 0.11, 0.07, 0.05, 0.05, 0.05, 0.15, 0.13, 0.17, 0.11, 0.13, 0.11, 0.15, 0.13], dtype = float)
+            cw_cal_025[:,1] = np.array([0.15, 0.11, 0.11, 0.11, 0.13, 0.11, 0.13, 0.13, 0.15, 0.17, 0.25, 0.17, 0.17, 0.17, 0.19, 0.15], dtype = float)
+            cw_cal_025[:,2] = np.array([0.11, 0.09, 0.09, 1000, 0.09, 0.07, 0.07, 1000, 0.15, 0.13, 0.13, 1000, 0.17, 0.15, 0.17, 1000], dtype = float)
+            cw_cal_025[:,3] = np.array([0.11, 0.09, 0.09, 1000, 0.09, 0.09, 0.07, 1000, 0.13, 0.13, 0.15, 1000, 0.15, 0.15, 0.17, 1000], dtype = float)
+            cw_cal_025[:,4] = np.array([0.15, 0.09, 0.13, 1000, 0.11, 0.09, 0.07, 1000, 0.19, 0.15, 0.17, 1000, 0.17, 0.19, 0.19, 1000], dtype = float)
+            cw_cal_025[:,5] = np.array([0.11, 0.09, 0.11, 0.07, 0.11, 0.11, 0.07, 0.13, 0.15, 0.13, 0.15, 0.17, 0.15, 0.13, 0.15, 0.13], dtype = float)
+            cw_cal_025[:,6] = np.array([1000, 0.07, 0.09, 1000, 1000, 0.09, 0.05, 1000, 1000, 0.13, 0.13, 1000, 1000, 0.13, 0.15, 1000], dtype = float)
+            cw_cal_025[:,7] = np.array([1000, 0.07, 0.09, 1000, 1000, 0.09, 0.05, 1000, 1000, 0.13, 0.13, 1000, 1000, 0.13, 0.15, 1000], dtype = float)
+
+            cw_cal_0125 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_cal_0125[:,0] = np.array([0.03, 0.03, 0.07, 0.03, 0.03, 0.03, 0.03, 0.03, 0.05, 0.03, 0.03, 0.03, 0.03, 0.09, 0.03, 0.03], dtype = float)
+            cw_cal_0125[:,1] = np.array([0.05, 0.03, 0.07, 0.05, 0.03, 0.05, 0.07, 0.03, 0.05, 0.07, 0.03, 0.07, 0.07, 0.09, 0.05, 0.03], dtype = float)
+            cw_cal_0125[:,2] = np.array([0.03, 0.03, 0.03, 1000, 0.03, 0.03, 0.03, 1000, 0.03, 0.05, 0.03, 1000, 0.03, 0.05, 0.03, 1000], dtype = float)
+            cw_cal_0125[:,3] = np.array([0.03, 0.03, 0.03, 1000, 0.03, 0.03, 0.03, 1000, 0.03, 0.05, 0.03, 1000, 0.03, 0.07, 0.03, 1000], dtype = float)
+            cw_cal_0125[:,4] = np.array([0.05, 0.03, 0.07, 1000, 0.03, 0.03, 0.03, 1000, 0.05, 0.07, 0.03, 1000, 0.07, 0.09, 0.05, 1000], dtype = float)
+            cw_cal_0125[:,5] = np.array([0.03, 0.05, 0.05, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.05, 0.05, 0.03, 0.03, 0.05, 0.03, 0.03], dtype = float)
+            cw_cal_0125[:,6] = np.array([1000, 0.05, 0.03, 1000, 1000, 0.05, 0.03, 1000, 1000, 0.03, 0.03, 1000, 1000, 0.05, 0.03, 1000], dtype = float)
+            cw_cal_0125[:,7] = np.array([1000, 0.05, 0.03, 1000, 1000, 0.05, 0.03, 1000, 1000, 0.03, 0.03, 1000, 1000, 0.05, 0.03, 1000], dtype = float)
+
+            cw_soft_04 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_soft_04[:,0] = np.array([0.21, 0.17, 0.17, 0.15, 0.15, 0.15, 0.15, 0.13, 0.25, 0.19, 0.17, 0.13, 0.17, 0.17, 0.21, 0.15], dtype = float)
+            cw_soft_04[:,1] = np.array([0.31, 0.21, 0.19, 0.19, 0.17, 0.17, 0.15, 0.15, 0.21, 0.23, 0.21, 0.15, 0.17, 0.19, 0.17, 0.15], dtype = float)
+            cw_soft_04[:,2] = np.array([0.31, 0.19, 0.19, 1000, 0.17, 0.15, 0.17, 1000, 0.21, 0.21, 0.25, 1000, 0.17, 0.19, 0.21, 1000], dtype = float)
+            cw_soft_04[:,3] = np.array([0.21, 0.17, 0.17, 1000, 0.15, 0.15, 0.17, 1000, 0.19, 0.21, 0.27, 1000, 0.15, 0.19, 0.21, 1000], dtype = float)
+            cw_soft_04[:,4] = np.array([0.29, 0.19, 0.19, 1000, 0.17, 0.17, 0.17, 1000, 0.23, 0.19, 0.19, 1000, 0.17, 0.17, 0.19, 1000], dtype = float)
+            cw_soft_04[:,5] = np.array([0.13, 0.13, 0.13, 0.19, 0.11, 0.11, 0.19, 0.11, 0.13, 0.13, 0.15, 0.15, 0.11, 0.15, 0.17, 0.15], dtype = float)
+            cw_soft_04[:,6] = np.array([1000, 0.13, 0.11, 1000, 1000, 0.11, 0.19, 1000, 1000, 0.15, 0.13, 1000, 1000, 0.15, 0.21, 1000], dtype = float)
+            cw_soft_04[:,7] = np.array([1000, 0.13, 0.11, 1000, 1000, 0.11, 0.19, 1000, 1000, 0.15, 0.13, 1000, 1000, 0.15, 0.21, 1000], dtype = float)
+
+            cw_soft_025 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_soft_025[:,0] = np.array([0.27, 0.23, 0.21, 0.23, 0.25, 0.23, 0.31, 0.23, 0.35, 0.27, 0.33, 0.21, 0.25, 0.25, 0.31, 0.25], dtype = float)
+            cw_soft_025[:,1] = np.array([0.33, 0.29, 0.29, 0.27, 0.35, 0.33, 0.39, 0.35, 0.37, 0.39, 0.47, 0.35, 0.37, 0.39, 0.41, 0.37], dtype = float)
+            cw_soft_025[:,2] = np.array([0.37, 0.29, 0.31, 1000, 0.35, 0.31, 0.25, 1000, 0.33, 0.33, 0.31, 1000, 0.39, 0.35, 0.35, 1000], dtype = float)
+            cw_soft_025[:,3] = np.array([0.31, 0.19, 0.29, 1000, 0.31, 0.31, 0.25, 1000, 0.35, 0.33, 0.29, 1000, 0.35, 0.33, 0.41, 1000], dtype = float)
+            cw_soft_025[:,4] = np.array([0.41, 0.27, 0.29, 1000, 0.35, 0.31, 0.31, 1000, 0.39, 0.31, 0.35, 1000, 0.37, 0.37, 0.41, 1000], dtype = float)
+            cw_soft_025[:,5] = np.array([0.23, 0.17, 0.25, 0.15, 0.25, 0.23, 0.17, 0.21, 0.31, 0.23, 0.31, 0.27, 0.29, 0.27, 0.29, 0.23], dtype = float)
+            cw_soft_025[:,6] = np.array([1000, 0.13, 0.23, 1000, 1000, 0.21, 0.15, 1000, 1000, 0.23, 0.25, 1000, 1000, 0.27, 0.27, 1000], dtype = float)
+            cw_soft_025[:,7] = np.array([1000, 0.13, 0.23, 1000, 1000, 0.21, 0.15, 1000, 1000, 0.23, 0.25, 1000, 1000, 0.27, 0.27, 1000], dtype = float)
+
+            cw_soft_0125 = np.full((num_ants, num_configs), np.nan, dtype = float)
+            cw_soft_0125[:,0] = np.array([0.11, 0.05, 0.07, 0.09, 0.09, 0.11, 0.15, 0.07, 0.11, 0.11, 0.05, 0.13, 0.11, 0.21, 0.09, 0.05], dtype = float)
+            cw_soft_0125[:,1] = np.array([0.17, 0.09, 0.11, 0.11, 0.13, 0.17, 0.15, 0.11, 0.15, 0.15, 0.15, 0.17, 0.19, 0.29, 0.13, 0.11], dtype = float)
+            cw_soft_0125[:,2] = np.array([0.13, 0.11, 0.11, 1000, 0.11, 0.17, 0.13, 1000, 0.07, 0.15, 0.13, 1000, 0.15, 0.23, 0.13, 1000], dtype = float)
+            cw_soft_0125[:,3] = np.array([0.15, 0.11, 0.11, 1000, 0.11, 0.15, 0.13, 1000, 0.17, 0.15, 0.13, 1000, 0.15, 0.25, 0.13, 1000], dtype = float)
+            cw_soft_0125[:,4] = np.array([0.13, 0.11, 0.11, 1000, 0.13, 0.17, 0.15, 1000, 0.15, 0.13, 0.09, 1003, 0.15, 0.21, 0.13, 1000], dtype = float)
+            cw_soft_0125[:,5] = np.array([0.07, 0.07, 0.11, 0.05, 0.05, 0.13, 0.09, 0.05, 0.05, 0.09, 0.09, 0.09, 0.07, 0.19, 0.11, 0.03], dtype = float)
+            cw_soft_0125[:,6] = np.array([1000, 0.07, 0.13, 1000, 1000, 0.13, 0.07, 1000, 1000, 0.07, 0.05, 1000, 1000, 0.15, 0.09, 1000], dtype = float)
+            cw_soft_0125[:,7] = np.array([1000, 0.07, 0.13, 1000, 1000, 0.13, 0.07, 1000, 1000, 0.07, 0.05, 1000, 1000, 0.15, 0.09, 1000], dtype = float)
+
+    cut_04_rf = cw_rf_04[:, g_idx]
+    cut_025_rf = cw_rf_025[:, g_idx]
+    cut_0125_rf = cw_rf_0125[:, g_idx]
+    cut_04_cal = cw_cal_04[:, g_idx]
+    cut_025_cal = cw_cal_025[:, g_idx]
+    cut_0125_cal = cw_cal_0125[:, g_idx]
+    cut_04_soft = cw_soft_04[:, g_idx]
+    cut_025_soft = cw_soft_025[:, g_idx]
+    cut_0125_soft = cw_soft_0125[:, g_idx]
+
+    return cut_04_rf, cut_025_rf, cut_0125_rf, cut_04_cal, cut_025_cal, cut_0125_cal, cut_04_soft, cut_025_soft, cut_0125_soft        
 
 
 

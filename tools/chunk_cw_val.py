@@ -32,7 +32,7 @@ def cw_val_collector(Data, Ped, analyze_blind_dat = False):
     del run_info, qual_dat, qual_hf
 
     # post quality cut
-    post_qual = post_qual_cut_loader(ara_root, ara_uproot, daq_qual_cut_sum, use_cw_cut = True, use_cw_val = True, verbose = True)
+    post_qual = post_qual_cut_loader(ara_root, ara_uproot, daq_qual_cut_sum, use_cw_cut = True, verbose = True)
     del daq_qual_cut_sum, ara_uproot 
 
     # loop over the events
