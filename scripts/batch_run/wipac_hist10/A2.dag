@@ -1,0 +1,117 @@
+JOB job_ARA_S2_T0_R0 ARA_job.sub 
+VARS job_ARA_S2_T0_R0 station="2" trig="0" run="0" run_w="1000"
+
+JOB job_ARA_S2_T0_R1000 ARA_job.sub 
+VARS job_ARA_S2_T0_R1000 station="2" trig="0" run="1000" run_w="1000"
+
+JOB job_ARA_S2_T0_R2000 ARA_job.sub 
+VARS job_ARA_S2_T0_R2000 station="2" trig="0" run="2000" run_w="1000"
+
+JOB job_ARA_S2_T0_R3000 ARA_job.sub 
+VARS job_ARA_S2_T0_R3000 station="2" trig="0" run="3000" run_w="1000"
+
+JOB job_ARA_S2_T0_R4000 ARA_job.sub 
+VARS job_ARA_S2_T0_R4000 station="2" trig="0" run="4000" run_w="1000"
+
+JOB job_ARA_S2_T0_R5000 ARA_job.sub 
+VARS job_ARA_S2_T0_R5000 station="2" trig="0" run="5000" run_w="1000"
+
+JOB job_ARA_S2_T0_R6000 ARA_job.sub 
+VARS job_ARA_S2_T0_R6000 station="2" trig="0" run="6000" run_w="1000"
+
+JOB job_ARA_S2_T0_R7000 ARA_job.sub 
+VARS job_ARA_S2_T0_R7000 station="2" trig="0" run="7000" run_w="1000"
+
+JOB job_ARA_S2_T0_R8000 ARA_job.sub 
+VARS job_ARA_S2_T0_R8000 station="2" trig="0" run="8000" run_w="1000"
+
+JOB job_ARA_S2_T0_R9000 ARA_job.sub 
+VARS job_ARA_S2_T0_R9000 station="2" trig="0" run="9000" run_w="1000"
+
+JOB job_ARA_S2_T0_R10000 ARA_job.sub 
+VARS job_ARA_S2_T0_R10000 station="2" trig="0" run="10000" run_w="1000"
+
+JOB job_ARA_S2_T0_R11000 ARA_job.sub
+VARS job_ARA_S2_T0_R11000 station="2" trig="0" run="11000" run_w="1000"
+
+JOB job_ARA_S2_T0_R12000 ARA_job.sub
+VARS job_ARA_S2_T0_R12000 station="2" trig="0" run="12000" run_w="1000"
+
+JOB job_ARA_S2_T1_R0 ARA_job.sub 
+VARS job_ARA_S2_T1_R0 station="2" trig="1" run="0" run_w="1000"
+
+JOB job_ARA_S2_T1_R1000 ARA_job.sub 
+VARS job_ARA_S2_T1_R1000 station="2" trig="1" run="1000" run_w="1000"
+
+JOB job_ARA_S2_T1_R2000 ARA_job.sub 
+VARS job_ARA_S2_T1_R2000 station="2" trig="1" run="2000" run_w="1000"
+
+JOB job_ARA_S2_T1_R3000 ARA_job.sub 
+VARS job_ARA_S2_T1_R3000 station="2" trig="1" run="3000" run_w="1000"
+
+JOB job_ARA_S2_T1_R4000 ARA_job.sub 
+VARS job_ARA_S2_T1_R4000 station="2" trig="1" run="4000" run_w="1000"
+
+JOB job_ARA_S2_T1_R5000 ARA_job.sub 
+VARS job_ARA_S2_T1_R5000 station="2" trig="1" run="5000" run_w="1000"
+
+JOB job_ARA_S2_T1_R6000 ARA_job.sub 
+VARS job_ARA_S2_T1_R6000 station="2" trig="1" run="6000" run_w="1000"
+
+JOB job_ARA_S2_T1_R7000 ARA_job.sub 
+VARS job_ARA_S2_T1_R7000 station="2" trig="1" run="7000" run_w="1000"
+
+JOB job_ARA_S2_T1_R8000 ARA_job.sub 
+VARS job_ARA_S2_T1_R8000 station="2" trig="1" run="8000" run_w="1000"
+
+JOB job_ARA_S2_T1_R9000 ARA_job.sub 
+VARS job_ARA_S2_T1_R9000 station="2" trig="1" run="9000" run_w="1000"
+
+JOB job_ARA_S2_T1_R10000 ARA_job.sub 
+VARS job_ARA_S2_T1_R10000 station="2" trig="1" run="10000" run_w="1000"
+
+JOB job_ARA_S2_T1_R11000 ARA_job.sub
+VARS job_ARA_S2_T1_R11000 station="2" trig="1" run="11000" run_w="1000"
+
+JOB job_ARA_S2_T1_R12000 ARA_job.sub
+VARS job_ARA_S2_T1_R12000 station="2" trig="1" run="12000" run_w="1000"
+
+JOB job_ARA_S2_T2_R0 ARA_job.sub 
+VARS job_ARA_S2_T2_R0 station="2" trig="2" run="0" run_w="1000"
+
+JOB job_ARA_S2_T2_R1000 ARA_job.sub 
+VARS job_ARA_S2_T2_R1000 station="2" trig="2" run="1000" run_w="1000"
+
+JOB job_ARA_S2_T2_R2000 ARA_job.sub 
+VARS job_ARA_S2_T2_R2000 station="2" trig="2" run="2000" run_w="1000"
+
+JOB job_ARA_S2_T2_R3000 ARA_job.sub 
+VARS job_ARA_S2_T2_R3000 station="2" trig="2" run="3000" run_w="1000"
+
+JOB job_ARA_S2_T2_R4000 ARA_job.sub 
+VARS job_ARA_S2_T2_R4000 station="2" trig="2" run="4000" run_w="1000"
+
+JOB job_ARA_S2_T2_R5000 ARA_job.sub 
+VARS job_ARA_S2_T2_R5000 station="2" trig="2" run="5000" run_w="1000"
+
+JOB job_ARA_S2_T2_R6000 ARA_job.sub 
+VARS job_ARA_S2_T2_R6000 station="2" trig="2" run="6000" run_w="1000"
+
+JOB job_ARA_S2_T2_R7000 ARA_job.sub 
+VARS job_ARA_S2_T2_R7000 station="2" trig="2" run="7000" run_w="1000"
+
+JOB job_ARA_S2_T2_R8000 ARA_job.sub 
+VARS job_ARA_S2_T2_R8000 station="2" trig="2" run="8000" run_w="1000"
+
+JOB job_ARA_S2_T2_R9000 ARA_job.sub 
+VARS job_ARA_S2_T2_R9000 station="2" trig="2" run="9000" run_w="1000"
+
+JOB job_ARA_S2_T2_R10000 ARA_job.sub 
+VARS job_ARA_S2_T2_R10000 station="2" trig="2" run="10000" run_w="1000"
+
+JOB job_ARA_S2_T2_R11000 ARA_job.sub
+VARS job_ARA_S2_T2_R11000 station="2" trig="2" run="11000" run_w="1000"
+
+JOB job_ARA_S2_T2_R12000 ARA_job.sub
+VARS job_ARA_S2_T2_R12000 station="2" trig="2" run="12000" run_w="1000"
+
