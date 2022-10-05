@@ -3,9 +3,9 @@ import h5py
 import numpy as np
 from tqdm import tqdm
 
-def reco_mf_sim_collector(Data, Station, Year):
+def reco_sim_collector(Data, Station, Year):
 
-    print('Collecting sim reco mf starts!')
+    print('Collecting sim reco starts!')
 
     from tools.ara_sim_load import ara_root_loader
     from tools.ara_py_interferometers import py_interferometers
@@ -30,13 +30,13 @@ def reco_mf_sim_collector(Data, Station, Year):
     nnu = ara_root.nnu
 
     # snr
-    s_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/mf_sim/'
+    s_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/snr_sim/'
     slash_idx = Data.rfind('/')
     dot_idx = Data.rfind('.')
-    s_name = s_path + 'mf_' + Data[slash_idx+1:dot_idx] + '.h5'
+    s_name = s_path + 'snr_' + Data[slash_idx+1:dot_idx] + '.h5'
     print('snr_path:', s_name)
     snr_hf = h5py.File(s_name, 'r')
-    snr = snr_hf['evt_wise_ant'][:]
+    snr = snr_hf['snr'][:]
     print(snr.shape)
     del s_path, slash_idx, dot_idx, s_name, snr_hf
 
@@ -67,8 +67,8 @@ def reco_mf_sim_collector(Data, Station, Year):
     del snr, snr_v_sum, snr_h_sum, v_pairs_len, pairs, run, wf_len_double
 
     # output array
-    coef = np.full((2, 2, num_evts), np.nan, dtype = float) # pol, rad
-    coord = np.full((2, 2, 2, num_evts), np.nan, dtype = float) # thephi, pol, rad
+    coef = np.full((2, 2, 2, num_evts), np.nan, dtype = float) # pol, rad, sol
+    coord = np.full((2, 2, 2, 2, num_evts), np.nan, dtype = float) # thephi, pol, rad, sol
 
     # loop over the events
     for evt in tqdm(range(num_evts)):
@@ -76,7 +76,7 @@ def reco_mf_sim_collector(Data, Station, Year):
 
         wf_v = ara_root.get_rf_wfs(evt)
         wf_v_double = np.pad(wf_v, [(wf_len_half, ), (0, )], 'constant', constant_values = 0)
-        coef[:, :, evt], coord[:, :, :, evt] = ara_int.get_sky_map(wf_v_double, weights = snr_weights[:, evt])
+        coef[:, :, :, evt], coord[:, :, :, :, evt] = ara_int.get_sky_map(wf_v_double, weights = snr_weights[:, evt])
         del wf_v, wf_v_double
     del ara_root, num_evts, ara_int, wf_len_half
 
