@@ -79,7 +79,7 @@ def mf_sim_collector(Data, Station, Year):
             bad_run_arr.append(run_num)
     bad_run_arr = np.asarray(bad_run_arr, dtype = int)
     if run in bad_run_arr:
-        print(f'Bad noise modeling for A{st} R{run}! So, no MF sim results!')
+        print(f'Bad noise modeling for A{Station} R{run}! So, no MF sim results!')
         evt_wise = np.full((2, num_evts), np.nan, dtype = float)
         evt_wise_ant = np.full((2, num_ants, num_evts), np.nan, dtype = float)
         return {'entry_num':entry_num,
