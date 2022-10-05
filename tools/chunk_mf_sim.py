@@ -70,6 +70,38 @@ def mf_sim_collector(Data, Station, Year):
     snr_weights[8:] /= h_sum
     del snr_copy, v_sum, h_sum, s_path, snr_hf, sim_type 
 
+    # rayl table check
+    bad_path = f'../data/rayl_runs/rayl_run_A{Station}.txt'
+    bad_run_arr = []
+    with open(bad_path, 'r') as f:
+        for lines in f:
+            run_num = int(lines)
+            bad_run_arr.append(run_num)
+    bad_run_arr = np.asarray(bad_run_arr, dtype = int)
+    if run in bad_run_arr:
+        print(f'Bad noise modeling for A{Station} R{run}! So, no MF sim results!')
+        evt_wise = np.full((2, num_evts), np.nan, dtype = float)
+        evt_wise_ant = np.full((2, num_ants, num_evts), np.nan, dtype = float)
+        return {'entry_num':entry_num,
+            'dt':dt,
+            'wf_time':wf_time,
+            'pnu':pnu,
+            'inu_thrown':inu_thrown,
+            'weight':weight,
+            'probability':probability,
+            'nuflavorint':nuflavorint,
+            'nu_nubar':nu_nubar,
+            'currentint':currentint,
+            'elast_y':elast_y,
+            'posnu':posnu,
+            'nnu':nnu,
+            'bad_ant':bad_ant.astype(int),
+            'snr_weights':snr_weights,
+            'evt_wise':evt_wise,
+            'evt_wise_ant':evt_wise_ant}
+    else:
+        del bad_path, bad_run_arr
+
     ara_mf = ara_matched_filter(Station, run, dt, wf_len, get_sub_file = True)
     num_pols = ara_mf.num_pols
     del run, wf_len
