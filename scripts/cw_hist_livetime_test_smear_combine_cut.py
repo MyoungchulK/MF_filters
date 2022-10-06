@@ -698,9 +698,9 @@ for r in tqdm(range(len(d_run_tot))):
     del cut_04_idx, pass_04_idx, cut_025_idx, pass_025_idx
 
     for ant in range(num_ants):
-        if Station == 3 and g_idx > 5 and ant%3:
+        if Station == 3 and g_idx > 5 and ant%4 == 3:
             continue
-        if Station == 3 and g_idx > 5 and ant%0:
+        if Station == 3 and g_idx > 5 and ant%4 == 0:
             continue
         if Station == 2 and ant == 15:
             continue
