@@ -341,11 +341,13 @@ class run_info_loader:
             #elif (self.run>=12864 and self.run<=12871) or self.run>=13085:
             elif self.run>=12879 and self.run<=14990:
                 config=7
-            elif self.run>=14991:
+            elif self.run>=14991 and self.run<=16486:
                 config=8
+            elif self.run>=16487:
+                config=9
             else:
                 pass
-            self.num_configs = 8
+            self.num_configs = 9
 
         elif self.st == 5:
             pass
@@ -389,6 +391,31 @@ class batch_info_loader:
 
         print('Dag making is done!')
         print(f'output is {dag_file_name}')
+
+    def get_rest_dag_file(self, path, run_lists, file_type = 'event', analyze_blind_dat = False):
+
+        lists = self.get_dat_list(file_type = file_type, analyze_blind_dat = analyze_blind_dat)
+
+        self.get_list_in_txt(path, lists)
+
+        print('Dag making starts!')
+        dag_file_name = f'{path}A{self.st}.dag'
+        statements = ""
+
+        with open(dag_file_name, 'w') as f:
+            f.write(statements)
+
+            for w in tqdm(lists[0]):
+                if int(w) in run_lists:
+                    continue
+
+                statements = self.get_dag_statement(int(w))
+                with open(dag_file_name, 'a') as f:
+                    f.write(statements)
+
+        print('Dag making is done!')
+        print(f'output is {dag_file_name}')
+
 
     def get_list_in_txt(self, path, lists):
 

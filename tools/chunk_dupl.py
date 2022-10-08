@@ -39,8 +39,8 @@ def dupl_collector(Data, Ped, analyze_blind_dat = False):
         return diff
 
     # loop over the events
-    #for evt in tqdm(range(num_evts)):
-    for evt in range(num_evts):
+    for evt in tqdm(range(num_evts)):
+    #for evt in range(num_evts):
       #if evt < 100:        
    
         # get entry and wf
