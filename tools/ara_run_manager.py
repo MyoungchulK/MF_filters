@@ -448,10 +448,12 @@ class batch_info_loader:
             for s in run_yrs_idx:
                 dat_yrs_sort.append(dat_yrs_list[int(s)])
 
-            if self.st == 3 and int(yrs) == 2018:
+            if self.st == 3 and int(yrs) >= 2018:
                 wrong_idx = run_yrs_sort < 10000
             elif self.st == 3 and int(yrs) == 2016:
                 wrong_idx = np.logical_or(run_yrs_sort == 17052, run_yrs_sort == 18031)
+            elif self.st == 2 and int(yrs) >= 2019:
+                wrong_idx = run_yrs_sort < 10000
             else:
                 wrong_idx = run_yrs_sort < 100
             bad_run = run_yrs_sort[wrong_idx]

@@ -22,24 +22,27 @@ class known_issue_loader:
 
         if self.st == 2:
             bad_ant[15] = True #D4BH
-            if run < 9749:
-                bad_ant[1] = True #D2TV too much fluctuation
-            if run > 2274 or run < 120:
-                bad_ant[3] = True #D4TV gradual decay
+            #if run < 9749:
+            #    bad_ant[1] = True #D2TV too much fluctuation
+            #if run > 2274 or run < 120:
+            #    bad_ant[3] = True #D4TV gradual decay
+            if run > 15526:
+                bad_ant[0::4] = True # all D4 antennas, duplication issue
 
         if self.st ==  3:
-            if run > 2800: 
-                bad_ant[1] = True #D2TV gradual decay
-            if run > 10000:
-                bad_ant[3] = True #D4TV low amp gain
-            bad_ant[6] = True #D3BV low amp gain
+            #if run > 2800: 
+            #    bad_ant[1] = True #D2TV gradual decay
+            #if run > 10000:
+            #    bad_ant[3] = True #D4TV low amp gain
+            #bad_ant[6] = True #D3BV low amp gain
 
             if run > 1901 and run < 10001:
                 st_idx = 3
                 bad_ant[st_idx::num_ddas] = True # all D4 antennas
-            if run > 12865:
+            if run > 12865 and run < 16487:
                 st_idx = 0
                 bad_ant[st_idx::num_ddas] = True # all D1 antennas, dead bit issue
+            if run > 12865:
                 bad_ant[3::4] = True # all D4 antennas, duplication issue
 
         if good_ant_true:

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # load in variables
-key=reco
+key=dupl
 station=$1
 run=$2
 condor_run=0

@@ -1795,7 +1795,7 @@ VARS job_ARA_S2_R2272 station="2" run="2272"
 JOB job_ARA_S2_R2273 ARA_job.sub 
 VARS job_ARA_S2_R2273 station="2" run="2273"
 
-JOB job_ARA_S2_R2274 ARA_job.sub 
+JOB job_ARA_S2_R2274 ARA_job_1.sub 
 VARS job_ARA_S2_R2274 station="2" run="2274"
 
 JOB job_ARA_S2_R2275 ARA_job.sub 

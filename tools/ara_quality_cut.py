@@ -656,10 +656,6 @@ class post_qual_cut_loader:
             else:
                 self.pre_cut_evts = np.full((self.num_evts), 1, dtype = int)        
 
-            ara_known_issue = known_issue_loader(self.st)
-            self.bad_ant = ara_known_issue.get_bad_antenna(self.run)
-            del ara_known_issue
-
             from tools.ara_wf_analyzer import wf_analyzer
             self.wf_int = wf_analyzer(dt = dt, use_time_pad = True, use_band_pass = True)
 
@@ -701,8 +697,6 @@ class post_qual_cut_loader:
 
                 self.ara_root.get_useful_evt(self.ara_root.cal_type.kLatestCalib)
                 for ant in range(num_ants):
-                    if self.bad_ant[ant]:
-                        continue
                     raw_t, raw_v = self.ara_root.get_rf_ch_wf(ant)
                     int_v, int_num = self.wf_int.get_int_wf(raw_t, raw_v, ant, use_unpad = True, use_band_pass = True)[1:]
                     self.sin_sub.get_sin_subtract_wf(int_v, int_num, ant, return_none = True)  
@@ -733,7 +727,6 @@ class post_qual_cut_loader:
             print(f'cw params {cw_freq[0, 0]} ~ {cw_freq[0, 1]} GHz: {cw_thres[0]}')
             print(f'cw params {cw_freq[1, 0]} ~ {cw_freq[1, 1]} GHz: {cw_thres[1]}')
             print(f'cw params {cw_freq[2, 0]} ~ {cw_freq[2, 1]} GHz: {cw_thres[2]}')
-        del config_idx, num_configs
 
         return num_params, cw_thres, cw_freq
 

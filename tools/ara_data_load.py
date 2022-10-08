@@ -225,18 +225,18 @@ class ara_uproot_loader:
             self.num_evts = len(st_arr)
             self.entry_num = np.arange(len(st_arr))
             self.evt_num = np.asarray(self.evtTree['event/eventNumber'],dtype=int)
-            self.run = int(np.asarray(self.evtTree['run'],dtype=int)[0])
+            self.run = self.get_run()
 
             evt_key = 'event'
             evt_key_len = len(evt_key)
             end_key = '.root'
             i_idx = data.find(evt_key)
             f_idx = data.find(end_key, i_idx + evt_key_len)
-            run_str = int(data[i_idx + evt_key_len:f_idx])
-            if self.run != run_str:
-                print(f'Disagreement! run in data: {self.run}, run in name: {run_str}. Use run in name!! AAAAAARGH!!!')
-                self.run = np.copy(run_str)
-            del evt_key, evt_key_len, end_key, i_idx, f_idx, run_str
+            self.run_str = int(data[i_idx + evt_key_len:f_idx])
+            if self.run != self.run_str:
+                print(f'Disagreement! run in data: {self.run}, run in name: {self.run_str}. Use run in name!! AAAAAARGH!!!')
+                self.run = np.copy(self.run_str)
+            del evt_key, evt_key_len, end_key, i_idx, f_idx
 
             self.year = self.get_year()
             print('total events:', self.num_evts)
@@ -244,6 +244,12 @@ class ara_uproot_loader:
         except uproot.exceptions.KeyInFileError:
             self.hasKeyInFileError = True
             print('File is currupted!')
+
+    def get_run(self):
+
+        run = int(np.asarray(self.evtTree['run'],dtype=int)[0])
+        
+        return run
 
     def get_year(self, use_year = False):
 

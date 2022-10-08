@@ -15,7 +15,7 @@ from tools.ara_utility import size_checker
 @click.option('-k', '--key', type = str)
 @click.option('-s', '--station', type = int)
 @click.option('-r', '--run', type = int)
-@click.option('-a', '--act_evt', default = None, multiple = True)
+@click.option('-a', '--act_evt', default = None)#, multiple = False)#, type = int)
 @click.option('-b', '--blind_dat', default = False, type = bool)
 @click.option('-c', '--condor_run', default = False, type = bool)
 @click.option('-n', '--not_override', default = False, type = bool)
@@ -52,7 +52,7 @@ def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_overrid
         file_type = 'eventHk'
         return_none = True
         return_dat_only = True
-    elif key == 'blk_len' or key == 'rf_len' or key == 'dead_dupl' or key == 'run_time' or key == 'ped' or key == 'qual_cut' or key == 'ped' or key == 'medi' or key == 'sub_info' or key == 'cw_time':
+    elif key == 'blk_len' or key == 'rf_len' or key == 'dead' or key == 'dupl' or  key == 'run_time' or key == 'ped' or key == 'qual_cut' or key == 'ped' or key == 'medi' or key == 'sub_info' or key == 'cw_time':
         return_dat_only = True
     Data, Ped = run_info.get_data_ped_path(file_type = file_type, return_none = return_none, verbose = verbose, return_dat_only = return_dat_only)
     station, run, Config, Year, Month, Date = run_info.get_data_info()
@@ -101,6 +101,8 @@ def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_overrid
     print(f'Output path check:{output_path}')
     h5_file_name = f'{key}{blind_type}_A{station}_R{run}'
     if key == 'wf' and act_evt is not None:
+        act_evt = act_evt.split(',')
+        act_evt = np.asarray(act_evt).astype(int)
         if len(act_evt) == 1:
             h5_file_name += f'_E{act_evt[0]}'
         else:

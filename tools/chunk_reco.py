@@ -39,29 +39,6 @@ def reco_collector(Data, Ped, analyze_blind_dat = False):
     bad_ant = known_issue.get_bad_antenna(run, print_integer = True)
     del known_issue
 
-    # rayl table check
-    bad_path = f'../data/rayl_runs/rayl_run_A{st}.txt'
-    bad_run_arr = []
-    with open(bad_path, 'r') as f:
-        for lines in f:
-            run_num = int(lines)
-            bad_run_arr.append(run_num)
-    bad_run_arr = np.asarray(bad_run_arr, dtype = int)
-    if run in bad_run_arr:
-        print(f'Bad noise modeling for A{st} R{run}! So, no Reco results!')
-        coef = np.full((2, 2, 2, num_evts), np.nan, dtype = float) # pol, rad, sol
-        coord = np.full((2, 2, 2, 2, num_evts), np.nan, dtype = float) # thephi, pol, rad, sol
-        return {'evt_num':evt_num,
-            'entry_num':entry_num,
-            'trig_type':trig_type,
-            'unix_time':unix_time,
-            'pps_number':pps_number,
-            'bad_ant':bad_ant,
-            'coef':coef,
-            'coord':coord}
-    else:
-        del bad_path, bad_run_arr
-
     # pre quality cut
     run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
     daq_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True)
@@ -98,7 +75,8 @@ def reco_collector(Data, Ped, analyze_blind_dat = False):
     coord = np.full((2, 2, 2, 2, num_evts), np.nan, dtype = float) # pol, thephi, rad, sol
 
     # loop over the events
-    for evt in tqdm(range(num_evts)):
+    #for evt in tqdm(range(num_evts)):
+    for evt in range(num_evts):
       #if evt <100:        
         
         if daq_qual_cut_sum[evt]:

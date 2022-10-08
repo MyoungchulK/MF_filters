@@ -52,8 +52,8 @@ def snr_collector(Data, Ped, analyze_blind_dat = False):
     p2p = np.copy(rms)
 
     # loop over the events
-    for evt in tqdm(range(num_evts)):
-    #for evt in range(num_evts):
+    #for evt in tqdm(range(num_evts)):
+    for evt in range(num_evts):
       #if evt <100:        
   
         if daq_qual_cut_sum[evt]:
