@@ -619,22 +619,24 @@ for r in tqdm(range(len(d_run_tot))):
     sub_025 = sub_r_t[1]
     sub_0125 = sub_r_t[0]
 
-    cur_04_rf, cur_025_rf, cur_0125_rf, cur_04_cal, cur_025_cal, cur_0125_cal, cur_04_soft, cur_025_soft, cur_0125_soft = cur_cut(Station, g_idx)
+    #cur_04_rf, cur_025_rf, cur_0125_rf, cur_04_cal, cur_025_cal, cur_0125_cal, cur_04_soft, cur_025_soft, cur_0125_soft = cur_cut(Station, g_idx)
 
-    smear_cut_04_idx, smear_pass_04_idx = get_smear_cut(sub_r[2], unix_time, trig_type, cw_rf_04[:, g_idx], cw_cal_04[:, g_idx], cw_soft_04[:, g_idx])
+    #smear_cut_04_idx, smear_pass_04_idx = get_smear_cut(sub_r[2], unix_time, trig_type, cw_rf_04[:, g_idx], cw_cal_04[:, g_idx], cw_soft_04[:, g_idx])
+    cut_04_idx = get_smear_cut(sub_r[2], unix_time, trig_type, cw_rf_04[:, g_idx], cw_cal_04[:, g_idx], cw_soft_04[:, g_idx])[0]
     #cur_cut_04_idx, cur_pass_04_idx = get_smear_cut_v2(sub_r[2], smear_cut_04_idx, 0, trig_type, cur_04_rf, cur_04_cal, cur_04_soft)
     #cut_04_idx = np.logical_or(smear_cut_04_idx, cur_cut_04_idx)
-    cut_04_idx = smear_cut_04_idx
+    #cut_04_idx = smear_cut_04_idx
     pass_04_idx = ~cut_04_idx
-    del smear_cut_04_idx, smear_pass_04_idx#, cur_cut_04_idx, cur_pass_04_idx
+    #del smear_cut_04_idx, smear_pass_04_idx#, cur_cut_04_idx, cur_pass_04_idx
 
-    smear_cut_025_idx, smear_pass_025_idx = get_combine_smear_cut(sub_r[1], sub_r[0], unix_time, trig_type, cw_rf_025[:, g_idx], cw_cal_025[:, g_idx], cw_soft_025[:, g_idx], cw_rf_0125[:, g_idx], cw_cal_0125[:, g_idx], cw_soft_0125[:, g_idx])
+    #smear_cut_025_idx, smear_pass_025_idx = get_combine_smear_cut(sub_r[1], sub_r[0], unix_time, trig_type, cw_rf_025[:, g_idx], cw_cal_025[:, g_idx], cw_soft_025[:, g_idx], cw_rf_0125[:, g_idx], cw_cal_0125[:, g_idx], cw_soft_0125[:, g_idx])
+    cut_025_idx = get_combine_smear_cut(sub_r[1], sub_r[0], unix_time, trig_type, cw_rf_025[:, g_idx], cw_cal_025[:, g_idx], cw_soft_025[:, g_idx], cw_rf_0125[:, g_idx], cw_cal_0125[:, g_idx], cw_soft_0125[:, g_idx])[0]
     #cur_cut_025_idx, cur_pass_025_idx = get_combine_smear_cut_v2(sub_r[1], sub_r[0], smear_cut_025_idx, 0, trig_type, cur_025_rf, cur_025_cal, cur_025_soft, cur_0125_rf, cur_0125_cal, cur_0125_soft)
     #cut_025_idx = np.logical_or(smear_cut_025_idx, cur_cut_025_idx)
-    cut_025_idx = smear_cut_025_idx
+    #cut_025_idx = smear_cut_025_idx
     pass_025_idx = ~cut_025_idx
-    del smear_cut_025_idx, smear_pass_025_idx#, cur_cut_025_idx, cur_pass_025_idx
-    del cur_04_rf, cur_025_rf, cur_0125_rf, cur_04_cal, cur_025_cal, cur_0125_cal, cur_04_soft, cur_025_soft, cur_0125_soft
+    #del smear_cut_025_idx, smear_pass_025_idx#, cur_cut_025_idx, cur_pass_025_idx
+    #del cur_04_rf, cur_025_rf, cur_0125_rf, cur_04_cal, cur_025_cal, cur_0125_cal, cur_04_soft, cur_025_soft, cur_0125_soft
 
     if trig == 100:
             evt_num = hf['evt_num'][:]
@@ -704,10 +706,10 @@ for r in tqdm(range(len(d_run_tot))):
         #    continue
         #if Station == 3 and g_idx > 5 and ant%4 == 0:
         #    continue
-        if Station == 2 and ant == 15:
-            continue
-        if Station == 2 and g_idx > 5 and ant%4 == 0:
-            continue
+        #if Station == 2 and ant == 15:
+        #    continue
+        #if Station == 2 and g_idx > 5 and ant%4 == 0:
+        #    continue
 
         ratio_04_hist[:, ant, g_idx] += np.histogram(sub_04[ant], bins = ratio_bins)[0].astype(int) 
         ratio_04_pass_hist[:, ant, g_idx] += np.histogram(sub_04_pass[ant], bins = ratio_bins)[0].astype(int) 

@@ -22,7 +22,7 @@ def batch_run_loader(Station = None, Output = None, Analyze_Blind = False, Key =
     d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/{Key}{blined}/*'
     d_list, d_run_tot, d_run_range = file_sorter(d_path)
 
-    batch_info.get_rest_dag_file(Output, d_run_range, analyze_blind_dat = Analyze_Blind)    
+    batch_info.get_rest_dag_file(Output, d_run_tot, analyze_blind_dat = Analyze_Blind)    
 
 if __name__ == "__main__":
 

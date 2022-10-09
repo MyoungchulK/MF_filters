@@ -396,8 +396,6 @@ class batch_info_loader:
 
         lists = self.get_dat_list(file_type = file_type, analyze_blind_dat = analyze_blind_dat)
 
-        self.get_list_in_txt(path, lists)
-
         print('Dag making starts!')
         dag_file_name = f'{path}A{self.st}.dag'
         statements = ""
