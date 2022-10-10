@@ -619,20 +619,20 @@ for r in tqdm(range(len(d_run_tot))):
     sub_025 = sub_r_t[1]
     sub_0125 = sub_r_t[0]
 
-    #cur_04_rf, cur_025_rf, cur_0125_rf, cur_04_cal, cur_025_cal, cur_0125_cal, cur_04_soft, cur_025_soft, cur_0125_soft = cur_cut(Station, g_idx)
+    cur_04_rf, cur_025_rf, cur_0125_rf, cur_04_cal, cur_025_cal, cur_0125_cal, cur_04_soft, cur_025_soft, cur_0125_soft = cur_cut(Station, g_idx)
 
-    #smear_cut_04_idx, smear_pass_04_idx = get_smear_cut(sub_r[2], unix_time, trig_type, cw_rf_04[:, g_idx], cw_cal_04[:, g_idx], cw_soft_04[:, g_idx])
-    cut_04_idx = get_smear_cut(sub_r[2], unix_time, trig_type, cw_rf_04[:, g_idx], cw_cal_04[:, g_idx], cw_soft_04[:, g_idx])[0]
-    #cur_cut_04_idx, cur_pass_04_idx = get_smear_cut_v2(sub_r[2], smear_cut_04_idx, 0, trig_type, cur_04_rf, cur_04_cal, cur_04_soft)
-    #cut_04_idx = np.logical_or(smear_cut_04_idx, cur_cut_04_idx)
+    smear_cut_04_idx, smear_pass_04_idx = get_smear_cut(sub_r[2], unix_time, trig_type, cw_rf_04[:, g_idx], cw_cal_04[:, g_idx], cw_soft_04[:, g_idx])
+    #cut_04_idx = get_smear_cut(sub_r[2], unix_time, trig_type, cw_rf_04[:, g_idx], cw_cal_04[:, g_idx], cw_soft_04[:, g_idx])[0]
+    cur_cut_04_idx, cur_pass_04_idx = get_smear_cut_v2(sub_r[2], smear_cut_04_idx, 0, trig_type, cur_04_rf, cur_04_cal, cur_04_soft)
+    cut_04_idx = np.logical_or(smear_cut_04_idx, cur_cut_04_idx)
     #cut_04_idx = smear_cut_04_idx
     pass_04_idx = ~cut_04_idx
-    #del smear_cut_04_idx, smear_pass_04_idx, cur_cut_04_idx, cur_pass_04_idx
+    del smear_cut_04_idx, smear_pass_04_idx, cur_cut_04_idx, cur_pass_04_idx
 
-    #smear_cut_025_idx, smear_pass_025_idx = get_combine_smear_cut(sub_r[1], sub_r[0], unix_time, trig_type, cw_rf_025[:, g_idx], cw_cal_025[:, g_idx], cw_soft_025[:, g_idx], cw_rf_0125[:, g_idx], cw_cal_0125[:, g_idx], cw_soft_0125[:, g_idx])
-    cut_025_idx = get_combine_smear_cut(sub_r[1], sub_r[0], unix_time, trig_type, cw_rf_025[:, g_idx], cw_cal_025[:, g_idx], cw_soft_025[:, g_idx], cw_rf_0125[:, g_idx], cw_cal_0125[:, g_idx], cw_soft_0125[:, g_idx])[0]
-    #cur_cut_025_idx, cur_pass_025_idx = get_combine_smear_cut_v2(sub_r[1], sub_r[0], smear_cut_025_idx, 0, trig_type, cur_025_rf, cur_025_cal, cur_025_soft, cur_0125_rf, cur_0125_cal, cur_0125_soft)
-    #cut_025_idx = np.logical_or(smear_cut_025_idx, cur_cut_025_idx)
+    smear_cut_025_idx, smear_pass_025_idx = get_combine_smear_cut(sub_r[1], sub_r[0], unix_time, trig_type, cw_rf_025[:, g_idx], cw_cal_025[:, g_idx], cw_soft_025[:, g_idx], cw_rf_0125[:, g_idx], cw_cal_0125[:, g_idx], cw_soft_0125[:, g_idx])
+    #cut_025_idx = get_combine_smear_cut(sub_r[1], sub_r[0], unix_time, trig_type, cw_rf_025[:, g_idx], cw_cal_025[:, g_idx], cw_soft_025[:, g_idx], cw_rf_0125[:, g_idx], cw_cal_0125[:, g_idx], cw_soft_0125[:, g_idx])[0]
+    cur_cut_025_idx, cur_pass_025_idx = get_combine_smear_cut_v2(sub_r[1], sub_r[0], smear_cut_025_idx, 0, trig_type, cur_025_rf, cur_025_cal, cur_025_soft, cur_0125_rf, cur_0125_cal, cur_0125_soft)
+    cut_025_idx = np.logical_or(smear_cut_025_idx, cur_cut_025_idx)
     #cut_025_idx = smear_cut_025_idx
     pass_025_idx = ~cut_025_idx
     del smear_cut_025_idx, smear_pass_025_idx, cur_cut_025_idx, cur_pass_025_idx
@@ -752,7 +752,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'CW_Table_Test_Smear_Combine_Cut{blined}_v11_A{Station}_T{trig}_C{ant_c}_S{smear_len}_R{count_i}.h5'
+file_name = f'CW_Table_Test_Smear_Combine_Cut{blined}_v12_A{Station}_T{trig}_C{ant_c}_S{smear_len}_R{count_i}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('tot_sec', data=tot_sec, compression="gzip", compression_opts=9)
 hf.create_dataset('tot_bad_sec_04', data=tot_bad_sec_04, compression="gzip", compression_opts=9)
