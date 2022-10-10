@@ -193,7 +193,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'CW_Table_Set_Cut{blined}_A{Station}_{trig}_{count_i}.h5'
+file_name = f'CW_Table_Set_Cut{blined}_v1_A{Station}_{trig}_{count_i}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('hrs_in_days', data=hrs_in_days, compression="gzip", compression_opts=9)
 hf.create_dataset('day_in_yrs', data=day_in_yrs, compression="gzip", compression_opts=9)

@@ -30,13 +30,14 @@ cal_bins = np.linspace(0, 5, 50 + 1)
 cal_bin_center = (cal_bins[1:] + cal_bins[:-1]) / 2
 
 medi = []
+medi_fir = []
 medi_sen = []
 medi_cal = []
 medi_tot = []
 sen = []
 cal = []
 
-q_idx = np.array([10, 12], dtype = int)
+q_idx = np.array([9, 10, 12], dtype = int)
 
 for r in tqdm(range(len(d_run_tot))):
   #if r < 10:
@@ -45,8 +46,9 @@ for r in tqdm(range(len(d_run_tot))):
     qual_f = h5py.File(qual_dat, 'r')
     qual = qual_f['tot_qual_cut'][:, q_idx]
     tot_q = np.nansum(qual, axis = 1) != 0
-    sen_q = qual[:, 0] != 0
-    cal_q = qual[:, 1] != 0
+    fir_q = qual[:, 0] != 0
+    sen_q = qual[:, 1] != 0
+    cal_q = qual[:, 2] != 0
     del qual_dat, qual_f 
 
     sub_dat = f'{g_path}sub_info_full/sub_info_full_A{Station}_R{d_run_tot[r]}.h5'
@@ -72,6 +74,8 @@ for r in tqdm(range(len(d_run_tot))):
     medi_rf[:, trig] = np.nan
     del medi_f, trig
 
+    medi_fir_r = np.copy(medi_rf)
+    medi_fir_r[:, fir_q] = np.nan
     medi_sen_r = np.copy(medi_rf)
     medi_sen_r[:, sen_q] = np.nan
     medi_cal_r = np.copy(medi_rf)
@@ -81,16 +85,19 @@ for r in tqdm(range(len(d_run_tot))):
     del qual, tot_q, sen_q, cal_q
 
     medi_hist = np.full((medi_len, 16), 0, dtype = int)
+    medi_hist_fir = np.copy(medi_hist)
     medi_hist_sen = np.copy(medi_hist)
     medi_hist_cal = np.copy(medi_hist)
     medi_hist_tot = np.copy(medi_hist)
     for m in range(16):    
         medi_hist[:, m] = np.histogram(medi_rf[m], bins = medi_bins)[0].astype(int)
+        medi_hist_fir[:, m] = np.histogram(medi_fir_r[m], bins = medi_bins)[0].astype(int)
         medi_hist_sen[:, m] = np.histogram(medi_sen_r[m], bins = medi_bins)[0].astype(int)
         medi_hist_cal[:, m] = np.histogram(medi_cal_r[m], bins = medi_bins)[0].astype(int)
         medi_hist_tot[:, m] = np.histogram(medi_tot_r[m], bins = medi_bins)[0].astype(int)
     del medi_rf, medi_sen_r, medi_cal_r, medi_tot_r
     medi.append(medi_hist)
+    medi_fir.append(medi_hist_fir)
     medi_sen.append(medi_hist_sen)
     medi_cal.append(medi_hist_cal)
     medi_tot.append(medi_hist_tot)
@@ -100,7 +107,7 @@ path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
-file_name = f'Medi_Cut_A{Station}.h5'
+file_name = f'Medi_Cut_v2_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('medi_bins', data=medi_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('medi_bin_center', data=medi_bin_center, compression="gzip", compression_opts=9)
@@ -110,6 +117,7 @@ hf.create_dataset('cal_bins', data=cal_bins, compression="gzip", compression_opt
 hf.create_dataset('cal_bin_center', data=cal_bin_center, compression="gzip", compression_opts=9)
 hf.create_dataset('run_num', data=np.asarray(run_num), compression="gzip", compression_opts=9)
 hf.create_dataset('medi', data=np.asarray(medi), compression="gzip", compression_opts=9)
+hf.create_dataset('medi_fir', data=np.asarray(medi_fir), compression="gzip", compression_opts=9)
 hf.create_dataset('medi_sen', data=np.asarray(medi_sen), compression="gzip", compression_opts=9)
 hf.create_dataset('medi_cal', data=np.asarray(medi_cal), compression="gzip", compression_opts=9)
 hf.create_dataset('medi_tot', data=np.asarray(medi_tot), compression="gzip", compression_opts=9)
