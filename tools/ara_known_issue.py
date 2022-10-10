@@ -42,7 +42,6 @@ class known_issue_loader:
             if run > 12865 and run < 16487:
                 st_idx = 0
                 bad_ant[st_idx::num_ddas] = True # all D1 antennas, dead bit issue
-            if run > 12865:
                 bad_ant[3::4] = True # all D4 antennas, duplication issue
 
         if good_ant_true:
