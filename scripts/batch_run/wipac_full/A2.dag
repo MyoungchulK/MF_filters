@@ -3886,7 +3886,7 @@ VARS job_ARA_S2_R3311 station="2" run="3311"
 JOB job_ARA_S2_R3312 ARA_job.sub 
 VARS job_ARA_S2_R3312 station="2" run="3312"
 
-JOB job_ARA_S2_R3313 ARA_job.sub 
+JOB job_ARA_S2_R3313 ARA_job_1.sub 
 VARS job_ARA_S2_R3313 station="2" run="3313"
 
 JOB job_ARA_S2_R3315 ARA_job.sub 
@@ -4834,7 +4834,7 @@ VARS job_ARA_S2_R3720 station="2" run="3720"
 JOB job_ARA_S2_R3721 ARA_job.sub 
 VARS job_ARA_S2_R3721 station="2" run="3721"
 
-JOB job_ARA_S2_R3722 ARA_job.sub 
+JOB job_ARA_S2_R3722 ARA_job_1.sub 
 VARS job_ARA_S2_R3722 station="2" run="3722"
 
 JOB job_ARA_S2_R3723 ARA_job.sub 
@@ -5242,7 +5242,7 @@ VARS job_ARA_S2_R3890 station="2" run="3890"
 JOB job_ARA_S2_R3891 ARA_job.sub 
 VARS job_ARA_S2_R3891 station="2" run="3891"
 
-JOB job_ARA_S2_R3892 ARA_job.sub 
+JOB job_ARA_S2_R3892 ARA_job_1.sub 
 VARS job_ARA_S2_R3892 station="2" run="3892"
 
 JOB job_ARA_S2_R3894 ARA_job.sub 
@@ -13843,7 +13843,7 @@ VARS job_ARA_S2_R7834 station="2" run="7834"
 JOB job_ARA_S2_R7835 ARA_job.sub 
 VARS job_ARA_S2_R7835 station="2" run="7835"
 
-JOB job_ARA_S2_R7836 ARA_job.sub 
+JOB job_ARA_S2_R7836 ARA_job_1.sub 
 VARS job_ARA_S2_R7836 station="2" run="7836"
 
 JOB job_ARA_S2_R7838 ARA_job.sub 

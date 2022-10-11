@@ -36,8 +36,8 @@ def cw_val_collector(Data, Ped, analyze_blind_dat = False):
     del daq_qual_cut_sum, ara_uproot 
 
     # loop over the events
-    #for evt in tqdm(range(num_evts)):
-    for evt in range(num_evts):
+    for evt in tqdm(range(num_evts)):
+    #for evt in range(num_evts):
       #if evt> (num_evts - 100):
         # post quality cut
         post_qual.run_post_qual_cut(evt)
