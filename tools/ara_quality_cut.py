@@ -509,7 +509,7 @@ class pre_qual_cut_loader:
             del cur_04_rf, cur_025_rf, cur_0125_rf, cur_04_cal, cur_025_cal, cur_0125_cal, cur_04_soft, cur_025_soft, cur_0125_soft
             del cut_04_rf, cut_025_rf, cut_0125_rf, cut_04_cal, cut_025_cal, cut_0125_cal, cut_04_soft, cut_025_soft, cut_0125_soft
         else:
-            cw_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = self.verbose, force_blind = True)
+            cw_dat = self.run_info.get_result_path(file_type = 'qual_cut', verbose = self.verbose, force_blind = True)
             cw_hf = h5py.File(cw_dat, 'r')
             evt_num_full = cw_hf['evt_num'][:]
             evt_idx = np.in1d(evt_num_full, self.evt_num)
