@@ -512,11 +512,12 @@ class pre_qual_cut_loader:
             cw_dat = self.run_info.get_result_path(file_type = 'qual_cut', verbose = self.verbose, force_blind = True)
             cw_hf = h5py.File(cw_dat, 'r')
             evt_num_full = cw_hf['evt_num'][:]
-            evt_idx = np.in1d(evt_num_full, self.evt_num)
             tot_cuts = cw_hf['tot_qual_cut'][:]
-            cw_thres_evts[:, 0] = tot_cuts[:, 21][evt_idx]
-            cw_thres_evts[:, 1] = tot_cuts[:, 22][evt_idx]
-            del tot_cuts, evt_idx, evt_num_full, cw_hf, cw_dat 
+            cw_04_evt = evt_num_full[tot_cuts[:, 21] != 0]
+            cw_025_evt = evt_num_full[tot_cuts[:, 22] != 0]
+            cw_thres_evts[:, 0] = np.in1d(self.evt_num, cw_04_evt).astype(int)
+            cw_thres_evts[:, 1] = np.in1d(self.evt_num, cw_025_evt).astype(int)
+            del cw_dat, cw_hf, evt_num_full, tot_cuts, cw_04_evt, cw_025_evt 
 
         if self.verbose:
             quick_qual_check(cw_thres_evts[:, 0] != 0, 'cw threshold 0.4 GHz events', self.evt_num)

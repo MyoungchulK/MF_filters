@@ -60,20 +60,16 @@ def rayl_collector(Data, Ped, st = None, run = None, analyze_blind_dat = False):
     run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
     daq_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True)
     daq_hf = h5py.File(daq_dat, 'r')
-    tot_qual_cut_sum = daq_hf['tot_qual_cut_sum'][:]
-    cw_dat = run_info.get_result_path(file_type = 'cw_cut', verbose = True)
-    cw_hf = h5py.File(cw_dat, 'r')
-    cw_qual_cut_sum = cw_hf['cw_qual_cut_sum'][:]
-    del daq_dat, daq_hf, cw_dat, cw_hf, run_info
+    tot_cuts = daq_hf['tot_qual_cut_sum'][:]
+    del daq_dat, daq_hf, run_info
    
     # clean soft trigger 
-    tot_cuts = (tot_qual_cut_sum + cw_qual_cut_sum).astype(int)
     clean_rf_idx = np.logical_and(tot_cuts == 0, trig_type == 0)
     clean_soft_idx = np.logical_and(tot_cuts == 0, trig_type == 2)
     clean_soft_entry = entry_num[clean_soft_idx]
     num_clean_softs = np.count_nonzero(clean_soft_idx)
     print(f'Number of clean soft event is {num_clean_softs}') 
-    del tot_qual_cut_sum, cw_qual_cut_sum, tot_cuts
+    del tot_cuts
 
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_band_pass = True, use_rfft = True)

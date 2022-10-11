@@ -1059,6 +1059,9 @@ class known_issue_loader:
             # Eliminate all early data taking (all runs before 508)
             bad_run = np.append(bad_run, np.arange(508+1))
 
+            bad_run = np.append(bad_run, 965) # burn samples.....
+            bad_run = np.append(bad_run, 1652) # burn samples.....
+
             # Cal sweep: http://ara.icecube.wisc.edu/wiki/index.php/A23_Diffuse_UW
             # ??
 
