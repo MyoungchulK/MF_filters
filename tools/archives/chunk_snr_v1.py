@@ -31,14 +31,18 @@ def snr_collector(Data, Ped, analyze_blind_dat = False):
 
     # pre quality cut
     run_info = run_info_loader(ara_uproot.station_id, ara_uproot.run, analyze_blind_dat = analyze_blind_dat)
-    qual_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True, force_blind = True)
+    qual_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True)
     qual_hf = h5py.File(qual_dat, 'r')
-    qual_evt = qual_hf['evt_num'][:] 
-    daq_qual_cut = qual_hf['daq_qual_cut_sum'][:] != 0
-    tot_qual_cut = qual_hf['tot_qual_cut_sum'][:] != 0
-    daq_qual_cut_sum = np.in1d(evt_num, qual_evt[daq_qual_cut]).astype(int)
-    tot_qual_cut_sum = np.in1d(evt_num, qual_evt[tot_qual_cut]).astype(int)
-    del ara_uproot, qual_dat, qual_hf, qual_evt, daq_qual_cut, tot_qual_cut, run_info
+    daq_qual_cut_sum = qual_hf['daq_qual_cut_sum'][:]
+    tot_qual_cut_sum = qual_hf['tot_qual_cut_sum'][:]
+    del ara_uproot, qual_dat, qual_hf
+
+    cw_dat = run_info.get_result_path(file_type = 'cw_cut', verbose = True)
+    cw_hf = h5py.File(cw_dat, 'r')
+    cw_qual_cut_sum = cw_hf['cw_qual_cut_sum'][:]
+    tot_qual_cut_sum += cw_qual_cut_sum
+    tot_qual_cut_sum = tot_qual_cut_sum.astype(int)
+    del cw_dat, cw_hf, cw_qual_cut_sum, run_info
 
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True)
@@ -48,8 +52,8 @@ def snr_collector(Data, Ped, analyze_blind_dat = False):
     p2p = np.copy(rms)
 
     # loop over the events
-    for evt in tqdm(range(num_evts)):
-    #for evt in range(num_evts):
+    #for evt in tqdm(range(num_evts)):
+    for evt in range(num_evts):
       #if evt <100:        
   
         if daq_qual_cut_sum[evt]:

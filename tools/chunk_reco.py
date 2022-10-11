@@ -41,10 +41,12 @@ def reco_collector(Data, Ped, analyze_blind_dat = False):
 
     # pre quality cut
     run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
-    daq_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True)
+    daq_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True, force_blind = True)
     daq_hf = h5py.File(daq_dat, 'r')
-    daq_qual_cut_sum = daq_hf['daq_qual_cut_sum'][:]
-    del daq_dat, daq_hf
+    daq_evt = daq_hf['evt_num'][:]
+    daq_qual_cut = daq_hf['daq_qual_cut_sum'][:] != 0
+    daq_qual_cut_sum = np.in1d(evt_num, daq_evt[daq_qual_cut]).astype(int)
+    del daq_dat, daq_hf, daq_evt, daq_qual_cut
 
     # snr info
     wei_key = 'snr'
