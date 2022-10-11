@@ -58,10 +58,12 @@ def rayl_collector(Data, Ped, st = None, run = None, analyze_blind_dat = False):
 
     # pre quality cut
     run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
-    daq_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True)
+    daq_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True, force_blind = True)
     daq_hf = h5py.File(daq_dat, 'r')
-    tot_cuts = daq_hf['tot_qual_cut_sum'][:]
-    del run_info, daq_dat, daq_hf 
+    daq_evt = daq_hf['evt_num'][:]
+    tot_qual_cut = daq_hf['tot_qual_cut_sum'][:] != 0
+    tot_cuts = np.in1d(evt_num, daq_evt[tot_qual_cut]).astype(int)    
+    del run_info, daq_dat, daq_hf, daq_evt, tot_qual_cut 
    
     # clean soft trigger 
     clean_rf_idx = np.logical_and(tot_cuts == 0, trig_type == 0)
