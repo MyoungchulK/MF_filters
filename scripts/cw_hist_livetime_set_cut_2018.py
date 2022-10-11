@@ -32,7 +32,7 @@ d_list, d_run_tot, d_run_range = file_sorter(d_path)
 del d_path, d_run_range
 
 # wb map
-md_2013 = datetime(2013, 1, 1, 0, 0)
+md_2013 = datetime(2018, 1, 1, 0, 0)
 md_2013_r = md_2013.replace(tzinfo=timezone.utc)
 unix_2013 = int(md_2013_r.timestamp())
 md_2020 = datetime(2021, 1, 1, 0, 0)
@@ -54,7 +54,7 @@ print(len(wb_table))
 del hf, cw_h5_path, txt_name
 
 # pole
-yrs_range = np.arange(2013, 2021+1, 1, dtype = int)
+yrs_range = np.arange(2018, 2021+1, 1, dtype = int)
 yrs_len = len(yrs_range)
 mon_2_sec = 60 * 60 * 24 * 31 * 2
 pole_table = np.full((mon_2_sec * 2 + 1, yrs_len), 0, dtype = int)
@@ -109,6 +109,9 @@ def get_max_2d(x, y, x_bins):
 count_ff = count_i + count_f
 
 for r in tqdm(range(len(d_run_tot))):
+
+  if d_run_tot[r] < 10000:
+    continue
     
   #if r <10:
   if r >= count_i and r < count_ff:
@@ -193,7 +196,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'CW_Table_Set_Cut{blined}_v2_A{Station}_{trig}_{count_i}.h5'
+file_name = f'CW_Table_Set_Cut{blined}_2018_A{Station}_{trig}_{count_i}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('hrs_in_days', data=hrs_in_days, compression="gzip", compression_opts=9)
 hf.create_dataset('day_in_yrs', data=day_in_yrs, compression="gzip", compression_opts=9)
