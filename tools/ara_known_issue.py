@@ -39,6 +39,9 @@ class known_issue_loader:
             if run > 1901 and run < 10001:
                 st_idx = 3
                 bad_ant[st_idx::num_ddas] = True # all D4 antennas
+            #if run > 12865:
+            #    st_idx = 0
+            #    bad_ant[st_idx::num_ddas] = True # all D1 antennas, dead bit issue
             if run > 12865 and run < 16487:
                 st_idx = 0
                 bad_ant[st_idx::num_ddas] = True # all D1 antennas, dead bit issue
