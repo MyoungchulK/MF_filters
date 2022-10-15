@@ -42,13 +42,11 @@ def context_finder(txt_read, key, end_key, empty_format = np.nan):
 
     return val
 
-def scrap_run_dat_info(run_list, run_key, time_key, run_end_key):
+def scrap_run_dat_info(run_list, run_key):
     """! function for scraping the run number, and unix time from run dat file and convert into UTC date time
 
     @param run_list  string. dat file path
     @param run_key  string  
-    @param time_key  string
-    @param run_end_key  string
     @return run_num  integer
     @return unix_time integer
     @return date_time integer
@@ -62,12 +60,12 @@ def scrap_run_dat_info(run_list, run_key, time_key, run_end_key):
         ## check whether output of context_finder has a information or not
         ## some of files dont have a all the information...
         
-        run_num = context_finder(run_read, run_key, time_key)
+        run_num = context_finder(run_read, run_key[0], run_key[1])
         if not np.isfinite(run_num):
             print(f'{run_list} doesnt has run number!! Use file name for identifying run number!')
             run_num = int(run_list[-10:-4]) # I dont like it...
         
-        unix_time = context_finder(run_read, time_key, run_end_key)
+        unix_time = context_finder(run_read, run_key[1], run_key[2])
         if not np.isfinite(unix_time):
             print(f'{run_list} doesnt has unix time!! Output date time as a NAN...')
             date_time = np.nan
@@ -100,76 +98,79 @@ def main(station, output):
 
     ## list for all file path
     config_list = [] # saving all configFile.run[xxxxxx].dat paths
-    run_start_list = [] # saving for all runStart.run[xxxxxx].dat paths
-    run_stop_list = [] # savinf for all runStop.run[xxxxxx].dat paths
+    run_list = [] # saving for all runStart.run[xxxxxx].dat and  runStop.run[xxxxxx].dat paths
 
-    ## Seach the config files by loop over all L1 data path (2013 ~ 2019) and save it into lists
+    ## Seach the config files by loop over all L1 data path and save it into lists
     for y in tqdm(range(2013, 2020 + 1)):
-        if int(y) == 2013: # 2013 has different file path 
-            #g_path = f'/data/exp/ARA/{int(y)}/filtered/unzippedTGZFiles/ARA0{station}/run_[0-9]*/logs/' # alternate path
-            g_path = f'/data/exp/ARA/{int(y)}/raw/ARA0{station}-SPS-ARA/run_[0-9]*/logs/'
-        else:
-            g_path = f'/data/exp/ARA/{int(y)}/unblinded/L1/ARA0{station}/*/run*/'
-        config_list += glob(f'{g_path}{config_dat_str}')
-        run_start_list += glob(f'{g_path}{run_start_str}')
-        run_stop_list += glob(f'{g_path}{run_stop_str}')
-
+        for b in range(3): # ped, burn or 100
+            if int(y) == 2013:
+                if  b == 2: # 2013 has different file path
+                    #g_path = f'/data/exp/ARA/{int(y)}/filtered/unzippedTGZFiles/ARA0{station}/run_[0-9]*/logs/' # alternate path
+                    g_path = f'/data/exp/ARA/{int(y)}/raw/ARA0{station}-SPS-ARA/run_[0-9]*/logs/'
+            else:
+                if b == 0:
+                    g_path = f'/data/exp/ARA/{int(y)}/calibration/pedestals/ARA0{station}/'
+                elif b == 1:
+                    g_path = f'/data/exp/ARA/{int(y)}/unblinded/L1/ARA0{station}/*/run*/'
+                else:
+                    g_path = f'/data/exp/ARA/{int(y)}/blinded/L1/ARA0{station}/*/run*/'
+            config_list += glob(f'{g_path}{config_dat_str}')
+            run_list += glob(f'{g_path}{run_start_str}')
+            run_list += glob(f'{g_path}{run_stop_str}')
+    
     config_len = len(config_list)
-    run_start_len = len(run_start_list)
-    run_stop_len = len(run_stop_list)
+    run_len = len(run_list)
     print('Total # of config files:',config_len)
-    print('Total # of runstart files:',run_start_len)
-    print('Total # of runstop files:',run_stop_len)
+    print('Total # of run files:',run_len)
 
-    print('Collecting information. 3 for loop')
+    print('Collecting information. 2 for loop')
     ## giant numpy array pad for storing all the configuration from each run's config files
     ## if there is no run config for corresponding run number. array element would be Nan
+    ## info of first dim od array 1:ped, 2:burn, 3:100
     run_num = np.arange(22000, dtype = int) 
     run_num_len = len(run_num) 
-    unix_time = np.full((2, run_num_len), np.nan, dtype = float) # array for unix time stored in runStart.run[xxxxxx].dat and runStop.run[xxxxxx].dat
+    file_type = np.full((3, run_num_len), 0, dtype = int) # whether config info is coming from ped, burn, or 100
+    unix_time = np.full((3, 2, run_num_len), np.nan, dtype = float) # array for unix time stored in runStart.run[xxxxxx].dat and runStop.run[xxxxxx].dat
     date_time = np.copy(unix_time) # array for UTC date time converted from unix time
-    rf_block_num = np.full((run_num_len), np.nan, dtype = float) # number of RF blocks conifg stored in each run config file. we assuming 1 bkock = 20 ns
+    rf_block_num = np.full((3, run_num_len), np.nan, dtype = float) # number of RF blocks conifg stored in each run config file. we assuming 1 bkock = 20 ns
     soft_block_num = np.copy(rf_block_num) # number of Software blocks config stroed in each run config file
     trig_win_num = np.copy(rf_block_num) # number of trigger window length stired in each run config file
     delay_enable  = np.copy(rf_block_num) # trigger delay enable. 1: enable, 0: not enable
-    delay_num = np.full((16, run_num_len), np.nan, dtype = float) # number of trigger delay config stored in each run config file
-    masked_ant = np.full((20, run_num_len), np.nan, dtype = float) # which antenn is masked. 1: unmasked, 0: masked. This mapping is following trigger channel mapping
+    delay_num = np.full((3, 16, run_num_len), np.nan, dtype = float) # number of trigger delay config stored in each run config file
+    masked_ant = np.full((3, 20, run_num_len), np.nan, dtype = float) # which antenn is masked. 1: unmasked, 0: masked. This mapping is following trigger channel mapping
+    scaler_goal = np.copy(delay_num) # l1 rate goal
 
     ## 3 each 'for loop' for collecting information. Since not all the runs have a config, runstart, or runstop, we need to scrap the information from each list      
     ## variables for searching config information
-    run_key = 'Run:'
-    time_key = 'Time:'
-    run_end_key = 'Message'
-    masked_ant_key = 'enableL1Trigger#I20='
-    rf_blk_key = 'numRF0TriggerBlocks#1='
-    soft_blk_key = 'numSoftTriggerBlocks#1='
-    trig_win_key = 'triggerWindowSize#1='
-    delay_enable_key = 'enableTriggerDelays#I1='
-    delay_key = 'triggerDelays#I16='
+    run_key = ['Run:', 'Time:', 'Message']
+    config_key = ['enableL1Trigger#I20=', 'numRF0TriggerBlocks#1=', 'numSoftTriggerBlocks#1=', 'triggerWindowSize#1=', 'enableTriggerDelays#I1=', 'triggerDelays#I16=', 'scalerGoalValues#I16=']
     end_key = ';'
     empty_masked_ant_foramt = np.full((20), np.nan, dtype = float)
     empty_delay_format = np.full((16), np.nan ,dtype = float)
 
     ## 1st run start files
     for runs in tqdm(range(run_start_len)):
-        run_start, unix_start, date_start = scrap_run_dat_info(run_start_list[runs], run_key, time_key, run_end_key)
+        run, unix, date = scrap_run_dat_info(run_list[runs], run_key)
         unix_time[0, run_start] = unix_start
         date_time[0, run_start] = date_start
+        evt_or_ped[run_start] = 0
  
     ## 2nd run stop files. I believe if the run is suddenly terminated, that run usually dont have a runstop files 
     for runs in tqdm(range(run_stop_len)):
         run_stop, unix_stop, date_stop = scrap_run_dat_info(run_stop_list[runs], run_key, time_key, run_end_key)
         unix_time[1, run_stop] = unix_stop
         date_time[1, run_stop] = date_stop
- 
+        evt_or_ped[run_stop] = 0
+
     ## 3rd config files
     for runs in tqdm(range(config_len)):
         run_config = int(config_list[runs][-10:-4]) # scrap the run number from config file path
-        
+        evt_or_ped[run_config] = 0        
+
         ## open the each config file and scrap the information by context_finder function
         with open(config_list[runs],'r') as config_file:
             config_read = config_file.read()
-
+            
             rf_block_num[run_config] = context_finder(config_read, rf_blk_key, end_key)
             soft_block_num[run_config] = context_finder(config_read, soft_blk_key, end_key)
             try: # sometime ara5 doesn't have a ';' at the end of values. use diffeent key for scrapping infromation 
