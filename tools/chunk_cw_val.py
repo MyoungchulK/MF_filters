@@ -9,8 +9,8 @@ def cw_val_collector(Data, Ped, analyze_blind_dat = False):
 
     from tools.ara_data_load import ara_uproot_loader
     from tools.ara_data_load import ara_root_loader
+    from tools.ara_quality_cut import pre_qual_cut_loader
     from tools.ara_quality_cut import post_qual_cut_loader
-    from tools.ara_run_manager import run_info_loader
 
     # data config
     ara_uproot = ara_uproot_loader(Data)
@@ -25,11 +25,11 @@ def cw_val_collector(Data, Ped, analyze_blind_dat = False):
     ara_root = ara_root_loader(Data, Ped, ara_uproot.station_id, ara_uproot.year)
 
     # pre quality cut
-    run_info = run_info_loader(ara_uproot.station_id, ara_uproot.run, analyze_blind_dat = analyze_blind_dat)
-    qual_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True)
-    qual_hf = h5py.File(qual_dat, 'r')
-    daq_qual_cut_sum = qual_hf['daq_qual_cut_sum'][:]
-    del run_info, qual_dat, qual_hf
+    pre_qual = pre_qual_cut_loader(ara_uproot, analyze_blind_dat = analyze_blind_dat, verbose = True)
+    daq_sum = np.nansum(pre_qual.get_daq_structure_errors(), axis = 1)
+    read_sum = np.nansum(pre_qual.get_readout_window_errors(), axis = 1)
+    daq_qual_cut_sum = (daq_sum + read_sum).astype(int)
+    del pre_qual, daq_sum, read_sum
 
     # post quality cut
     post_qual = post_qual_cut_loader(ara_root, ara_uproot, daq_qual_cut_sum, use_cw_cut = True, verbose = True)

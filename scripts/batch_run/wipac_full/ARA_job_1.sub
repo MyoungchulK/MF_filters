@@ -3,7 +3,6 @@ output = /scratch/mkim/wipac_full/logs/A$(station).R$(run).out
 error  = /scratch/mkim/wipac_full/logs/A$(station).R$(run).err
 
 request_memory = 2GB
-#request_disk = 3GB
 
 Universe = vanilla
 getenv = true
