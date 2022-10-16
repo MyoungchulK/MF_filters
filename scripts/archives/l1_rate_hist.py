@@ -17,8 +17,6 @@ d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/sub_in
 d_list, d_run_tot, d_run_range = file_sorter(d_path)
 del d_run_range
 
-q_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/qual_cut_full/'
-
 rate_bins = np.linspace(0, 1000, 1000 + 1)
 rate_bin_center = (rate_bins[1:] + rate_bins[:-1]) / 2
 rate_len = len(rate_bin_center)
@@ -28,7 +26,6 @@ rate_len1 = len(rate_bin_center1)
 
 run_num = []
 l1_rate = []
-l1_rate_cut = []
 l1_flu = []
 l1_flu_cut = []
 l1_mean = []
@@ -62,13 +59,6 @@ for r in tqdm(range(len(d_run_tot))):
 
     run_num.append(d_run_tot[r])
 
-    q_name = f'{q_path}qual_cut_full_A{Station}_R{d_run_tot[r]}.h5'
-    hf_q = h5py.File(q_name, 'r')
-    unix = hf_q['unix_time'][:]
-    qual = hf_q['tot_qual_cut_sum'][:]
-    bad_unix = unix[qual != 0]
-    del q_name, hf_q, unix, qual
-
     hf = h5py.File(d_list[r], 'r') 
     trig_ch = hf['trig_ch'][:]
     l1_r = hf['l1_rate'][:]
@@ -77,27 +67,13 @@ for r in tqdm(range(len(d_run_tot))):
     l1_r = l1_r[:, trig_ch] / 32
     del trig_ch, hf
 
-    l1_bad_idx = np.in1d(event_unix_time, bad_unix)
-    l1_r_cut = np.copy(l1_r)
-    l1_r_cut = l1_r_cut.astype(float)
-    l1_r_cut[l1_bad_idx] = np.nan    
-    event_unix_time_cut = np.copy(event_unix_time)
-    event_unix_time_cut = event_unix_time_cut.astype(float)
-    event_unix_time_cut[l1_bad_idx] = np.nan
-    del bad_unix, l1_bad_idx
-
     l1_h = np.full((rate_len, 16), 0, dtype = int)
-    l1_h_cut = np.copy(l1_h)
     for l in range(16):
         l1_h[:, l] = np.histogram(l1_r[:, l], bins = rate_bins)[0].astype(int)
-        l1_h_cut[:, l] = np.histogram(l1_r_cut[:, l], bins = rate_bins)[0].astype(int)
     l1_rate.append(l1_h)
-    l1_rate_cut.append(l1_h_cut) 
 
     sq = (l1_r - goal) ** 2
-    sq_cut = (l1_r_cut - goal) ** 2
     time_bins = np.histogram(event_unix_time, bins = unix_min_bins)[0]
-    time_bins_cut = np.histogram(event_unix_time_cut, bins = unix_min_bins)[0]
 
     l1_flu_h = np.full((rate_len, 16), 0, dtype = int)
     l1_flu_h_cut = np.copy(l1_flu_h)
@@ -107,30 +83,27 @@ for r in tqdm(range(len(d_run_tot))):
     for a in range(16):
         time_bins_w = np.histogram(event_unix_time, bins = unix_min_bins, weights = sq[:, a])[0]
         time_bins_m = np.histogram(event_unix_time, bins = unix_min_bins, weights = l1_r[:, a])[0]
-        time_bins_w_cut = np.histogram(event_unix_time_cut, bins = unix_min_bins, weights = sq_cut[:, a])[0]
-        time_bins_m_cut = np.histogram(event_unix_time_cut, bins = unix_min_bins, weights = l1_r_cut[:, a])[0]
 
         l1_flu1 = np.sqrt(time_bins_w / time_bins)
         l1_mean1 = time_bins_m / time_bins - goal
-        l1_flu1_cut = np.sqrt(time_bins_w_cut / time_bins_cut)
-        l1_mean1_cut = time_bins_m_cut / time_bins_cut - goal
 
         l1_flu_h[:, a] = np.histogram(l1_flu1, bins = rate_bins)[0].astype(int)
+        l1_flu_h_cut[:, a] = np.histogram(l1_flu1[90:], bins = rate_bins)[0].astype(int)
+        
         l1_mean_h[:, a] = np.histogram(l1_mean1, bins = rate_bins1)[0].astype(int)
-        l1_flu_h_cut[:, a] = np.histogram(l1_flu1_cut, bins = rate_bins)[0].astype(int)
-        l1_mean_h_cut[:, a] = np.histogram(l1_mean1_cut, bins = rate_bins1)[0].astype(int)
-        del time_bins_w, l1_flu1, time_bins_m, l1_mean1, time_bins_w_cut, time_bins_m_cut, l1_flu1_cut, l1_mean1_cut
+        l1_mean_h_cut[:, a] = np.histogram(l1_mean1[90:], bins = rate_bins1)[0].astype(int)
+        del time_bins_w, l1_flu1, time_bins_m, l1_mean1
     l1_flu.append(l1_flu_h)
     l1_flu_cut.append(l1_flu_h_cut)
     l1_mean.append(l1_mean_h)
     l1_mean_cut.append(l1_mean_h_cut)
-    del l1_r, unix_min_bins, event_unix_time, sq, sq_cut, time_bins, l1_r_cut, event_unix_time_cut, time_bins_cut
+    del l1_r, unix_min_bins, event_unix_time, sq, time_bins
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
-file_name = f'L1_Rate_v3_A{Station}.h5'
+file_name = f'L1_Rate_v2_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('run_num', data=d_run_tot, compression="gzip", compression_opts=9)
 hf.create_dataset('rate_bins', data=rate_bins, compression="gzip", compression_opts=9)
@@ -138,7 +111,6 @@ hf.create_dataset('rate_bins1', data=rate_bins1, compression="gzip", compression
 hf.create_dataset('rate_bin_center', data=rate_bin_center, compression="gzip", compression_opts=9)
 hf.create_dataset('rate_bin_center1', data=rate_bin_center1, compression="gzip", compression_opts=9)
 hf.create_dataset('l1_rate', data=l1_rate, compression="gzip", compression_opts=9)
-hf.create_dataset('l1_rate_cut', data=l1_rate_cut, compression="gzip", compression_opts=9)
 hf.create_dataset('l1_flu', data=l1_flu, compression="gzip", compression_opts=9)
 hf.create_dataset('l1_flu_cut', data=l1_flu_cut, compression="gzip", compression_opts=9)
 hf.create_dataset('l1_mean', data=l1_mean, compression="gzip", compression_opts=9)
