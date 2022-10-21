@@ -41,6 +41,7 @@ l1_2d_good = np.copy(l1_2d)
 l1_2d_bad = np.copy(l1_2d)
 
 mins = 1
+bin_w = 10
 
 for r in tqdm(range(len(d_run_tot))):
   #if r < 10:
@@ -73,27 +74,32 @@ for r in tqdm(range(len(d_run_tot))):
     trig_ch = hf['trig_ch'][:]
     l1_r = hf['l1_rate'][:]
     unix = hf['unix_time'][:]
-    ops_t = (np.nanmax(unix) - np.nanmin(unix))//60
     if np.any(np.isnan(l1_r)):
         run_bad.append(d_run_tot[r])
+        ops_t = (np.nanmax(unix) - np.nanmin(unix))//60
         print(f'no l1 in A{Station} R{d_run_tot[r]} w/ Length: {ops_t} min !!!!')
         continue
     run_num.append(d_run_tot[r])
     l1_r = l1_r[:, trig_ch] / 32
 
-    unix_bins = hf['unix_min_bins'][:]
+    unix_bins = np.arange(np.nanmin(unix), np.nanmax(unix) + 1, bin_w, dtype = int)
+    unix_bins = unix_bins.astype(float)
+    unix_bins -= 0.5 # set the boundary of binspace to between seconds. probably doesn't need it though...
+    unix_bins = np.append(unix_bins, np.nanmax(unix) + 0.5) # take into account last time bin which is smaller than time_width
+    unix_min_counts = np.diff(unix_bins)
     unix_l1 = hf['event_unix_time'][:]
-    unix_min_counts = hf['unix_min_counts'][:]
     del hf, trig_ch
 
     unix_idx = np.logical_and(unix_l1 >= np.nanmin(unix), unix_l1 <= np.nanmax(unix))
     if np.all(~unix_idx):
         run_bad.append(d_run_tot[r])
+        ops_t = (np.nanmax(unix) - np.nanmin(unix))//60
         print(f'no unix in A{Station} R{d_run_tot[r]} w/ Length: {ops_t} min !!!!')
         continue
     unix_l1_sort = unix_l1[unix_idx]
     l1_r_sort = l1_r[unix_idx]
-    l1_idx = ((unix_l1_sort - unix_l1_sort[0]) // 60).astype(int)
+    l1_idx = ((unix_l1_sort - unix_l1_sort[0]) // bin_w).astype(int)
+    l1_idx_2d = ((unix_l1_sort - unix_l1_sort[0]) // 60).astype(int)
     del l1_r, unix_l1, unix, unix_idx
 
     l1_up = np.full((len(unix_bins)-1, 16), np.nan, dtype = float)
@@ -119,13 +125,13 @@ for r in tqdm(range(len(d_run_tot))):
             sta_idx[:, a] = np.where(unix_bins == unix_bins[-2])[0][0]
         else:
             sta_idx[0, a] = max_1st[0] + mins
-            #min_1st = np.where(l1_low[max_1st[0] + mins * 2:, a] < goal)[0]
-            min_1st = np.where(l1_low[max_1st[0] + 3:, a] < goal)[0]
+            min_1st = np.where(l1_low[max_1st[0] + mins * 2:, a] < goal)[0]
+            #min_1st = np.where(l1_low[max_1st[0] + 3:, a] < goal)[0]
             if len(min_1st) == 0:
                 sta_idx[0, a] = np.where(unix_bins == unix_bins[-2])[0][0]
             else:
-                #sta_idx[1, a] = max_1st[0] + mins * 2 + min_1st[0]
-                sta_idx[1, a] = max_1st[0] + 3 + min_1st[0]
+                sta_idx[1, a] = max_1st[0] + mins * 2 + min_1st[0]
+                #sta_idx[1, a] = max_1st[0] + 3 + min_1st[0]
             del min_1st
         del max_1st
     del l1_up, l1_low
@@ -156,11 +162,11 @@ for r in tqdm(range(len(d_run_tot))):
         l1_hist[:, l] += l1_hh
         l1_hist_good[:, l] += l1_good_hh
         l1_hist_bad[:, l] += l1_bad_hh
-        l1_2d[:, :, l] += np.histogram2d(l1_idx, l1_r_sort[:, l], bins = (min_bins, rate_bins))[0].astype(int)
-        l1_2d_good[:, :, l] += np.histogram2d(l1_idx, l1_good, bins = (min_bins, rate_bins))[0].astype(int)
-        l1_2d_bad[:, :, l] += np.histogram2d(l1_idx, l1_bad, bins = (min_bins, rate_bins))[0].astype(int)
+        l1_2d[:, :, l] += np.histogram2d(l1_idx_2d, l1_r_sort[:, l], bins = (min_bins, rate_bins))[0].astype(int)
+        l1_2d_good[:, :, l] += np.histogram2d(l1_idx_2d, l1_good, bins = (min_bins, rate_bins))[0].astype(int)
+        l1_2d_bad[:, :, l] += np.histogram2d(l1_idx_2d, l1_bad, bins = (min_bins, rate_bins))[0].astype(int)
         del l1_hh, l1_good_hh, l1_bad_hh, unix_good, l1_good, l1_bad
-    del unix_l1_sort, l1_r_sort, unix_cut, l1_idx
+    del unix_l1_sort, l1_r_sort, unix_cut, l1_idx, l1_idx_2d
     l1_rate.append(l1_h)
     l1_rate_good.append(l1_h_good)
     l1_rate_bad.append(l1_h_bad)
@@ -169,7 +175,7 @@ path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
-file_name = f'L1_Rate_v10_A{Station}.h5'
+file_name = f'L1_Rate_v11_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('run_num', data=np.asarray(run_num), compression="gzip", compression_opts=9)
 hf.create_dataset('run_bad', data=np.asarray(run_bad), compression="gzip", compression_opts=9)
