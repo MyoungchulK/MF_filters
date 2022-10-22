@@ -24,6 +24,7 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
     pps_number = ara_uproot.pps_number
     unix_time = ara_uproot.unix_time
     time_bins, sec_per_min = ara_uproot.get_event_rate(use_time_bins = True)
+    time_bins_sec, sec_per_sec = ara_uproot.get_event_rate(use_sec = True, use_time_bins = True)
     if ara_uproot.station_id == 3 and (ara_uproot.run > 1124 and ara_uproot.run < 1429):
         ara_root = ara_root_loader(Data, Ped, ara_uproot.station_id, ara_uproot.year)
     else:
@@ -65,7 +66,7 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
     # total quality cut
     tot_qual_cut = np.append(pre_qual_cut, ped_qual_cut, axis = 1)
     tot_qual_cut_copy = np.copy(tot_qual_cut)
-    tot_qual_cut_copy[:, 16] = 0
+    tot_qual_cut_copy[:, 14] = 0
     tot_qual_cut_sum = np.nansum(tot_qual_cut_copy, axis = 1)
     del tot_qual_cut_copy
 
@@ -76,8 +77,8 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
     del run_qual, ara_uproot
 
     # live time
-    tot_qual_live_time, tot_qual_bad_live_time = get_bad_live_time(trig_type, unix_time, time_bins, sec_per_min, tot_qual_cut, verbose = True)
-    tot_qual_sum_bad_live_time = get_bad_live_time(trig_type, unix_time, time_bins, sec_per_min, np.nansum(tot_qual_cut, axis = 1), verbose = True)[1]
+    tot_qual_live_time, tot_qual_bad_live_time = get_bad_live_time(trig_type, unix_time, time_bins_sec, sec_per_sec, tot_qual_cut, verbose = True)
+    tot_qual_sum_bad_live_time = get_bad_live_time(trig_type, unix_time, time_bins_sec, sec_per_sec, np.nansum(tot_qual_cut, axis = 1), verbose = True)[1]
  
     print('Quality cut is done!')
 
@@ -86,7 +87,9 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
             'trig_type':trig_type,
             'unix_time':unix_time,
             'pps_number':pps_number,
+            'time_bins_sec':time_bins_sec,
             'time_bins':time_bins,
+            'sec_per_sec':sec_per_sec,
             'sec_per_min':sec_per_min,
             'pre_qual_cut':pre_qual_cut,
             'pre_qual_cut_sum':pre_qual_cut_sum,
