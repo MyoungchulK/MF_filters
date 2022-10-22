@@ -1107,7 +1107,7 @@ def get_bad_live_time(trig_type, unix_time, time_bins, sec_per_min, cuts, verbos
     rc_trig_flag *= unix_time
     tot_evt_per_min = np.histogram(rc_trig_flag, bins = time_bins)[0]
     del rc_trig_flag
-
+    
     cut_flag = (cuts != 0).astype(int)
     cut_flag = cut_flag.astype(float)
     cut_flag[cut_flag < 0.5] = np.nan
