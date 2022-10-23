@@ -30820,7 +30820,7 @@ VARS job_ARA_S2_R15263 station="2" run="15263"
 JOB job_ARA_S2_R15264 ARA_job.sub 
 VARS job_ARA_S2_R15264 station="2" run="15264"
 
-JOB job_ARA_S2_R15265 ARA_job.sub 
+JOB job_ARA_S2_R15265 ARA_job_2.sub 
 VARS job_ARA_S2_R15265 station="2" run="15265"
 
 JOB job_ARA_S2_R15266 ARA_job.sub 
