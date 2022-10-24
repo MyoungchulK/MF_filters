@@ -14,7 +14,6 @@ Station = int(sys.argv[1])
 count_i = int(sys.argv[2])
 count_f = int(sys.argv[3])
 count_ff = count_i + count_f
-
 if Station == 2: num_configs = 7
 if Station == 3: num_configs = 9
 
@@ -99,31 +98,31 @@ for r in tqdm(range(len(d_run_tot))):
     del q_name, hf_q, qual, evt_full, evt
 
     c_daq = np.copy(coord)
-    c_daq[:,:,:,:,daq] = np.nan
+    c_daq[:,:,:,:,~daq] = np.nan
     c_fir = np.copy(coord)
-    c_fir[:,:,:,:,fir] = np.nan
+    c_fir[:,:,:,:,~fir] = np.nan
     c_dda = np.copy(coord)
-    c_dda[:,:,:,:,dda] = np.nan
+    c_dda[:,:,:,:,~dda] = np.nan
     c_rate = np.copy(coord)
-    c_rate[:,:,:,:,rate] = np.nan
+    c_rate[:,:,:,:,~rate] = np.nan
     c_l1 = np.copy(coord)
-    c_l1[:,:,:,:,l1] = np.nan
+    c_l1[:,:,:,:,~l1] = np.nan
     c_short = np.copy(coord)
-    c_short[:,:,:,:,short] = np.nan
+    c_short[:,:,:,:,~short] = np.nan
     c_bad = np.copy(coord)
-    c_bad[:,:,:,:,bad] = np.nan
+    c_bad[:,:,:,:,~bad] = np.nan
     c_log = np.copy(coord)
-    c_log[:,:,:,:,log] = np.nan
+    c_log[:,:,:,:,~log] = np.nan
     c_wb = np.copy(coord)
-    c_wb[:,:,:,:,wb] = np.nan
+    c_wb[:,:,:,:,~wb] = np.nan
     c_pole = np.copy(coord)
-    c_pole[:,:,:,:,pole] = np.nan
+    c_pole[:,:,:,:,~pole] = np.nan
     c_un = np.copy(coord)
-    c_un[:,:,:,:,un] = np.nan
+    c_un[:,:,:,:,~un] = np.nan
     c_ped = np.copy(coord)
-    c_ped[:,:,:,:,ped] = np.nan
+    c_ped[:,:,:,:,~ped] = np.nan
     c_cut = np.copy(coord)
-    c_cut[:,:,:,:,cut] = np.nan
+    c_cut[:,:,:,:,~cut] = np.nan
 
     for t in range(3):
         for pol in range(2):
@@ -150,7 +149,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Reco_Map_A{Station}_R{count_i}.h5'
+file_name = f'Reco_Map_Bad_A{Station}_R{count_i}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('a_bins', data=a_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('a_bin_center', data=a_bin_center, compression="gzip", compression_opts=9)
