@@ -1,5 +1,6 @@
 import numpy as np
 from tqdm import tqdm
+import h5py
 
 def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
 
@@ -13,6 +14,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     from tools.ara_constant import ara_const
     from tools.ara_wf_analyzer import wf_analyzer
     from tools.ara_py_interferometers import py_interferometers
+    from tools.ara_py_interferometers import get_products
     from tools.ara_known_issue import known_issue_loader
 
     # const. info.
@@ -51,6 +53,26 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     bad_ant = known_issue.get_bad_antenna(run, print_integer = True)
     del known_issue
 
+    run_info1 = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
+    qual_dat = run_info1.get_result_path(file_type = 'qual_cut', verbose = True, force_blind = True)
+    daq_hf = h5py.File(qual_dat, 'r')
+    evt_full = daq_hf['evt_num'][:]
+    tot_qual_cut = daq_hf['tot_qual_cut'][:]
+    del qual_dat, daq_hf
+
+    wei_key = 'snr'
+    wei_dat = run_info1.get_result_path(file_type = wei_key, verbose = True)
+    wei_hf = h5py.File(wei_dat, 'r')
+    if wei_key == 'mf':
+        wei_ant = wei_hf['evt_wise_ant'][:]
+        weights = np.full((num_ants, num_evts), np.nan, dtype = float)
+        weights[:8] = wei_ant[0, :8]
+        weights[8:] = wei_ant[1, 8:]
+        del wei_ant
+    else:
+        weights = wei_hf['snr'][:]
+    del run_info1, wei_key, wei_dat, wei_hf
+
     print('example event number')
     print('entries, events, trigs')
     for e in range(20):
@@ -85,7 +107,8 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     pairs = ara_int.pairs
     v_pairs_len = ara_int.v_pairs_len    
     lags = ara_int.lags
- 
+    wei_pairs = get_products(weights, pairs, v_pairs_len) 
+
     # output array
     wf_all = np.full((wf_int.pad_len, 2, num_ants, sel_evt_len), np.nan, dtype=float)
     int_wf_all = np.copy(wf_all)
@@ -225,7 +248,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         corr_nonorm[:,:,evt] = corr_nonorm_evt
         corr_01[:,:,evt] = corr_01_evt
 
-        coval_evt = ara_int.get_coval_sample(corr_evt)
+        coval_evt = ara_int.get_coval_sample(corr_evt * wei_pairs[:, evt])
         coval[:,:,:,:,:,evt] = coval_evt
         sky_map[:,:,:,:,0,evt] = np.nansum(coval_evt[:, :, :, :, :v_pairs_len], axis = 4)
         sky_map[:,:,:,:,1,evt] = np.nansum(coval_evt[:, :, :, :, v_pairs_len:], axis = 4)
@@ -239,7 +262,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         bp_corr_nonorm[:,:,evt] = bp_corr_nonorm_evt
         bp_corr_01[:,:,evt] = bp_corr_01_evt
 
-        bp_coval_evt = ara_int.get_coval_sample(bp_corr_evt, sum_pol = False)
+        bp_coval_evt = ara_int.get_coval_sample(bp_corr_evt * wei_pairs[:, evt], sum_pol = False)
         bp_coval[:,:,:,:,:,evt] = bp_coval_evt
         bp_sky_map[:,:,:,:,0,evt] = np.nansum(bp_coval_evt[:, :, :, :, :v_pairs_len], axis = 4)
         bp_sky_map[:,:,:,:,1,evt] = np.nansum(bp_coval_evt[:, :, :, :, v_pairs_len:], axis = 4)
@@ -276,6 +299,10 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     #output
     return {'evt_num':evt_num,
             'entry_num':entry_num,
+            'evt_full':evt_full,
+            'tot_qual_cut':tot_qual_cut,
+            'weights':weights,
+            'wei_pairs':wei_pairs,
             'trig_type':trig_type,
             'time_stamp':time_stamp,
             'pps_number':pps_number,
