@@ -634,7 +634,10 @@ class known_issue_loader:
         bad_run = []
         logs_file = open(logs_file_name, "r")
         for lines in logs_file:
-            run_num = int(lines.split('\t')[0])
+            try:
+                run_num = int(lines.split('\t')[0])
+            except ValueError:
+                run_num = int(lines.split()[0])
             bad_run.append(run_num)
         bad_run = np.asarray(bad_run)
         logs_file.close()
