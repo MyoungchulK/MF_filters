@@ -702,7 +702,7 @@ class pre_qual_cut_loader:
         tot_pre_qual_cut[:, 12:15] = self.get_bad_evt_rate_events(use_sec = True)
         tot_pre_qual_cut[:, 15] = self.get_bad_l1_rate_events()
         tot_pre_qual_cut[:, 16] = self.get_short_run_events()
-        tot_pre_qual_cut[:, 17] = self.get_known_bad_unix_time_events()
+        tot_pre_qual_cut[:, 17] = self.get_known_bad_unix_time_events(add_unchecked_unix_time = True)
         tot_pre_qual_cut[:, 18] = self.get_known_bad_run_events()
         tot_pre_qual_cut[:, 19] = self.get_cw_log_events()
         tot_pre_qual_cut[:, 20:] = self.get_cw_threshold_events()
@@ -795,23 +795,20 @@ class post_qual_cut_loader:
 
     def get_cw_params(self):
 
-        num_params = 3
+        cw_freq_type = np.array([0,125, 0.15, 0.25, 0.405])
+        num_params = len(cw_freq_type)
+
+        cw_freq = np.full((num_params, 2), np.nan, dtype = float)
+        for f in range(num_params):
+            cw_freq[f, 0] = cw_freq_type[f] - 0.01
+            cw_freq[f, 1] = cw_freq_type[f] + 0.01
 
         cut_val = 0.02
         cw_thres = np.full((num_params, num_ants), cut_val, dtype = float)
 
-        cw_freq = np.full((num_params, 2), np.nan, dtype = float)
-        cw_freq[0, 0] = 0.115
-        cw_freq[0, 1] = 0.135
-        cw_freq[1, 0] = 0.24
-        cw_freq[1, 1] = 0.26
-        cw_freq[2, 0] = 0.395
-        cw_freq[2, 1] = 0.415
-
         if self.verbose:
-            print(f'cw params {cw_freq[0, 0]} ~ {cw_freq[0, 1]} GHz: {cw_thres[0]}')
-            print(f'cw params {cw_freq[1, 0]} ~ {cw_freq[1, 1]} GHz: {cw_thres[1]}')
-            print(f'cw params {cw_freq[2, 0]} ~ {cw_freq[2, 1]} GHz: {cw_thres[2]}')
+            for f in range(num_params):
+                print(f'cw params {cw_freq[f, 0]} ~ {cw_freq[f, 1]} GHz: {cw_thres[f]}')
 
         return num_params, cw_thres, cw_freq
 

@@ -10,9 +10,10 @@ num_ddas = ara_const.DDA_PER_ATRI
 
 class known_issue_loader:
 
-    def __init__(self, st):
+    def __init__(self, st, verbose = False):
 
         self.st = st
+        self.verbose = verbose
       
     def get_bad_antenna(self, run, good_ant_true = False, print_ant_idx = False, print_integer = False):
 
@@ -606,26 +607,22 @@ class known_issue_loader:
 
         bad_surface_run = self.get_bad_surface_run()
         bad_run = self.get_bad_run()
-        knwon_bad_run = np.append(bad_surface_run, bad_run)
         L0_to_L1_Processing = self.get_L0_to_L1_Processing_run()
-        knwon_bad_run = np.append(knwon_bad_run, L0_to_L1_Processing)
         ARARunLogDataBase = self.get_ARARunLogDataBase()
-        knwon_bad_run = np.append(knwon_bad_run, ARARunLogDataBase)
         ob_bad_run = self.get_obviously_bad_run()
-        knwon_bad_run = np.append(knwon_bad_run, ob_bad_run)
+        software_dominant_run = self.get_software_dominant_run()
+        knwon_bad_run = np.concatenate((bad_surface_run, bad_run, L0_to_L1_Processing, ARARunLogDataBase, software_dominant_run, ob_bad_run), axis = None, dtype = int)
         if use_qual:
             qual_bad_run = self.get_qual_bad_run()
-            knwon_bad_run = np.append(knwon_bad_run, qual_bad_run)
+            knwon_bad_run = np.concatenate((knwon_bad_run, qual_bad_run), axis = None, dtype = int)
             del qual_bad_run
-        knwon_bad_run = np.unique(knwon_bad_run)
-        del bad_surface_run, bad_run, L0_to_L1_Processing, ARARunLogDataBase, ob_bad_run
+        knwon_bad_run = np.unique(knwon_bad_run).astype(int)
+        del bad_surface_run, bad_run, L0_to_L1_Processing, ARARunLogDataBase, software_dominant_run, ob_bad_run
 
         #untagged_calpulser_run = self.get_untagged_calpulser_run()
         #knwon_bad_run = np.append(knwon_bad_run, untagged_calpulser_run) 
-        #software_dominant_run = self.get_software_dominant_run()
-        #knwon_bad_run = np.append(knwon_bad_run, software_dominant_run)
-        #del bad_surface_run, bad_run, L0_to_L1_Processing, untagged_calpulser_run, software_dominant_run    
-        print(f'Total number of known bad runs are {len(knwon_bad_run)}')
+        if self.verbose:
+            print(f'Total number of known bad runs are {len(knwon_bad_run)}')
 
         return knwon_bad_run
 
@@ -1156,6 +1153,149 @@ class known_issue_loader:
 
     def get_obviously_bad_run(self):
 
+         # array for bad run
+        bad_run = np.array([], dtype=int)
+
+        if self.st == 2:
+            bad_run = np.append(bad_run, 2428) # 2428 2013/09/27 unknown signal
+            bad_run = np.append(bad_run, 2631) # 2631 2013/11/06 unknown signal
+            bad_run = np.append(bad_run, 2849) # 2849 2014/02/10 unknown signal
+            bad_run = np.append(bad_run, np.arange(2861, 2869 + 1, dtype = int)) # 2861 ~ 2869 2014/02/11 unknown signal
+            bad_run = np.append(bad_run, 3442) # 3442 2014/04/19 unknown signal
+            bad_run = np.append(bad_run, np.arange(3917, 3919 + 1, dtype = int)) # 2014/07/17 unknown signal
+            bad_run = np.append(bad_run, 4316) # 4316 2014/10/28 unknown signal
+            bad_run = np.append(bad_run, 4645) # 4645 2014/12/08 unknown daq error
+            bad_run = np.append(bad_run, 5911) # 5911 2015/07/21 unknown signal
+            bad_run = np.append(bad_run, 6694) # 6694 2016/01/10 unknown signal
+            bad_run = np.append(bad_run, 7100) # 7100 daq error
+            bad_run = np.append(bad_run, 7405) # 7405 2016/06/06 temperature dependance
+            bad_run = np.append(bad_run, 8518) # 8518 2017/01/12 unknown signal
+            bad_run = np.append(bad_run, 8521) # 8521 2017/01/13 unknown signal
+            bad_run = np.append(bad_run, np.arange(8523, 8527 + 1, dtype = int)) # 2017/01/15 unknown signal, temp issue
+            bad_run = np.append(bad_run, 8545) # 8545 2017/01/19 unknown signal
+            bad_run = np.append(bad_run, np.arange(8549, 8551 + 1, dtype = int)) # 8549 ~ 8551 2017/01/20 unknown signal
+            bad_run = np.append(bad_run, np.arange(8558, 8574 + 1, dtype = int)) # 2017/01/22 ~ 3 only software, unknown signal
+            bad_run = np.append(bad_run, np.arange(8591, 8596 + 1, dtype = int)) # 8591 ~ 8595 2017/01/28 unknown signal
+            bad_run = np.append(bad_run, 8622) # 2017/02/03 unknown signal
+            bad_run = np.append(bad_run, np.arange(8640, 8652 + 1, dtype = int)) # 8640 ~ 8652 2017/02/07 ~ 09 unknown signal
+            bad_run = np.append(bad_run, np.arange(8680, 8687 + 1, dtype = int)) # 8680 ~ 8687 2017/02/14 ~ 16 unknown signal
+            bad_run = np.append(bad_run, np.arange(8720, 8721 + 1, dtype = int)) # 2017/02/23 unknown signal
+            bad_run = np.append(bad_run, 8763) # 8763 2017/03/01 unknown signal
+            bad_run = np.append(bad_run, np.arange(8787, 8792 + 1, dtype = int)) # 2017/03/06 ~ 7 unknown signal
+            bad_run = np.append(bad_run, 8821) # 2017/03/13 unknown signal
+            bad_run = np.append(bad_run, np.arange(8933, 8934 + 1, dtype = int)) # 8933 ~ 8934 2017/04/05 unknown signal
+            bad_run = np.append(bad_run, np.arange(9402, 9848 + 1, dtype = int)) # short... and pole season...
+            bad_run = np.append(bad_run, 9916) # 9916 2018/02/07 unknown signal
+            bad_run = np.append(bad_run, np.arange(11071, 11076 + 1, dtype = int)) # 11071 ~ 11076 2018/06/25 unknown signal
+            bad_run = np.append(bad_run, np.arange(11654, 11655 + 1, dtype = int)) # 11654 ~ 11655 2018/09/10 unknown signal
+            bad_run = np.append(bad_run, np.arange(12128, 12131 + 1, dtype = int)) # 12131 2018/11/01 unknown signal
+            bad_run = np.append(bad_run, 12259) # 12259 2018/11/16 unknown signal
+            bad_run = np.append(bad_run, 12345) # 12345 2018/11/23 unknown signal
+            bad_run = np.append(bad_run, np.arange(12364, 12375 + 1, dtype = int)) # 12364 ~ 12375 2018/11/25 ~ 26 unknown signal
+            bad_run = np.append(bad_run, 12383) # long!!!
+            bad_run = np.append(bad_run, np.arange(12421, 12422 + 1, dtype = int)) # 12421 2018/12/05 unknow daq error
+            bad_run = np.append(bad_run, np.arange(12429, 12430 + 1, dtype = int)) # 12430 2018/12/07 unknown daq error
+            bad_run = np.append(bad_run, 12431) # short...
+            bad_run = np.append(bad_run, np.arange(12435, 12436 + 1, dtype = int)) # 2018/12/07 unknown signal
+            bad_run = np.append(bad_run, np.arange(12441, 12449 + 1, dtype = int)) # 2018/12/08 ~ 10 unknown signal
+            bad_run = np.append(bad_run, np.arange(12463, 12465 + 1, dtype = int)) # 12464 2018/12/12 unknown signal
+            bad_run = np.append(bad_run, np.arange(12470, 12474 + 1, dtype = int)) # 12470 ~ 12473 2018/12/14 unknown signal
+            bad_run = np.append(bad_run, np.arange(12502, 12504 + 1, dtype = int)) # 12502 2018/12/17 unknown signal
+            bad_run = np.append(bad_run, np.arange(12540, 12541 + 1, dtype = int)) # 12540 2018/12/21 unknown signal
+            bad_run = np.append(bad_run, np.arange(12547, 12550 + 1, dtype = int)) # 12547 ~ 12548 2018/12/22 unknown signal
+            bad_run = np.append(bad_run, np.arange(12574, 12576 + 1, dtype = int)) # 12574 ~ 12576 2018/12/25 unknown signal
+            bad_run = np.append(bad_run, np.arange(12583, 12598 + 1, dtype = int)) # 2018/12/26 ~ 27 unknown signal
+            bad_run = np.append(bad_run, np.arange(12600, 12610 + 1, dtype = int)) # 12608 2018/12/28 unknown signal
+            bad_run = np.append(bad_run, np.arange(12616, 12618 + 1, dtype = int)) # 12616 ~ 12618 2018/12/29 unknown signal
+            bad_run = np.append(bad_run, np.arange(12633, 12647 + 1, dtype = int)) # 2018/12/31 ~ 01 unknown signal
+            bad_run = np.append(bad_run, np.arange(12680, 12682 + 1, dtype = int)) # 2019/01/05 unknown signal
+            bad_run = np.append(bad_run, np.arange(12691, 12692 + 1, dtype = int)) # 2019/01/06 unknown signal
+            bad_run = np.append(bad_run, np.arange(12717, 12719 + 1, dtype = int)) # 2019/01/09 unknown signal
+            bad_run = np.append(bad_run, np.arange(12725, 12727 + 1, dtype = int)) # 2019/01/10 unknown signal
+            bad_run = np.append(bad_run, np.arange(12751, 12753 + 1, dtype = int)) # 12752 2019/01/13 unknown signal
+            bad_run = np.append(bad_run, np.arange(12770, 12771 + 1, dtype = int)) # 12770 2019/01/17 unknown signal
+            bad_run = np.append(bad_run, np.arange(12778, 12779 + 1, dtype = int)) # 12778 ~ 12779 2019/01/18 unknown signal
+            bad_run = np.append(bad_run, np.arange(12835, 12905 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, np.arange(12922, 12923 + 1, dtype = int)) # 12922 ~ 12923 2019/01/27 unknown signal
+            bad_run = np.append(bad_run, np.arange(12930, 12932 + 1, dtype = int)) # 12930 2019/01/28 unknown signal
+            bad_run = np.append(bad_run, np.arange(12948, 12950 + 1, dtype = int)) # 12948 ~ 12950 2019/01/30 unknown signal
+            bad_run = np.append(bad_run, 12967) # 12967 2019/02/01 unknown signal
+            bad_run = np.append(bad_run, 12994) # 12994 2019/02/04 unknown signal
+            bad_run = np.append(bad_run, np.arange(13001, 13002 + 1, dtype = int)) # 13001 2019/02/05 ev8850 unknown signal 
+            bad_run = np.append(bad_run, 13253) # 13253 2019/03/02 unknown signal
+            bad_run = np.append(bad_run, 13583) # 13583 2019/04/01 unknown signal
+            bad_run = np.append(bad_run, 15246) # 15246 2019/07/16 unknown signal
+            bad_run = np.append(bad_run, np.arange(15340, 15343 + 1, dtype = int)) # 15340 ~ 15343 unknown signal
+
+        elif self.st == 3:
+
+            bad_run = np.append(bad_run, np.arange(515 + 1, dtype = int))
+            bad_run = np.append(bad_run, np.arange(1124, 1144 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 1751) # 2013/11/08 unknown signal
+            bad_run = np.append(bad_run, 1770) # unknown signal
+            bad_run = np.append(bad_run, np.arange(1796, 1814 + 1, dtype = int)) # dda issue
+            bad_run = np.append(bad_run, 2079) # unknown signal
+            bad_run = np.append(bad_run, np.arange(3843, 3861 + 1, dtype = int)) # noise source test
+            bad_run = np.append(bad_run, np.arange(3881, 3892 + 1, dtype = int)) # noise source test
+            bad_run = np.append(bad_run, np.arange(3916, 3975 + 1, dtype = int)) # noise source test
+            bad_run = np.append(bad_run, np.arange(4008, 4073 + 1, dtype = int)) # noise source test
+            bad_run = np.append(bad_run, np.arange(7122, 7153 + 1, dtype = int)) # 2016 Cal Pulser Sweep
+            bad_run = np.append(bad_run, np.arange(10000, 10102 + 1, dtype = int)) # trim short runs
+            bad_run = np.append(bad_run, np.arange(10158, 10160 + 1, dtype = int)) # 10158 2018/02/07 unknown signal
+            bad_run = np.append(bad_run, 10167) # dda issue
+            bad_run = np.append(bad_run, np.arange(10435, 10437 + 1, dtype = int)) # 10436 ~ 10437 2018/03/22 unknown signal
+            bad_run = np.append(bad_run, np.arange(10659, 10666 + 1, dtype = int)) # dda issue
+            bad_run = np.append(bad_run, 10684) # short...
+            bad_run = np.append(bad_run, 10974) # 10974 2018/05/18 unknown signal
+            bad_run = np.append(bad_run, np.arange(11108, 11110 + 1, dtype = int)) # 11108 ~ 11110 2018/06/01 ~ 2 unknown signal
+            bad_run = np.append(bad_run, 11122) # short...
+            bad_run = np.append(bad_run, 11295) # short...
+            bad_run = np.append(bad_run, np.arange(11325, 11326 + 1, dtype = int)) # dda issue
+            bad_run = np.append(bad_run, np.arange(11330, 11334 + 1, dtype = int)) # short...
+            bad_run = np.append(bad_run, 11335) # possibly pulser
+            bad_run = np.append(bad_run, np.arange(11428, 11432 + 1, dtype = int)) # 2018/07/04 ~ 5 unknown signal
+            bad_run = np.append(bad_run, np.arange(12660, 12661 + 1, dtype = int)) # possibly pulser
+            bad_run = np.append(bad_run, 12734) # 12734 2018/11/16 unknown signal
+            bad_run = np.append(bad_run, np.arange(12884, 12885 + 1, dtype = int)) # possibly pulser
+            bad_run = np.append(bad_run, np.arange(12903, 12905 + 1, dtype = int)) # 12903 ~ 12905 2018/12/12 unknown signal
+            bad_run = np.append(bad_run, np.arange(12927, 12929 + 1, dtype = int)) # possibly pulser
+            bad_run = np.append(bad_run, np.arange(13019, 13024 + 1, dtype = int)) # possibly spice core
+            bad_run = np.append(bad_run, np.arange(13029, 13030 + 1, dtype = int)) # possibly spice core
+            bad_run = np.append(bad_run, np.arange(13039, 13065 + 1, dtype = int)) # possibly spice core
+            bad_run = np.append(bad_run, np.arange(13085, 13090 + 1, dtype = int)) # unknown signal
+            bad_run = np.append(bad_run, np.arange(13113, 13117 + 1, dtype = int)) # 13113 ~ 13114 2019/01/03 unknown signal
+            bad_run = np.append(bad_run, np.arange(13184, 13185 + 1, dtype = int)) # 13185 2019/01/11 unknown signal
+            bad_run = np.append(bad_run, np.arange(13200, 13205 + 1, dtype = int)) # 13200 2019/01/13 unknown signal
+            bad_run = np.append(bad_run, 13211) # 13211 2019/01/16 unknown signal
+            bad_run = np.append(bad_run, 13265) # 2019/01/22 unknown signal
+            bad_run = np.append(bad_run, np.arange(13272, 13274 + 1, dtype = int)) # 13272 ~ 13274 2019/01/23 unknown signal
+            bad_run = np.append(bad_run, np.arange(13281, 13284 + 1, dtype = int)) # 13281 ~ 13284 2019/01/24 unknown signal
+            bad_run = np.append(bad_run, np.arange(13290, 13291 + 1, dtype = int)) # 13291 2019/01/25 unknown signal
+            bad_run = np.append(bad_run, 13333) # 13333 2019/01/30 unknown signal
+            bad_run = np.append(bad_run, np.arange(13338, 13340 + 1, dtype = int)) # 13338 2019/01/30 unknown signal
+            bad_run = np.append(bad_run, 13356) # 13356 2019/02/01 unknown signal
+            bad_run = np.append(bad_run, np.arange(13443, 13444 + 1, dtype = int)) # 2019/02/11 unknown signal
+            bad_run = np.append(bad_run, 13482) # 13482 2019/02/15 unknown signal
+            bad_run = np.append(bad_run, 13482) # 2019/2/15 unknown signal
+            bad_run = np.append(bad_run, np.arange(13964, 13969 + 1, dtype = int)) # low power...
+            bad_run = np.append(bad_run, 16307) # unkown signal
+            bad_run = np.append(bad_run, np.arange(16347, 16349 + 1, dtype = int)) # 16347 ~ 16348 2019/11/27 possible noise mode
+            bad_run = np.append(bad_run, np.arange(16365, 16368 + 1, dtype = int)) # 16365 ~ 16366 2019/11/29 possible pulser signal
+            bad_run = np.append(bad_run, np.arange(16374, 16376 + 1, dtype = int)) # obvious short run
+            bad_run = np.append(bad_run, np.arange(16415, 16419 + 1, dtype = int)) # obvious short run
+            bad_run = np.append(bad_run, np.arange(16450, 16451 + 1, dtype = int)) # 16450 ~ 16451 2019/12/08 possible pulser signal
+            bad_run = np.append(bad_run, 16460) # 16460 2019/12/09 possible pulser signal
+            bad_run = np.append(bad_run, np.arange(16518, 16520 + 1, dtype = int)) # unkown signal
+            bad_run = np.append(bad_run, np.arange(16531, 16533 + 1, dtype = int)) # unkown signal
+            bad_run = np.append(bad_run, np.arange(16538, 16540 + 1, dtype = int)) # unkown signal
+
+        else:
+            pass
+
+        return bad_run        
+
+    def get_obviously_bad_run_temp(self):
+
         # array for bad run
         bad_run = np.array([], dtype=int)
 
@@ -1333,7 +1473,7 @@ class known_issue_loader:
             bad_run = np.append(bad_run, np.arange(12717, 12719 + 1, dtype = int)) # 2019/01/09 unknown signal
             bad_run = np.append(bad_run, np.arange(12725, 12727 + 1, dtype = int)) # 2019/01/10 unknown signal
             bad_run = np.append(bad_run, 12741) # short...
-            bad_run = np.append(bad_run, np.arange(12751, 12753 + 1, dtype = int)) # 12752 2019/01/13 unknown signal 
+            bad_run = np.append(bad_run, np.arange(12751, 12753 + 1, dtype = int)) # 12752 2019/01/13 unknown signal
             bad_run = np.append(bad_run, np.arange(12770, 12771 + 1, dtype = int)) # 12770 2019/01/17 unknown signal
             bad_run = np.append(bad_run, np.arange(12778, 12779 + 1, dtype = int)) # 12778 ~ 12779 2019/01/18 unknown signal
             bad_run = np.append(bad_run, np.arange(12835, 12905 + 1, dtype = int)) # short...
