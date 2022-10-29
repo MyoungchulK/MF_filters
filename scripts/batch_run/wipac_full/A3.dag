@@ -9427,7 +9427,7 @@ VARS job_ARA_S3_R4821 station="3" run="4821"
 JOB job_ARA_S3_R4822 ARA_job.sub 
 VARS job_ARA_S3_R4822 station="3" run="4822"
 
-JOB job_ARA_S3_R4823 ARA_job.sub 
+JOB job_ARA_S3_R4823 ARA_job_2.sub 
 VARS job_ARA_S3_R4823 station="3" run="4823"
 
 JOB job_ARA_S3_R4824 ARA_job.sub 
