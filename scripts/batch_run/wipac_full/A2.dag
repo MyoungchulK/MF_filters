@@ -19630,7 +19630,7 @@ VARS job_ARA_S2_R10568 station="2" run="10568"
 JOB job_ARA_S2_R10570 ARA_job.sub 
 VARS job_ARA_S2_R10570 station="2" run="10570"
 
-JOB job_ARA_S2_R10571 ARA_job.sub 
+JOB job_ARA_S2_R10571 ARA_job_2.sub 
 VARS job_ARA_S2_R10571 station="2" run="10571"
 
 JOB job_ARA_S2_R10572 ARA_job.sub 
@@ -20101,7 +20101,7 @@ VARS job_ARA_S2_R10742 station="2" run="10742"
 JOB job_ARA_S2_R10743 ARA_job.sub 
 VARS job_ARA_S2_R10743 station="2" run="10743"
 
-JOB job_ARA_S2_R10744 ARA_job.sub 
+JOB job_ARA_S2_R10744 ARA_job_2.sub 
 VARS job_ARA_S2_R10744 station="2" run="10744"
 
 JOB job_ARA_S2_R10745 ARA_job.sub 

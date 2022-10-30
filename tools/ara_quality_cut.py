@@ -795,7 +795,7 @@ class post_qual_cut_loader:
 
     def get_cw_params(self):
 
-        cw_freq_type = np.array([0,125, 0.15, 0.25, 0.405])
+        cw_freq_type = np.array([0.125, 0.15, 0.25, 0.405])
         num_params = len(cw_freq_type)
 
         cw_freq = np.full((num_params, 2), np.nan, dtype = float)
