@@ -33,7 +33,7 @@ def context_finder(txt_read, key, end_key, empty_format = np.nan):
         key_idx += len(key)
         end_key_idx = new_txt_read.find(end_key, key_idx) # find the end_key index after key_idx
 
-        if key == 'enableL1Trigger#I20=' or key == 'triggerDelays#I16=': # multiple elements
+        if key == 'enableL1Trigger#I20=' or key == 'triggerDelays#I16=' or key == 'scalerGoalValues#I16=': # multiple elements
             val = np.asarray(new_txt_read[key_idx:end_key_idx].split(","), dtype = int)
         else:
             val = int(new_txt_read[key_idx:end_key_idx])
@@ -104,7 +104,7 @@ def main(station, output):
     run_stop_list = [] # savinf for all runStop.run[xxxxxx].dat paths
 
     ## Seach the config files by loop over all L1 data path (2013 ~ 2019) and save it into lists
-    for y in tqdm(range(2013, 2019 + 1)):
+    for y in tqdm(range(2013, 2020 + 1)):
         if int(y) == 2013: # 2013 has different file path 
             #g_path = f'/data/exp/ARA/{int(y)}/filtered/unzippedTGZFiles/ARA0{station}/run_[0-9]*/logs/' # alternate path
             g_path = f'/data/exp/ARA/{int(y)}/raw/ARA0{station}-SPS-ARA/run_[0-9]*/logs/'
@@ -124,7 +124,7 @@ def main(station, output):
     print('Collecting information. 3 for loop')
     ## giant numpy array pad for storing all the configuration from each run's config files
     ## if there is no run config for corresponding run number. array element would be Nan
-    run_num = np.arange(20000, dtype = int) 
+    run_num = np.arange(22000, dtype = int) 
     run_num_len = len(run_num) 
     unix_time = np.full((2, run_num_len), np.nan, dtype = float) # array for unix time stored in runStart.run[xxxxxx].dat and runStop.run[xxxxxx].dat
     date_time = np.copy(unix_time) # array for UTC date time converted from unix time
@@ -136,6 +136,7 @@ def main(station, output):
     masked_ant = np.full((20, run_num_len), np.nan, dtype = float) # which antenn is masked. 1: unmasked, 0: masked. This mapping is following trigger channel mapping
     scaler_goal = np.copy(delay_num) # L1 servo goal value. unit is Hz. I guess...
     calpulser_info = np.full((6, run_num_len), np.nan, dtype = float) # info for calpulser configuration. antennaIceA#I1=, antennaIceB#I1=, opIceA#I1=, opIceB#I1=0, attIceA#I1=, and attIceB#I1=
+    ## related document for calpulser configuration... https://aradocs.wipac.wisc.edu/0005/000502/007/icecalsoftware.pdf
 
     ## 3 each 'for loop' for collecting information. Since not all the runs have a config, runstart, or runstop, we need to scrap the information from each list      
     ## variables for searching config information
@@ -150,7 +151,7 @@ def main(station, output):
     delay_key = 'triggerDelays#I16='
     goal_key = 'scalerGoalValues#I16='
     calpulser_key = ['antennaIceA#I1=', 'antennaIceB#I1=', 'opIceA#I1=', 'opIceB#I1=', 'attIceA#I1=', 'attIceB#I1=']
-    cal_key_len = len(calpuler_key)
+    cal_key_len = len(calpulser_key)
     end_key = ';'
     empty_masked_ant_foramt = np.full((20), np.nan, dtype = float)
     empty_delay_format = np.full((16), np.nan ,dtype = float)
@@ -197,10 +198,9 @@ def main(station, output):
     ## create output dir
     if not os.path.exists(output):
         os.makedirs(output)
-    os.chdir(output)
 
     ## save into h5 file
-    h5_file_name=f'Config_A{station}.h5'
+    h5_file_name=f'{output}Config_A{station}.h5'
     hf = h5py.File(h5_file_name, 'w')
     hf.create_dataset('run_num', data=run_num, compression="gzip", compression_opts=9)
     hf.create_dataset('unix_time', data=unix_time, compression="gzip", compression_opts=9)

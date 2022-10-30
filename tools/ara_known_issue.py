@@ -1226,15 +1226,19 @@ class known_issue_loader:
             bad_run = np.append(bad_run, 13583) # 13583 2019/04/01 unknown signal
             bad_run = np.append(bad_run, 15246) # 15246 2019/07/16 unknown signal
             bad_run = np.append(bad_run, np.arange(15340, 15343 + 1, dtype = int)) # 15340 ~ 15343 unknown signal
+            bad_run = np.append(bad_run, np.arange(15604, 15606 + 1, dtype = int)) # 15604 15605 15606 wrong l1 goal
+            bad_run = np.append(bad_run, 16885) # 16885 wrong l1 goal
 
         elif self.st == 3:
 
             bad_run = np.append(bad_run, np.arange(515 + 1, dtype = int))
             bad_run = np.append(bad_run, np.arange(1124, 1144 + 1, dtype = int)) # short...
+            #bad_run = np.append(bad_run, np.arange(1669, 1674 + 1, dtype = int)) # wrong l1 goal. It is from 2018 data....
             bad_run = np.append(bad_run, 1751) # 2013/11/08 unknown signal
             bad_run = np.append(bad_run, 1770) # unknown signal
             bad_run = np.append(bad_run, np.arange(1796, 1814 + 1, dtype = int)) # dda issue
             bad_run = np.append(bad_run, 2079) # unknown signal
+            bad_run = np.append(bad_run, 2148) # wrong l1 goal
             bad_run = np.append(bad_run, np.arange(3843, 3861 + 1, dtype = int)) # noise source test
             bad_run = np.append(bad_run, np.arange(3881, 3892 + 1, dtype = int)) # noise source test
             bad_run = np.append(bad_run, np.arange(3916, 3975 + 1, dtype = int)) # noise source test
