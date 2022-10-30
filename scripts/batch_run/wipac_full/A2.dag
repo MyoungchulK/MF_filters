@@ -20701,7 +20701,7 @@ VARS job_ARA_S2_R10967 station="2" run="10967"
 JOB job_ARA_S2_R10968 ARA_job.sub 
 VARS job_ARA_S2_R10968 station="2" run="10968"
 
-JOB job_ARA_S2_R10970 ARA_job.sub 
+JOB job_ARA_S2_R10970 ARA_job_2.sub 
 VARS job_ARA_S2_R10970 station="2" run="10970"
 
 JOB job_ARA_S2_R10971 ARA_job.sub 
