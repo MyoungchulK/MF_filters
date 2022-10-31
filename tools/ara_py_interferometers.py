@@ -153,7 +153,7 @@ class py_interferometers:
         if weights is not None:
            corr *= weights
 
-        coval
+        # coval
         coval, coord = self.get_coval_sample(corr, sum_pol = True)
         del corr
 
