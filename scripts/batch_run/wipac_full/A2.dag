@@ -31903,7 +31903,7 @@ VARS job_ARA_S2_R15691 station="2" run="15691"
 JOB job_ARA_S2_R15692 ARA_job.sub 
 VARS job_ARA_S2_R15692 station="2" run="15692"
 
-JOB job_ARA_S2_R15693 ARA_job.sub 
+JOB job_ARA_S2_R15693 ARA_job_2.sub 
 VARS job_ARA_S2_R15693 station="2" run="15693"
 
 JOB job_ARA_S2_R15694 ARA_job.sub 
@@ -33826,7 +33826,7 @@ VARS job_ARA_S2_R16395 station="2" run="16395"
 JOB job_ARA_S2_R16396 ARA_job.sub 
 VARS job_ARA_S2_R16396 station="2" run="16396"
 
-JOB job_ARA_S2_R16397 ARA_job.sub 
+JOB job_ARA_S2_R16397 ARA_job_2.sub 
 VARS job_ARA_S2_R16397 station="2" run="16397"
 
 JOB job_ARA_S2_R16399 ARA_job.sub 

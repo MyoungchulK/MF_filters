@@ -27,13 +27,6 @@ d_list, d_run_tot, d_run_range = file_sorter(d_path)
 d_len = len(d_run_tot)
 q_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/qual_cut_full/'
 
-c_bins = np.linspace(0, 2, 2000 + 1, dtype = float)
-c_bin_center = (c_bins[1:] + c_bins[:-1]) / 2
-c_bin_len = len(c_bin_center)
-
-coef_tot = np.full((c_bin_len, 3, 2, 2, 2, num_configs), 0, dtype = int) # c, trig, pol, rad, sol, config
-coef_cut = np.copy(coef_tot)
-
 for r in tqdm(range(len(d_run_tot))):
     
   #if r <10:
@@ -45,6 +38,9 @@ for r in tqdm(range(len(d_run_tot))):
     ara_run = run_info_loader(Station, d_run_tot[r])
     g_idx = ara_run.get_config_number() - 1
     del ara_run
+
+    if g_idx != 8:
+        continue
 
     hf = h5py.File(d_list[r], 'r')
     trig = hf['trig_type'][:]
@@ -71,28 +67,17 @@ for r in tqdm(range(len(d_run_tot))):
         for pol in range(2):
             for rad in range(2):
                 for sol in range(2):       
-                    coef_tot[:, t, pol, rad, sol, g_idx] += np.histogram(coef[pol, rad, sol][t_list[t]], bins = (c_bins))[0].astype(int)
                     if bad_idx:
                         continue
-                    coef_cut[:, t, pol, rad, sol, g_idx] += np.histogram(coef_c[pol, rad, sol][t_list[t]], bins = (c_bins))[0].astype(int)
+                    if t == 0 and pol == 0 and rad == 0 and sol == 0:
+                        coef_val = coef_c[pol, rad, sol][t_list[t]] > 0.125
+                        if np.any(coef_val):
+                            evtss = evt[t_list[t]][coef_val]
+                            print(Station, d_run_tot[r], len(evtss), evtss)
+
     del coef, coef_c, t_list, rf_t, cal_t, soft_t
 
-path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
-if not os.path.exists(path):
-    os.makedirs(path)
-os.chdir(path)
-
-file_name = f'Reco_Coef_A{Station}.h5'
-hf = h5py.File(file_name, 'w')
-hf.create_dataset('c_bins', data=c_bins, compression="gzip", compression_opts=9)
-hf.create_dataset('c_bin_center', data=c_bin_center, compression="gzip", compression_opts=9)
-hf.create_dataset('coef_tot', data=coef_tot, compression="gzip", compression_opts=9)
-hf.create_dataset('coef_cut', data=coef_cut, compression="gzip", compression_opts=9)
-hf.close()
-print('file is in:',path+file_name)
-# quick size check
-size_checker(path+file_name)
-
+print('done!')
 
 
 
