@@ -14,10 +14,11 @@ num_Bits = ara_const.BUFFER_BIT_RANGE
 
 class wf_analyzer:
 
-    def __init__(self, dt = 0.5, use_time_pad = False, use_freq_pad = False, use_band_pass = False,
+    def __init__(self, dt = 0.5, use_l2 = False, use_time_pad = False, use_freq_pad = False, use_band_pass = False,
                     add_double_pad = False, use_rfft = False, use_ele_ch = False, use_cw = False, 
                     cw_freq = None, cw_thres = None, new_wf_time = None):
 
+        self.use_l2 = use_l2
         self.dt = dt
         self.num_chs = num_ants
         if use_ele_ch:
@@ -26,7 +27,7 @@ class wf_analyzer:
             self.get_time_pad(add_double_pad = add_double_pad, new_wf_time = new_wf_time)
         if use_freq_pad:
             self.get_freq_pad(use_rfft = use_rfft)
-        if use_band_pass:
+        if use_band_pass and not self.use_l2:
             self.get_band_pass_filter()
         if use_cw:
             from tools.ara_data_load import sin_subtract_loader
@@ -92,6 +93,8 @@ class wf_analyzer:
         self.pad_t = np.full((self.pad_len, self.num_chs), np.nan, dtype = float)
         self.pad_v = np.copy(self.pad_t)
         self.pad_num = np.full((self.num_chs), 0, dtype = int)
+        if self.use_l2:
+            self.pad_idx = (self.pad_zero_t / self.dt).astype(int)
         print(f'time pad length: {self.pad_len * self.dt} ns')
 
     def get_freq_pad(self, use_rfft = False):
@@ -118,15 +121,22 @@ class wf_analyzer:
 
     def get_int_wf(self, raw_t, raw_v, ant, use_unpad = False, use_zero_pad = False, use_band_pass = False, use_cw = False, use_p2p = False):
 
-        # akima interpolation!
-        akima = Akima1DInterpolator(raw_t, raw_v)
-        int_v = akima(self.pad_zero_t)
-        int_idx = ~np.isnan(int_v)
-        int_num = np.count_nonzero(int_idx)
-        int_v = int_v[int_idx]
+        if self.use_l2:
+            int_idx = np.in1d(self.pad_idx, (raw_t / self.dt).astype(int))
+            #int_idx = np.in1d(self.pad_zero_t, raw_t)
+            int_num = len(raw_v)
+            int_v = raw_v            
+        else:
+            # akima interpolation!
+            akima = Akima1DInterpolator(raw_t, raw_v)
+            int_v = akima(self.pad_zero_t)
+            int_idx = ~np.isnan(int_v)
+            int_num = np.count_nonzero(int_idx)
+            int_v = int_v[int_idx]
+            del akima
 
-        if use_band_pass:
-            int_v = self.get_band_passed_wf(int_v)
+            if use_band_pass:
+                int_v = self.get_band_passed_wf(int_v)
 
         if use_cw:
             int_v = self.sin_sub.get_filtered_wf(int_v, int_num, ant)
@@ -150,7 +160,7 @@ class wf_analyzer:
 
         self.pad_num[ant] = 0
         self.pad_num[ant] = int_num
-        del akima, int_idx, int_v, int_num      
+        del int_idx, int_v, int_num      
 
     def get_fft_wf(self, use_zero_pad = False, use_rfft = False, use_abs = False, use_norm = False, use_dbmHz = False, use_phase = False):
 

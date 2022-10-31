@@ -24856,7 +24856,7 @@ VARS job_ARA_S3_R13964 station="3" run="13964"
 JOB job_ARA_S3_R13965 ARA_job.sub 
 VARS job_ARA_S3_R13965 station="3" run="13965"
 
-JOB job_ARA_S3_R13966 ARA_job.sub 
+JOB job_ARA_S3_R13966 ARA_job_2.sub 
 VARS job_ARA_S3_R13966 station="3" run="13966"
 
 JOB job_ARA_S3_R13967 ARA_job.sub 
@@ -31849,7 +31849,7 @@ VARS job_ARA_S3_R16489 station="3" run="16489"
 JOB job_ARA_S3_R16490 ARA_job.sub 
 VARS job_ARA_S3_R16490 station="3" run="16490"
 
-JOB job_ARA_S3_R16491 ARA_job.sub 
+JOB job_ARA_S3_R16491 ARA_job_2.sub 
 VARS job_ARA_S3_R16491 station="3" run="16491"
 
 JOB job_ARA_S3_R16492 ARA_job.sub 
