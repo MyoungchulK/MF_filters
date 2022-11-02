@@ -1159,6 +1159,7 @@ class known_issue_loader:
         if self.st == 2:
             bad_run = np.append(bad_run, 2428) # 2428 2013/09/27 unknown signal
             bad_run = np.append(bad_run, 2631) # 2631 2013/11/06 unknown signal
+            bad_run = np.append(bad_run, 2814) # 2814 2014/02/08 unknown signal
             bad_run = np.append(bad_run, 2849) # 2849 2014/02/10 unknown signal
             bad_run = np.append(bad_run, np.arange(2861, 2869 + 1, dtype = int)) # 2861 ~ 2869 2014/02/11 unknown signal
             bad_run = np.append(bad_run, 3442) # 3442 2014/04/19 unknown signal

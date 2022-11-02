@@ -42,20 +42,17 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     buffer_info = analog_buffer_info_loader(st, run, year, incl_cable_delay = True)
     buffer_info.get_int_time_info()
     ara_root = ara_root_loader(Data, Ped, st, year)
-
-    # channel mapping 
+ 
     ara_geom = ara_geom_loader(st, year, verbose = True)
     rf_ch = np.arange(num_ants, dtype = int)
     ele_ch = ara_geom.get_ele_ch_idx()
     trig_ch = ara_geom.get_trig_ch_idx()
     del ara_geom
 
-    # bad antenna
     known_issue = known_issue_loader(st)
     bad_ant = known_issue.get_bad_antenna(run, print_integer = True)
     del known_issue
 
-    # quality cut
     run_info1 = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
     qual_dat = run_info1.get_result_path(file_type = 'qual_cut', verbose = True, force_blind = True)
     daq_hf = h5py.File(qual_dat, 'r')
