@@ -223,13 +223,15 @@ class run_info_loader:
 
         return dat_path
 
-    def get_data_ped_path(self, file_type = 'event', verbose = False, return_none = False, return_dat_only = False, use_path_search = False):
+    def get_data_ped_path(self, file_type = 'event', verbose = False, return_none = False, return_dat_only = False, use_path_search = False, l2_data = False):
 
         if use_path_search:
             dat_path = self.get_data_path(file_type = file_type, verbose = verbose, return_none = return_none)
+        if l2_data:
+            dat_path = self.get_result_path(file_type = 'l2', verbose = verbose)
         else:
             dat_path = self.get_data_path_from_list(file_type = file_type, verbose = verbose, return_none = return_none)
-        if return_dat_only == True:
+        if return_dat_only == True or l2_data == True:
             ped_path = '0'
         else:
             ped_path = self.get_ped_path(verbose = verbose, return_none = return_none)

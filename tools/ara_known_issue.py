@@ -1264,6 +1264,7 @@ class known_issue_loader:
             bad_run = np.append(bad_run, np.arange(12884, 12885 + 1, dtype = int)) # possibly pulser
             bad_run = np.append(bad_run, np.arange(12903, 12905 + 1, dtype = int)) # 12903 ~ 12905 2018/12/12 unknown signal
             bad_run = np.append(bad_run, np.arange(12927, 12929 + 1, dtype = int)) # possibly pulser
+            bad_run = np.append(bad_run, 13016) # 13016 2018/12/24 unknown signal 
             bad_run = np.append(bad_run, np.arange(13019, 13024 + 1, dtype = int)) # possibly spice core
             bad_run = np.append(bad_run, np.arange(13029, 13030 + 1, dtype = int)) # possibly spice core
             bad_run = np.append(bad_run, np.arange(13039, 13065 + 1, dtype = int)) # possibly spice core

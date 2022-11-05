@@ -98,7 +98,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     sel_evt_len = len(sel_entries)
 
     # wf analyzer
-    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_band_pass = True, use_rfft = True, use_cw = True, use_cw_debug = True)
+    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_band_pass = True, add_double_pad = True, use_rfft = True, use_cw = True, use_cw_debug = True)
     dt = np.asarray([wf_int.dt])
     print(dt[0])
     pad_time = wf_int.pad_zero_t
@@ -284,13 +284,12 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
             wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True)
             ara_root.del_TGraph()
+        corr_evt, corr_nonorm_evt, corr_01_evt = ara_int.get_cross_correlation(wf_int.pad_v, return_debug_dat = True)
+        corr[:,:,evt] = corr_evt
+        corr_nonorm[:,:,evt] = corr_nonorm_evt
+        corr_01[:,:,evt] = corr_01_evt
 
-        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], sum_pol = False)
-        corr[:,:,evt] = ara_int.corr
-        corr_nonorm[:,:,evt] = ara_int.corr_nonorm
-        corr_01[:,:,evt] = ara_int.nor_fac
-
-        coval_evt = ara_int.coval
+        coval_evt = ara_int.get_coval_sample(corr_evt * wei_pairs[:, evt])
         coval[:,:,:,:,:,evt] = coval_evt
         sky_map[:,:,:,:,0,evt] = np.nansum(coval_evt[:, :, :, :, :v_pairs_len], axis = 4)
         sky_map[:,:,:,:,1,evt] = np.nansum(coval_evt[:, :, :, :, v_pairs_len:], axis = 4)
@@ -299,13 +298,12 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
             wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True)
             ara_root.del_TGraph()
-        
-        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], sum_pol = False)
-        bp_corr[:,:,evt] = ara_int.corr
-        bp_corr_nonorm[:,:,evt] = ara_int.corr_nonorm
-        bp_corr_01[:,:,evt] = ara_int.nor_fac
+        bp_corr_evt, bp_corr_nonorm_evt, bp_corr_01_evt = ara_int.get_cross_correlation(wf_int.pad_v, return_debug_dat = True)
+        bp_corr[:,:,evt] = bp_corr_evt
+        bp_corr_nonorm[:,:,evt] = bp_corr_nonorm_evt
+        bp_corr_01[:,:,evt] = bp_corr_01_evt
 
-        bp_coval_evt = ara_int.coval
+        bp_coval_evt = ara_int.get_coval_sample(bp_corr_evt * wei_pairs[:, evt], sum_pol = False)
         bp_coval[:,:,:,:,:,evt] = bp_coval_evt
         bp_sky_map[:,:,:,:,0,evt] = np.nansum(bp_coval_evt[:, :, :, :, :v_pairs_len], axis = 4)
         bp_sky_map[:,:,:,:,1,evt] = np.nansum(bp_coval_evt[:, :, :, :, v_pairs_len:], axis = 4)
@@ -314,19 +312,18 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
             wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True)
             ara_root.del_TGraph()
-        
-        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], sum_pol = False)
-        cw_corr[:,:,evt] = ara_int.corr
-        cw_corr_nonorm[:,:,evt] = ara_int.corr_nonorm
-        cw_corr_01[:,:,evt] = ara_int.nor_fac
+        cw_corr_evt, cw_corr_nonorm_evt, cw_corr_01_evt = ara_int.get_cross_correlation(wf_int.pad_v, return_debug_dat = True)
+        cw_corr[:,:,evt] = cw_corr_evt
+        cw_corr_nonorm[:,:,evt] = cw_corr_nonorm_evt
+        cw_corr_01[:,:,evt] = cw_corr_01_evt
 
-        cw_coval_evt = ara_int.coval
+        cw_coval_evt = ara_int.get_coval_sample(cw_corr_evt * wei_pairs[:, evt], sum_pol = False)
         cw_coval[:,:,:,:,:,evt] = cw_coval_evt
         cw_sky_map[:,:,:,:,0,evt] = np.nansum(cw_coval_evt[:, :, :, :, :v_pairs_len], axis = 4)
         cw_sky_map[:,:,:,:,1,evt] = np.nansum(cw_coval_evt[:, :, :, :, v_pairs_len:], axis = 4)
 
     # wf analyzer
-    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_rfft = True, use_ele_ch = True)
+    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, add_double_pad = True, use_rfft = True, use_ele_ch = True)
     # loop over the events
     for evt in tqdm(range(sel_evt_len)):
 

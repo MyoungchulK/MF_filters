@@ -19,7 +19,8 @@ from tools.ara_utility import size_checker
 @click.option('-b', '--blind_dat', default = False, type = bool)
 @click.option('-c', '--condor_run', default = False, type = bool)
 @click.option('-n', '--not_override', default = False, type = bool)
-def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_override):
+@click.option('-l', '--l2_data', default = False, type = bool)
+def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_override, l2_data):
 
     if not_override:
         blind_type = ''
@@ -54,7 +55,7 @@ def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_overrid
         return_dat_only = True
     elif key == 'blk_len' or key == 'rf_len' or key == 'dead' or key == 'dupl' or  key == 'run_time' or key == 'ped' or key == 'qual_cut' or key == 'evt_num' or key == 'medi' or key == 'sub_info' or key == 'cw_time':
         return_dat_only = True
-    Data, Ped = run_info.get_data_ped_path(file_type = file_type, return_none = return_none, verbose = verbose, return_dat_only = return_dat_only)
+    Data, Ped = run_info.get_data_ped_path(file_type = file_type, return_none = return_none, verbose = verbose, return_dat_only = return_dat_only, l2_data = l2_data)
     station, run, Config, Year, Month, Date = run_info.get_data_info()
     del run_info   
 
@@ -84,10 +85,10 @@ def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_overrid
         results = method(station, run, analyze_blind_dat = blind_dat)
         return
     elif key == 'l2':
-        results = method(Data, Ped, analyze_blind_dat = blind_dat)
+        results = method(Data, Ped, analyze_blind_dat = blind_dat, use_condor = condor_run)
         return 
     else:
-        results = method(Data, Ped, analyze_blind_dat = blind_dat)
+        results = method(Data, Ped, analyze_blind_dat = blind_dat, use_l2 = l2_data)
     del module, method
 
     # create output dir

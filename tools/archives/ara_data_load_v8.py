@@ -78,69 +78,26 @@ class ara_geom_loader:
             print('cable delay:',cable_delay)
         return cable_delay
 
-class ara_l2_loader:
+class ara_root_loader:
 
-    def __init__(self, data, ped = None):
+    def __init__(self, data, ped, st, yrs, use_l2 = False, run = None, analyze_blind_dat = None, irs_block_number = None):
 
         # calibration mode
         self.cal_type = ROOT.AraCalType
 
-        self.file = h5py.File(data, 'r')
-        run_config = self.file['config'][:]
-        self.station_id = int(run_config[0])
-        self.run = int(run_config[1])
-        self.num_evts = int(run_config[2])
-        self.config = int(run_config[3])
-        self.year = int(run_config[4])
-        self.month = int(run_config[5])
-        self.date = int(run_config[6])
-        self.unix = int(run_config[7])
-        self.evt_num = self.file['evt_num'][:]
-        self.irs_block = self.file['irs_block'][:]
-        self.daq_cut = self.file['daq_cut'][:]
-        print('total events:', self.num_evts)
+        self.use_l2 = use_l2
+        if self.use_l2:
+            print('This is L2 Running!!!!!!')
+            self.irs_block_number = irs_block_number
+            self.buffer_info = analog_buffer_info_loader(st, run, yrs, incl_cable_delay = True)
+            self.buffer_info.get_int_time_info()
 
-        self.buffer_info = analog_buffer_info_loader(self.station_id, self.run, self.unix, incl_cable_delay = True)
-        self.buffer_info.get_int_time_info()
-
-    def get_sub_info(self):
-
-        self.entry_num = self.file['entry_num'][:]
-        self.unix_time = self.file['unix_time'][:]
-        self.pps_number = self.file['pps_number'][:]
-        self.trig_type = self.file['trig_type'][:]
-
-    def get_entry(self, evt):
-
-        self.evts = self.file[f'entry{evt}'][:]
-        self.evts_nan = ~np.isnan(self.evts)
-        self.times = self.buffer_info.get_time_arr(self.irs_block[evt], trim_1st_blk = True, use_int_dat = True, ch_shape = True)
-        self.times_nan = ~np.isnan(self.times)
-
-    def get_useful_evt(self, cal_mode):
-        
-        # place holder
-        return
-
-    def get_rf_ch_wf(self, ant):
-
-        raw_t = self.times[self.times_nan[:, ant], ant]
-        raw_v = self.evts[self.evts_nan[:, ant], ant]
-
-        return raw_t, raw_v
-
-    def del_TGraph(self):
-
-        # place holder
-        return
-
-    def del_usefulEvt(self):
-
-        del self.evts, self.evts_nan, self.times, self.times_nan
-
-class ara_root_loader:
-
-    def __init__(self, data, ped, st, yrs):
+            from tools.ara_run_manager import run_info_loader
+            run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
+            l2_dat = run_info.get_result_path(file_type = 'l2', verbose = True)
+            self.l2_hf = h5py.File(l2_dat, 'r')           
+            del run_info, l2_dat
+            return
 
         #geom info
         self.ara_geom = ara_geom_loader(st, yrs)
@@ -164,20 +121,37 @@ class ara_root_loader:
         self.cal = ROOT.AraEventCalibrator.Instance()
         self.cal.setAtriPedFile(ped, st)
 
-        # calibration mode
-        self.cal_type = ROOT.AraCalType
-
     def get_entry(self, evt):
        
+        if self.use_l2:
+            self.evts = self.l2_hf[f'entry{evt}'][:]
+            #self.evts = self.l2_hf[f'evts'][:,:,evt]
+            self.evts_nan = ~np.isnan(self.evts)
+            blk_idx = self.irs_block_number[evt][num_ddas::num_ddas]
+            self.times = self.buffer_info.get_time_arr(blk_idx, trim_1st_blk = True, use_int_dat = True, ch_shape = True)
+            self.times_nan = ~np.isnan(self.times)
+            del blk_idx
+            return
+
         # get the event
         self.evtTree.GetEntry(evt)
 
     #def get_useful_evt(self):
     def get_useful_evt(self, cal_mode):
 
+        if self.use_l2:
+            return
+
         self.usefulEvt = ROOT.UsefulAtriStationEvent(self.rawEvt, cal_mode)
 
-    def get_rf_ch_wf(self, ant):
+    def get_rf_ch_wf(self, ant, blk_idx_arr = None):
+
+        if self.use_l2:
+
+            raw_t = self.times[self.times_nan[:, ant], ant]
+            raw_v = self.evts[self.evts_nan[:, ant], ant]
+            
+            return raw_t, raw_v
 
         self.gr = self.usefulEvt.getGraphFromRFChan(ant)
         raw_t = np.frombuffer(self.gr.GetX(),dtype=float,count=-1)
@@ -195,11 +169,18 @@ class ara_root_loader:
 
     def del_TGraph(self):
 
+        if self.use_l2:
+            return
+
         self.gr.Delete()
         del self.gr
 
     def del_usefulEvt(self):
         
+        if self.use_l2:
+            del self.evts, self.evts_nan, self.times, self.times_nan
+            return
+    
         #self.usefulEvt.Delete()
         del self.usefulEvt
 

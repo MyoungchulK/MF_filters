@@ -21,14 +21,21 @@ class py_interferometers:
         self.st = st
         self.yrs = yrs
         self.run = run
-        self.lags = correlation_lags(pad_len, pad_len, 'same') * self.dt
+        self.lags = correlation_lags(pad_len, pad_len, 'full') * self.dt
         self.lag_len = len(self.lags)
 
         if get_sub_file:
             self.get_pair_info()
             self.get_arrival_time_tables()
             self.get_coval_time()
-            self.pad_one = np.full((pad_len, num_ants), 1, dtype = float)
+            self.get_zero_pad(pad_len)
+
+    def get_zero_pad(self, pad_len):
+    
+        double_pad_len = pad_len * 2 
+        self.pad_one = np.full((double_pad_len, num_ants), 1, dtype = float) 
+        self.zero_pad = np.full((double_pad_len, num_ants), 0, dtype = float)
+        self.quater_idx = pad_len // 2
 
     def get_pair_info(self):
 
@@ -94,70 +101,71 @@ class py_interferometers:
 
         self.int_factor = (self.table - self.lags[self.p0_idx])/self.dt
 
-    def get_coval_sample(self, corr, sum_pol = False):
+    def get_coval_sample(self, sum_pol = False):
 
-        corr_diff = corr[1:] - corr[:-1]
+        corr_diff = self.corr[1:] - self.corr[:-1]
 
-        coval = np.full(self.table_shape, 0, dtype=float)
+        self.coval = np.full(self.table_shape, 0, dtype=float)
         for p in range(self.pair_len):
-            coval[:, :, :, :, p] = corr_diff[:, p][self.p0_idx[:, :, :, :, p]] * self.int_factor[:, :, :, :, p] + corr[:, p][self.p0_idx[:, :, :, :, p]]
-        coval[self.bad_arr] = 0
+            self.coval[:, :, :, :, p] = corr_diff[:, p][self.p0_idx[:, :, :, :, p]] * self.int_factor[:, :, :, :, p] + self.corr[:, p][self.p0_idx[:, :, :, :, p]]
+        self.coval[self.bad_arr] = 0
         del corr_diff
 
         if sum_pol:
-            corr_v_sum = np.nansum(coval[:, :, :, :, :self.v_pairs_len], axis = 4)
-            corr_h_sum = np.nansum(coval[:, :, :, :, self.v_pairs_len:], axis = 4)
+            corr_v_sum = np.nansum(self.coval[:, :, :, :, :self.v_pairs_len], axis = 4)
+            corr_h_sum = np.nansum(self.coval[:, :, :, :, self.v_pairs_len:], axis = 4)
 
             corr_v_max = np.nanmax(corr_v_sum, axis = (0,1))
             corr_h_max = np.nanmax(corr_h_sum, axis = (0,1))
-            coval = np.asarray([corr_v_max, corr_h_max]) # pol, rad, sol
+            self.coval = np.asarray([corr_v_max, corr_h_max]) # pol, rad, sol
 
-            coord = np.full((2, 2, 2, 2), np.nan, dtype = float) # pol, thetapi, rad, sol
+            self.coord = np.full((2, 2, 2, 2), np.nan, dtype = float) # pol, thetapi, rad, sol
             for r in range(2):
                 for s in range(2):
-                    coord[0, :, r, s] = np.asarray(np.where(corr_v_sum[:, :, r, s] == corr_v_max[r, s]), dtype = float).flatten()                 
-                    coord[1, :, r, s] = np.asarray(np.where(corr_h_sum[:, :, r, s] == corr_h_max[r, s]), dtype = float).flatten()
+                    self.coord[0, :, r, s] = np.asarray(np.where(corr_v_sum[:, :, r, s] == corr_v_max[r, s]), dtype = float).flatten()                 
+                    self.coord[1, :, r, s] = np.asarray(np.where(corr_h_sum[:, :, r, s] == corr_h_max[r, s]), dtype = float).flatten()
             del corr_v_sum, corr_h_sum
 
-            return coval, coord
-        else:
-            return coval
+    def get_padded_wf(self, pad_v):
 
-    def get_cross_correlation(self, pad_v, return_debug_dat = False):
+        self.zero_pad[:] = 0
+        self.zero_pad[self.quater_idx:-self.quater_idx] = pad_v
+
+    def get_cross_correlation(self, return_debug_dat = False):
 
         # fft correlation w/ multiple array at once
-        corr = fftconvolve(pad_v[:, self.pairs[:, 0]], pad_v[::-1, self.pairs[:, 1]], 'same', axes = 0)
+        self.corr = fftconvolve(self.zero_pad[:, self.pairs[:, 0]], self.zero_pad[::-1, self.pairs[:, 1]], 'same', axes = 0)
         if return_debug_dat:
-            corr_nonorm = np.copy(corr)
+            self.corr_nonorm = np.copy(self.corr)
 
         # normalization factor by wf weight
-        nor_fac = fftconvolve(pad_v**2, self.pad_one, 'same', axes = 0)
+        nor_fac = fftconvolve(self.zero_pad**2, self.pad_one, 'same', axes = 0)
         nor_fac = np.sqrt(nor_fac[::-1, self.pairs[:, 0]] * nor_fac[:, self.pairs[:, 1]])
-        corr /= nor_fac
-        corr[np.isnan(corr) | np.isinf(corr)] = 0 # convert x/nan result
+        self.corr /= nor_fac
+        self.corr[np.isnan(self.corr) | np.isinf(self.corr)] = 0 # convert x/nan result
 
         # hilbert
-        corr = np.abs(hilbert(corr, axis = 0))
+        self.corr = np.abs(hilbert(self.corr, axis = 0))
 
         if return_debug_dat:
-            return corr, corr_nonorm, nor_fac
+            self.nor_fac = nor_fac
         else:
             del nor_fac
-            return corr
     
-    def get_sky_map(self, pad_v, weights = None):
+    def get_sky_map(self, pad_v, weights = None, sum_pol = False, return_debug_dat = False):
+
+        #zero pad
+        self.get_padded_wf(pad_v)
         
         # correlation
-        corr = self.get_cross_correlation(pad_v)
+        self.get_cross_correlation(return_debug_dat = return_debug_dat)
 
         if weights is not None:
-           corr *= weights
+           self.corr *= weights
 
         # coval
-        coval, coord = self.get_coval_sample(corr, sum_pol = True)
-        del corr
-
-        return coval, coord
+        self.get_coval_sample(sum_pol = sum_pol)
+        del self.corr
 
 def get_products(weights, pairs, v_pairs_len):
    

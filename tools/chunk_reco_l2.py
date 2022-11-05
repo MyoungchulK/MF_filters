@@ -6,8 +6,8 @@ def reco_l2_collector(Data, Ped, analyze_blind_dat = False):
 
     print('Collecting reco starts!')
 
-    from tools.ara_data_load_temp import ara_uproot_loader
-    from tools.ara_data_load_temp import ara_root_loader
+    from tools.ara_data_load import ara_uproot_loader
+    from tools.ara_data_load import ara_root_loader
     from tools.ara_constant import ara_const
     from tools.ara_wf_analyzer import wf_analyzer
     from tools.ara_py_interferometers import py_interferometers
@@ -63,7 +63,7 @@ def reco_l2_collector(Data, Ped, analyze_blind_dat = False):
     del run_info, wei_key, wei_dat, wei_hf
 
     # wf analyzer
-    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, add_double_pad = True, use_l2 = True)
+    wf_int = wf_analyzer(use_time_pad = True, use_l2 = True)
 
     # interferometers
     ara_int = py_interferometers(wf_int.pad_len, wf_int.dt, st, yr, run = run, get_sub_file = True)
@@ -92,12 +92,14 @@ def reco_l2_collector(Data, Ped, analyze_blind_dat = False):
         # loop over the antennas
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True)
             del raw_t, raw_v
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()   
 
-        coef[:, :, :, evt], coord[:, :, :, :, evt] = ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt])
+        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], sum_pol = True)
+        coef[:, :, :, evt] = ara_int.coval
+        coord[:, :, :, :, evt] = ara_int.coord
         #print(coef[:, :, :, evt], coord[:, :, :, :, evt])       
     del ara_root, num_evts, num_ants, wf_int, ara_int, daq_qual_cut_sum, wei_pairs
 
