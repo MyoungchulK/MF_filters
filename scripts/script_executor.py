@@ -84,7 +84,7 @@ def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_overrid
     elif key == 'cw_time':
         results = method(station, run, analyze_blind_dat = blind_dat)
         return
-    elif key == 'l2':
+    elif key == 'l2' or key == 'l2_temp':
         results = method(Data, Ped, analyze_blind_dat = blind_dat, use_condor = condor_run)
         return 
     else:

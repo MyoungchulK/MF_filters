@@ -98,6 +98,7 @@ class ara_l2_loader:
         self.evt_num = self.file['evt_num'][:]
         self.irs_block = self.file['irs_block'][:]
         self.daq_cut = self.file['daq_cut'][:]
+        #self.num_bins = self.file['num_bins'][:]
         print('total events:', self.num_evts)
 
         self.buffer_info = analog_buffer_info_loader(self.station_id, self.run, self.unix, incl_cable_delay = True)
@@ -112,6 +113,8 @@ class ara_l2_loader:
 
     def get_entry(self, evt):
 
+        #self.bin_evt = self.num_bins[:, evt]
+        #self.evt = evt
         self.evts = self.file[f'entry{evt}'][:]
         self.evts_nan = ~np.isnan(self.evts)
         self.times = self.buffer_info.get_time_arr(self.irs_block[evt], trim_1st_blk = True, use_int_dat = True, ch_shape = True)
@@ -126,6 +129,8 @@ class ara_l2_loader:
 
         raw_t = self.times[self.times_nan[:, ant], ant]
         raw_v = self.evts[self.evts_nan[:, ant], ant]
+        #raw_v = self.evts[:self.bin_evt[ant], ant]
+        #raw_v = self.evts[:self.num_bins[ant, self.evt], ant]
 
         return raw_t, raw_v
 
@@ -136,7 +141,9 @@ class ara_l2_loader:
 
     def del_usefulEvt(self):
 
-        del self.evts, self.evts_nan, self.times, self.times_nan
+        #del self.bin_evt, self.evts, self.times, self.times_nan
+        #del self.evt, self.evts, self.times, self.times_nan
+        del self.evts_nan, self.evts, self.times, self.times_nan
 
 class ara_root_loader:
 
@@ -870,7 +877,8 @@ class analog_buffer_info_loader:
         self.num_int_idxs = np.full((2, num_useful_chs), 0, dtype = int)
         self.num_int_idxs_f = np.copy(self.num_int_idxs)
 
-        self.int_time_num_arr = np.full((num_samples, 2, num_useful_chs), np.nan, dtype = float)
+        self.int_num_samples = int(self.blk_time // dt) + 5 # 5 for generous space...
+        self.int_time_num_arr = np.full((self.int_num_samples, 2, num_useful_chs), np.nan, dtype = float)
         self.int_time_f_num_arr = np.copy(self.int_time_num_arr)
 
         offset_arr = np.array([self.blk_time * 2, 0.])
@@ -959,14 +967,17 @@ class analog_buffer_info_loader:
 
         time_offset = self.blk_time * (np.arange(len(cap_idx_arr)) + remove_1_blk) - self.blk_time * (cap_idx_arr)
         if use_int_dat:        
-            time_arr = np.full((num_samples, len(cap_idx_arr), num_useful_chs), np.nan, dtype = float)
+            time_arr = np.full((self.int_num_samples, len(cap_idx_arr), num_useful_chs), np.nan, dtype = float)
             time_arr[:, :-1] = self.int_time_num_arr[:, cap_idx_arr[:-1]]
             time_arr[:, -1] = self.int_time_f_num_arr[:, cap_idx_arr[-1]]
         else:
             time_arr = self.time_num_arr[:, cap_idx_arr]
         time_arr += time_offset[np.newaxis, : , np.newaxis]
         if ch_shape:
-            time_arr = np.reshape(time_arr, (num_samples * len(cap_idx_arr), num_useful_chs), order='F')
+            if use_int_dat:
+                time_arr = np.reshape(time_arr, (self.int_num_samples * len(cap_idx_arr), num_useful_chs), order='F')
+            else:
+                time_arr = np.reshape(time_arr, (num_samples * len(cap_idx_arr), num_useful_chs), order='F')
         del remove_1_blk, cap_idx_arr, time_offset 
 
         if return_min_max:

@@ -3,7 +3,7 @@ import numpy as np
 from tqdm import tqdm
 import h5py
 
-def l2_collector(Data, Ped, analyze_blind_dat = False, use_condor = False):
+def l2_temp_collector(Data, Ped, analyze_blind_dat = False, use_condor = False):
 
     print('Collecting l2 starts!')
 
@@ -72,7 +72,10 @@ def l2_collector(Data, Ped, analyze_blind_dat = False, use_condor = False):
         output_path = condor_info.local_path
     else:
         output_path = true_output_path   
- 
+
+    dt = h5py.vlen_dtype(np.dtype(int))
+    dt_f = h5py.vlen_dtype(np.dtype(float))
+
     h5_file_name = f'l2{blind_type}_A{st}_R{run}.h5'
     hf = h5py.File(f'{output_path}{h5_file_name}', 'w')
     hf.create_dataset('config', data=run_config, compression="gzip", compression_opts=9)
@@ -85,9 +88,7 @@ def l2_collector(Data, Ped, analyze_blind_dat = False, use_condor = False):
     if len(irs_block.shape) != 1:
         hf.create_dataset(f'irs_block', data=irs_block, compression="gzip", compression_opts=9)
     else:
-        dt = h5py.vlen_dtype(np.dtype(int))
         hf.create_dataset(f'irs_block', data=irs_block, dtype = dt, compression="gzip", compression_opts=9)
-        del dt
     del blind_type, st, run, output_path, run_config, evt_num, entry_num, unix_time, pps_number, trig_type, year, month, date, unix
 
     num_bins = np.full((num_ants, num_evts), 0, dtype = int)
@@ -114,13 +115,27 @@ def l2_collector(Data, Ped, analyze_blind_dat = False, use_condor = False):
         ara_root.del_usefulEvt()   
 
         pad_num = wf_int.pad_num
+        fil_wfs = wf_int.pad_v
         num_bins[:, evt] = pad_num
+
         max_num_bins = np.nanmax(pad_num)
-        wfs = wf_int.pad_v[:max_num_bins]
+        wfs = fil_wfs[:max_num_bins]
         hf.create_dataset(f'entry{evt}', data=wfs, compression="gzip", compression_opts=9)
-        del max_num_bins, wfs, pad_num
+    
+        
+        #wfs = []
+        #for ant in range(num_ants):
+        #    new_wf = fil_wfs[:pad_num[ant], ant]
+        #    new_wf = new_wf.astype(float)
+        #    wfs.append(new_wf)
+        #wfs = np.asarray(wfs)
+        #if len(wfs.shape) != 1:       
+        #    hf.create_dataset(f'entry{evt}', data=wfs, compression="gzip", compression_opts=9)
+        #else:
+        #    hf.create_dataset(f'entry{evt}', data=wfs, dtype = dt_f, compression="gzip", compression_opts=9)
+        #del wfs, pad_num, fil_wfs
     hf.create_dataset(f'num_bins', data=num_bins, compression="gzip", compression_opts=9)
-    del ara_root, num_evts, num_ants, wf_int, daq_cut
+    del dt, dt_f, ara_root, num_evts, num_ants, wf_int, daq_cut
     hf.close()
 
     Output = condor_info.get_condor_to_target_path(h5_file_name, true_output_path)
