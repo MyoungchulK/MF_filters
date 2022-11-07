@@ -10,12 +10,16 @@ import os
 import h5py
 import ROOT
 from tqdm import tqdm
+from datetime import datetime
+from datetime import timezone
 from scipy.interpolate import Akima1DInterpolator
 from scipy.signal import butter, filtfilt
 from scipy.stats import rayleigh
+from scipy.interpolate import interp1d
 
 #link AraRoot
 ROOT.gSystem.Load(os.environ.get('ARA_UTIL_INSTALL_DIR')+"/lib/libAraEvent.so")
+ROOT.gSystem.Load(os.environ.get('ARA_UTIL_INSTALL_DIR')+"/lib/libRootFftwWrapper.so.3.0.1")
 
 class ara_root_loader:
     """! Class for loading data by using AraRoot"""
@@ -118,10 +122,65 @@ class ara_root_loader:
 
         return trig_type
 
+    def get_block_length(self, trim_1st_blk = False):
+        """! Get block length of each event
+
+        @param trim_1st_blk  Bool.
+        @return blk_len  Integer
+        """
+        
+        num_ddas = 4 # number of dda boards
+        block_vec = self.rawEvt.blockVec
+        blk_len = block_vec.size() // num_ddas - int(trim_1st_blk)
+        del num_ddas, block_vec        
+
+        return blk_len
+
+class sin_subtract_loader:
+    """! Class that filter out cw signal
+        Please use this package: https://github.com/MyoungchulK/libRootFftwWrapper
+        Default package wont work for this class    
+    """
+
+    def __init__(self, cw_freq, cw_thres, max_fail_atts = 3, num_params = 6, dt = 0.5):
+        """! Class initializer
+
+        @param cw_freq  Frequency ranges that want to filter out
+        @param cw_thres  Power reduction ratio that use to tell SineSubtract 'thats enough'
+        @param max_fail_atts  Number fo try before stop
+        @param dt  Dt
+        """
+
+        self.dt = dt
+        self.num_params = num_params
+        self.cw_freq = cw_freq
+        self.cw_thres = cw_thres
+
+        self.sin_sub = ROOT.FFTtools.SineSubtract(max_fail_atts, 0.05, False) # no store
+        self.sin_sub.setFreqLimits(self.num_params, cw_freq[:, 0].astype(np.double), cw_freq[:, 1].astype(np.double)) # frequency ranges that want to filter out
+
+    def get_filtered_wf(self, int_v, int_num, ant):
+        """! filter function
+
+        @param int_v  Original WF
+        @param int_num  WF length
+        @param ant  RF channel number
+        @return cw_v Filtered WF
+        """
+
+        int_v_db = int_v.astype(np.double) # convert to doule
+        cw_v = np.full((int_num), 0, dtype = np.double) # empty array for filtered result
+
+        self.sin_sub.subtractCW(int_num, int_v_db, self.dt, self.cw_thres[ant], cw_v) # filter !!!
+
+        cw_v = cw_v.astype(float) # convert back to float
+
+        return cw_v
+
 class wf_analyzer:
     """! Class that takes care of zero padding, interpolation, and fft"""
 
-    def __init__(self, dt = 0.5, num_chs = 16, use_time_pad = False, use_freq_pad = False, use_band_pass = False, use_rfft = False):
+    def __init__(self, dt = 0.5, num_chs = 16, use_time_pad = False, use_freq_pad = False, use_band_pass = False, use_rfft = False, use_cw = False):
         """! Class initializer
 
         @param dt time  Binwidth
@@ -130,6 +189,7 @@ class wf_analyzer:
         @param use_freq_pad  Boolean. turn on/off frequency spectrum pad
         @param use_band_pass  Boolean. turn on/off band pass filter
         @param use_rfft  Boolean. turn on/off real fft
+        @param use_cw  Boolean. turn on/off SineSubtract
         """
 
         self.dt = dt
@@ -140,6 +200,19 @@ class wf_analyzer:
             self.get_freq_pad(use_rfft = use_rfft)
         if use_band_pass:
             self.get_band_pass_filter()
+        if use_cw:
+            cw_cut = 0.02
+            cw_thres = np.full((16), cw_cut, dtype = float) # Power reduction ratio that use to tell SineSubtract 'thats enough'
+
+            cw_range = 0.01
+            cw_freq_type = np.array([0.125, 0.15, 0.25, 0.3, 0.405, 0.5]) # Frequency ranges that want to filter out. So many peaks....
+            num_params = len(cw_freq_type)
+
+            cw_freq = np.full((num_params, 2), np.nan, dtype = float)
+            for p in range(num_params):
+                cw_freq[p, 0] = cw_freq_type[p] - cw_range
+                cw_freq[p, 1] = cw_freq_type[p] + cw_range        
+            self.sin_sub = sin_subtract_loader(cw_freq, cw_thres, 3, num_params = num_params, dt = self.dt) # load SineSubtract
 
     def get_band_pass_filter(self, low_freq_cut = 0.13, high_freq_cut = 0.85, order = 10, pass_type = 'band'):
         """! Band pass filter config       
@@ -173,7 +246,7 @@ class wf_analyzer:
         It will also create nan arrays for storing times/volts from all 16 channels
         """
 
-        ## max/min time from 2013 ~2019 a2/3. You can just pad in n=1024 
+        ## max/min time from 2013 ~2019 a2/3. You can just pad in n=1024 though 
         pad_i = -186.5
         pad_f = 953
 
@@ -199,7 +272,7 @@ class wf_analyzer:
         self.df = 1 / (self.pad_len *  self.dt) # df for pad
         self.sqrt_dt = np.sqrt(self.dt)
 
-    def get_int_wf(self, raw_t, raw_v, ant, use_zero_pad = False, use_band_pass = False):
+    def get_int_wf(self, raw_t, raw_v, ant, use_zero_pad = False, use_band_pass = False, use_cw = False):
         """! Interpolation module for single channel WF
         User can turn on/off zero padding and band pass filtering
         
@@ -219,6 +292,9 @@ class wf_analyzer:
 
         if use_band_pass:
             int_v = self.get_band_passed_wf(int_v)
+
+        if use_cw:
+            int_v = self.sin_sub.get_filtered_wf(int_v, int_num, ant)
 
         if use_zero_pad:
             self.pad_v[:, ant] = 0 # remaining element would be 0
@@ -325,6 +401,36 @@ def get_rayl_distribution(dat, binning = 1000):
 
     return rayl_params, rfft_2d, dat_bin_edges
 
+def get_signal_chain_gain(soft_rayl, freq_range, dt, st):
+    """! gain extraction code
+    Related slide: https://aradocs.wipac.wisc.edu/cgi-bin/DocDB/ShowDocument?docid=2629
+    in-ice noise estimation calculation will be added soon
+    
+    @param soft_rayl  Numpy array. fit parameters from rayl. dimension of array should be (rfft length, number of channels)
+    @param freq_range  Numpy array. rfft freuqency range
+    @param dt  Float Dt
+    @param st  Integer station id
+
+    @return soft_sc  Numpy array. signal chain gain. dimension of array should be (rfft length, number of channels)
+    """
+
+    p1 = soft_rayl / 1e3 * np.sqrt(1e-9) # mV to V and ns to s
+    freq_mhz = freq_range * 1e3 # GHz to MHz
+
+    h_tot_path = f'data/A{st}_Htot.txt'
+    h_tot = np.loadtxt(h_tot_path)
+    f = interp1d(h_tot[:,0], h_tot[:, 1:], axis = 0, fill_value = 'extrapolate')
+    h_tot_int = f(freq_mhz)
+    del freq_mhz, h_tot, f
+
+    Htot = h_tot_int * np.sqrt(dt * 1e-9)
+    Hmeas = p1 * np.sqrt(2) # power symmetry
+    Hmeas *= np.sqrt(2) # surf_turf
+    soft_sc = Hmeas / Htot
+    del p1, Htot, Hmeas
+
+    return soft_sc
+
 def get_path_info(dat_path, front_key, end_key):
     """! scrap info from string
 
@@ -345,44 +451,54 @@ def get_path_info(dat_path, front_key, end_key):
 
     return val
 
+def get_soft_blk_len(st, run):
+    """! Get configured software triggered block length
+
+    @param st  Integer station id
+    @param run  Integer run number
+    @return soft_readout_limit  Integer software triggered block length
+    """
+
+    if st == 2:
+        if run < 9505:
+            soft_readout_limit = 8
+        else:
+            soft_readout_limit = 12
+    elif st == 3:
+        if run < 10001:
+            soft_readout_limit = 8
+        else:
+            soft_readout_limit = 12
+
+    return soft_readout_limit
+
 def get_config_info(dat_path):
-    """! Get basic data path and config 
+    """! Get basic data and config info
     
     @param dat_path  String
-    @return Ped  String pedestal path
     @return st  Station ID
-    @return run  Run number
-    @return year  Year
-    @return blind_type  Boolean
+    @return run  Integer Run number
+    @return year  Integer Year
+    @return soft_blk_len  Integer software triggered block length
     """
 
     st = int(get_path_info(dat_path, '/ARA0', '/'))
     run = int(get_path_info(dat_path, '/run', '/'))
     year = int(get_path_info(dat_path, 'ARA/', '/'))
-    Ped = f'/data/user/mkim/OMF_filter/ARA0{st}/ped_full/ped_full_values_A{st}_R{run}.dat'
+    month_date = get_path_info(dat_path, f'/ARA0{st}/', '/run')
+    month = int(month_date[:2])
+    date = int(month_date[2:])
+    ymd = datetime(year, month, date, 0, 0)
+    ymd_r = ymd.replace(tzinfo=timezone.utc)
+    year_in_unix = int(ymd_r.timestamp())
+    soft_blk_len = get_soft_blk_len(st, run)
     print(f'Station ID: {st}')
     print(f'Run: {run}')
-    print(f'Year: {year}')
+    print(f'YMD: {year}, {month}, {date}')
+    print(f'Year in Unix: {year_in_unix}')
+    print(f'Soft Blk Config: {soft_blk_len}')
 
-    return Ped, st, run, year
-
-def get_qual_cut(st, run):
-    """! Get quality cut result
-
-    @param st  Station ID
-    @param run  Run number
-    @return bad_evt  Numpy array. 0: pass, 1: cut
-    """
-
-    path = f'/data/user/mkim/OMF_filter/ARA0{st}/qual_cut/qual_cut_A{st}_R{run}.h5'
-    qual_file = h5py.File(path, 'r') 
-    total_cut = qual_file['total_qual_cut_sum'][:]
-    rp_ant = np.nansum(qual_file['rp_ants'][:], axis = 0)
-
-    bad_evt = np.logical_or(total_cut != 0, rp_ant != 0).astype(int)
-    print(f'Quality Cut: {path}')
-
-    return bad_evt
+    return st, run, year_in_unix, soft_blk_len
 
 
 
