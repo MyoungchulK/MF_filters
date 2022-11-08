@@ -21,20 +21,23 @@ class py_interferometers:
         self.st = st
         self.yrs = yrs
         self.run = run
-        self.lags = correlation_lags(pad_len, pad_len, 'full') * self.dt
-        self.lag_len = len(self.lags)
 
         if get_sub_file:
+            self.get_zero_pad(pad_len)
+            self.lags = correlation_lags(self.double_pad_len, self.double_pad_len, 'same') * self.dt
+            self.lag_len = len(self.lags)
             self.get_pair_info()
             self.get_arrival_time_tables()
             self.get_coval_time()
-            self.get_zero_pad(pad_len)
+        else:                
+            self.lags = correlation_lags(pad_len, pad_len, 'full') * self.dt    
+            self.lag_len = len(self.lags)
 
     def get_zero_pad(self, pad_len):
     
-        double_pad_len = pad_len * 2 
-        self.pad_one = np.full((double_pad_len, num_ants), 1, dtype = float) 
-        self.zero_pad = np.full((double_pad_len, num_ants), 0, dtype = float)
+        self.double_pad_len = pad_len * 2 
+        self.pad_one = np.full((self.double_pad_len, num_ants), 1, dtype = float) 
+        self.zero_pad = np.full((self.double_pad_len, num_ants), 0, dtype = float)
         self.quater_idx = pad_len // 2
 
     def get_pair_info(self):
@@ -165,7 +168,8 @@ class py_interferometers:
 
         # coval
         self.get_coval_sample(sum_pol = sum_pol)
-        del self.corr
+        if return_debug_dat == False:
+            del self.corr
 
 def get_products(weights, pairs, v_pairs_len):
    

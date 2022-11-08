@@ -41,6 +41,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     print('run info:', run_info)
     buffer_info = analog_buffer_info_loader(st, run, year, incl_cable_delay = True)
     buffer_info.get_int_time_info()
+    int_num_samples = buffer_info.int_num_samples
     ara_root = ara_root_loader(Data, Ped, st, year)
 
     # channel mapping 
@@ -116,17 +117,19 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     wei_pairs = get_products(weights, pairs, v_pairs_len) 
 
     # output array
-    wf_all = np.full((wf_int.pad_len, 2, num_ants, sel_evt_len), np.nan, dtype=float)
-    int_wf_all = np.copy(wf_all)
-    bp_wf_all = np.copy(wf_all)
-    cw_wf_all = np.copy(wf_all)
-    ele_wf_all = np.full((wf_int.pad_len, 2, num_eles, sel_evt_len), np.nan, dtype=float)
-    int_ele_wf_all = np.copy(ele_wf_all)
+    blk_max = 48
+    samp_pad = blk_max * num_samps
+    wf_all = np.full((samp_pad, 2, num_ants, sel_evt_len), np.nan, dtype=float)
+    int_wf_all = np.full((wf_int.pad_len, 2, num_ants, sel_evt_len), np.nan, dtype=float)
+    bp_wf_all = np.copy(int_wf_all)
+    cw_wf_all = np.copy(int_wf_all)
+    ele_wf_all = np.full((samp_pad, 2, num_eles, sel_evt_len), np.nan, dtype=float)
+    int_ele_wf_all = np.full((wf_int.pad_len, 2, num_eles, sel_evt_len), np.nan, dtype=float)
 
-    adc_all = np.copy(wf_all)
-    ped_all = np.copy(wf_all)
-    ele_adc_all = np.copy(ele_wf_all)
-    ele_ped_all = np.copy(ele_wf_all)
+    adc_all = np.full((samp_pad, 2, num_ants, sel_evt_len), np.nan, dtype=float)
+    ped_all = np.copy(adc_all)
+    ele_adc_all = np.full((samp_pad, 2, num_eles, sel_evt_len), np.nan, dtype=float)
+    ele_ped_all = np.copy(ele_adc_all)
 
     freq = np.full((wf_int.pad_fft_len, num_ants, sel_evt_len), np.nan, dtype=float)
     fft = np.copy(freq)
@@ -184,7 +187,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         num_int_samps_in_blk[:blk_idx_len, :, evt] = buffer_info.int_samp_in_blk
         samp_idx[:, :blk_idx_len, :, evt] = buffer_info.get_samp_idx(blk_idx_arr)
         time_arr[:, :blk_idx_len, :, evt] = buffer_info.get_time_arr(blk_idx_arr, trim_1st_blk = True)
-        int_time_arr[:, :blk_idx_len, :, evt] = buffer_info.get_time_arr(blk_idx_arr, trim_1st_blk = True, use_int_dat = True)
+        int_time_arr[:int_num_samples, :blk_idx_len, :, evt] = buffer_info.get_time_arr(blk_idx_arr, trim_1st_blk = True, use_int_dat = True)
         
         # get entry and wf
         ara_root.get_entry(sel_entries[evt])
@@ -285,7 +288,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True)
             ara_root.del_TGraph()
 
-        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], sum_pol = False)
+        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], sum_pol = False, return_debug_dat = True)
         corr[:,:,evt] = ara_int.corr
         corr_nonorm[:,:,evt] = ara_int.corr_nonorm
         corr_01[:,:,evt] = ara_int.nor_fac
@@ -300,7 +303,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True)
             ara_root.del_TGraph()
         
-        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], sum_pol = False)
+        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], sum_pol = False, return_debug_dat = True)
         bp_corr[:,:,evt] = ara_int.corr
         bp_corr_nonorm[:,:,evt] = ara_int.corr_nonorm
         bp_corr_01[:,:,evt] = ara_int.nor_fac
@@ -315,7 +318,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True)
             ara_root.del_TGraph()
         
-        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], sum_pol = False)
+        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], sum_pol = False, return_debug_dat = True)
         cw_corr[:,:,evt] = ara_int.corr
         cw_corr_nonorm[:,:,evt] = ara_int.corr_nonorm
         cw_corr_01[:,:,evt] = ara_int.nor_fac
