@@ -41,6 +41,8 @@ def get_rayl_distribution(dat, binning = 1000):
                 rayl_params[:, freq, ant] = rayleigh.fit(dat[freq, ant], loc = dat_bin_edges[0, freq, ant], scale = mu_init)
             except RuntimeError:
                 print(f'Runtime Issue in Freq. {freq} index!')
+                rayl_params[0, freq, ant] = 0
+                rayl_params[1, freq, ant] = mu_init
                 pass
             del mu_init
     del dat_bins, dat_half_bin_width, fft_len
@@ -49,7 +51,8 @@ def get_rayl_distribution(dat, binning = 1000):
 
 def get_signal_chain_gain(soft_rayl, freq_range, dt, st):
 
-    p1 = np.nansum(soft_rayl, axis = 0) / 1e3 * np.sqrt(1e-9) # mV to V and ns to s
+    p1 = soft_rayl / 1e3 * np.sqrt(1e-9) # mV to V and ns to s
+    print(p1.shape)
     freq_mhz = freq_range * 1e3 # GHz to MHz
 
     h_tot_path = f'../data/sc_info/A{st}_Htot.txt'

@@ -65,8 +65,8 @@ def scrap_run_dat_info(run_list, run_key = 'Run:', time_key = 'Time:', run_end_k
         run_num = context_finder(run_read, run_key, time_key)
         if not np.isfinite(run_num):
             print(f'{run_list} doesnt has run number!! Use file name for identifying run number!')
-            run_num = int(run_list[-10:-4]) # I dont like scrapping info from file name... but this is best...
-        
+            run_num = get_run_number(run_list, '.run', '.dat') # I dont like scrapping info from file name... but this is best...    
+    
         unix_time = context_finder(run_read, time_key, run_end_key)
         if not np.isfinite(unix_time):
             print(f'{run_list} doesnt has unix time!! Output date time as a NAN...')
@@ -77,6 +77,24 @@ def scrap_run_dat_info(run_list, run_key = 'Run:', time_key = 'Time:', run_end_k
             date_time = int(date_time) # save date time as an interger for convenience
     
     return run_num, unix_time, date_time
+
+def get_run_number(paths, key, end_key = None):
+    """! extract run run number from run dir
+
+    @param paths  string
+    @param key  string
+    @param end_key  None
+    @return val  integer
+    """
+
+    run_idx = paths.find(key) + len(key)
+    if end_key is not None:
+        format_idx = paths.find(end_key, run_idx)
+        val = int(paths[run_idx:format_idx])
+    else:
+        val = int(paths[run_idx:])
+
+    return val
 
 @click.command()
 @click.option('-s', '--station', type = int, help = 'any ara station id ex) 2 or 3')
@@ -110,6 +128,8 @@ def main(station, output, blinded, pad_len, year_start, year_end):
     run_list = [] # saving for all run paths
     evt_list = [] # saving for all event paths
     ped_list = [] # saving for all pedestal paths
+    evt_hk_list = [] # saving for all eventHk paths
+    sen_hk_list = [] # saving for all sensorHk paths
 
     ## Seach the config files by loop over all L1 data path (2013 ~ 2019) and save it into lists
     if blinded:
@@ -135,6 +155,8 @@ def main(station, output, blinded, pad_len, year_start, year_end):
             paths = [c_path, p_path] # event and pestal path
         run_list += glob(f'{data_path}{r_path}')
         evt_list += glob(f'{data_path}{r_path}/event[0-9]*')
+        evt_hk_list += glob(f'{data_path}{r_path}/eventHk[0-9]*')
+        sen_hk_list += glob(f'{data_path}{r_path}/sensorHk[0-9]*')
         for p in range(len(paths)):
             config_list += glob(f'{data_path}{paths[p]}{config_dat_str}')
             run_start_list += glob(f'{data_path}{paths[p]}{run_start_str}')
@@ -146,20 +168,23 @@ def main(station, output, blinded, pad_len, year_start, year_end):
     config_len = len(config_list)
     run_start_len = len(run_start_list)
     run_stop_len = len(run_stop_list)
+    evt_hk_len = len(evt_hk_list)
+    sen_hk_len = len(sen_hk_list)
     print('Total # of run paths:', run_len)
     print('Total # of event files:', evt_len)
+    print('Total # of eventHk files:', evt_hk_len)
+    print('Total # of sensorHk files:', sen_hk_len)
     print('Total # of pedestal files:', ped_len)
     print('Total # of config files (event + pedestal):', config_len)
     print('Total # of runstart files (event + pedestal):', run_start_len)
     print('Total # of runstop files (event + pedestal):', run_stop_len)
 
-    print('Collecting information. 6 for loop')
+    print('Collecting information.')
     ## giant numpy array pad for storing all the configuration from each run's config files
     ## if there is no run config for corresponding run number. array element would be Nan
-    countings = np.array([run_len, evt_len, ped_len, config_len, run_start_len, run_stop_len], dtype = int) # total number of run, event, pedestal, config, runstart, and runstop counting
+    countings = np.array([run_len, evt_len, ped_len, config_len, run_start_len, run_stop_len, evt_hk_len, sen_hk_len], dtype = int) # total number of run, event, pedestal, config, runstart, runstop, eventHk, and sensorHk counting
     run_num = np.arange(pad_len, dtype = int) 
     run_num_len = len(run_num) 
-    run_type = np.full((run_num_len), np.nan, dtype = float) # whether run number is corresponding to event or pedestal. 0: pedestal, 1: event, 2: only run path but no event file, and nan: There are no event or pedetal run for corresponding run number
     unix_time = np.full((2, run_num_len), np.nan, dtype = float) # array for unix time stored in runStart.run[xxxxxx].dat and runStop.run[xxxxxx].dat
     date_time = np.copy(unix_time) # array for UTC date time converted from unix time
     rf_block_num = np.full((run_num_len), np.nan, dtype = float) # number of RF blocks conifg stored in each run config file. we assuming 1 bkock = 20 ns
@@ -171,6 +196,21 @@ def main(station, output, blinded, pad_len, year_start, year_end):
     scaler_goal = np.copy(delay_num) # L1 servo goal value. unit is Hz. I guess...
     calpulser_info = np.full((6, run_num_len), np.nan, dtype = float) # info for calpulser configuration. antennaIceA#I1=, antennaIceB#I1=, opIceA#I1=, opIceB#I1=0, attIceA#I1=, and attIceB#I1=
     ## related document for calpulser configuration... https://aradocs.wipac.wisc.edu/0005/000502/007/icecalsoftware.pdf
+    file_status = np.full((8, run_num_len), 0, dtype = int) # checks list of files in the corresponding run
+    ## 1st rows: whether there is l1 directory for the corresponding run number. If it is, element would be 1
+    ## 2nd rows: whether there is event[xxxxxxxx].root for the corresponding run number. If it is, element would be 1
+    ## 3rd rows: whether there is eventHk[xxxxxxxx].root for the corresponding run number. If it is, element would be 1
+    ## 4th rows: whether there is sensorHk[xxxxxxxx].root for the corresponding run number. If it is, element would be 1
+    ## 5th rows: whether there is configFile.run[xxxxxxxx].dat for the corresponding run number. If it is, element would be 1
+    ## 6th rows: whether there is runStart.run[xxxxxxxx].dat for the corresponding run number. If it is, element would be 1
+    ## 7th rows: whether there is runStop.run[xxxxxxxx].dat for the corresponding run number. If it is, element would be 1
+    ## 8th rows: whether there is pedestal for the corresponding run number. If it is, element would be 1
+    file_list = [] # all the file paths for run, event, eventHk, sensorHk, config, runstart, runstop, pedestal
+    for l in range(file_status.shape[0]):
+        file_list.append([])
+        for r in range(run_num_len):
+            empty_str = ''
+            file_list[l].append(empty_str)
 
     ## 5 each 'for loop' for collecting information. Since not all the runs have a config, runstart, or runstop, we need to scrap the information from each list      
     ## variables for searching config information
@@ -184,50 +224,65 @@ def main(station, output, blinded, pad_len, year_start, year_end):
     calpulser_key = ['antennaIceA#I1=', 'antennaIceB#I1=', 'opIceA#I1=', 'opIceB#I1=', 'attIceA#I1=', 'attIceB#I1=']
     cal_key_len = len(calpulser_key)
     evt_key = 'event'
-    evt_key_len = len(evt_key)
+    evt_hk_key = 'eventHk'
+    sen_hk_key = 'sensorHk'
+    config_key = 'configFile.run'
     run_key = 'run'
-    run_key_len = len(run_key)
     root_key = '.root'
     dat_key = '.dat'
 
-    ## 1st event files
-    for evts in tqdm(range(evt_len)):
-        run_idx = evt_list[evts].find(evt_key) + evt_key_len          
-        format_idx = evt_list[evts].find(root_key, run_idx)           
-        val = int(evt_list[evts][run_idx:format_idx])
-        run_type[val] = 1        
-        
-    ## 2nd pedestal files
-    for peds in tqdm(range(ped_len)):
-        run_idx = ped_list[peds].find(run_key) + run_key_len
-        format_idx = ped_list[peds].find(dat_key, run_idx)
-        val = int(ped_list[peds][run_idx:format_idx])
-        run_type[val] = 0
+    ## file status. Doesnt has to be multiple for loops... But I will save improvement for future person;)
+    for runs in range(run_len):
+        val = get_run_number(run_list[runs], run_key)
+        file_status[0, val] = 1
+        file_list[0][val] = run_list[runs]
 
-    ## 3rd check the run that has no event file...
-    for runs in tqdm(range(run_len)):
-        run_idx = run_list[runs].find(run_key) + run_key_len
-        val = int(run_list[runs][run_idx:])
-        if np.isnan(run_type[val]):
-            run_type[val] = 2
-            print(f'{run_list[runs]} has no event file!!')
+    ## event files
+    for evts in range(evt_len):
+        val = get_run_number(evt_list[evts], evt_key, root_key)
+        file_status[1, val] = 1       
+        file_list[1][val] = evt_list[evts]
+    
+    ## eventHk files
+    for hks in range(evt_hk_len):
+        val = get_run_number(evt_hk_list[hks], evt_hk_key, root_key)
+        file_status[2, val] = 1
+        file_list[2][val] = evt_hk_list[hks]
+    
+    ## sensorHk files
+    for hks in range(sen_hk_len):
+        val = get_run_number(sen_hk_list[hks], sen_hk_key, root_key)
+        file_status[3, val] = 1 
+        file_list[3][val] = sen_hk_list[hks]
 
-    ## 4th run start files
+    ## pedestal files
+    for peds in range(ped_len):
+        val = get_run_number(ped_list[peds], run_key, dat_key)
+        file_status[7, val] = 1
+        file_list[7][val] = ped_list[peds]
+
+    ## run start files
     for runs in tqdm(range(run_start_len)):
         run_start, unix_start, date_start = scrap_run_dat_info(run_start_list[runs])
         unix_time[0, run_start] = unix_start
         date_time[0, run_start] = date_start
- 
-    ## 5th run stop files. I believe if the run is suddenly terminated, that run usually dont have a runstop files 
+        file_status[5, run_start] = 1 
+        file_list[5][run_start] = run_start_list[runs]
+
+    ## run stop files. I believe if the run is suddenly terminated, that run usually dont have a runstop files 
     for runs in tqdm(range(run_stop_len)):
         run_stop, unix_stop, date_stop = scrap_run_dat_info(run_stop_list[runs])
         unix_time[1, run_stop] = unix_stop
         date_time[1, run_stop] = date_stop
- 
-    ## 6th config files
+        file_status[6, run_stop] = 1 
+        file_list[6][run_stop] = run_stop_list[runs]
+
+    ## config files
     for runs in tqdm(range(config_len)):
-        run_config = int(config_list[runs][-10:-4]) # scrap the run number from config file path
-        
+        run_config = get_run_number(config_list[runs], config_key, dat_key) # scrap the run number from config file path
+        file_status[4, run_config] = 1    
+        file_list[6][run_config] = config_list[runs]   
+ 
         ## open the each config file and scrap the information by context_finder function
         with open(config_list[runs],'r') as config_file:
             config_read = config_file.read()
@@ -259,7 +314,6 @@ def main(station, output, blinded, pad_len, year_start, year_end):
     h5_file_name=f'{output}Config_A{station}_{type_path}_{year_start}_to_{year_end}.h5'
     hf = h5py.File(h5_file_name, 'w')
     hf.create_dataset('run_num', data=run_num, compression="gzip", compression_opts=9)
-    hf.create_dataset('run_type', data=run_type, compression="gzip", compression_opts=9)
     hf.create_dataset('unix_time', data=unix_time, compression="gzip", compression_opts=9)
     hf.create_dataset('date_time', data=date_time, compression="gzip", compression_opts=9)
     hf.create_dataset('masked_ant', data=masked_ant, compression="gzip", compression_opts=9)
@@ -271,6 +325,8 @@ def main(station, output, blinded, pad_len, year_start, year_end):
     hf.create_dataset('scaler_goal', data=scaler_goal, compression="gzip", compression_opts=9)
     hf.create_dataset('calpulser_info', data=calpulser_info, compression="gzip", compression_opts=9)
     hf.create_dataset('countings', data=countings, compression="gzip", compression_opts=9)
+    hf.create_dataset('file_status', data=file_status, compression="gzip", compression_opts=9)
+    hf.create_dataset('file_list', data=file_list, compression="gzip", compression_opts=9)
     hf.close() 
 
     print(f'output is {h5_file_name}')

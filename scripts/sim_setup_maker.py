@@ -62,8 +62,7 @@ def main(key, station, blind_dat):
     blind = ''
     if blind_dat:
         blind = '_full'
-    #d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{station}/rayl{blind}/' # rayl path
-    d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{station}/rayl_full/' # rayl path
+    d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{station}/rayl{blind}/' # rayl path
     d_list, d_run_tot, d_run_range = file_sorter(d_path+'*h5')
     e_path = f'../sim/sim_setup_example/{key}_rayl.txt' # setup ex path
     r_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{station}/sim_{key}_setup{blind}/' # output path
@@ -111,8 +110,8 @@ def main(key, station, blind_dat):
 
     for r in tqdm(range(len(d_run_tot))):
       #if d_run_tot[r] == 12001:
-        if station == 3 and d_run_tot[r] == 3429:
-            continue
+        #if station == 3 and d_run_tot[r] == 3429:
+        #    continue
 
         hf = h5py.File(d_list[r], 'r')
         soft_len = hf['soft_len'][:]   
