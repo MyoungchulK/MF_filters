@@ -33,8 +33,8 @@ class known_issue_loader:
         if self.st ==  3:
             #if run > 2800: 
             #    bad_ant[1] = True #D2TV gradual decay
-            #if run > 10000:
-            #    bad_ant[3] = True #D4TV low amp gain
+            if run > 10000:
+                bad_ant[3] = True #D4TV low amp gain
             #bad_ant[6] = True #D3BV low amp gain
 
             if run > 1901 and run < 10001:

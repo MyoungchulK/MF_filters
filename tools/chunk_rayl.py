@@ -62,13 +62,11 @@ def rayl_collector(Data, Ped, st = None, run = None, analyze_blind_dat = False, 
     daq_hf = h5py.File(daq_dat, 'r')
     evt_full = daq_hf['evt_num'][:]
     tot_cuts_full = daq_hf['tot_qual_cut_sum'][:] != 0
-    #tot_cuts_full = daq_hf['daq_qual_cut_sum'][:] != 0
     tot_cuts = np.in1d(evt_num, evt_full[tot_cuts_full]).astype(int)
     del run_info, daq_dat, daq_hf, evt_full, tot_cuts_full
    
     # clean soft trigger 
     clean_rf_idx = np.logical_and(tot_cuts == 0, trig_type == 0)
-    #clean_soft_idx = np.logical_and(tot_cuts == 0, trig_type == 2)
     clean_soft_idx = np.logical_and(tot_cuts == 0, trig_type == 0)
     clean_soft_entry = entry_num[clean_soft_idx]
     num_clean_softs = np.count_nonzero(clean_soft_idx)
@@ -101,7 +99,7 @@ def rayl_collector(Data, Ped, st = None, run = None, analyze_blind_dat = False, 
         # loop over the antennas
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = False)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True)
             del raw_t, raw_v 
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()
