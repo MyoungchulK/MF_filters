@@ -44,7 +44,7 @@ def savgol_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     # output
     freq_bins = np.linspace(0, 1, 200 + 1)
     freq_bin_center = (freq_bins[1:] + freq_bins[:-1]) / 2
-    ratio_bins = np.linspace(0, 5, 500 + 1)
+    ratio_bins = np.linspace(0, 3, 300 + 1)
     ratio_bin_center = (ratio_bins[1:] + ratio_bins[:-1]) / 2
     sav_ratio = np.full((len(freq_bin_center), len(ratio_bin_center), num_ants, 3), 0, dtype = int)
     sav_ratio_cut = np.copy(sav_ratio)
@@ -85,14 +85,11 @@ def savgol_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
                 sav_ratio_cut[:, :, ant, trig_type[evt]] += ratio_2d
             del sav, ratio, ratio_2d
         del ffts, pad_num, good_evt, freqs
-    del ara_root, num_evts, num_ants, wf_int, poly, width
+    del ara_root, num_evts, num_ants, wf_int, poly, width, trig_type, daq_cut, tot_cut
   
     print('Savgol collecting is done!')
 
     return {'evt_num':evt_num,
-            'trig_type':trig_type,
-            'daq_cut':daq_cut,
-            'tot_cut':tot_cut,
             'freq_bins':freq_bins,
             'freq_bin_center':freq_bin_center,
             'ratio_bins':ratio_bins,
