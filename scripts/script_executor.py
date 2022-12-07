@@ -115,7 +115,11 @@ def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_overrid
     hf.create_dataset('config', data=np.array([station, run, Config, Year, Month, Date]), compression="gzip", compression_opts=9)
     for r in results:
         print(r, results[r].shape)
-        hf.create_dataset(r, data=results[r], compression="gzip", compression_opts=9)
+        try:
+            hf.create_dataset(r, data=results[r], compression="gzip", compression_opts=9)
+        except TypeError:
+            dt = h5py.vlen_dtype(np.dtype(float))
+            hf.create_dataset(r, data=results[r], dtype = dt, compression="gzip", compression_opts=9)
     del results
     hf.close()
 
