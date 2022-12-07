@@ -1,6 +1,7 @@
 import numpy as np
 from tqdm import tqdm
 import h5py
+import sys
 
 def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
 
@@ -262,7 +263,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         bp_phase[:, :, evt] = wf_int.pad_phase
 
         for ant in range(num_ants):
-          #if ant == 1:    
+          if ant == 6:    
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
             wf_int.get_int_wf(raw_t, raw_v, ant, use_band_pass = True, use_cw = True)
             wf_int_len = wf_int.pad_num[ant]
@@ -275,6 +276,9 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             #print(sub_ratio[:, ant, evt])
             #print(sub_power[:, ant, evt])
             print(sub_freq[:, ant, evt])
+            print(np.count_nonzero(~np.isnan(sub_freq[:, ant, evt])))
+
+            sys.exit(1)
 
         print(wf_int.pad_v[:, 3])
         cw_wf_all[:, 0, :, evt] = wf_int.pad_t
@@ -313,7 +317,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         bp_coval[:,:,:,:,:,evt] = bp_coval_evt
         bp_sky_map[:,:,:,:,0,evt] = np.nansum(bp_coval_evt[:, :, :, :, :v_pairs_len], axis = 4)
         bp_sky_map[:,:,:,:,1,evt] = np.nansum(bp_coval_evt[:, :, :, :, v_pairs_len:], axis = 4)
-         
+        """ 
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
             wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True)
@@ -328,7 +332,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         cw_coval[:,:,:,:,:,evt] = cw_coval_evt
         cw_sky_map[:,:,:,:,0,evt] = np.nansum(cw_coval_evt[:, :, :, :, :v_pairs_len], axis = 4)
         cw_sky_map[:,:,:,:,1,evt] = np.nansum(cw_coval_evt[:, :, :, :, v_pairs_len:], axis = 4)
-        
+        """
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_rfft = True, use_ele_ch = True)
     # loop over the events

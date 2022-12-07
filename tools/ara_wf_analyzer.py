@@ -33,8 +33,9 @@ class wf_analyzer:
             from tools.ara_data_load import sin_subtract_loader
             if num_params is None:
                 num_params = 7
+                #num_params = 1
             if cw_thres is None:
-                cw_cut = 0.5
+                cw_cut = 0.05
                 self.ratio_cut = np.full((num_ants), cw_cut, dtype = float) 
                 print(f'cw ratio cut: {self.ratio_cut}')
             else:
@@ -42,6 +43,7 @@ class wf_analyzer:
             if cw_freq is None:
                 cw_range = 0.01
                 cw_freq_type = np.array([0.125, 0.15, 0.25, 0.3, 0.405, 0.5, 0.7])
+                #cw_freq_type = np.array([0.5])
                 self.freq_cut = np.full((num_params, 2), np.nan, dtype = float)
                 for p in range(num_params):
                     self.freq_cut[p, 0] = cw_freq_type[p] - cw_range
@@ -49,7 +51,7 @@ class wf_analyzer:
                     print(f'cw search range: {self.freq_cut[p, 0]} ~ {self.freq_cut[p, 1]} GHz') 
             else:
                 self.freq_cut = cw_freq
-            self.sin_sub = sin_subtract_loader(self.freq_cut, self.ratio_cut, 3, num_params = num_params, dt = self.dt, sol_pad = 300, use_filter = True, use_filter_debug = use_cw_debug)
+            self.sin_sub = sin_subtract_loader(self.freq_cut, self.ratio_cut, 3, num_params = num_params, dt = self.dt, sol_pad = 3000, use_filter = True, use_filter_debug = use_cw_debug)
 
     def get_band_pass_filter(self, low_freq_cut = 0.13, high_freq_cut = 0.85, order = 10, pass_type = 'band'):
 
@@ -148,7 +150,7 @@ class wf_analyzer:
                 int_v = self.get_band_passed_wf(int_v)
 
             if use_cw:
-                int_v = self.sin_sub.get_filtered_wf(int_v, int_num, ant)
+                int_v = self.sin_sub.get_filtered_wf(int_v, int_num, ant, self.pad_len)
 
         if use_p2p:
             self.int_p2p = self.get_p2p(int_v, use_max = True) 

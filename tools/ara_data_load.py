@@ -776,14 +776,15 @@ class sin_subtract_loader:
         self.cw_freq = cw_freq
         self.cw_thres = cw_thres
 
-        self.sin_sub = ROOT.FFTtools.SineSubtract(max_fail_atts, 0.05, False) # no store
+        #self.sin_sub = ROOT.FFTtools.SineSubtract(max_fail_atts, 0.05, False) # no store
+        self.sin_sub = ROOT.FFTtools.SineSubtract(max_fail_atts, 0.01, True) # no store
         #self.sin_sub.setVerbose(True)
 
         if use_filter:
             self.sin_sub.setFreqLimits(self.num_params, cw_freq[:, 0].astype(np.double), cw_freq[:, 1].astype(np.double))
             self.use_filter_debug = use_filter_debug
     
-    def get_filtered_wf(self, int_v, int_num, ant):
+    def get_filtered_wf(self, int_v, int_num, ant, pad_len):
 
         int_v_db = int_v.astype(np.double)
         cw_v = np.full((int_num), 0, dtype = np.double)
@@ -791,15 +792,20 @@ class sin_subtract_loader:
             self.sub_ratios = np.full((self.sol_pad), np.nan, dtype = float)
             self.sub_powers = np.copy(self.sub_ratios)
             self.sub_freqs = np.copy(self.sub_ratios)
-
-        self.sin_sub.subtractCW(int_num, int_v_db, self.dt, self.cw_thres[ant], cw_v)
+        
+        #self.sin_sub.subtractCW(int_num, int_v_db, self.dt, self.cw_thres[ant], pad_len, cw_v)
+        self.sin_sub.subtractCW(int_num, int_v_db, self.dt, cw_v)
         self.num_sols = self.sin_sub.getNSines()
-        if self.use_filter_debug:
-            self.sub_ratios[1:self.num_sols+1] = np.frombuffer(self.sin_sub.getRatios(), dtype = float, count = self.num_sols + 1)[1:]
-            self.sub_powers[:self.num_sols+1] = np.frombuffer(self.sin_sub.getPowers(), dtype = float, count = self.num_sols + 1)
-            self.sub_freqs[:self.num_sols] = np.frombuffer(self.sin_sub.getFreqs(), dtype = float, count = self.num_sols)
+        print(self.num_sols)
+        #if self.use_filter_debug:
+        #    self.sub_ratios[1:self.num_sols+1] = np.frombuffer(self.sin_sub.getRatios(), dtype = float, count = self.num_sols + 1)[1:]
+        #    self.sub_powers[:self.num_sols+1] = np.frombuffer(self.sin_sub.getPowers(), dtype = float, count = self.num_sols + 1)
+        #    self.sub_freqs[:self.num_sols] = np.frombuffer(self.sin_sub.getFreqs(), dtype = float, count = self.num_sols)
+        #self.sin_sub.makeSlides(title = f'ch{ant}', prefix = f'ch{ant}', outdir = '/home/mkim/')
 
         cw_v = cw_v.astype(float)
+        #for c in range(self.num_sols):
+        #    self.sin_sub.makeSlides(title = f'ch{ant} iter{c}', prefix = f'ch{ant} iter{c}', output = '/home/mkim/')
 
         return cw_v
 
