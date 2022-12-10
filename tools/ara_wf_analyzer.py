@@ -173,7 +173,7 @@ class wf_analyzer:
         self.pad_num[ant] = int_num
         del int_idx, int_v, int_num      
 
-    def get_fft_wf(self, use_zero_pad = False, use_rfft = False, use_abs = False, use_norm = False, use_dbmHz = False, use_phase = False):
+    def get_fft_wf(self, use_zero_pad = False, use_rfft = False, use_abs = False, use_norm = False, use_dbmHz = False, use_dB = False, use_phase = False):
 
         if use_zero_pad:
             if use_rfft:
@@ -208,7 +208,10 @@ class wf_analyzer:
         
         if use_dbmHz:
             self.pad_fft = 10 * np.log10(self.pad_fft**2 * 1e-9 / 50 / 1e3)
-           
+        
+        if use_dB:
+            self.pad_fft = 10 * np.log10(self.pad_fft)
+   
     def get_peak(self, x, y):
 
         max_idx = np.nanargmax(y)

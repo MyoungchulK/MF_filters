@@ -21,7 +21,6 @@ def phase_var_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
 
     # data config
     ara_uproot = ara_uproot_loader(Data)
-    ara_uproot.get_sub_info()
     trig_type = ara_uproot.get_trig_type()
     evt_num = ara_uproot.evt_num
     num_evts = ara_uproot.num_evts
