@@ -2,15 +2,16 @@ import numpy as np
 from tqdm import tqdm
 import h5py
 
-def phase_var_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
+def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
 
-    print('Collecting reco starts!')
+    print('Collecting cw flag starts!')
 
     from tools.ara_data_load import ara_uproot_loader
     from tools.ara_data_load import ara_root_loader
     from tools.ara_constant import ara_const
     from tools.ara_wf_analyzer import wf_analyzer
     from tools.ara_cw_filters import py_phase_variance
+    from tools.ara_cw_filters import py_testbed
     from tools.ara_run_manager import run_info_loader
     from tools.ara_known_issue import known_issue_loader
 
@@ -47,26 +48,28 @@ def phase_var_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_rfft = True)
     freq_range = wf_int.pad_zero_freq
 
-    # phase_variance
+    # cw class
     cw_phase = py_phase_variance(st, run, freq_range)
     evt_len = cw_phase.evt_len
     start_evt = int(evt_len - 1)
+    cw_testbed = py_testbed(st, run, freq_range, 6, 5.5, 3, analyze_blind_dat = analyze_blind_dat, verbose = True)
     del st, run
 
     # output array  
     sigma = []
-    freq_idx = []
+    phase_idx = []
+    testbed_idx = []
     empty = np.full((0), np.nan, dtype = float)
 
     # loop over the events
     evt_counts = 0
     for evt in tqdm(range(num_evts)):
-    #for evt in range(num_evts):
-      #if evt == 0:        
+      #if evt_num[evt] == 84329:        
         
         if daq_qual_cut_sum[evt] or trig_type[evt] == 1:
             sigma.append(empty)
-            freq_idx.append(empty)
+            phase_idx.append(empty)
+            testbed_idx.append(empty)
             continue
 
         # get entry and wf
@@ -81,37 +84,51 @@ def phase_var_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()   
 
-        wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_phase = True)
+        wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_phase = True, use_abs = True, use_norm = True, use_dB = True)
         cw_phase.get_phase_differences(wf_int.pad_phase, evt_counts % evt_len)
+        cw_testbed.get_bad_magnitude(wf_int.pad_fft)
+        testbed_idxs = cw_testbed.bad_idx 
+        testbed_idx.append(testbed_idxs)
+        #print(evt)
+        #print(testbed_idxs)
+        #print(freq_range[testbed_idxs])
+        #print(evt_counts)
         if evt_counts < start_evt:
             evt_counts += 1
             sigma.append(empty)
-            freq_idx.append(empty)
+            phase_idx.append(empty)
             continue
 
         cw_phase.get_bad_phase()
         sigmas = cw_phase.bad_sigma 
-        idxs = cw_phase.bad_idx
+        phase_idxs = cw_phase.bad_idx
         sigma.append(sigmas)
-        freq_idx.append(idxs)
-        #print(sigmas)
-        #print(idxs)
-        #print(freq_range[idxs])
+        phase_idx.append(phase_idxs)
         evt_counts += 1
 
-    del ara_root, num_evts, num_ants, wf_int, cw_phase, daq_qual_cut_sum
+        print(evt)
+        print(sigmas)
+        print(phase_idxs)
+        print(freq_range[phase_idxs])
+      #else:
+        #print(evt_counts)
+        #evt_counts += 1
+
+    del ara_root, num_evts, num_ants, wf_int, cw_phase, cw_testbed, daq_qual_cut_sum
 
     # to numpy array
     sigma = np.asarray(sigma)
-    freq_idx = np.asarray(freq_idx)
+    phase_idx = np.asarray(phase_idx)
+    testbed_idx = np.asarray(testbed_idx)
 
-    print('Reco collecting is done!')
+    print('CW flag collecting is done!')
 
     return {'evt_num':evt_num,
             'bad_ant':bad_ant,
             'freq_range':freq_range,
             'sigma':sigma,
-            'freq_idx':freq_idx,
+            'phase_idx':phase_idx,
+            'testbed_idx':testbed_idx,
             'evt_len':np.array([evt_len], dtype = int)}
 
 

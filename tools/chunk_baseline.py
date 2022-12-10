@@ -4,7 +4,7 @@ import h5py
 
 def baseline_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
 
-    print('Collecting reco starts!')
+    print('Collecting baseline starts!')
 
     from tools.ara_data_load import ara_uproot_loader
     from tools.ara_data_load import ara_root_loader
@@ -79,7 +79,7 @@ def baseline_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     baseline /= float(num_clean_rfs)
     del num_clean_rfs
 
-    print('Reco collecting is done!')
+    print('Baseline collecting is done!')
 
     return {'evt_num':evt_num,
             'clean_rf_idx':clean_rf_idx, 
