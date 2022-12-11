@@ -64,7 +64,7 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     # loop over the events
     evt_counts = 0
     for evt in tqdm(range(num_evts)):
-      #if evt_num[evt] == 84329:        
+      if evt_num[evt] == 200:        
         
         if daq_qual_cut_sum[evt] or trig_type[evt] == 1:
             sigma.append(empty)
@@ -84,36 +84,37 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()   
 
-        wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_phase = True, use_abs = True, use_norm = True, use_dB = True)
-        cw_phase.get_phase_differences(wf_int.pad_phase, evt_counts % evt_len)
-        cw_testbed.get_bad_magnitude(wf_int.pad_fft)
-        testbed_idxs = cw_testbed.bad_idx 
+        wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_phase = True, use_abs = True, use_norm = True, use_dbmHz = True)
+        rfft_dbmhz = wf_int.pad_fft
+        rfft_phase = wf_int.pad_phase
+        
+        cw_testbed.get_bad_magnitude(rfft_dbmhz)
+        testbed_idxs = cw_testbed.bad_idx
         testbed_idx.append(testbed_idxs)
-        #print(evt)
-        #print(testbed_idxs)
-        #print(freq_range[testbed_idxs])
-        #print(evt_counts)
+        print('testbed: ', freq_range[testbed_idxs])       
+        print(len(testbed_idxs))
+        print(len(freq_range))
+ 
+        cw_phase.get_phase_differences(rfft_phase, evt_counts % evt_len)
         if evt_counts < start_evt:
-            evt_counts += 1
             sigma.append(empty)
             phase_idx.append(empty)
+            evt_counts += 1 
+            del rfft_dbmhz, rfft_phase
             continue
-
         cw_phase.get_bad_phase()
         sigmas = cw_phase.bad_sigma 
         phase_idxs = cw_phase.bad_idx
         sigma.append(sigmas)
         phase_idx.append(phase_idxs)
+        print('phase: ', freq_range[phase_idxs])
+        print(evt_counts)        
+        print(evt_num[evt])
+   
+        if evt_counts == 14: 
+            sys.exit(1)
         evt_counts += 1
-
-        print(evt)
-        print(sigmas)
-        print(phase_idxs)
-        print(freq_range[phase_idxs])
-      #else:
-        #print(evt_counts)
-        #evt_counts += 1
-
+        del rfft_dbmhz, rfft_phase
     del ara_root, num_evts, num_ants, wf_int, cw_phase, cw_testbed, daq_qual_cut_sum
 
     # to numpy array

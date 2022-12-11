@@ -21,4 +21,5 @@ class ara_const:
         self.SAMPLES_PER_DDA = 32768 # SAMPLES_PER_BLOCK*BLOCKS_PER_DDA
         self.USEFUL_CHAN_PER_STATION = 16
         self.BUFFER_BIT_RANGE = 4096 # 12bits
+        self.POLARIZATION = 2
         
