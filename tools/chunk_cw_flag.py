@@ -64,7 +64,7 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     # loop over the events
     evt_counts = 0
     for evt in tqdm(range(num_evts)):
-      if evt_num[evt] == 200:        
+      if evt_num[evt] == 84329:        
         
         if daq_qual_cut_sum[evt] or trig_type[evt] == 1:
             sigma.append(empty)

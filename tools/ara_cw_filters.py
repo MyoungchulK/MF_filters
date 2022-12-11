@@ -170,7 +170,8 @@ class py_testbed:
         ## to prevent the accidantal increase of coincidances by rolling sum of neighboring 'really' bad frequencies. so, if element is bigger than 1, not it is just 'True'
         ## if each channel pair has 'really' bad frequencies in both channels (by logical_and()), now it is 'really really' bad frequencies
         bad_freq_1st_sum = np.round(fftconvolve(bad_freq_1st, self.freq_near_one, 'same', axes = 0)).astype(int) != 0 # it is Boolean array now
-        bad_freq_2nd = np.logical_and(bad_freq_1st_sum[:, self.pairs[:, 0]], bad_freq_1st_sum[:, self.pairs[:, 1]])
+        #bad_freq_2nd = np.logical_and(bad_freq_1st_sum[:, self.pairs[:, 0]], bad_freq_1st_sum[:, self.pairs[:, 1]])
+        bad_freq_2nd = np.logical_and(bad_freq_1st[:, self.pairs[:, 0]], bad_freq_1st_sum[:, self.pairs[:, 1]])
         del bad_freq_1st, bad_freq_1st_sum
 
         print(self.freq_range[bad_freq_2nd[:,0]])
