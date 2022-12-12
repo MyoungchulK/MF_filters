@@ -96,11 +96,11 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
         print(len(freq_range))
  
         cw_phase.get_phase_differences(rfft_phase, evt_counts % evt_len)
+        del rfft_dbmhz, rfft_phase
         if evt_counts < start_evt:
             sigma.append(empty)
             phase_idx.append(empty)
             evt_counts += 1 
-            del rfft_dbmhz, rfft_phase
             continue
         cw_phase.get_bad_phase()
         sigmas = cw_phase.bad_sigma 
@@ -114,7 +114,6 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
         if evt_counts == 14: 
             sys.exit(1)
         evt_counts += 1
-        del rfft_dbmhz, rfft_phase
     del ara_root, num_evts, num_ants, wf_int, cw_phase, cw_testbed, daq_qual_cut_sum
 
     # to numpy array

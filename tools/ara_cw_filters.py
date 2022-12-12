@@ -71,7 +71,7 @@ class py_testbed:
         self.freq_range_idx = np.arange(len(freq_range), dtype = int)
         self.freq_range_idx = np.repeat(self.freq_range_idx[self.useful_freq_idx][:, np.newaxis], num_pols, axis = 1) # frequency index array for identifying bad frequency in the last step
         self.half_range = (freq_upper_limit - freq_lower_limit) / 2 # half length of trim out frequency range
-        self.half_freq_idx = np.count_nonzero(self.useful_freq_idx) // 2 # # so... what is frequency value in half point?
+        self.half_freq_idx = self.useful_freq_len // 2 # so... what is index of half frequency?
         self.slope_x = freq_range[self.useful_freq_idx] - (freq_lower_limit + self.half_range)
         self.slope_x = np.repeat(self.slope_x[:, np.newaxis], num_ants, axis = 1) # x value of slope for tilt correction. we dont have to calculate in every event if all the wfs are padded in same zero padding lentgh 
  
@@ -90,7 +90,7 @@ class py_testbed:
         self.pairs, self.pair_len, self.v_pairs_len = get_pair_info(self.st, self.run)
         self.get_baseline() # prepare the baseline at the beginning
 
-        self.freq_range = freq_range[self.useful_freq_idx]
+        #self.freq_range = freq_range[self.useful_freq_idx] # for debug
 
     def get_baseline(self):
         """! get baseline (averaged frequency spectrum in amplitude unit (mV/sqrt(GHz))) 
@@ -132,8 +132,6 @@ class py_testbed:
         delta_mag = self.fft_dB - base_new # and differences
         del delta_mean, slope, base_new
 
-        print(delta_mag[(self.freq_range>0.23) & (self.freq_range<0.27), 0])
-
         ## calculate potentially bad frequencies and other frequencies that also have a big peak near bad frequencies
         self.bad_freqs = delta_mag > self.dB_cut             # it is Boolean array now
         self.bad_freqs_broad = delta_mag > self.dB_cut_broad # it is Boolean array now
@@ -141,7 +139,7 @@ class py_testbed:
 
     def get_bad_frequency(self):
         """! check 'potentially' bad frequencies are actully bad or not
-        first, check the frequencies near bad freq frequencies are also having big peak or not
+        first, check the frequencies near 'potentially' bad frequencies are also having big peak or not
         if number of big peaks are more than 50 % in the 40 MHz frequency window from 'potentially' bad frequencies, 
         the 'potentially' bad frequencies are considered not narrow peak and not from CW. It is just looong 'hiccup'
         if it is less than 50 %, now it is 'really' bad frequencies
@@ -151,7 +149,6 @@ class py_testbed:
         finally it is 'the' bad frequencies!
         And we are saving that frequency indexs. Hope this is clear for you:)
         """
-        print(np.count_nonzero(self.bad_freqs_broad[:,0]))
 
         ## 1st, broad check
         ## using rolling sum with 40 MHz frequency window to calculate how many big peaks are corresponded to each frequencies
@@ -161,36 +158,21 @@ class py_testbed:
         bad_freq_1st = np.logical_and(self.bad_freqs, (bad_freqs_broad_sum - 1) <= self.freq_broad_per) # it is Boolean array now
         del bad_freqs_broad_sum
 
-        print(self.freq_range[bad_freq_1st[:, 0]])
-        print(np.count_nonzero(bad_freq_1st[:, 0]))
-        
-
         ## 2nd, pair check
         ## using rolling sum with 5 MHz frequency window to compare the 'really' bad frequencies in each channel pair
-        ## to prevent the accidantal increase of coincidances by rolling sum of neighboring 'really' bad frequencies. so, if element is bigger than 1, not it is just 'True'
+        ## to prevent the accidantal increase of coincidances by rolling sum of neighboring 'really' bad frequencies, if element is bigger than 1, not it is just 'True'
         ## if each channel pair has 'really' bad frequencies in both channels (by logical_and()), now it is 'really really' bad frequencies
+        ## to prevent the accidantal increase of coincidances between two antennas by rolling sum, only oneside of pairs are spreaded by rolling sum
         bad_freq_1st_sum = np.round(fftconvolve(bad_freq_1st, self.freq_near_one, 'same', axes = 0)).astype(int) != 0 # it is Boolean array now
-        #bad_freq_2nd = np.logical_and(bad_freq_1st_sum[:, self.pairs[:, 0]], bad_freq_1st_sum[:, self.pairs[:, 1]])
         bad_freq_2nd = np.logical_and(bad_freq_1st[:, self.pairs[:, 0]], bad_freq_1st_sum[:, self.pairs[:, 1]])
         del bad_freq_1st, bad_freq_1st_sum
 
-        print(self.freq_range[bad_freq_2nd[:,0]])
-        print(np.count_nonzero(bad_freq_2nd[:,0]))
-
-        for a in range(self.pair_len):
-            print(self.pairs[a], np.count_nonzero(bad_freq_2nd[:,a]))
-        print(np.count_nonzero(bad_freq_2nd[:, :self.v_pairs_len], axis = 1))
-        print(np.count_nonzero(bad_freq_2nd[:, self.v_pairs_len:], axis = 1))
-
         ## 3ed, count coinc
-        ## If more than 3 channel pairs are having 'really really' bad frequencies in each polarization, now it is 'the' bad frequencies!
+        ## If more than 3 channel pairs are having 'really really' bad frequencies in any polarization, now it is 'the' bad frequencies!
         bad_freq_pol = np.full((self.useful_freq_len, num_pols), False, dtype = bool)
         bad_freq_pol[:, 0] = np.count_nonzero(bad_freq_2nd[:, :self.v_pairs_len], axis = 1) >= self.num_coinc
         bad_freq_pol[:, 1] = np.count_nonzero(bad_freq_2nd[:, self.v_pairs_len:], axis = 1) >= self.num_coinc
         del bad_freq_2nd
-
-        print(self.freq_range[bad_freq_pol[:, 0]])
-        print(np.count_nonzero(bad_freq_pol[:, 0]))
 
         ## save 'the' bad frequency indexs
         self.bad_idx = self.freq_range_idx[bad_freq_pol].flatten()
@@ -258,33 +240,29 @@ class py_phase_variance:
     def get_phase_variance(self):
         """! phase variance. checking phase differences in all channel pairs and neighboring events"""
 
-        ## first, summing up phase differences in each channels and polarizations
+        ## first, summing up phase differences of all events
         ## convert pahse into real and imaginary and sum up seperatly
-        ## calculate distance, average, and check diffenerces from 1
-        real_sum_v = np.nansum(np.cos(self.phase_diff_pad[:, :, :self.v_pairs_len]), axis = 2) # now it is (number of freq bins, number of pairs) 
-        real_sum_h = np.nansum(np.cos(self.phase_diff_pad[:, :, self.v_pairs_len:]), axis = 2) 
-        im_sum_v = np.nansum(np.sin(self.phase_diff_pad[:, :, :self.v_pairs_len]), axis = 2) 
-        im_sum_h = np.nansum(np.sin(self.phase_diff_pad[:, :, self.v_pairs_len:]), axis = 2) 
-        phase_variance = np.full((self.useful_freq_len, self.pair_len, num_pols), np.nan, dtype = float)
-        phase_variance[:, :, 0] = 1 - np.sqrt(real_sum_v**2 + im_sum_v**2) / self.num_evts
-        phase_variance[:, :, 1] = 1 - np.sqrt(real_sum_h**2 + im_sum_h**2) / self.num_evts
-        del real_sum_v, im_sum_v, real_sum_h, im_sum_h 
-
-        ## calcualte sigma by median and upper 95 % vaule
-        median = np.nanmedian(phase_variance, axis = 0) # now it is (number of pairs, number of polarization)
-        upper95 = np.sort(phase_variance, axis = 0)[self.upper95_idx] # sort the elements in frequency dim. and pick up elements in upper 95 %
-        sigma = (upper95 - median) / 1.64 # still (number of pairs, number of palarization) why 1.64?
+        ## calculate averaged radius and check diffenerces from 1
+        real_evt_sum = np.nansum(np.cos(self.phase_diff_pad), axis = 2) # now it is (number of freq bins, number of pairs)
+        imag_evt_sum = np.nansum(np.sin(self.phase_diff_pad), axis = 2) # now it is (number of freq bins, number of pairs)
+        phase_variance = 1 - np.sqrt(real_evt_sum**2 + imag_evt_sum**2) / self.num_evts # still (number of freq bins, number of pairs)
+        del real_evt_sum, imag_evt_sum   
+ 
+        ## calcualte sigma by median and upper 95 % value
+        median = np.nanmedian(phase_variance, axis = 0) # now it is (number of pairs)
+        upper95 = np.sort(phase_variance, axis = 0)[self.upper95_idx] # sort the elements in frequency dim. and pick up elements in 90% Confidence interval which is upper 95 % (5 % for both side)
+        sigma = (upper95 - median) / 1.64 # still (number of pairs). divdied by Critical Values of 90% Confidence interval which is 1.64
         del upper95
 
-        ## how phase variance is far from sigma. (pahse_var - median) / sigma
-        phase_variance *= -1
-        phase_variance += median[np.newaxis, :, :]
-        phase_variance /= sigma[np.newaxis, :, :]
-        del median, sigma 
+        ## how phase variance is far from sigma. (median - pahse_var) / sigma
+        sigma_variance = (phase_variance - median[np.newaxis, :]) * -1 / sigma[np.newaxis, :]
+        del median, sigma, phase_variance 
 
-        ## averaging it within neighboring events
-        self.sigma_variance = np.nanmean(phase_variance, axis = 1) # now it is (number of freq bins,  number of polarization)
-        del phase_variance      
+        ## averaging it with each polarization
+        self.sigma_variance_avg = np.full((self.useful_freq_len, num_pols), np.nan, dtype = float)
+        self.sigma_variance_avg[:, 0] = np.nanmean(sigma_variance[:, :self.v_pairs_len], axis = 1) # now it is (number of freq bins)
+        self.sigma_variance_avg[:, 1] = np.nanmean(sigma_variance[:, self.v_pairs_len:], axis = 1) # now it is (number of freq bins)
+        del sigma_variance      
  
     def get_peak_above_threshold(self, thres = 1):
         """! which values are bigger than threhold if this is bigger than threshold, This event has a problem
@@ -292,8 +270,8 @@ class py_phase_variance:
         @param thres  Integer.
         """
     
-        bad_bool = self.sigma_variance > thres 
-        self.bad_sigma = self.sigma_variance[bad_bool].flatten() # bad sigma vaules
+        bad_bool = self.sigma_variance_avg > thres 
+        self.bad_sigma = self.sigma_variance_avg[bad_bool].flatten() # bad sigma vaules
         self.bad_idx = self.freq_range_idx[bad_bool].flatten() # indexs of bad frequencies
         del bad_bool
 
