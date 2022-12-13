@@ -2,7 +2,7 @@ import numpy as np
 from tqdm import tqdm
 import h5py
 
-def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
+def cw_flag_debug_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
 
     print('Collecting cw flag starts!')
 
@@ -10,8 +10,8 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     from tools.ara_data_load import ara_root_loader
     from tools.ara_constant import ara_const
     from tools.ara_wf_analyzer import wf_analyzer
-    from tools.ara_cw_filters import py_phase_variance
-    from tools.ara_cw_filters import py_testbed
+    from tools.ara_cw_filters_debug import py_phase_variance
+    from tools.ara_cw_filters_debug import py_testbed
     from tools.ara_run_manager import run_info_loader
     from tools.ara_known_issue import known_issue_loader
 
@@ -50,9 +50,20 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
 
     # cw class
     cw_phase = py_phase_variance(st, run, freq_range)
+    useful_freq_range_phase = freq_range[cw_phase.useful_freq_idx]
     evt_len = cw_phase.evt_len
     start_evt = int(evt_len - 1)
     cw_testbed = py_testbed(st, run, freq_range, 6, 5.5, 3, analyze_blind_dat = analyze_blind_dat, verbose = True)
+    baseline = cw_testbed.baseline_copy
+    useful_freq_range = cw_testbed.useful_freq_range
+    freq_bins = np.linspace(0, 1, 200 + 1)
+    freq_bin_center = (freq_bins[1:] + freq_bins[:-1]) / 2
+    dbm_bins = np.linspace(-240, -40, 200 + 1)
+    dbm_bin_center = (dbm_bins[1:] + dbm_bins[:-1]) / 2
+    del_bins = np.linspace(-50, 50, 200 + 1)
+    del_bin_center = (del_bins[1:] + del_bins[:-1]) / 2 
+    sig_bins = np.linspace(-2, 18, 200 + 1)
+    sig_bin_center = (sig_bins[1:] + sig_bins[:-1]) / 2
     del st, run
 
     # output array  
@@ -60,6 +71,9 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     phase_idx = []
     testbed_idx = []
     empty = np.full((0), np.nan, dtype = float)
+    dbm_map = np.full((len(freq_bin_center), len(dbm_bin_center), num_ants, 2), 0, dtype = int)
+    del_map = np.full((len(freq_bin_center), len(del_bin_center), num_ants, 2), 0, dtype = int)
+    sig_map = np.full((len(freq_bin_center), len(sig_bin_center), 2, 2), 0, dtype = int)
 
     # loop over the events
     evt_counts = 0
@@ -86,18 +100,33 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
         wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_phase = True, use_abs = True, use_norm = True, use_dbmHz = True)
         rfft_dbmhz = wf_int.pad_fft
         rfft_phase = wf_int.pad_phase
-
+        
+        if trig_type[evt] == 0:
+            arr_idx = 0
+        if trig_type[evt] == 2:
+            arr_idx = 1
+        for ant in range(num_ants): 
+            dbm_map[:, :, ant, arr_idx] += np.histogram2d(freq_range, rfft_dbmhz[:, ant], bins = (freq_bins, dbm_bins))[0].astype(int)
+        
         cw_testbed.get_bad_magnitude(rfft_dbmhz)
+        delta_mag = cw_testbed.delta_mag
+        for ant in range(num_ants):
+            del_map[:, :, ant, arr_idx] += np.histogram2d(useful_freq_range, delta_mag[:, ant], bins = (freq_bins, del_bins))[0].astype(int)
+
         testbed_idxs = cw_testbed.bad_idx
         testbed_idx.append(testbed_idxs)
         cw_phase.get_phase_differences(rfft_phase, evt_counts % evt_len)
-        del rfft_dbmhz, rfft_phase
+        del rfft_dbmhz, rfft_phase, delta_mag
         if evt_counts < start_evt:
             sigma.append(empty)
             phase_idx.append(empty)
             evt_counts += 1 
             continue
         cw_phase.get_bad_phase()
+        sigma_variance_avg = cw_phase.sigma_variance_avg
+        for pol in range(2):
+            sig_map[:, :, pol, arr_idx] += np.histogram2d(useful_freq_range_phase, sigma_variance_avg[:, pol], bins = (freq_bins, sig_bins))[0].astype(int)
+        del sigma_variance_avg
         sigmas = cw_phase.bad_sigma 
         phase_idxs = cw_phase.bad_idx
         sigma.append(sigmas)
@@ -115,15 +144,24 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     return {'evt_num':evt_num,
             'bad_ant':bad_ant,
             'freq_range':freq_range,
+            'useful_freq_range':useful_freq_range,
+            'useful_freq_range_phase':useful_freq_range_phase,
             'sigma':sigma,
             'phase_idx':phase_idx,
             'testbed_idx':testbed_idx,
-            'evt_len':np.array([evt_len], dtype = int)}
-
-
-
-
-
+            'evt_len':np.array([evt_len], dtype = int),
+            'baseline':baseline,
+            'freq_bins':freq_bins,
+            'freq_bin_center':freq_bin_center,
+            'dbm_bins':dbm_bins,
+            'dbm_bin_center':dbm_bin_center,
+            'del_bins':del_bins,
+            'del_bin_center':del_bin_center,
+            'sig_bins':sig_bins,
+            'sig_bin_center':sig_bin_center,
+            'dbm_map':dbm_map,
+            'del_map':del_map,
+            'sig_map':sig_map}
 
 
 

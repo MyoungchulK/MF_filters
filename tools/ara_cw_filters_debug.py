@@ -90,7 +90,7 @@ class py_testbed:
         self.pairs, self.pair_len, self.v_pairs_len = get_pair_info(self.st, self.run)
         self.get_baseline() # prepare the baseline at the beginning
 
-        #self.freq_range = freq_range[self.useful_freq_idx] # for debug
+        self.useful_freq_range = freq_range[self.useful_freq_idx] # for debug
 
     def get_baseline(self):
         """! get baseline (averaged frequency spectrum in amplitude unit (mV/sqrt(GHz))) 
@@ -102,6 +102,7 @@ class py_testbed:
         base_dat = run_info.get_result_path(file_type = 'baseline', verbose = self.verbose) # get the h5 file path
         base_hf = h5py.File(base_dat, 'r')
         self.baseline = 10 * np.log10((base_hf['baseline'][:]**2) * 1e-9 / 50 / 1e3) # from mV/sqrt(GHz) to dBm/Hz
+        self.baseline_copy = np.copy(self.baseline)
         self.baseline = self.baseline[self.useful_freq_idx] # trim the edge frequencies 
         del run_info, base_dat, base_hf
 
@@ -129,13 +130,13 @@ class py_testbed:
 
         self.fft_dB -= delta_mean[np.newaxis, :] # remove differences
         base_new = self.baseline - self.slope_x * slope[np.newaxis, :] # tilt baseline
-        delta_mag = self.fft_dB - base_new # and differences
+        self.delta_mag = self.fft_dB - base_new # and differences
         del delta_mean, slope, base_new
 
         ## calculate potentially bad frequencies and other frequencies that also have a big peak near bad frequencies
-        self.bad_freqs = delta_mag > self.dB_cut             # it is Boolean array now
-        self.bad_freqs_broad = delta_mag > self.dB_cut_broad # it is Boolean array now
-        del delta_mag
+        self.bad_freqs = self.delta_mag > self.dB_cut             # it is Boolean array now
+        self.bad_freqs_broad = self.delta_mag > self.dB_cut_broad # it is Boolean array now
+        #del delta_mag
 
     def get_bad_frequency(self):
         """! check 'potentially' bad frequencies are actully bad or not
@@ -222,7 +223,7 @@ class py_phase_variance:
     def get_phase_pad(self):
         """! prepare the phase differences array at the beginning"""
         
-        self.phase_diff_pad = np.full((self.useful_freq_len, self.pair_len, self.evt_len), np.nan, dtype = float) # arr dim: (number of freq bins, number of pairs, number of events)
+        self.phase_diff_pad = np.full((self.useful_freq_len, self.pair_len, self.evt_len), np.nan, dtype = float) # (number of freq bins, number of pairs, number events)
 
     def get_phase_differences(self, phase, evt_counts):
         """! fill phase differences into pad
