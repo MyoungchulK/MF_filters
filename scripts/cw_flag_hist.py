@@ -58,16 +58,18 @@ for r in tqdm(range(len(d_run_tot))):
         hf = h5py.File(d_list[r], 'r')
     except OSError:
         continue
-    dbms = hf['dbm_map'][:]
-    dels = hf['del_map'][:]
-    sigs = hf['sig_map'][:]
+    try:
+        dbms = hf['dbm_map'][:]
+        dels = hf['del_map'][:]
+        sigs = hf['sig_map'][:]
+        bases = hf['baseline'][:]
+        freqs = hf['freq_range'][:]
+    except KeyError:
+        continue
     dbm_map[:, :, :, :, g_idx] += dbms
     del_map[:, :, :, :, g_idx] += dels
     sig_map[:, :, :, :, g_idx] += sigs
     dbm_map[:, :, :, :, g_idx] += dbms
-
-    bases = hf['baseline'][:]
-    freqs = hf['freq_range'][:]
     for a in range(num_ants):
         bas_map[:, :, a, g_idx] += np.histogram2d(freqs, bases[:, a], bins = (freq_bins, dbm_bins))[0].astype(int)
     del hf, dbms, dels, sigs, bases, g_idx, freqs
