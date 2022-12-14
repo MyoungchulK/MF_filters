@@ -37,8 +37,10 @@ def cw_flag_debug_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False
     daq_hf = h5py.File(daq_dat, 'r')
     daq_evt = daq_hf['evt_num'][:]
     daq_qual_cut = daq_hf['daq_qual_cut_sum'][:] != 0
+    tot_qual_cut = daq_hf['tot_qual_cut_sum'][:] != 0
     daq_qual_cut_sum = np.in1d(evt_num, daq_evt[daq_qual_cut]).astype(int)
-    del run_info, daq_dat, daq_hf, daq_evt, daq_qual_cut
+    tot_qual_cut_sum = np.in1d(evt_num, daq_evt[tot_qual_cut]).astype(int)
+    del run_info, daq_dat, daq_hf, daq_evt, daq_qual_cut, tot_qual_cut
 
     known_issue = known_issue_loader(st)
     bad_ant = known_issue.get_bad_antenna(run, print_integer = True)
@@ -74,6 +76,9 @@ def cw_flag_debug_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False
     dbm_map = np.full((len(freq_bin_center), len(dbm_bin_center), num_ants, 2), 0, dtype = int)
     del_map = np.full((len(freq_bin_center), len(del_bin_center), num_ants, 2), 0, dtype = int)
     sig_map = np.full((len(freq_bin_center), len(sig_bin_center), 2, 2), 0, dtype = int)
+    dbm_map_cut = np.full((len(freq_bin_center), len(dbm_bin_center), num_ants, 2), 0, dtype = int)
+    del_map_cut = np.full((len(freq_bin_center), len(del_bin_center), num_ants, 2), 0, dtype = int)
+    sig_map_cut = np.full((len(freq_bin_center), len(sig_bin_center), 2, 2), 0, dtype = int)
 
     # loop over the events
     evt_counts = 0
@@ -84,6 +89,7 @@ def cw_flag_debug_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False
             phase_idx.append(empty)
             testbed_idx.append(empty)
             continue
+        tot_cut = tot_qual_cut_sum[evt] == 0
 
         # get entry and wf
         ara_root.get_entry(evt)
@@ -106,12 +112,20 @@ def cw_flag_debug_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False
         if trig_type[evt] == 2:
             arr_idx = 1
         for ant in range(num_ants): 
-            dbm_map[:, :, ant, arr_idx] += np.histogram2d(freq_range, rfft_dbmhz[:, ant], bins = (freq_bins, dbm_bins))[0].astype(int)
-        
+            dbm_m = np.histogram2d(freq_range, rfft_dbmhz[:, ant], bins = (freq_bins, dbm_bins))[0].astype(int)
+            dbm_map[:, :, ant, arr_idx] += dbm_m
+            if tot_cut:
+                dbm_map_cut[:, :, ant, arr_idx] += dbm_m  
+            del dbm_m 
+
         cw_testbed.get_bad_magnitude(rfft_dbmhz)
         delta_mag = cw_testbed.delta_mag
         for ant in range(num_ants):
-            del_map[:, :, ant, arr_idx] += np.histogram2d(useful_freq_range, delta_mag[:, ant], bins = (freq_bins, del_bins))[0].astype(int)
+            del_m = np.histogram2d(useful_freq_range, delta_mag[:, ant], bins = (freq_bins, del_bins))[0].astype(int)
+            del_map[:, :, ant, arr_idx] += del_m
+            if tot_cut:
+                del_map_cut[:, :, ant, arr_idx] += del_m
+            del del_m
 
         testbed_idxs = cw_testbed.bad_idx
         testbed_idx.append(testbed_idxs)
@@ -125,14 +139,18 @@ def cw_flag_debug_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False
         cw_phase.get_bad_phase()
         sigma_variance_avg = cw_phase.sigma_variance_avg
         for pol in range(2):
-            sig_map[:, :, pol, arr_idx] += np.histogram2d(useful_freq_range_phase, sigma_variance_avg[:, pol], bins = (freq_bins, sig_bins))[0].astype(int)
+            sig_m = np.histogram2d(useful_freq_range_phase, sigma_variance_avg[:, pol], bins = (freq_bins, sig_bins))[0].astype(int)
+            sig_map[:, :, pol, arr_idx] += sig_m
+            if tot_cut:
+                sig_map_cut[:, :, pol, arr_idx] += sig_m
+            del sig_m
         del sigma_variance_avg
         sigmas = cw_phase.bad_sigma 
         phase_idxs = cw_phase.bad_idx
         sigma.append(sigmas)
         phase_idx.append(phase_idxs)
         evt_counts += 1
-    del ara_root, num_evts, num_ants, wf_int, cw_phase, cw_testbed, daq_qual_cut_sum
+    del ara_root, num_evts, num_ants, wf_int, cw_phase, cw_testbed, daq_qual_cut_sum, tot_qual_cut_sum
 
     # to numpy array
     sigma = np.asarray(sigma)
@@ -161,7 +179,10 @@ def cw_flag_debug_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False
             'sig_bin_center':sig_bin_center,
             'dbm_map':dbm_map,
             'del_map':del_map,
-            'sig_map':sig_map}
+            'sig_map':sig_map,
+            'dbm_map_cut':dbm_map_cut,
+            'del_map_cut':del_map_cut,
+            'sig_map_cut':sig_map_cut}
 
 
 
