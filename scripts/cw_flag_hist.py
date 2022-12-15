@@ -43,13 +43,19 @@ dbm_map = np.full((len(freq_bin_center), len(dbm_bin_center), num_ants, 2, num_c
 del_map = np.full((len(freq_bin_center), len(del_bin_center), num_ants, 2, num_configs), 0, dtype = int)
 sig_map = np.full((len(freq_bin_center), len(sig_bin_center), num_pols, 2, num_configs), 0, dtype = int)
 bas_map = np.full((len(freq_bin_center), len(dbm_bin_center), num_ants, num_configs), 0, dtype = int)
+dbm_map_cut = np.full((len(freq_bin_center), len(dbm_bin_center), num_ants, 2, num_configs), 0, dtype = int)
+del_map_cut = np.full((len(freq_bin_center), len(del_bin_center), num_ants, 2, num_configs), 0, dtype = int)
+sig_map_cut = np.full((len(freq_bin_center), len(sig_bin_center), num_pols, 2, num_configs), 0, dtype = int)
+dbm_map_bad = np.full((len(freq_bin_center), len(dbm_bin_center), num_ants, 2, num_configs), 0, dtype = int)
+del_map_bad = np.full((len(freq_bin_center), len(del_bin_center), num_ants, 2, num_configs), 0, dtype = int)
+sig_map_bad = np.full((len(freq_bin_center), len(sig_bin_center), num_pols, 2, num_configs), 0, dtype = int)
 
 for r in tqdm(range(len(d_run_tot))):
 
   #if r <10:
   if r >= count_i and r < count_ff:
 
-    #bad_idx = d_run_tot[r] in bad_runs
+    bad_idx = d_run_tot[r] in bad_runs
     ara_run = run_info_loader(Station, d_run_tot[r])
     g_idx = ara_run.get_config_number() - 1
     del ara_run
@@ -62,6 +68,12 @@ for r in tqdm(range(len(d_run_tot))):
         dbms = hf['dbm_map'][:]
         dels = hf['del_map'][:]
         sigs = hf['sig_map'][:]
+        dbms_c = hf['dbm_map_cut'][:]
+        dels_c = hf['del_map_cut'][:]
+        sigs_c = hf['sig_map_cut'][:]
+        dbms_b = hf['dbm_map_bad'][:]
+        dels_b = hf['del_map_bad'][:]
+        sigs_b = hf['sig_map_bad'][:]
         bases = hf['baseline'][:]
         freqs = hf['freq_range'][:]
     except KeyError:
@@ -69,10 +81,15 @@ for r in tqdm(range(len(d_run_tot))):
     dbm_map[:, :, :, :, g_idx] += dbms
     del_map[:, :, :, :, g_idx] += dels
     sig_map[:, :, :, :, g_idx] += sigs
-    dbm_map[:, :, :, :, g_idx] += dbms
+    dbm_map_cut[:, :, :, :, g_idx] += dbms_c
+    del_map_cut[:, :, :, :, g_idx] += dels_c
+    sig_map_cut[:, :, :, :, g_idx] += sigs_c
+    dbm_map_bad[:, :, :, :, g_idx] += dbms_b
+    del_map_bad[:, :, :, :, g_idx] += dels_b
+    sig_map_bad[:, :, :, :, g_idx] += sigs_b
     for a in range(num_ants):
         bas_map[:, :, a, g_idx] += np.histogram2d(freqs, bases[:, a], bins = (freq_bins, dbm_bins))[0].astype(int)
-    del hf, dbms, dels, sigs, bases, g_idx, freqs
+    del hf, dbms, dels, sigs, bases, g_idx, freqs, dbms_c, dels_c, sigs_c
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
 if not os.path.exists(path):
@@ -93,6 +110,12 @@ hf.create_dataset('dbm_map', data=dbm_map, compression="gzip", compression_opts=
 hf.create_dataset('del_map', data=del_map, compression="gzip", compression_opts=9)
 hf.create_dataset('sig_map', data=sig_map, compression="gzip", compression_opts=9)
 hf.create_dataset('bas_map', data=bas_map, compression="gzip", compression_opts=9)
+hf.create_dataset('dbm_map_cut', data=dbm_map_cut, compression="gzip", compression_opts=9)
+hf.create_dataset('del_map_cut', data=del_map_cut, compression="gzip", compression_opts=9)
+hf.create_dataset('sig_map_cut', data=sig_map_cut, compression="gzip", compression_opts=9)
+hf.create_dataset('dbm_map_bad', data=dbm_map_bad, compression="gzip", compression_opts=9)
+hf.create_dataset('del_map_bad', data=del_map_bad, compression="gzip", compression_opts=9)
+hf.create_dataset('sig_map_bad', data=sig_map_bad, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name)
 # quick size check

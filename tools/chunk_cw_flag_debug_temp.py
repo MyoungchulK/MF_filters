@@ -10,8 +10,8 @@ def cw_flag_debug_temp_collector(Data, Ped, analyze_blind_dat = False, use_l2 = 
     from tools.ara_data_load import ara_root_loader
     from tools.ara_constant import ara_const
     from tools.ara_wf_analyzer import wf_analyzer
-    from tools.ara_cw_filters_debug import py_phase_variance
-    from tools.ara_cw_filters_debug import py_testbed
+    from tools.ara_cw_filters_debug_temp import py_phase_variance
+    from tools.ara_cw_filters_debug_temp import py_testbed
     from tools.ara_run_manager import run_info_loader
     from tools.ara_known_issue import known_issue_loader
 
@@ -42,6 +42,21 @@ def cw_flag_debug_temp_collector(Data, Ped, analyze_blind_dat = False, use_l2 = 
     tot_qual_cut_sum = np.in1d(evt_num, daq_evt[tot_qual_cut]).astype(int)
     del run_info, daq_dat, daq_hf, daq_evt, daq_qual_cut, tot_qual_cut
 
+    bad_s = np.arange(0,15,1,dtype = int)
+    bad_s_len = len(bad_s)
+    rs_idx = np.logical_and(trig_type != 1, daq_qual_cut_sum == 0)
+    rs_len = np.count_nonzero(rs_idx)
+    rs_evt_num = evt_num[rs_idx]
+    rs_qual_cut = tot_qual_cut_sum[rs_idx]
+    rs_entry_num = np.arange(rs_len, dtype = int)
+    bad_rs = rs_entry_num[rs_qual_cut != 0]
+    bad_rs = np.repeat(bad_rs[:, np.newaxis], bad_s_len, axis = 1)
+    bad_rs += bad_s[np.newaxis, :]
+    bad_rs = np.unique(bad_rs.flatten()).astype(int)
+    bad_idx = np.in1d(rs_entry_num, bad_rs)
+    bad_evt = rs_evt_num[bad_idx]
+    bad_tot_evt = np.in1d(evt_num, bad_evt).astype(int)
+
     known_issue = known_issue_loader(st)
     bad_ant = known_issue.get_bad_antenna(run, print_integer = True)
     del known_issue
@@ -69,10 +84,6 @@ def cw_flag_debug_temp_collector(Data, Ped, analyze_blind_dat = False, use_l2 = 
     del st, run
 
     # output array  
-    sigma = []
-    phase_idx = []
-    testbed_idx = []
-    empty = np.full((0), np.nan, dtype = float)
     dbm_map = np.full((len(freq_bin_center), len(dbm_bin_center), num_ants, 2), 0, dtype = int)
     del_map = np.full((len(freq_bin_center), len(del_bin_center), num_ants, 2), 0, dtype = int)
     sig_map = np.full((len(freq_bin_center), len(sig_bin_center), 2, 2), 0, dtype = int)
@@ -88,11 +99,8 @@ def cw_flag_debug_temp_collector(Data, Ped, analyze_blind_dat = False, use_l2 = 
     for evt in tqdm(range(num_evts)):
         
         if daq_qual_cut_sum[evt] or trig_type[evt] == 1:
-            sigma.append(empty)
-            phase_idx.append(empty)
-            testbed_idx.append(empty)
             continue
-        tot_cut = tot_qual_cut_sum[evt] == 0
+        tot_cut = bad_tot_evt[evt] == 0
 
         # get entry and wf
         ara_root.get_entry(evt)
@@ -134,13 +142,9 @@ def cw_flag_debug_temp_collector(Data, Ped, analyze_blind_dat = False, use_l2 = 
                 del_map_bad[:, :, ant, arr_idx] += del_m
             del del_m
 
-        testbed_idxs = cw_testbed.bad_idx
-        testbed_idx.append(testbed_idxs)
         cw_phase.get_phase_differences(rfft_phase, evt_counts % evt_len)
         del rfft_dbmhz, rfft_phase, delta_mag
         if evt_counts < start_evt:
-            sigma.append(empty)
-            phase_idx.append(empty)
             evt_counts += 1 
             continue
         cw_phase.get_bad_phase()
@@ -154,17 +158,8 @@ def cw_flag_debug_temp_collector(Data, Ped, analyze_blind_dat = False, use_l2 = 
                 sig_map_bad[:, :, pol, arr_idx] += sig_m
             del sig_m
         del sigma_variance_avg
-        sigmas = cw_phase.bad_sigma 
-        phase_idxs = cw_phase.bad_idx
-        sigma.append(sigmas)
-        phase_idx.append(phase_idxs)
         evt_counts += 1
     del ara_root, num_evts, num_ants, wf_int, cw_phase, cw_testbed, daq_qual_cut_sum, tot_qual_cut_sum
-
-    # to numpy array
-    sigma = np.asarray(sigma)
-    phase_idx = np.asarray(phase_idx)
-    testbed_idx = np.asarray(testbed_idx)
 
     print('CW flag collecting is done!')
 
@@ -173,9 +168,6 @@ def cw_flag_debug_temp_collector(Data, Ped, analyze_blind_dat = False, use_l2 = 
             'freq_range':freq_range,
             'useful_freq_range':useful_freq_range,
             'useful_freq_range_phase':useful_freq_range_phase,
-            'sigma':sigma,
-            'phase_idx':phase_idx,
-            'testbed_idx':testbed_idx,
             'evt_len':np.array([evt_len], dtype = int),
             'baseline':baseline,
             'freq_bins':freq_bins,
