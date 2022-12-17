@@ -25,7 +25,7 @@ bad_runs = knwon_issue.get_knwon_bad_run(use_qual = True)
 del knwon_issue
 
 # sort
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_flag_debug/*'
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_flag_debug_temp/*'
 print(d_path)
 d_list, d_run_tot, d_run_range = file_sorter(d_path)
 del d_run_range
@@ -96,7 +96,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'CW_Flag_Debug_A{Station}_R{count_i}.h5'
+file_name = f'CW_Flag_Debug_Temp_A{Station}_R{count_i}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('freq_bins', data=freq_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('freq_bin_center', data=freq_bin_center, compression="gzip", compression_opts=9)

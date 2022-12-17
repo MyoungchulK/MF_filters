@@ -101,11 +101,10 @@ class py_testbed:
         run_info = run_info_loader(self.st, self.run, analyze_blind_dat = self.analyze_blind_dat)
         base_dat = run_info.get_result_path(file_type = 'baseline', verbose = self.verbose) # get the h5 file path
         base_hf = h5py.File(base_dat, 'r')
-        num_mean_evts = float(np.count_nonzero(base_hf['clean_rf_idx'][:]))
-        self.baseline = 10 * np.log10(base_hf['baseline'][:]**2 * num_mean_evts * 1e-9 / 50 / 1e3) # from mV/sqrt(GHz) to dBm/Hz. And for averaged 'power' spectrum
+        self.baseline = 10 * np.log10(base_hf['baseline'][:]**2 * 1e-9 / 50 / 1e3) # from mV/sqrt(GHz) to dBm/Hz.
         self.baseline_copy = np.copy(self.baseline)
         self.baseline = self.baseline[self.useful_freq_idx] # trim the edge frequencies 
-        del run_info, base_dat, base_hf, num_mean_evts
+        del run_info, base_dat, base_hf
 
         ## get mean of frequency spectrum in three different ranges
         self.base_mean = np.nanmean(self.baseline, axis = 0) # whole range
