@@ -150,11 +150,16 @@ class run_info_loader:
             if verbose:
                 print(f'{file_type}_dat_path:{dat_path}')
         else:
-            print(f'There is no desired {file_type} data!')
-            if return_none == True:
-                return None
+            temp_dat_path = dat_path.replace('exp', 'wipac')
+            if os.path.exists(temp_dat_path):
+                dat_path = temp_dat_path
+                print(f'{file_type}_dat_path:{dat_path} -> /exp/ is replaced to /wipac/!!')
             else:
-                sys.exit(1)
+                print(f'There is no desired {file_type} data!')
+                if return_none == True:
+                    return None
+                else:
+                    sys.exit(1)
 
         return dat_path
 
