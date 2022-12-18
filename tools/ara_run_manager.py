@@ -153,7 +153,8 @@ class run_info_loader:
             temp_dat_path = dat_path.replace('exp', 'wipac')
             if os.path.exists(temp_dat_path):
                 dat_path = temp_dat_path
-                print(f'{file_type}_dat_path:{dat_path} -> /exp/ is replaced to /wipac/!!')
+                if verbose:
+                    print(f'{file_type}_dat_path:{dat_path} -> /exp/ is replaced to /wipac/!!')
             else:
                 print(f'There is no desired {file_type} data!')
                 if return_none == True:
