@@ -1,5 +1,5 @@
 ## You can find original C++ version from here: https://github.com/clark2668/a23_analysis_tools/blob/master/tools_CW.h
-## all creadit to Brian:)
+## all creadit to Brian and creator of the code:)
 
 import h5py
 import numpy as np
@@ -14,7 +14,7 @@ ara_const = ara_const()
 num_ants = ara_const.USEFUL_CHAN_PER_STATION
 num_pols = ara_const.POLARIZATION
 
-def get_pair_info(st, run):
+def get_pair_info(st, run, verbose = False):
     """! get pair array by 'good' channels
 
     @param st  Integer.  station id
@@ -27,7 +27,8 @@ def get_pair_info(st, run):
     known_issue = known_issue_loader(st)
     good_ant = known_issue.get_bad_antenna(run, good_ant_true = True, print_ant_idx = True) # good channel indexs in 1d array
     del known_issue
-    print('useful antenna chs for reco:', good_ant)
+    if verbose:
+        print('useful antenna chs for reco:', good_ant)
 
     # get combination for each polarization
     v_pairs = np.asarray(list(combinations(good_ant[good_ant < 8], 2)))
@@ -36,7 +37,8 @@ def get_pair_info(st, run):
     pair_len = len(pairs) # number of whole pairs
     v_pairs_len = len(v_pairs) # number of vpol pairs
     del v_pairs, h_pairs, good_ant
-    print('number of pairs:', len(pairs))
+    if verbose:
+        print('number of pairs:', len(pairs))
 
     return pairs, pair_len, v_pairs_len
 
@@ -70,8 +72,7 @@ class py_testbed:
 
         self.useful_freq_idx = np.logical_and(freq_range > freq_lower_limit, freq_range < freq_upper_limit) # trim out edge frequencies. we are not going to use anyway
         self.useful_freq_len = np.count_nonzero(self.useful_freq_idx) # so... how many frequencies left?
-        self.freq_range_idx = np.arange(len(freq_range), dtype = int)
-        self.freq_range_idx = np.repeat(self.freq_range_idx[self.useful_freq_idx][:, np.newaxis], num_pols, axis = 1) # frequency index array for identifying bad frequency in the last step
+        self.freq_range_idx = np.arange(len(freq_range), dtype = int)[self.useful_freq_idx] # frequency index array for identifying bad frequency in the last step
         self.half_range = (freq_upper_limit - freq_lower_limit) / 2 # half length of trim out frequency range
         self.half_freq_idx = self.useful_freq_len // 2 # so... what is index of half frequency?
         self.slope_x = freq_range[self.useful_freq_idx] - (freq_lower_limit + self.half_range)
@@ -170,7 +171,7 @@ class py_testbed:
 
         ## 2nd, pair check
         ## using rolling sum with 5 MHz frequency window to compare the 'really' bad frequencies in each channel pair
-        ## to prevent the accidantal increase of coincidances by rolling sum of neighboring 'really' bad frequencies, if element is bigger than 1, not it is just 'True'
+        ## to prevent the accidantal increase of coincidances by rolling sum of neighboring 'really' bad frequencies, if element is bigger than 1, now it is just 'True'
         ## if each channel pair has 'really' bad frequencies in both channels (by logical_and()), now it is 'really really' bad frequencies
         ## to prevent the accidantal increase of coincidances between two antennas by rolling sum, only oneside of pairs are spreaded by rolling sum
         bad_freq_1st_sum = np.round(fftconvolve(bad_freq_1st, self.freq_near_one, 'same', axes = 0)).astype(int) != 0 # it is Boolean array now
@@ -187,8 +188,11 @@ class py_testbed:
         del bad_freq_2nd
 
         ## save 'the' bad frequency indexs
-        self.bad_idx = self.freq_range_idx[bad_freq_pol].flatten()
-        del bad_freq_pol
+        bad_freq_pol_sum = np.logical_or(bad_freq_pol[:, 0], bad_freq_pol[:, 1]) # merging both pol results
+        if self.use_debug:
+            self.bad_freq_pol_sum_copy = np.copy(bad_freq_pol_sum)
+        self.bad_idx = self.freq_range_idx[bad_freq_pol_sum]
+        del bad_freq_pol, bad_freq_pol_sum
 
     def get_bad_magnitude(self, fft_dB):
         """! all the calculation will be excuted by this function
@@ -227,8 +231,7 @@ class py_phase_variance:
         self.useful_freq_idx = np.logical_and(self.freq_range > freq_lower_limit, self.freq_range < freq_upper_limit) # trim out edge frequencies. we are not going to use anyway
         self.useful_freq_len = np.count_nonzero(self.useful_freq_idx) # so... how many frequencies left?
         self.upper95_idx = int(self.useful_freq_len * 0.95) # what would be starting index of upper 95 % element after sorting
-        self.freq_range_idx = np.arange(len(self.freq_range), dtype = int) 
-        self.freq_range_idx = np.repeat(self.freq_range_idx[self.useful_freq_idx][:, np.newaxis], num_pols, axis = 1) # frequency index array for identifying bad frequency in the last step
+        self.freq_range_idx = np.arange(len(self.freq_range), dtype = int)[self.useful_freq_idx] # frequency index array for identifying bad frequency in the last step 
         if self.use_debug:
             self.useful_freq_range = self.freq_range[self.useful_freq_idx] # for debug
 
@@ -288,17 +291,19 @@ class py_phase_variance:
         del sigma_variance      
  
     def get_peak_above_threshold(self, thres = 1):
-        """! which values are bigger than threhold if this is bigger than threshold, This event has a problem
+        """! which values are bigger than threhold.
 
         @param thres  Integer.
         """
-    
-        bad_bool = self.sigma_variance_avg > thres
+   
+        sigma_variance_avg_sum = np.nanmax(self.sigma_variance_avg, axis = 1) 
+        bad_bool = sigma_variance_avg_sum > thres # merging both pol results 
         if self.use_debug:
+            self.sigma_variance_avg_sum = sigma_variance_avg_sum
             self.bad_bool_copy = np.copy(bad_bool) 
-        self.bad_sigma = self.sigma_variance_avg[bad_bool].flatten() # bad sigma vaules
-        self.bad_idx = self.freq_range_idx[bad_bool].flatten() # indexs of bad frequencies
-        del bad_bool
+        self.bad_sigma = sigma_variance_avg_sum[bad_bool] # bad sigma vaules
+        self.bad_idx = self.freq_range_idx[bad_bool] # indexs of bad frequencies
+        del bad_bool, sigma_variance_avg_sum
 
     def get_bad_phase(self):
         """! all the calculation will be excuted by this function """

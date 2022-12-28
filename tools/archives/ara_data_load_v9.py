@@ -769,46 +769,47 @@ class ara_eventHk_uproot_loader:
 
 class sin_subtract_loader:
 
-    def __init__(self, max_fail_atts = 3, cw_thres = 0.05, dt = 0.5, sol_pad = 300, 
-                    baseline = None, testbed_dB = None, fft_len = None, use_debug = False):
+    def __init__(self, cw_freq, cw_thres, max_fail_atts = 3, num_params = 3, dt = 0.5, sol_pad = None, use_filter = False, use_filter_debug = False):
 
         self.dt = dt
         self.sol_pad = sol_pad
-        self.testbed_dB = testbed_dB
-        self.use_debug = use_debug
-    
-        baseline = baseline.astype(np.double) 
-        self.sin_sub = ROOT.FFTtools.SineSubtract(fft_len, baseline, max_fail_atts, cw_thres, False) # no store
+        self.num_params = num_params
+        self.cw_freq = cw_freq
+        self.cw_thres = cw_thres
+
+        #self.sin_sub = ROOT.FFTtools.SineSubtract(max_fail_atts, 0.05, False) # no store
+        self.sin_sub = ROOT.FFTtools.SineSubtract(max_fail_atts, 0.01, True) # no store
         #self.sin_sub.setVerbose(True)
 
-    def get_filtered_wf(self, int_v, int_num, ant, pad_len, bad_idx):
+        if use_filter:
+            self.sin_sub.setFreqLimits(self.num_params, cw_freq[:, 0].astype(np.double), cw_freq[:, 1].astype(np.double))
+            self.use_filter_debug = use_filter_debug
+    
+    def get_filtered_wf(self, int_v, int_num, ant, pad_len):
 
-        if self.use_debug:
+        int_v_db = int_v.astype(np.double)
+        cw_v = np.full((int_num), 0, dtype = np.double)
+        if self.use_filter_debug:
             self.sub_ratios = np.full((self.sol_pad), np.nan, dtype = float)
             self.sub_powers = np.copy(self.sub_ratios)
             self.sub_freqs = np.copy(self.sub_ratios)
+        
+        #self.sin_sub.subtractCW(int_num, int_v_db, self.dt, self.cw_thres[ant], pad_len, cw_v)
+        self.sin_sub.subtractCW(int_num, int_v_db, self.dt, cw_v)
+        self.num_sols = self.sin_sub.getNSines()
+        print(self.num_sols)
+        #if self.use_filter_debug:
+        #    self.sub_ratios[1:self.num_sols+1] = np.frombuffer(self.sin_sub.getRatios(), dtype = float, count = self.num_sols + 1)[1:]
+        #    self.sub_powers[:self.num_sols+1] = np.frombuffer(self.sin_sub.getPowers(), dtype = float, count = self.num_sols + 1)
+        #    self.sub_freqs[:self.num_sols] = np.frombuffer(self.sin_sub.getFreqs(), dtype = float, count = self.num_sols)
+        #self.sin_sub.makeSlides(title = f'ch{ant}', prefix = f'ch{ant}', outdir = '/home/mkim/')
 
-        if bad_idx is None or len(bad_idx) == 0:
-            cw_v = int_v
-            print('Oops!!')
-        else:
-            int_v_double = int_v.astype(np.double)
-            cw_v = np.full((int_num), 0, dtype = np.double)
-            
-            bad_idx = bad_idx.astype(np.int32)
-            self.sin_sub.subtractCW(int_num, int_v_double, self.dt, pad_len, bad_idx, len(bad_idx), self.testbed_dB, ant, cw_v)
-            #if self.use_debug:
-            #    self.num_sols = self.sin_sub.getNSines()
-            #    self.sub_ratios[1:self.num_sols+1] = np.frombuffer(self.sin_sub.getRatios(), dtype = float, count = self.num_sols + 1)[1:]
-            #    self.sub_powers[:self.num_sols+1] = np.frombuffer(self.sin_sub.getPowers(), dtype = float, count = self.num_sols + 1)
-            #    self.sub_freqs[:self.num_sols] = np.frombuffer(self.sin_sub.getFreqs(), dtype = float, count = self.num_sols)
-            #    for c in range(self.num_sols):
-            #       self.sin_sub.makeSlides(title = f'ch{ant} iter{c}', prefix = f'ch{ant} iter{c}', output = '/home/mkim/')
-            
-            cw_v = cw_v.astype(float)
+        cw_v = cw_v.astype(float)
+        #for c in range(self.num_sols):
+        #    self.sin_sub.makeSlides(title = f'ch{ant} iter{c}', prefix = f'ch{ant} iter{c}', output = '/home/mkim/')
 
         return cw_v
-    """
+
     def get_sin_subtract_wf(self, int_v, int_num, ant, return_none = False):
 
         int_v_db = int_v.astype(np.double)
@@ -844,7 +845,7 @@ class sin_subtract_loader:
         else:
             cw_v = cw_v.astype(float)
         return cw_v
-    """
+
 class analog_buffer_info_loader:
 
     def __init__(self, st, run, yrs, incl_cable_delay = False):

@@ -24,6 +24,7 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     ara_uproot = ara_uproot_loader(Data)
     trig_type = ara_uproot.get_trig_type()
     evt_num = ara_uproot.evt_num
+    entry_num = ara_uproot.entry_num
     num_evts = ara_uproot.num_evts
     st = ara_uproot.station_id
     yr = ara_uproot.year
@@ -52,21 +53,23 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     cw_phase = py_phase_variance(st, run, freq_range)
     evt_len = cw_phase.evt_len
     start_evt = int(evt_len - 1)
-    cw_testbed = py_testbed(st, run, freq_range, 6, 5.5, 3, analyze_blind_dat = analyze_blind_dat, verbose = True)
+    cw_testbed = py_testbed(st, run, freq_range, 12, 11, 3, analyze_blind_dat = analyze_blind_dat, verbose = True)
     del st, run
 
     # output array  
     sigma = []
     phase_idx = []
     testbed_idx = []
-    empty = np.full((0), np.nan, dtype = float)
+    empty = np.full((0), 0, dtype = int)
+    empty_float = np.full((0), np.nan, dtype = float)
+    clean_entry = entry_num[(daq_qual_cut_sum == 0) & (trig_type != 1)]
 
     # loop over the events
     evt_counts = 0
     for evt in tqdm(range(num_evts)):
         
         if daq_qual_cut_sum[evt] or trig_type[evt] == 1:
-            sigma.append(empty)
+            sigma.append(empty_float)
             phase_idx.append(empty)
             testbed_idx.append(empty)
             continue
@@ -93,7 +96,7 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
         cw_phase.get_phase_differences(rfft_phase, evt_counts % evt_len)
         del rfft_dbmhz, rfft_phase
         if evt_counts < start_evt:
-            sigma.append(empty)
+            sigma.append(empty_float)
             phase_idx.append(empty)
             evt_counts += 1 
             continue
@@ -102,8 +105,12 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
         phase_idxs = cw_phase.bad_idx
         sigma.append(sigmas)
         phase_idx.append(phase_idxs)
+        time_travel_idx = clean_entry[evt_counts - start_evt] 
+        sigma[time_travel_idx] = np.concatenate((sigma[time_travel_idx], sigmas))
+        phase_idx[time_travel_idx] = np.concatenate((phase_idx[time_travel_idx], phase_idxs))
         evt_counts += 1
-    del ara_root, num_evts, num_ants, wf_int, cw_phase, cw_testbed, daq_qual_cut_sum
+        del time_travel_idx
+    del ara_root, num_evts, num_ants, wf_int, cw_phase, cw_testbed, daq_qual_cut_sum, clean_entry
 
     # to numpy array
     sigma = np.asarray(sigma)

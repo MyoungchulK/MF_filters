@@ -50,6 +50,7 @@ dbm_map_bad = np.full((len(freq_bin_center), len(dbm_bin_center), num_ants, 2, n
 del_map_bad = np.full((len(freq_bin_center), len(del_bin_center), num_ants, 2, num_configs), 0, dtype = int)
 sig_map_bad = np.full((len(freq_bin_center), len(sig_bin_center), num_pols, 2, num_configs), 0, dtype = int)
 
+run_num = []
 dbm_2d = []
 dbm_cut_2d = []
 dbm_bad_2d = []
@@ -72,7 +73,7 @@ def get_max_2d(xy, y_bin_cen):
 
 for r in tqdm(range(len(d_run_tot))):
 
-  #if r <10:
+  #if r <100:
   #if r >= count_i and r < count_ff:
 
     bad_idx = d_run_tot[r] in bad_runs
@@ -112,7 +113,10 @@ for r in tqdm(range(len(d_run_tot))):
         bas_map_r[:, :, a] = np.histogram2d(freqs, bases[:, a], bins = (freq_bins, dbm_bins))[0].astype(int)
     bas_map[:, :, :, g_idx] += bas_map_r
     bas_m = get_max_2d(bas_map_r, dbm_bin_center)
-    bas_2d.append(bas_map)
+    bas_2d.append(bas_m)
+    del bas_map_r
+
+    run_num.append(d_run_tot[r])
 
     dbm_m = get_max_2d(dbms[:, :, :, 0], dbm_bin_center)
     dbm_m_c = get_max_2d(dbms_c[:, :, :, 0], dbm_bin_center)
@@ -123,6 +127,18 @@ for r in tqdm(range(len(d_run_tot))):
     sig_m = get_max_2d(sigs[:, :, :, 0], sig_bin_center)
     sig_m_c = get_max_2d(sigs_c[:, :, :, 0], sig_bin_center)
     sig_m_b = get_max_2d(sigs_b[:, :, :, 0], sig_bin_center)
+    """
+    print(bas_m.shape)
+    print(dbm_m.shape)
+    print(dbm_m_c.shape)
+    print(dbm_m_b.shape)
+    print(del_m.shape)
+    print(del_m_c.shape)
+    print(del_m_b.shape)
+    print(sig_m.shape)
+    print(sig_m_c.shape)
+    print(sig_m_b.shape)
+    """
     dbm_2d.append(dbm_m)
     dbm_cut_2d.append(dbm_m_c)
     dbm_bad_2d.append(dbm_m_b)
@@ -138,7 +154,28 @@ path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
-
+"""
+print(bas_map.shape)
+print(dbm_map.shape)
+print(dbm_map_cut.shape)
+print(dbm_map_bad.shape)
+print(del_map.shape)
+print(del_map_cut.shape)
+print(del_map_bad.shape)
+print(sig_map.shape)
+print(sig_map_cut.shape)
+print(sig_map_bad.shape)
+print(np.asarray(dbm_2d).shape)
+print(np.asarray(dbm_cut_2d).shape)
+print(np.asarray(dbm_bad_2d).shape)
+print(np.asarray(del_2d).shape)
+print(np.asarray(del_cut_2d).shape)
+print(np.asarray(del_bad_2d).shape)
+print(np.asarray(sig_2d).shape)
+print(np.asarray(sig_cut_2d).shape)
+print(np.asarray(sig_bad_2d).shape)
+print(np.asarray(bas_2d).shape)
+"""
 #file_name = f'CW_Flag_Debug_Temp_v1_A{Station}_R{count_i}.h5'
 file_name = f'CW_Flag_Debug_Temp_v1_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
@@ -160,6 +197,7 @@ hf.create_dataset('sig_map_cut', data=sig_map_cut, compression="gzip", compressi
 hf.create_dataset('dbm_map_bad', data=dbm_map_bad, compression="gzip", compression_opts=9)
 hf.create_dataset('del_map_bad', data=del_map_bad, compression="gzip", compression_opts=9)
 hf.create_dataset('sig_map_bad', data=sig_map_bad, compression="gzip", compression_opts=9)
+hf.create_dataset('run_num', data=np.asarray(run_num), compression="gzip", compression_opts=9)
 hf.create_dataset('dbm_2d', data=np.asarray(dbm_2d), compression="gzip", compression_opts=9)
 hf.create_dataset('dbm_cut_2d', data=np.asarray(dbm_cut_2d), compression="gzip", compression_opts=9)
 hf.create_dataset('dbm_bad_2d', data=np.asarray(dbm_bad_2d), compression="gzip", compression_opts=9)

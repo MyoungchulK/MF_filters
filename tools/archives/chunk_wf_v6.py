@@ -69,13 +69,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     daq_qual_cut_sum = np.in1d(evt_num, evt_full[daq_qual_cut]).astype(int)
     del qual_dat, daq_hf
 
-    # baseline
-    base_dat =  run_info1.get_result_path(file_type = 'baseline', verbose = True)
-    base_hf = h5py.File(base_dat, 'r')
-    baseline_orig = base_hf['baseline'][:]
-    del base_dat, base_hf
-    print(baseline_orig.shape)
-
     # weight
     wei_key = 'snr'
     wei_dat = run_info1.get_result_path(file_type = wei_key, verbose = True)
@@ -111,20 +104,24 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     sel_evt_len = len(sel_entries)
 
     # wf analyzer
-    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_band_pass = True, use_rfft = True, use_cw = True, baseline = baseline_orig, testbed_dB = 6)
+    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_band_pass = True, use_rfft = True)#, use_cw = True, use_cw_debug = True)
     dt = np.asarray([wf_int.dt])
     print(dt[0])
     pad_time = wf_int.pad_zero_t
     pad_len = wf_int.pad_len
     pad_freq = wf_int.pad_zero_freq
     pad_fft_len = wf_int.pad_fft_len
+    """
+    cw_thres = wf_int.ratio_cut
+    cw_freq = wf_int.freq_cut 
+    """
 
     # cw detection
     cw_phase1 = py_phase_variance(st, run, pad_freq, use_debug = True)
     evt_len = cw_phase1.evt_len
     start_evt = int(evt_len - 1)
     phase_var_freq_range = cw_phase1.useful_freq_range
-    cw_testbed = py_testbed(st, run, pad_freq, 12, 11, 3, analyze_blind_dat = analyze_blind_dat, verbose = True, use_debug = True)
+    cw_testbed = py_testbed(st, run, pad_freq, 6, 5.5, 3, analyze_blind_dat = analyze_blind_dat, verbose = True, use_debug = True)
     baseline = cw_testbed.baseline_copy
     testbed_freq_range = cw_testbed.useful_freq_range
 
@@ -142,7 +139,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     int_wf_all = np.full((wf_int.pad_len, 2, num_ants, sel_evt_len), np.nan, dtype=float)
     bp_wf_all = np.copy(int_wf_all)
     cw_wf_all = np.copy(int_wf_all)
-    cw_bp_wf_all = np.copy(int_wf_all)
     ele_wf_all = np.full((samp_pad, 2, num_eles, sel_evt_len), np.nan, dtype=float)
     int_ele_wf_all = np.full((wf_int.pad_len, 2, num_eles, sel_evt_len), np.nan, dtype=float)
     adc_all = np.full((samp_pad, 2, num_ants, sel_evt_len), np.nan, dtype=float)
@@ -153,13 +149,11 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     fft = np.copy(freq)
     bp_fft = np.copy(freq)
     cw_fft = np.copy(freq)
-    cw_bp_fft = np.copy(freq)
     ele_freq = np.full((wf_int.pad_fft_len, num_eles, sel_evt_len), np.nan, dtype=float)
     ele_fft = np.copy(ele_freq)
     phase = np.copy(freq)
     bp_phase = np.copy(freq)
     cw_phase = np.copy(freq)
-    cw_bp_phase = np.copy(freq)
     ele_phase = np.copy(ele_freq)
     bad_pad = 1000
     fft_dB = np.copy(freq)
@@ -173,7 +167,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     phase_var_sigma = np.copy(phase_var_median)
     sigma_variance = np.copy(phase_variance)
     sigma_variance_avg = np.full((len(phase_var_freq_range), num_pols, sel_evt_len), np.nan, dtype=float)
-    phase_var_bad_freqs = np.full((len(phase_var_freq_range), sel_evt_len), np.nan, dtype=float)
+    phase_var_bad_freqs = np.copy(sigma_variance_avg)
     phase_var_bad_idx = np.copy(testbed_bad_idx)
     phase_var_bad_sigma = np.copy(testbed_bad_idx)
     blk_est_range = 50
@@ -187,7 +181,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     int_mean_blk = np.copy(mean_blk)
     bp_mean_blk = np.copy(mean_blk)
     cw_mean_blk = np.copy(mean_blk)
-    cw_bp_mean_blk = np.copy(mean_blk)
     corr = np.full((ara_int.lag_len, ara_int.pair_len, sel_evt_len), np.nan, dtype = float)
     corr_nonorm = np.copy(corr)
     corr_01 = np.copy(corr)
@@ -197,91 +190,16 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     cw_corr = np.copy(corr)
     cw_corr_nonorm = np.copy(corr)
     cw_corr_01 = np.copy(corr)
-    cw_bp_corr = np.copy(corr)
-    cw_bp_corr_nonorm = np.copy(corr)
-    cw_bp_corr_01 = np.copy(corr)
     coval = np.full(ara_int.table_shape, np.nan, dtype = float)
     coval = np.repeat(coval[:, :, :, :, :, np.newaxis], sel_evt_len, axis = 5)
     bp_coval = np.copy(coval)
     cw_coval = np.copy(coval)
-    cw_bp_coval = np.copy(coval)
     sky_map = np.full((ara_int.table_shape[0], ara_int.table_shape[1], 2, 2, 2, sel_evt_len), np.nan, dtype = float) 
     bp_sky_map = np.copy(sky_map)
     cw_sky_map = np.copy(sky_map)
-    cw_bp_sky_map = np.copy(sky_map)
-
-    # cw detection
-    evt_counts = 0
-    rs_idx = np.logical_and(daq_qual_cut_sum == 0, trig_type != 1)
-    rs_entry = entry_num[rs_idx]
-    sel_idxs = np.in1d(rs_entry, sel_entries)
-    rs_idxs = np.arange(len(rs_entry), dtype = int)
-    rs_sel_idxs = rs_idxs[sel_idxs]
-    if len(rs_sel_idxs) == 0:
-        rs_entry_idx = np.full((0), False, dtype = bool)
-    else:
-        rs_entry_idx = np.logical_and(rs_idxs > np.nanmin(rs_sel_idxs) - 15, rs_idxs < np.nanmax(rs_sel_idxs) + 1)
-    rs_entry = rs_entry[rs_entry_idx]
-    rs_evt = evt_num[rs_idx]
-    rs_evt = rs_evt[sel_idxs]
-    print(f'rs_entry for phase vatriance: {len(rs_entry)}, {rs_entry}')
-    for evt in tqdm(range(len(rs_entry))):
-        # get entry and wf
-        ara_root.get_entry(rs_entry[evt])
-        ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
-        for ant in range(num_ants):
-            raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True)
-            ara_root.del_TGraph()
-        ara_root.del_usefulEvt()
-        wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_phase = True, use_abs = True, use_norm = True, use_dbmHz = True)
-        rfft_phase = wf_int.pad_phase
-        cw_phase1.get_phase_differences(rfft_phase, evt_counts % evt_len)
-        rs_evts = np.where(sel_entries == rs_entry[evt])[0]
-        if len(rs_evts) != 0:
-            print('CW TestBed!!!!!!!!')
-            rs_evts1 = rs_evts[0]
-            rfft_dbmhz = wf_int.pad_fft
-            fft_dB[:, :, rs_evts1] = np.copy(rfft_dbmhz)
-            cw_testbed.get_bad_magnitude(rfft_dbmhz)
-            fft_dB_t = cw_testbed.fft_dB_tilt
-            baseline_t = cw_testbed.baseline_tilt
-            delta_m = cw_testbed.delta_mag_copy
-            testbed_bad_f = cw_testbed.bad_freq_pol_copy
-            testbed_bad_i = cw_testbed.bad_idx
-            bad_len = len(testbed_bad_i)
-            fft_dB_tilt[:, :, rs_evts1] = fft_dB_t
-            baseline_tilt[:, :, rs_evts1] = baseline_t
-            delta_mag[:, :, rs_evts1] = delta_m
-            testbed_bad_freqs[:, :, rs_evts1] = testbed_bad_f
-            testbed_bad_idx[:bad_len, rs_evts1] = testbed_bad_i
-            print(testbed_bad_i)
-        if evt_counts < start_evt:
-            pass
-        else:
-            print('CW Phase!!!!!!')
-            cw_phase1.get_bad_phase()
-            phase_v = cw_phase1.phase_variance_copy
-            phase_v_m = cw_phase1.median_copy
-            phase_v_s = cw_phase1.sigma_copy
-            sigma_v = cw_phase1.sigma_variance_copy
-            sigma_v_a = cw_phase1.sigma_variance_avg
-            phase_v_bad_f = cw_phase1.bad_bool_copy
-            sigmas = cw_phase1.bad_sigma
-            phase_idxs = cw_phase1.bad_idx
-            bad_len = len(phase_idxs)
-            phase_variance[:, :, rs_evts1] = phase_v
-            phase_var_median[:, rs_evts1] = phase_v_m
-            phase_var_sigma[:, rs_evts1] = phase_v_s
-            sigma_variance[:, :, rs_evts1] = sigma_v
-            sigma_variance_avg[:, :, rs_evts1] = sigma_v_a
-            phase_var_bad_freqs[:, rs_evts1] = phase_v_bad_f
-            phase_var_bad_idx[:bad_len, rs_evts1] = phase_idxs
-            phase_var_bad_sigma[:bad_len, rs_evts1] = sigmas
-            print(phase_idxs)
-        evt_counts += 1
-
-    bad_idxs = np.append(testbed_bad_idx, phase_var_bad_idx, axis = 0)
+    sub_ratio = np.full((bad_pad, num_ants, sel_evt_len), np.nan, dtype = float)
+    sub_power = np.copy(sub_ratio)
+    sub_freq = np.copy(sub_ratio)
 
     # loop over the events
     for evt in tqdm(range(sel_evt_len)):
@@ -365,38 +283,25 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         wf_int.get_fft_wf(use_rfft = True, use_abs = True, use_norm = True, use_phase = True)        
         bp_fft[:, :, evt] = wf_int.pad_fft
         bp_phase[:, :, evt] = wf_int.pad_phase
-        
-        # cw wf
-        bad_idx_evt = bad_idxs[:, evt]
-        bad_idx_evt = bad_idx_evt[~np.isnan(bad_idx_evt)]
-        bad_idx_evt = bad_idx_evt.astype(int)
-        bad_idx_evt = np.unique(bad_idx_evt).astype(int)
+    
+        """
+        # cw (and band-passed) wf
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_cw = True, bad_idx = bad_idx_evt)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_band_pass = True, use_cw = True)
             wf_int_len = wf_int.pad_num[ant]
             cw_v = wf_int.pad_v[:wf_int_len, ant]
             cw_mean_blk[:blk_idx_len, ant, evt] = buffer_info.get_mean_blk(ant, cw_v, use_int_dat = True)
             ara_root.del_TGraph()
+            sub_ratio[:, ant, evt] = wf_int.sin_sub.sub_ratios    
+            sub_power[:, ant, evt] = wf_int.sin_sub.sub_powers    
+            sub_freq[:, ant, evt] = wf_int.sin_sub.sub_freqs    
         cw_wf_all[:, 0, :, evt] = wf_int.pad_t
         cw_wf_all[:, 1, :, evt] = wf_int.pad_v
         wf_int.get_fft_wf(use_rfft = True, use_abs = True, use_norm = True, use_phase = True)
         cw_fft[:, :, evt] = wf_int.pad_fft
         cw_phase[:, :, evt] = wf_int.pad_phase
-
-        # cw (and band-passed) wf
-        for ant in range(num_ants):
-            raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_band_pass = True, use_cw = True, bad_idx = bad_idx_evt)
-            wf_int_len = wf_int.pad_num[ant]
-            cw_bp_v = wf_int.pad_v[:wf_int_len, ant]
-            cw_bp_mean_blk[:blk_idx_len, ant, evt] = buffer_info.get_mean_blk(ant, cw_bp_v, use_int_dat = True)
-            ara_root.del_TGraph()
-        cw_bp_wf_all[:, 0, :, evt] = wf_int.pad_t
-        cw_bp_wf_all[:, 1, :, evt] = wf_int.pad_v
-        wf_int.get_fft_wf(use_rfft = True, use_abs = True, use_norm = True, use_phase = True)
-        cw_bp_fft[:, :, evt] = wf_int.pad_fft
-        cw_bp_phase[:, :, evt] = wf_int.pad_phase
+        """
 
         # reco w/ interpolated wf
         for ant in range(num_ants):
@@ -426,11 +331,11 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         bp_sky_map[:,:,:,:,0,evt] = np.nansum(bp_coval_evt[:, :, :, :, :v_pairs_len], axis = 4)
         bp_sky_map[:,:,:,:,1,evt] = np.nansum(bp_coval_evt[:, :, :, :, v_pairs_len:], axis = 4)
         
-        
-        # reco w/ cw wf
+        """
+        # reco w/ cw (and band-passed) wf
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_cw = True, bad_idx = bad_idx_evt)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True)
             ara_root.del_TGraph()
         ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], sum_pol = False, return_debug_dat = True)
         cw_corr[:,:,evt] = ara_int.corr
@@ -440,20 +345,78 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         cw_coval[:,:,:,:,:,evt] = cw_coval_evt
         cw_sky_map[:,:,:,:,0,evt] = np.nansum(cw_coval_evt[:, :, :, :, :v_pairs_len], axis = 4)
         cw_sky_map[:,:,:,:,1,evt] = np.nansum(cw_coval_evt[:, :, :, :, v_pairs_len:], axis = 4)
-        
-        # reco w/ cw (and band-passed) wf
+        """
+
+    # cw detection
+    evt_counts = 0
+    rs_idx = np.logical_and(daq_qual_cut_sum == 0, trig_type != 1)
+    rs_entry = entry_num[rs_idx]
+    sel_idxs = np.in1d(rs_entry, sel_entries)
+    rs_idxs = np.arange(len(rs_entry), dtype = int)
+    rs_sel_idxs = rs_idxs[sel_idxs]
+    if len(rs_sel_idxs) == 0:
+        rs_entry_idx = np.full((0), False, dtype = bool)
+    else:
+        rs_entry_idx = np.logical_and(rs_idxs > np.nanmin(rs_sel_idxs) - 15, rs_idxs < np.nanmax(rs_sel_idxs) + 1)
+    rs_entry = rs_entry[rs_entry_idx]
+    rs_evt = evt_num[rs_idx]
+    rs_evt = rs_evt[sel_idxs]
+    print(f'rs_entry for phase vatriance: {len(rs_entry)}, {rs_entry}')
+    for evt in tqdm(range(len(rs_entry))):
+        # get entry and wf
+        ara_root.get_entry(rs_entry[evt])
+        ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True, bad_idx = bad_idx_evt)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True)
             ara_root.del_TGraph()
-        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], sum_pol = False, return_debug_dat = True)
-        cw_bp_corr[:,:,evt] = ara_int.corr
-        cw_bp_corr_nonorm[:,:,evt] = ara_int.corr_nonorm
-        cw_bp_corr_01[:,:,evt] = ara_int.nor_fac
-        cw_bp_coval_evt = ara_int.coval
-        cw_bp_coval[:,:,:,:,:,evt] = cw_bp_coval_evt
-        cw_bp_sky_map[:,:,:,:,0,evt] = np.nansum(cw_bp_coval_evt[:, :, :, :, :v_pairs_len], axis = 4)
-        cw_bp_sky_map[:,:,:,:,1,evt] = np.nansum(cw_bp_coval_evt[:, :, :, :, v_pairs_len:], axis = 4)
+        ara_root.del_usefulEvt()
+        wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_phase = True, use_abs = True, use_norm = True, use_dbmHz = True)
+        rfft_phase = wf_int.pad_phase
+        cw_phase1.get_phase_differences(rfft_phase, evt_counts % evt_len)
+        rs_evts = np.where(sel_entries == rs_entry[evt])[0]
+        if len(rs_evts) != 0:
+            print('CW TestBed!!!!!!!!')
+            rs_evts1 = rs_evts[0]
+            rfft_dbmhz = wf_int.pad_fft
+            print(rfft_dbmhz[:,0])
+            fft_dB[:, :, rs_evts1] = np.copy(rfft_dbmhz)
+            print(fft_dB[:, 0, rs_evts1])
+            cw_testbed.get_bad_magnitude(rfft_dbmhz)
+            fft_dB_t = cw_testbed.fft_dB_tilt
+            baseline_t = cw_testbed.baseline_tilt
+            delta_m = cw_testbed.delta_mag_copy
+            testbed_bad_f = cw_testbed.bad_freq_pol_copy
+            testbed_bad_i = cw_testbed.bad_idx
+            bad_len = len(testbed_bad_i)
+            fft_dB_tilt[:, :, rs_evts1] = fft_dB_t
+            baseline_tilt[:, :, rs_evts1] = baseline_t
+            delta_mag[:, :, rs_evts1] = delta_m
+            testbed_bad_freqs[:, :, rs_evts1] = testbed_bad_f
+            testbed_bad_idx[:bad_len, rs_evts1] = testbed_bad_i
+        if evt_counts < start_evt:
+            pass
+        else:
+            print('CW Phase!!!!!!')
+            cw_phase1.get_bad_phase()
+            phase_v = cw_phase1.phase_variance_copy
+            phase_v_m = cw_phase1.median_copy
+            phase_v_s = cw_phase1.sigma_copy
+            sigma_v = cw_phase1.sigma_variance_copy
+            sigma_v_a = cw_phase1.sigma_variance_avg
+            phase_v_bad_f = cw_phase1.bad_bool_copy
+            sigmas = cw_phase1.bad_sigma
+            phase_idxs = cw_phase1.bad_idx
+            bad_len = len(phase_idxs)
+            phase_variance[:, :, rs_evts1] = phase_v
+            phase_var_median[:, rs_evts1] = phase_v_m
+            phase_var_sigma[:, rs_evts1] = phase_v_s
+            sigma_variance[:, :, rs_evts1] = sigma_v
+            sigma_variance_avg[:, :, rs_evts1] = sigma_v_a
+            phase_var_bad_freqs[:, :, rs_evts1] = phase_v_bad_f
+            phase_var_bad_idx[:bad_len, rs_evts1] = sigmas
+            phase_var_bad_sigma[:bad_len, rs_evts1] = phase_idxs
+        evt_counts += 1
 
     # interpolated all ele chs
     wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_rfft = True, use_ele_ch = True)
@@ -507,7 +470,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'int_wf_all':int_wf_all,
             'bp_wf_all':bp_wf_all,
             'cw_wf_all':cw_wf_all,
-            'cw_bp_wf_all':cw_bp_wf_all,
             'ele_wf_all':ele_wf_all,
             'int_ele_wf_all':int_ele_wf_all,
             'adc_all':adc_all,
@@ -518,16 +480,15 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'fft':fft,
             'bp_fft':bp_fft,
             'cw_fft':cw_fft,
-            'cw_bp_fft':cw_bp_fft,
             'ele_freq':ele_freq,
             'ele_fft':ele_fft,
             'phase':phase,
             'bp_phase':bp_phase,
             'cw_phase':cw_phase,
-            'cw_bp_phase':cw_bp_phase,
             'ele_phase':ele_phase,
             'rs_entry':rs_entry,
             'rs_evt':rs_evt,
+            'freq_range':freq_range,
             'phase_var_freq_range':phase_var_freq_range,
             'baseline':baseline,
             'testbed_freq_range':testbed_freq_range,
@@ -555,27 +516,26 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'int_mean_blk':int_mean_blk,
             'bp_mean_blk':bp_mean_blk,
             'cw_mean_blk':cw_mean_blk,
-            'cw_bp_mean_blk':cw_bp_mean_blk,
             'corr':corr,
             'bp_corr':bp_corr,
             'cw_corr':cw_corr,
-            'cw_bp_corr':cw_bp_corr,
             'corr_nonorm':corr_nonorm,
             'bp_corr_nonorm':bp_corr_nonorm,
             'cw_corr_nonorm':cw_corr_nonorm,
-            'cw_bp_corr_nonorm':cw_bp_corr_nonorm,
             'corr_01':corr_01,
             'bp_corr_01':bp_corr_01,
             'cw_corr_01':cw_corr_01,
-            'cw_bp_corr_01':cw_bp_corr_01,
             'coval':coval,
             'bp_coval':bp_coval,
             'cw_coval':cw_coval,
-            'cw_bp_coval':cw_bp_coval,
             'sky_map':sky_map,
             'bp_sky_map':bp_sky_map,
-            'cw_sky_map':cw_sky_map,
-            'cw_bp_sky_map':cw_bp_sky_map}
+            'cw_sky_map':cw_sky_map}
+            #'cw_thres':cw_thres,
+            #'cw_freq':cw_freq,
+            #'sub_ratio':sub_ratio,
+            #'sub_power':sub_power,
+            #'sub_freq':sub_freq}
 
 
 

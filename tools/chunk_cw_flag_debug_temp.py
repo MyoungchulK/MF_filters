@@ -105,6 +105,7 @@ def cw_flag_debug_temp_collector(Data, Ped, analyze_blind_dat = False, use_l2 = 
         # get entry and wf
         ara_root.get_entry(evt)
         ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
+        #ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib14to20_Bug)
         
         # loop over the antennas
         for ant in range(num_ants):
@@ -114,8 +115,10 @@ def cw_flag_debug_temp_collector(Data, Ped, analyze_blind_dat = False, use_l2 = 
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()   
 
-        wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_phase = True, use_abs = True, use_norm = True, use_dbmHz = True)
-        rfft_dbmhz = wf_int.pad_fft
+        #wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_phase = True, use_abs = True, use_norm = True, use_dbmHz = True)
+        wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_phase = True, use_abs = True, use_norm = True)
+        #rfft_dbmhz = wf_int.pad_fft
+        rfft_dbmhz = 10 * np.log10(wf_int.pad_fft)
         rfft_phase = wf_int.pad_phase
         
         if trig_type[evt] == 0:

@@ -101,7 +101,10 @@ class py_testbed:
         run_info = run_info_loader(self.st, self.run, analyze_blind_dat = self.analyze_blind_dat)
         base_dat = run_info.get_result_path(file_type = 'baseline', verbose = self.verbose) # get the h5 file path
         base_hf = h5py.File(base_dat, 'r')
-        self.baseline = 10 * np.log10(base_hf['baseline'][:]**2 * 1e-9 / 50 / 1e3) # from mV/sqrt(GHz) to dBm/Hz.
+        num_mean_evts = float(np.count_nonzero(base_hf['clean_rf_idx'][:]))
+        self.baseline = 10 * np.log10(base_hf['baseline'][:] * np.sqrt(num_mean_evts)) # from mV/sqrt(GHz) to dBm/Hz.
+
+        #self.baseline = 10 * np.log10(base_hf['baseline'][:]**2 * 1e-9 / 50 / 1e3) # from mV/sqrt(GHz) to dBm/Hz.
         self.baseline_copy = np.copy(self.baseline)
         self.baseline = self.baseline[self.useful_freq_idx] # trim the edge frequencies 
         del run_info, base_dat, base_hf
