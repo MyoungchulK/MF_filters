@@ -3,7 +3,7 @@
 
 import h5py
 import numpy as np
-from scipy.signal import fftconvolve
+from scipy.signal import fftconvolve, medfilt
 from itertools import combinations
 
 # custom lib
@@ -91,13 +91,13 @@ class py_testbed:
         del df, freq_broad_len, freq_near_len
 
         self.pairs, self.pair_len, self.v_pairs_len = get_pair_info(self.st, self.run)
-        self.get_baseline() # prepare the baseline at the beginning
+        self.get_baseline(use_roll_medi = True) # prepare the baseline at the beginning
 
         if self.use_debug:
             self.freq_range = freq_range # for debug
             self.useful_freq_range = freq_range[self.useful_freq_idx] # for debug
 
-    def get_baseline(self):
+    def get_baseline(self, use_roll_medi = False):
         """! get baseline (averaged frequency spectrum in amplitude unit (mV/sqrt(GHz))) 
         from pre-calculated h5 file and convert to dBm/Hz 
         """
@@ -106,11 +106,24 @@ class py_testbed:
         run_info = run_info_loader(self.st, self.run, analyze_blind_dat = self.analyze_blind_dat)
         base_dat = run_info.get_result_path(file_type = 'baseline', verbose = self.verbose) # get the h5 file path
         base_hf = h5py.File(base_dat, 'r')
-        self.baseline = 10 * np.log10(base_hf['baseline'][:]**2 * 1e-9 / 50 / 1e3) # from mV/sqrt(GHz) to dBm/Hz
+        baseline_fft = base_hf['baseline'][:]
+        if self.use_debug:
+            self.baseline_fft_copy = np.copy(baseline_fft)
+
+        ## if user want to use smooth baesline by rolling median. This is (unfortunately) required for remoivng A3 low amp ch
+        if use_roll_medi:
+            baseline_fft_medi = np.full(baseline_fft.shape, np.nan, dtype = float)
+            for ant in range(num_ants):
+                baseline_fft_medi[:, ant] = medfilt(baseline_fft[:, ant], kernel_size = 39)
+            if self.use_debug:
+                self.baseline_fft_medi_copy = np.copy(baseline_fft_medi)
+            baseline_fft = np.copy(baseline_fft_medi)
+
+        self.baseline = 10 * np.log10(baseline_fft**2 * 1e-9 / 50 / 1e3) # from mV/sqrt(GHz) to dBm/Hz
         if self.use_debug:
             self.baseline_copy = np.copy(self.baseline)
         self.baseline = self.baseline[self.useful_freq_idx] # trim the edge frequencies 
-        del run_info, base_dat, base_hf
+        del run_info, base_dat, base_hf, baseline_fft
 
         ## get mean of frequency spectrum in three different ranges
         self.base_mean = np.nanmean(self.baseline, axis = 0) # whole range

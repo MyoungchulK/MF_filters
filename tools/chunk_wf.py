@@ -2,6 +2,7 @@ import numpy as np
 from tqdm import tqdm
 import h5py
 import sys
+from scipy.signal import medfilt
 
 def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
 
@@ -72,7 +73,10 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     # baseline
     base_dat =  run_info1.get_result_path(file_type = 'baseline', verbose = True)
     base_hf = h5py.File(base_dat, 'r')
-    baseline_orig = base_hf['baseline'][:]
+    baseline_orig0 = base_hf['baseline'][:]
+    baseline_orig = np.full(baseline_orig0.shape, np.nan, dtype = float)
+    for a in range(16):
+        baseline_orig[:, a] = medfilt(baseline_orig0[:, a], kernel_size = 39)
     del base_dat, base_hf
     print(baseline_orig.shape)
 
@@ -118,6 +122,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     pad_len = wf_int.pad_len
     pad_freq = wf_int.pad_zero_freq
     pad_fft_len = wf_int.pad_fft_len
+    df = wf_int.df
 
     # cw detection
     cw_phase1 = py_phase_variance(st, run, pad_freq, use_debug = True)
@@ -126,6 +131,8 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     phase_var_freq_range = cw_phase1.useful_freq_range
     cw_testbed = py_testbed(st, run, pad_freq, 12, 11, 3, analyze_blind_dat = analyze_blind_dat, verbose = True, use_debug = True)
     baseline = cw_testbed.baseline_copy
+    baseline_fft = cw_testbed.baseline_fft_copy
+    baseline_fft_medi = cw_testbed.baseline_fft_medi_copy
     testbed_freq_range = cw_testbed.useful_freq_range
 
     # interferometers
@@ -269,6 +276,15 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             phase_v_bad_f = cw_phase1.bad_bool_copy
             sigmas = cw_phase1.bad_sigma
             phase_idxs = cw_phase1.bad_idx
+            print(phase_idxs)
+
+            if st == 2: sigma_thres = 1.5
+            if st == 3: sigma_thres = 2
+
+            sigmas_bad = sigmas > sigma_thres
+            sigmas = sigmas[sigmas_bad]
+            phase_idxs = phase_idxs[sigmas_bad] 
+
             bad_len = len(phase_idxs)
             phase_variance[:, :, rs_evts1] = phase_v
             phase_var_median[:, rs_evts1] = phase_v_m
@@ -371,9 +387,31 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         bad_idx_evt = bad_idx_evt[~np.isnan(bad_idx_evt)]
         bad_idx_evt = bad_idx_evt.astype(int)
         bad_idx_evt = np.unique(bad_idx_evt).astype(int)
+        
+        df_10 = np.round(0.01 / df).astype(int)
+
+        diff_idx = np.diff(bad_idx_evt)
+        diff_idx = diff_idx > (df_10 - 1)
+        diff_idx_len = np.count_nonzero(diff_idx) + 1
+       
+        bad_band = np.full((diff_idx_len, 3), 0, dtype = int)
+        bad_band[0, 0] = bad_idx_evt[0]
+        bad_band[-1, 1] = bad_idx_evt[-1]
+        bad_band[1:, 0] = bad_idx_evt[1:][diff_idx]
+        bad_band[:-1, 1] = bad_idx_evt[:-1][diff_idx]
+        bad_band[:, 2] = np.round((bad_band[:, 1] + bad_band[:, 0]) / 2)
+ 
+        bad_idx_evt = np.copy(bad_band[:, 2])
+        print(bad_band[:, 0])
+        print(bad_band[:, 1])
+        print(bad_band[:, 2])
+        freq_band = np.full((len(bad_idx_evt), 2), np.nan, dtype = float)   
+        freq_band[:, 0] = pad_freq[bad_band[:, 0]] - 5
+        freq_band[:, 1] = pad_freq[bad_band[:, 1]] + 5
+
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_cw = True, bad_idx = bad_idx_evt)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_cw = True, bad_idx = bad_idx_evt, band = freq_band)
             wf_int_len = wf_int.pad_num[ant]
             cw_v = wf_int.pad_v[:wf_int_len, ant]
             cw_mean_blk[:blk_idx_len, ant, evt] = buffer_info.get_mean_blk(ant, cw_v, use_int_dat = True)
@@ -387,7 +425,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         # cw (and band-passed) wf
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_band_pass = True, use_cw = True, bad_idx = bad_idx_evt)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_band_pass = True, use_cw = True, bad_idx = bad_idx_evt, band = freq_band)
             wf_int_len = wf_int.pad_num[ant]
             cw_bp_v = wf_int.pad_v[:wf_int_len, ant]
             cw_bp_mean_blk[:blk_idx_len, ant, evt] = buffer_info.get_mean_blk(ant, cw_bp_v, use_int_dat = True)
@@ -430,7 +468,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         # reco w/ cw wf
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_cw = True, bad_idx = bad_idx_evt)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_cw = True, bad_idx = bad_idx_evt, band = freq_band)
             ara_root.del_TGraph()
         ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], sum_pol = False, return_debug_dat = True)
         cw_corr[:,:,evt] = ara_int.corr
@@ -444,7 +482,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         # reco w/ cw (and band-passed) wf
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True, bad_idx = bad_idx_evt)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True, bad_idx = bad_idx_evt, band = freq_band)
             ara_root.del_TGraph()
         ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], sum_pol = False, return_debug_dat = True)
         cw_bp_corr[:,:,evt] = ara_int.corr
@@ -530,6 +568,8 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'rs_evt':rs_evt,
             'phase_var_freq_range':phase_var_freq_range,
             'baseline':baseline,
+            'baseline_fft':baseline_fft,
+            'baseline_fft_medi':baseline_fft_medi,
             'testbed_freq_range':testbed_freq_range,
             'fft_dB':fft_dB,
             'fft_dB_tilt':fft_dB_tilt,

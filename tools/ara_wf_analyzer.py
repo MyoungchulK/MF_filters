@@ -112,7 +112,7 @@ class wf_analyzer:
 
         return int_t
 
-    def get_int_wf(self, raw_t, raw_v, ant, use_unpad = False, use_zero_pad = False, use_band_pass = False, use_cw = False, use_p2p = False, bad_idx = None):
+    def get_int_wf(self, raw_t, raw_v, ant, use_unpad = False, use_zero_pad = False, use_band_pass = False, use_cw = False, use_p2p = False, bad_idx = None, band = None):
 
         if self.use_l2:
             int_idx = np.in1d(self.pad_idx, (raw_t / self.dt).astype(int))
@@ -129,7 +129,7 @@ class wf_analyzer:
             del akima
 
             if use_cw:
-                int_v = self.sin_sub.get_filtered_wf(int_v, int_num, ant, self.pad_len, bad_idx)
+                int_v = self.sin_sub.get_filtered_wf(int_v, int_num, ant, self.pad_len, bad_idx, band)
 
             if use_band_pass:
                 int_v = self.get_band_passed_wf(int_v)

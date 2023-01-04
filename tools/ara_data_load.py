@@ -781,7 +781,7 @@ class sin_subtract_loader:
         self.sin_sub = ROOT.FFTtools.SineSubtract(fft_len, baseline, max_fail_atts, cw_thres, False) # no store
         #self.sin_sub.setVerbose(True)
 
-    def get_filtered_wf(self, int_v, int_num, ant, pad_len, bad_idx):
+    def get_filtered_wf(self, int_v, int_num, ant, pad_len, bad_idx, band):
 
         if self.use_debug:
             self.sub_ratios = np.full((self.sol_pad), np.nan, dtype = float)
@@ -791,21 +791,30 @@ class sin_subtract_loader:
         if bad_idx is None or len(bad_idx) == 0:
             cw_v = int_v
             print('Oops!!')
-        else:
-            int_v_double = int_v.astype(np.double)
-            cw_v = np.full((int_num), 0, dtype = np.double)
+            return cw_v
+
+        int_v_double = int_v.astype(np.double)
+        cw_v = np.full((int_num), 0, dtype = np.double)
+        bad_idx = bad_idx.astype(np.int32)
+ 
+        if band is not None: 
+            band_len = len(band[:, 0])
+            self.sin_sub.setFreqLimits(band_len, band[:, 0].astype(np.double), band[:, 1].astype(np.double))     
+        self.sin_sub.subtractCW(int_num, int_v_double, self.dt, pad_len, bad_idx, len(bad_idx), self.testbed_dB, ant, cw_v)
+        if band is not None: 
+            self.sin_sub.unsetFreqLimits()
+
+        cw_v = cw_v.astype(float)
+
+        #if self.use_debug:
+        #    self.num_sols = self.sin_sub.getNSines()
+        #    self.sub_ratios[1:self.num_sols+1] = np.frombuffer(self.sin_sub.getRatios(), dtype = float, count = self.num_sols + 1)[1:]
+        #    self.sub_powers[:self.num_sols+1] = np.frombuffer(self.sin_sub.getPowers(), dtype = float, count = self.num_sols + 1)
+        #    self.sub_freqs[:self.num_sols] = np.frombuffer(self.sin_sub.getFreqs(), dtype = float, count = self.num_sols)
+        #    for c in range(self.num_sols):
+        #       self.sin_sub.makeSlides(title = f'ch{ant} iter{c}', prefix = f'ch{ant} iter{c}', output = '/home/mkim/')
             
-            bad_idx = bad_idx.astype(np.int32)
-            self.sin_sub.subtractCW(int_num, int_v_double, self.dt, pad_len, bad_idx, len(bad_idx), self.testbed_dB, ant, cw_v)
-            #if self.use_debug:
-            #    self.num_sols = self.sin_sub.getNSines()
-            #    self.sub_ratios[1:self.num_sols+1] = np.frombuffer(self.sin_sub.getRatios(), dtype = float, count = self.num_sols + 1)[1:]
-            #    self.sub_powers[:self.num_sols+1] = np.frombuffer(self.sin_sub.getPowers(), dtype = float, count = self.num_sols + 1)
-            #    self.sub_freqs[:self.num_sols] = np.frombuffer(self.sin_sub.getFreqs(), dtype = float, count = self.num_sols)
-            #    for c in range(self.num_sols):
-            #       self.sin_sub.makeSlides(title = f'ch{ant} iter{c}', prefix = f'ch{ant} iter{c}', output = '/home/mkim/')
-            
-            cw_v = cw_v.astype(float)
+        cw_v = cw_v.astype(float)
 
         return cw_v
     """
