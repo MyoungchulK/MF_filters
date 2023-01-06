@@ -74,7 +74,7 @@ def rayl_collector(Data, Ped, st = None, run = None, analyze_blind_dat = False, 
     del tot_cuts, entry_num, trig_type
 
     # wf analyzer
-    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_band_pass = True, use_rfft = True, use_cw = True, use_l2 = use_l2, analyze_blind_dat = analyze_blind_dat, st = st, run = run)
+    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_band_pass = True, use_rfft = True, use_cw = True, use_l2 = use_l2)
     dt = np.array([wf_int.dt], dtype = float)
     fft_len = wf_int.pad_fft_len
     freq_range = wf_int.pad_zero_freq 
@@ -99,7 +99,7 @@ def rayl_collector(Data, Ped, st = None, run = None, analyze_blind_dat = False, 
         # loop over the antennas
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True, evt = evt)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True)
             del raw_t, raw_v 
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()

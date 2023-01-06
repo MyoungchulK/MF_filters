@@ -8,44 +8,16 @@ from itertools import combinations
 
 # custom lib
 from tools.ara_constant import ara_const
-from tools.ara_known_issue import known_issue_loader
+from tools.ara_run_manager import get_pair_info
 
 ara_const = ara_const()
 num_ants = ara_const.USEFUL_CHAN_PER_STATION
 num_pols = ara_const.POLARIZATION
 
-def get_pair_info(st, run, verbose = False):
-    """! get pair array by 'good' channels
-
-    @param st  Integer.  station id
-    @param run  Integer.  run number
-    @return pairs  Numpy array.  array for all channels combination
-    @return pair_len  Integer.  number of whole pairs
-    @return v_pairs_len  Integer.  number of vpol pairs
-    """
-
-    known_issue = known_issue_loader(st)
-    good_ant = known_issue.get_bad_antenna(run, good_ant_true = True, print_ant_idx = True) # good channel indexs in 1d array
-    del known_issue
-    if verbose:
-        print('useful antenna chs for reco:', good_ant)
-
-    # get combination for each polarization
-    v_pairs = np.asarray(list(combinations(good_ant[good_ant < 8], 2)))
-    h_pairs = np.asarray(list(combinations(good_ant[good_ant > 7], 2)))
-    pairs = np.append(v_pairs, h_pairs, axis = 0) # merge
-    pair_len = len(pairs) # number of whole pairs
-    v_pairs_len = len(v_pairs) # number of vpol pairs
-    del v_pairs, h_pairs, good_ant
-    if verbose:
-        print('number of pairs:', len(pairs))
-
-    return pairs, pair_len, v_pairs_len
-
 class py_testbed:
     """! testbed in python version. checking bad frequencies in all channel pairs and all frequencies """
 
-    def __init__(self, st, run, freq_range, dB_cut, dB_cut_broad, num_coinc, freq_range_broad = 0.04, freq_range_near = 0.005,
+    def __init__(self, st, run, freq_range, dB_cut = 12, dB_cut_broad = 11, num_coinc = 3, freq_range_broad = 0.04, freq_range_near = 0.005,
                     freq_lower_limit = 0.12, freq_upper_limit = 0.85, analyze_blind_dat = False, verbose = False, use_debug = False):
         """! testbed initializer
 
@@ -76,7 +48,7 @@ class py_testbed:
         self.half_range = (freq_upper_limit - freq_lower_limit) / 2 # half length of trim out frequency range
         self.half_freq_idx = self.useful_freq_len // 2 # so... what is index of half frequency?
         self.slope_x = freq_range[self.useful_freq_idx] - (freq_lower_limit + self.half_range)
-        self.slope_x = np.repeat(self.slope_x[:, np.newaxis], num_ants, axis = 1) # x value of slope for tilt correction. we dont have to calculate in every event if all the wfs are padded in same zero padding lentgh 
+        self.slope_x = np.repeat(self.slope_x[:, np.newaxis], num_ants, axis = 1) # x value of slope for tilt correction. we dont have to calculate this in every event if all the wfs are padded in same zero padding lentgh 
  
         self.dB_cut = dB_cut # threshold for 'potentially' bad frequencies
         self.dB_cut_broad = dB_cut_broad # threshold for big peak
@@ -94,8 +66,8 @@ class py_testbed:
         self.get_baseline(use_roll_medi = True) # prepare the baseline at the beginning
 
         if self.use_debug:
-            self.freq_range = freq_range # for debug
-            self.useful_freq_range = freq_range[self.useful_freq_idx] # for debug
+            self.freq_range_debug = freq_range # for debug
+            self.useful_freq_range_debug = freq_range[self.useful_freq_idx] # for debug
 
     def get_baseline(self, use_roll_medi = False):
         """! get baseline (averaged frequency spectrum in amplitude unit (mV/sqrt(GHz))) 
@@ -106,24 +78,24 @@ class py_testbed:
         run_info = run_info_loader(self.st, self.run, analyze_blind_dat = self.analyze_blind_dat)
         base_dat = run_info.get_result_path(file_type = 'baseline', verbose = self.verbose) # get the h5 file path
         base_hf = h5py.File(base_dat, 'r')
-        baseline_fft = base_hf['baseline'][:]
+        self.baseline_fft = base_hf['baseline'][:]
         if self.use_debug:
-            self.baseline_fft_copy = np.copy(baseline_fft)
+            self.baseline_fft_debug = np.copy(self.baseline_fft)
 
-        ## if user want to use smooth baesline by rolling median. This is (unfortunately) required for remoivng A3 low amp ch
+        ## if user want to use smooth baesline by rolling median. This is (unfortunately) required for filtering A3 low amp ch
         if use_roll_medi:
-            baseline_fft_medi = np.full(baseline_fft.shape, np.nan, dtype = float)
+            baseline_fft_medi = np.full(self.baseline_fft.shape, np.nan, dtype = float)
             for ant in range(num_ants):
-                baseline_fft_medi[:, ant] = medfilt(baseline_fft[:, ant], kernel_size = 39)
+                baseline_fft_medi[:, ant] = medfilt(self.baseline_fft[:, ant], kernel_size = 39)
             if self.use_debug:
-                self.baseline_fft_medi_copy = np.copy(baseline_fft_medi)
-            baseline_fft = np.copy(baseline_fft_medi)
+                self.baseline_fft_medi_debug = np.copy(baseline_fft_medi)
+            self.baseline_fft = np.copy(baseline_fft_medi)
 
-        self.baseline = 10 * np.log10(baseline_fft**2 * 1e-9 / 50 / 1e3) # from mV/sqrt(GHz) to dBm/Hz
+        self.baseline = 10 * np.log10(self.baseline_fft**2 * 1e-9 / 50 / 1e3) # from mV/sqrt(GHz) to dBm/Hz
         if self.use_debug:
-            self.baseline_copy = np.copy(self.baseline)
+            self.baseline_debug = np.copy(self.baseline)
         self.baseline = self.baseline[self.useful_freq_idx] # trim the edge frequencies 
-        del run_info, base_dat, base_hf, baseline_fft
+        del run_info, base_dat, base_hf
 
         ## get mean of frequency spectrum in three different ranges
         self.base_mean = np.nanmean(self.baseline, axis = 0) # whole range
@@ -144,19 +116,19 @@ class py_testbed:
         delta_mean = fft_mean - self.base_mean
         delta_1st_mean = fft_1st_mean - self.base_1st_mean - delta_mean
         delta_2nd_mean = fft_2nd_mean - self.base_2nd_mean - delta_mean
-        slope = (delta_1st_mean - delta_2nd_mean) / self.half_range # use this slope for correcting base line and matching with target rffts
+        slope = (delta_1st_mean - delta_2nd_mean) / self.half_range # use this slope for correcting baseline and matching with target rffts
         del fft_1st_mean, fft_2nd_mean, fft_mean, delta_1st_mean, delta_2nd_mean
 
         self.fft_dB -= delta_mean[np.newaxis, :] # remove differences
         base_new = self.baseline - self.slope_x * slope[np.newaxis, :] # tilt baseline
         delta_mag = self.fft_dB - base_new # and differences
         if self.use_debug:
-            self.fft_dB_tilt = np.copy(self.fft_dB)
-            self.baseline_tilt = np.copy(base_new)
-            self.delta_mag_copy = np.copy(delta_mag)
+            self.fft_dB_tile_debug = np.copy(self.fft_dB)
+            self.baseline_tilt_debug = np.copy(base_new)
+            self.delta_mag_debug = np.copy(delta_mag)
         del delta_mean, slope, base_new
 
-        ## calculate potentially bad frequencies and other frequencies that also have a big peak near bad frequencies
+        ## flag potentially bad frequencies and other frequencies that also have a big peak near bad frequencies
         self.bad_freqs = delta_mag > self.dB_cut             # it is Boolean array now
         self.bad_freqs_broad = delta_mag > self.dB_cut_broad # it is Boolean array now
         del delta_mag
@@ -197,13 +169,13 @@ class py_testbed:
         bad_freq_pol[:, 0] = np.count_nonzero(bad_freq_2nd[:, :self.v_pairs_len], axis = 1) >= self.num_coinc
         bad_freq_pol[:, 1] = np.count_nonzero(bad_freq_2nd[:, self.v_pairs_len:], axis = 1) >= self.num_coinc
         if self.use_debug:
-            self.bad_freq_pol_copy = np.copy(bad_freq_pol)
+            self.bad_freq_pol_debug = np.copy(bad_freq_pol)
         del bad_freq_2nd
 
         ## save 'the' bad frequency indexs
         bad_freq_pol_sum = np.logical_or(bad_freq_pol[:, 0], bad_freq_pol[:, 1]) # merging both pol results
         if self.use_debug:
-            self.bad_freq_pol_sum_copy = np.copy(bad_freq_pol_sum)
+            self.bad_freq_pol_sum_debug = np.copy(bad_freq_pol_sum)
         self.bad_idx = self.freq_range_idx[bad_freq_pol_sum]
         del bad_freq_pol, bad_freq_pol_sum
 
@@ -240,15 +212,15 @@ class py_phase_variance:
         self.run = run
         self.evt_len = evt_len # number of events we are going to use for checking target event
         self.num_evts = float(self.evt_len) # maaaaaaybe needed ????
-        self.freq_range = freq_range
-        self.useful_freq_idx = np.logical_and(self.freq_range > freq_lower_limit, self.freq_range < freq_upper_limit) # trim out edge frequencies. we are not going to use anyway
+        self.useful_freq_idx = np.logical_and(freq_range > freq_lower_limit, freq_range < freq_upper_limit) # trim out edge frequencies. we are not going to use anyway
         self.useful_freq_len = np.count_nonzero(self.useful_freq_idx) # so... how many frequencies left?
         self.upper95_idx = int(self.useful_freq_len * 0.95) # what would be starting index of upper 95 % element after sorting
-        self.freq_range_idx = np.arange(len(self.freq_range), dtype = int)[self.useful_freq_idx] # frequency index array for identifying bad frequency in the last step 
+        self.freq_range_idx = np.arange(len(freq_range), dtype = int)[self.useful_freq_idx] # frequency index array for identifying bad frequency in the last step 
         if self.use_debug:
-            self.useful_freq_range = self.freq_range[self.useful_freq_idx] # for debug
+            self.freq_range_debug = freq_range # for debug
+            self.useful_freq_range_debug = freq_range[self.useful_freq_idx] # for debug
 
-        self.pairs, self.pair_len, self.v_pairs_len = get_pair_info(self.st, self.run) # get combination of all 'good' antenne pairs
+        self.pairs, self.pair_len, self.v_pairs_len = get_pair_info(self.st, self.run) # get combination of all 'good' antenna pairs
         self.get_phase_pad() # array for phase differences in each pair and all 15 events
 
     def get_phase_pad(self):
@@ -279,7 +251,8 @@ class py_phase_variance:
         imag_evt_sum = np.nansum(np.sin(self.phase_diff_pad), axis = 2) # now it is (number of freq bins, number of pairs)
         phase_variance = 1 - np.sqrt(real_evt_sum**2 + imag_evt_sum**2) / self.num_evts # still (number of freq bins, number of pairs)
         if self.use_debug:
-            self.phase_variance_copy = np.copy(phase_variance)
+            self.phase_diff_pad_debug = np.copy(phase_diff_pad)
+            self.phase_variance_debug = np.copy(phase_variance)
         del real_evt_sum, imag_evt_sum   
  
         ## calcualte sigma by median and upper 95 % value
@@ -287,14 +260,14 @@ class py_phase_variance:
         upper95 = np.sort(phase_variance, axis = 0)[self.upper95_idx] # sort the elements in frequency dim. and pick up elements in 90% Confidence interval which is upper 95 % (5 % for both side)
         sigma = (upper95 - median) / 1.64 # still (number of pairs). divdied by Critical Values of 90% Confidence interval which is 1.64
         if self.use_debug:
-            self.median_copy = np.copy(median)
-            self.sigma_copy = np.copy(sigma)
+            self.median_debug = np.copy(median)
+            self.sigma_debug = np.copy(sigma)
         del upper95
 
         ## how phase variance is far from sigma. (median - pahse_var) / sigma
-        sigma_variance = (phase_variance - median[np.newaxis, :]) * -1 / sigma[np.newaxis, :]
+        sigma_variance = (phase_variance - median[np.newaxis, :]) * -1 / sigma[np.newaxis, :] # for using np.newaxis feature, phase_variance is placed on top
         if self.use_debug:
-            self.sigma_variance_copy = np.copy(sigma_variance)
+            self.sigma_variance_debug = np.copy(sigma_variance)
         del median, sigma, phase_variance 
 
         ## averaging it with each polarization
@@ -309,11 +282,11 @@ class py_phase_variance:
         @param thres  Integer.
         """
    
-        sigma_variance_avg_sum = np.nanmax(self.sigma_variance_avg, axis = 1) 
-        bad_bool = sigma_variance_avg_sum > thres # merging both pol results 
+        sigma_variance_avg_sum = np.nanmax(self.sigma_variance_avg, axis = 1) # merging both pol results
+        bad_bool = sigma_variance_avg_sum > thres
         if self.use_debug:
-            self.sigma_variance_avg_sum = sigma_variance_avg_sum
-            self.bad_bool_copy = np.copy(bad_bool) 
+            self.sigma_variance_avg_sum_debug = np.copy(sigma_variance_avg_sum)
+            self.bad_bool_debug = np.copy(bad_bool) 
         self.bad_sigma = sigma_variance_avg_sum[bad_bool] # bad sigma vaules
         self.bad_idx = self.freq_range_idx[bad_bool] # indexs of bad frequencies
         del bad_bool, sigma_variance_avg_sum
@@ -324,3 +297,89 @@ class py_phase_variance:
         self.get_phase_variance()
 
         self.get_peak_above_threshold()
+
+class group_bad_frequency:
+    """! python version of grouping bad frequencies"""
+
+    def __init__(self, st, run, freq_range, freq_win = 0.01, verbose = False):
+        """! grouping bad frequencies initializer. super unnecessary classing...
+
+        @param st  Integer.  station id
+        @param run  Integer.  run number
+        @param freq_range  Numpy array.  frequency range of rfft of zero padded wf
+        @param freq_win  Float. expected cw distribution range 
+        @param verbose  Boolean.  wanna print the message
+        """
+
+        if st == 2:
+            self.sigma_thres = 1.5 # sigma threshold for selecting bad frequency from phase variance results
+        elif st == 3:
+            self.sigma_thres = 2
+        self.verbose = verbose
+        if self.verbose:
+            print(f'phase variance sigma threshold: {self.sigma_thres}')
+        self.freq_range = freq_range
+        self.freq_win_half = freq_win / 2
+        df = np.abs(self.freq_range[1] - self.freq_range[0]) # delta frequency.
+        self.num_df_10s = np.round(freq_win / df).astype(int) - 1 # how many bins in 10 MHz window
+        del df
+
+    def get_pick_freqs_n_bands(self, sigma, phase_idx, testbed_idx, use_freq_band = False, use_freq_center = False):
+        """! group bad frequencies and return as a band and peak (center)
+
+        @param sigma  Numpy array.  sigma values of bad frequencies from phase variance
+        @param phase_idx  Numpy array.  indexs of bad frequencies from phase variance
+        @param testbed_idx  Numpy array.  indexs of bad frequencies from testbed method
+        @param use_freq_band  Boolean.  if user want frequency instead of indexs
+        @param use_freq_center  Boolean.  if user want frequency instead of indexs
+        @return bad_center  Numpy array.  center of frequency group band 
+        @return bad_band  Numpy array.  lower / upper baoundaries of band
+        """
+
+        ## choose bad frequencies that have sigma bigger than threshold
+        sigma_cut = sigma > self.sigma_thres
+        phase_idx_cut = phase_idx[sigma_cut]
+        del sigma_cut
+
+        ## merging / sorting bad frequencies
+        bad_idx = np.unique(np.concatenate((testbed_idx, phase_idx_cut))).astype(int)
+        del phase_idx_cut
+
+        ## exit when there is nothing to do
+        if len(bad_idx) == 0:
+            if use_freq_band:
+                bad_band = np.full((0, 2), np.nan, dtype = float)
+            else:
+                bad_band = np.full((0, 2), 0, dtype = int)
+            if use_freq_center:
+                bad_center = np.full((0), np.nan, dtype = float)
+            else:
+                bad_center = np.full((0), 0, dtype = int)
+
+            return bad_center, bad_band
+
+        ## grouping bad frequencies in 10 MHz
+        diff_idx = np.diff(bad_idx) > self.num_df_10s # if bin to bin differences are bigger then num_df_10s, that is baoundary of the frequency group
+        diff_idx_len = np.count_nonzero(diff_idx) + 1 # so... how many groups are there? Adding 1 for considering 1st group
+
+        ## identify baoundary of the indexs.
+        ## bad_band[:, 0] -> lower baoundaries. bad_band[:, 1] -> upper baoundaries
+        bad_band = np.full((diff_idx_len, 2), 0, dtype = int)
+        bad_band[0, 0] = bad_idx[0]
+        bad_band[-1, 1] = bad_idx[-1]
+        bad_band[1:, 0] = bad_idx[1:][diff_idx]
+        bad_band[:-1, 1] = bad_idx[:-1][diff_idx]
+        del diff_idx_len, diff_idx, bad_idx
+
+        ## identify the center of group
+        bad_center = np.round(np.nanmean(bad_band.astype(float), axis = 1)).astype(int)
+
+        ## if user want frequency instead of indexs
+        if use_freq_band:
+            bad_band = self.freq_range[bad_band]
+            bad_band[:, 0] -= self.freq_win_half # add generous +/- 5 MHz buffer
+            bad_band[:, 1] += self.freq_win_half
+        if use_freq_center:
+            bad_center = self.freq_range[bad_center]
+
+        return bad_center, bad_band

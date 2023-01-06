@@ -6,6 +6,38 @@ from glob import glob
 from tqdm import tqdm
 from datetime import datetime
 from subprocess import call
+from itertools import combinations
+
+# custom lib
+from tools.ara_known_issue import known_issue_loader
+
+def get_pair_info(st, run, verbose = False):
+    """! get pair array by 'good' channels
+
+    @param st  Integer.  station id
+    @param run  Integer.  run number
+    @return pairs  Numpy array.  array for all channels combination
+    @return pair_len  Integer.  number of whole pairs
+    @return v_pairs_len  Integer.  number of vpol pairs
+    """
+
+    known_issue = known_issue_loader(st)
+    good_ant = known_issue.get_bad_antenna(run, good_ant_true = True, print_ant_idx = True) # good channel indexs in 1d array
+    del known_issue
+    if verbose:
+        print('useful antenna chs for reco:', good_ant)
+
+    # get combination for each polarization
+    v_pairs = np.asarray(list(combinations(good_ant[good_ant < 8], 2)))
+    h_pairs = np.asarray(list(combinations(good_ant[good_ant > 7], 2)))
+    pairs = np.append(v_pairs, h_pairs, axis = 0) # merge
+    pair_len = len(pairs) # number of whole pairs
+    v_pairs_len = len(v_pairs) # number of vpol pairs
+    del v_pairs, h_pairs, good_ant
+    if verbose:
+        print('number of pairs:', len(pairs))
+
+    return pairs, pair_len, v_pairs_len
 
 class condor_info_loader:
 

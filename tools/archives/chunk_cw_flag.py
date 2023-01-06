@@ -50,12 +50,10 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     freq_range = wf_int.pad_zero_freq
 
     # cw class
-    cw_testbed = py_testbed(st, run, freq_range, analyze_blind_dat = analyze_blind_dat, verbose = True)
-    baseline_fft = cw_testbed.baseline_fft
-    dB_cut = cw_testbed.dB_cut
     cw_phase = py_phase_variance(st, run, freq_range)
     evt_len = cw_phase.evt_len
     start_evt = int(evt_len - 1)
+    cw_testbed = py_testbed(st, run, freq_range, 12, 11, 3, analyze_blind_dat = analyze_blind_dat, verbose = True)
     del st, run
 
     # output array  
@@ -124,11 +122,9 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     return {'evt_num':evt_num,
             'bad_ant':bad_ant,
             'freq_range':freq_range,
-            'baseline_fft':baseline_fft,
             'sigma':sigma,
             'phase_idx':phase_idx,
             'testbed_idx':testbed_idx,
-            'dB_cut':np.array([dB_cut], dtype = float),
             'evt_len':np.array([evt_len], dtype = int)}
 
 

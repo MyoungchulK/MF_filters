@@ -38,9 +38,7 @@ def get_rayl_distribution(dat, binning = 1000):
             del fft_hist, mu_init_idx
 
             try:
-                dat_amp = dat[freq, ant][~np.isnan(dat[freq, ant])]
-                rayl_params[:, freq, ant] = rayleigh.fit(dat_amp, loc = dat_bin_edges[0, freq, ant], scale = mu_init)
-                del dat_amp
+                rayl_params[:, freq, ant] = rayleigh.fit(dat[freq, ant], loc = dat_bin_edges[0, freq, ant], scale = mu_init)
             except RuntimeError:
                 print(f'Runtime Issue in Freq. {freq} index!')
                 rayl_params[0, freq, ant] = 0

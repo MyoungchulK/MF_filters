@@ -1,5 +1,4 @@
 import numpy as np
-import h5py
 from scipy.interpolate import Akima1DInterpolator
 from scipy.signal import butter, filtfilt, argrelextrema
 from tqdm import tqdm
@@ -18,8 +17,8 @@ class wf_analyzer:
     def __init__(self, dt = 0.5, use_debug = False, use_l2 = False, use_ele_ch = False,  
                     use_time_pad = False, add_double_pad = False, use_band_pass = False,
                     use_freq_pad = False, use_rfft = False,
-                    use_cw = False, analyze_blind_dat = False,
-                    new_wf_time = None, st = None, run = None):
+                    use_cw = False,
+                    new_wf_time = None, baseline = None, testbed_dB = None):
 
         self.use_l2 = use_l2
         self.dt = dt
@@ -34,24 +33,7 @@ class wf_analyzer:
             self.get_band_pass_filter()
         if use_cw and not self.use_l2:
             from tools.ara_data_load import sin_subtract_loader
-            from tools.ara_cw_filters import group_bad_frequency
-            from tools.ara_run_manager import run_info_loader
-
-            run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
-            cw_dat = run_info.get_result_path(file_type = 'cw_flag', verbose = True) # get the h5 file path
-            cw_hf = h5py.File(cw_dat, 'r')
-            self.cw_sigma = cw_hf['sigma'][:]
-            self.cw_phase = cw_hf['phase_idx'][:]
-            self.cw_testbed = cw_hf['testbed_idx'][:]
-            baseline = cw_hf['baseline_fft'][:]
-            testbed_dB = cw_hf['dB_cut'][0]
-            testbed_dB /= 2
-            del run_info, cw_dat, cw_hf
-
-            self.cw_freq = group_bad_frequency(st, run, self.pad_zero_freq, verbose = True)
-
             self.sin_sub = sin_subtract_loader(fft_len = self.pad_fft_len, dt = self.dt, baseline = baseline, testbed_dB = testbed_dB)
-            del baseline, testbed_dB
 
     def get_band_pass_filter(self, low_freq_cut = 0.13, high_freq_cut = 0.85, order = 10, pass_type = 'band'):
 
@@ -130,7 +112,7 @@ class wf_analyzer:
 
         return int_t
 
-    def get_int_wf(self, raw_t, raw_v, ant, use_unpad = False, use_zero_pad = False, use_band_pass = False, use_cw = False, use_p2p = False, evt = None):
+    def get_int_wf(self, raw_t, raw_v, ant, use_unpad = False, use_zero_pad = False, use_band_pass = False, use_cw = False, use_p2p = False, bad_idx = None, band = None):
 
         if self.use_l2:
             int_idx = np.in1d(self.pad_idx, (raw_t / self.dt).astype(int))
@@ -147,11 +129,7 @@ class wf_analyzer:
             del akima
 
             if use_cw:
-                if ant == 0:
-                    self.bad_idx, self.band = self.cw_freq.get_pick_freqs_n_bands(self.cw_sigma[evt], self.cw_phase[evt], self.cw_testbed[evt], use_freq_band = True)
-                int_v = self.sin_sub.get_filtered_wf(int_v, int_num, ant, self.pad_len, self.bad_idx, self.band)
-                if ant == 15:
-                    del self.bad_idx, self.band
+                int_v = self.sin_sub.get_filtered_wf(int_v, int_num, ant, self.pad_len, bad_idx, band)
 
             if use_band_pass:
                 int_v = self.get_band_passed_wf(int_v)

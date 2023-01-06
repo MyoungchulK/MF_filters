@@ -783,15 +783,15 @@ class sin_subtract_loader:
 
     def get_filtered_wf(self, int_v, int_num, ant, pad_len, bad_idx, band):
 
+        if bad_idx is None or len(bad_idx) == 0:
+            cw_v = int_v
+            #print('Oops!!')
+            return cw_v
+
         if self.use_debug:
             self.sub_ratios = np.full((self.sol_pad), np.nan, dtype = float)
             self.sub_powers = np.copy(self.sub_ratios)
             self.sub_freqs = np.copy(self.sub_ratios)
-
-        if bad_idx is None or len(bad_idx) == 0:
-            cw_v = int_v
-            print('Oops!!')
-            return cw_v
 
         int_v_double = int_v.astype(np.double)
         cw_v = np.full((int_num), 0, dtype = np.double)

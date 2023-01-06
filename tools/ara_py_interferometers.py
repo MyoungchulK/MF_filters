@@ -9,6 +9,7 @@ from itertools import combinations
 
 # custom lib
 from tools.ara_constant import ara_const
+from tools.ara_run_manager import get_pair_info
 
 ara_const = ara_const()
 num_ants = ara_const.USEFUL_CHAN_PER_STATION
@@ -26,7 +27,7 @@ class py_interferometers:
             self.get_zero_pad(pad_len)
             self.lags = correlation_lags(self.double_pad_len, self.double_pad_len, 'same') * self.dt
             self.lag_len = len(self.lags)
-            self.get_pair_info()
+            self.pairs, self.pair_len, self.v_pairs_len = get_pair_info(self.st, self.run, verbose = True)
             self.get_arrival_time_tables()
             self.get_coval_time()
         else:                
@@ -39,25 +40,6 @@ class py_interferometers:
         self.pad_one = np.full((self.double_pad_len, num_ants), 1, dtype = float) 
         self.zero_pad = np.full((self.double_pad_len, num_ants), 0, dtype = float)
         self.quater_idx = pad_len // 2
-
-    def get_pair_info(self):
-
-        if self.run is not None:
-            from tools.ara_known_issue import known_issue_loader
-            known_issue = known_issue_loader(self.st)
-            good_ant = known_issue.get_bad_antenna(self.run, good_ant_true = True, print_ant_idx = True) 
-            del known_issue
-        else:
-            good_ant = np.arange(num_ants, dtype = int)
-        print('useful antenna chs for reco:', good_ant)
-
-        v_pairs = np.asarray(list(combinations(good_ant[good_ant < 8], 2)))
-        h_pairs = np.asarray(list(combinations(good_ant[good_ant > 7], 2)))
-        self.pairs = np.append(v_pairs, h_pairs, axis = 0)
-        self.pair_len = len(self.pairs)
-        self.v_pairs_len = len(v_pairs)
-        del v_pairs, h_pairs, good_ant
-        print('number of pairs:', len(self.pairs))
 
     def get_arrival_time_tables(self):
 
