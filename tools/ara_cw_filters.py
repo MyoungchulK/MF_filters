@@ -5,6 +5,7 @@ import h5py
 import numpy as np
 from scipy.signal import fftconvolve, medfilt
 from itertools import combinations
+from scipy.interpolate import interp1d
 
 # custom lib
 from tools.ara_constant import ara_const
@@ -319,21 +320,16 @@ class group_bad_frequency:
         if self.verbose:
             print(f'phase variance sigma threshold: {self.sigma_thres}')
         self.freq_range = freq_range
-        self.freq_win_half = freq_win / 2
-        df = np.abs(self.freq_range[1] - self.freq_range[0]) # delta frequency.
-        self.num_df_10s = np.round(freq_win / df).astype(int) - 1 # how many bins in 10 MHz window
-        del df
+        self.freq_win = freq_win
+        self.freq_win_half = self.freq_win / 2
 
-    def get_pick_freqs_n_bands(self, sigma, phase_idx, testbed_idx, use_freq_band = False, use_freq_center = False):
+    def get_pick_freqs_n_bands(self, sigma, phase_idx, testbed_idx):
         """! group bad frequencies and return as a band and peak (center)
 
         @param sigma  Numpy array.  sigma values of bad frequencies from phase variance
         @param phase_idx  Numpy array.  indexs of bad frequencies from phase variance
         @param testbed_idx  Numpy array.  indexs of bad frequencies from testbed method
-        @param use_freq_band  Boolean.  if user want frequency instead of indexs
-        @param use_freq_center  Boolean.  if user want frequency instead of indexs
-        @return bad_center  Numpy array.  center of frequency group band 
-        @return bad_band  Numpy array.  lower / upper baoundaries of band
+        @return bad_range  Numpy array.  lower / center / upper baoundaries of band
         """
 
         ## choose bad frequencies that have sigma bigger than threshold
@@ -347,39 +343,157 @@ class group_bad_frequency:
 
         ## exit when there is nothing to do
         if len(bad_idx) == 0:
-            if use_freq_band:
-                bad_band = np.full((0, 2), np.nan, dtype = float)
-            else:
-                bad_band = np.full((0, 2), 0, dtype = int)
-            if use_freq_center:
-                bad_center = np.full((0), np.nan, dtype = float)
-            else:
-                bad_center = np.full((0), 0, dtype = int)
+            bad_range = np.full((0, 3), np.nan, dtype = float)
 
-            return bad_center, bad_band
+            return bad_range
 
         ## grouping bad frequencies in 10 MHz
-        diff_idx = np.diff(bad_idx) > self.num_df_10s # if bin to bin differences are bigger then num_df_10s, that is baoundary of the frequency group
-        diff_idx_len = np.count_nonzero(diff_idx) + 1 # so... how many groups are there? Adding 1 for considering 1st group
+        bad_freqs = self.freq_range[bad_idx]
+        diff_idx = np.diff(bad_freqs) > self.freq_win # if bin to bin differences are bigger then num_df_10s, that is baoundary of the frequency group
+        diff_idx_len = np.count_nonzero(diff_idx) + 1 # so... how many groups are there? Adding 1 for considering 1st group        
+        del bad_idx
 
-        ## identify baoundary of the indexs.
-        ## bad_band[:, 0] -> lower baoundaries. bad_band[:, 1] -> upper baoundaries
-        bad_band = np.full((diff_idx_len, 2), 0, dtype = int)
-        bad_band[0, 0] = bad_idx[0]
-        bad_band[-1, 1] = bad_idx[-1]
-        bad_band[1:, 0] = bad_idx[1:][diff_idx]
-        bad_band[:-1, 1] = bad_idx[:-1][diff_idx]
-        del diff_idx_len, diff_idx, bad_idx
+        ## identify range of the indexs.
+        ## bad_range[:, 0] -> lower baoundaries. bad_range[:, 1] -> center. bad_range[:, 2] -> upper baoundaries
+        bad_range = np.full((diff_idx_len, 3), np.nan, dtype = float)
+        bad_range[0, 0] = bad_freqs[0] - self.freq_win_half # add generous +/- 5 MHz buffer
+        bad_range[-1, 2] = bad_freqs[-1] + self.freq_win_half
+        bad_range[1:, 0] = bad_freqs[1:][diff_idx] - self.freq_win_half
+        bad_range[:-1, 2] = bad_freqs[:-1][diff_idx] + self.freq_win_half
+        bad_range[:, 1] = np.nanmean(bad_band, axis = 1) # identify the center of group
+        del diff_idx_len, diff_idx, bad_freqs 
 
-        ## identify the center of group
-        bad_center = np.round(np.nanmean(bad_band.astype(float), axis = 1)).astype(int)
+        return bad_range
 
-        ## if user want frequency instead of indexs
-        if use_freq_band:
-            bad_band = self.freq_range[bad_band]
-            bad_band[:, 0] -= self.freq_win_half # add generous +/- 5 MHz buffer
-            bad_band[:, 1] += self.freq_win_half
-        if use_freq_center:
-            bad_center = self.freq_range[bad_center]
+class py_geometric_filter:
 
-        return bad_center, bad_band
+    def __init__(self, st, run, freq_win = 0.01, dt = 0.5, analyze_blind_dat = False):
+
+        self.dt = dt
+
+        from tools.ara_run_manager import run_info_loader
+        run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
+        cw_dat = run_info.get_result_path(file_type = 'cw_flag', verbose = True) # get the h5 file path
+        cw_hf = h5py.File(cw_dat, 'r')
+        self.cw_sigma = cw_hf['sigma'][:]
+        self.cw_phase = cw_hf['phase_idx'][:]
+        self.cw_testbed = cw_hf['testbed_idx'][:]
+        freq_range = cw_hf['freq_range'][:]
+        del run_info, cw_dat, cw_hf
+
+        self.freq_win = freq_win
+        self.cw_freq = group_bad_frequency(st, run, freq_range, freq_win = self.freq_win, verbose = True)
+        del freq_range
+
+    def get_bad_index(self): 
+
+        if self.ant == 0:
+            self.bad_range = self.cw_freq.get_pick_freqs_n_bands(self.cw_sigma[self.evt], self.cw_phase[self.evt], self.cw_testbed[self.evt]).flatten()
+            
+        self.bad_idx = np.digitize(self.freq, self.bad_range) % 3
+        self.good_idx = self.bad_idx == 0
+
+        if self.ant == 15:
+            del self.band_range
+
+    def get_interpolated_magnitude(self):
+
+        int_f = interp1d(self.freq[self.good_idx], np.abs(self.fft[self.good_idx]), fill_value = 'extrapolate')
+        self.int_mag = int_f(self.freq)
+        del int_f
+
+    def get_geometric_phase(self):
+
+        bad_idx_front = self.bad_idx == 1
+        bad_idx_back = self.bad_idx == 2
+
+        fft_real = self.int_mag * np.cos(self.phase)
+        fft_imag = self.int_mag * np.sin(self.phase)
+
+        fft_len = len(self.freq)
+        ffts = np.full((fft_len, 4), 0, dtype = float)
+        ffts[bad_idx_front, 0] = fft_real[bad_idx_front]
+        ffts[bad_idx_front, 1] = fft_imag[bad_idx_front]
+        ffts[bad_idx_back, 2] = fft_real[bad_idx_back]
+        ffts[bad_idx_back, 3] = fft_imag[bad_idx_back]
+        del fft_real, fft_imag
+
+        ffts_01 = np.full((fft_len, 2), 0, dtype = int)
+        ffts_01[:, 0] = bad_idx_front
+        ffts_01[:, 1] = bad_idx_back
+
+        freq_win_len = np.round(self.freq_win / np.abs(self.freq[1] - self.freq[0])).astype(int)
+        freq_win_one = np.full((freq_win_len, 4), 1, dtype = float)
+        roll_sum = fftconvolve(ffts, freq_win_one, 'same', axes = 0)
+        roll_sum_01 = np.round(fftconvolve(ffts_01, freq_win_one[:, :2], 'same', axes = 0))
+        del freq_win_len, ffts, ffts_01, freq_win_one
+
+        roll_mean = np.full((fft_len, 2), np.nan, dtype = float)
+        roll_mean[bad_idx_front, 0] = roll_sum[bad_idx_front, 0]
+        roll_mean[bad_idx_back, 0] = roll_sum[bad_idx_back, 2]
+        roll_mean[bad_idx_front, 1] = roll_sum[bad_idx_front, 1]
+        roll_mean[bad_idx_back, 1] = roll_sum[bad_idx_back, 3]
+        roll_mean[bad_idx_front] /= roll_sum_01[bad_idx_front, 0][:, np.newaxis]
+        roll_mean[bad_idx_back] /= roll_sum_01[bad_idx_back, 1][:, np.newaxis]
+        del fft_len, bad_idx_front, bad_idx_back, roll_sum, roll_sum_01
+
+        roll_mean = roll_mean[~self.good_idx]
+        avg_phase = np.arctan2(roll_mean[:, 1], roll_mean[:, 0])
+        del roll_mean
+
+        arg = self.phase[~self.good_idx] - avg_phase
+        delta = abs(arg)
+        sqrt_val = np.sqrt(1 - (np.cos(delta) / np.cos(arg))**2)
+        self.gamma = avg_phase + np.arccos(np.sin(2 * arg) / (2 * np.sin(delta)) * (1 + sqrt_val))
+        #self.gamma = avg_phase + np.arccos(np.sin(2 * arg) / (2 * np.sin(delta)) * (1 - sqrt_val))
+        self.gamma += np.pi / 2
+        del avg_phase, arg, delta, sqrt_val
+
+    def get_inverse_fft(self):
+
+        self.phase[~self.good_idx] = self.gamma
+        new_fft = self.int_mag * np.cos(self.phase) + self.int_mag * np.sin(self.phase) * 1j
+        self.new_wf = np.fft.irfft(new_fft)
+        del new_fft
+
+    def get_filtered_wf(self, int_v, int_num, ant, evt)
+
+        self.ant = ant
+        self.evt = evt
+        self.freq = np.fft.rfftfreq(int_num, self.dt) 
+        self.fft = np.fft.rfft(int_v)
+        self.phase = np.angle(self.fft)
+
+        self.get_bad_index()
+        del self.ant, self.evt
+
+        self.get_interpolated_magnitude()
+        del self.fft
+
+        self.get_geometric_phase()
+        del self.bad_idx, self.good_idx, self.freq
+
+        self.get_inverse_fft()
+        del self.int_mag, self.phase, self.gamma
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
