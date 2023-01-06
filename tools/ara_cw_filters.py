@@ -124,7 +124,7 @@ class py_testbed:
         base_new = self.baseline - self.slope_x * slope[np.newaxis, :] # tilt baseline
         delta_mag = self.fft_dB - base_new # and differences
         if self.use_debug:
-            self.fft_dB_tile_debug = np.copy(self.fft_dB)
+            self.fft_dB_tilt_debug = np.copy(self.fft_dB)
             self.baseline_tilt_debug = np.copy(base_new)
             self.delta_mag_debug = np.copy(delta_mag)
         del delta_mean, slope, base_new
@@ -252,7 +252,7 @@ class py_phase_variance:
         imag_evt_sum = np.nansum(np.sin(self.phase_diff_pad), axis = 2) # now it is (number of freq bins, number of pairs)
         phase_variance = 1 - np.sqrt(real_evt_sum**2 + imag_evt_sum**2) / self.num_evts # still (number of freq bins, number of pairs)
         if self.use_debug:
-            self.phase_diff_pad_debug = np.copy(phase_diff_pad)
+            self.phase_diff_pad_debug = np.copy(self.phase_diff_pad)
             self.phase_variance_debug = np.copy(phase_variance)
         del real_evt_sum, imag_evt_sum   
  
@@ -360,7 +360,7 @@ class group_bad_frequency:
         bad_range[-1, 2] = bad_freqs[-1] + self.freq_win_half
         bad_range[1:, 0] = bad_freqs[1:][diff_idx] - self.freq_win_half
         bad_range[:-1, 2] = bad_freqs[:-1][diff_idx] + self.freq_win_half
-        bad_range[:, 1] = np.nanmean(bad_band, axis = 1) # identify the center of group
+        bad_range[:, 1] = np.nanmean(bad_range, axis = 1) # identify the center of group
         del diff_idx_len, diff_idx, bad_freqs 
 
         return bad_range
@@ -394,7 +394,7 @@ class py_geometric_filter:
         self.good_idx = self.bad_idx == 0
 
         if self.ant == 15:
-            del self.band_range
+            del self.bad_range
 
     def get_interpolated_magnitude(self):
 
@@ -447,34 +447,37 @@ class py_geometric_filter:
         self.gamma = avg_phase + np.arccos(np.sin(2 * arg) / (2 * np.sin(delta)) * (1 + sqrt_val))
         #self.gamma = avg_phase + np.arccos(np.sin(2 * arg) / (2 * np.sin(delta)) * (1 - sqrt_val))
         self.gamma += np.pi / 2
-        del avg_phase, arg, delta, sqrt_val
+        nan_locator = np.isnan(self.gamma)
+        self.gamma[nan_locator] = self.phase[~self.good_idx][nan_locator]
+        del avg_phase, arg, delta, sqrt_val, nan_locator
 
     def get_inverse_fft(self):
 
         self.phase[~self.good_idx] = self.gamma
         new_fft = self.int_mag * np.cos(self.phase) + self.int_mag * np.sin(self.phase) * 1j
-        self.new_wf = np.fft.irfft(new_fft)
+        self.new_wf = np.fft.irfft(new_fft, n = self.int_num)
         del new_fft
 
-    def get_filtered_wf(self, int_v, int_num, ant, evt)
+    def get_filtered_wf(self, int_v, int_num, ant, evt):
 
         self.ant = ant
         self.evt = evt
-        self.freq = np.fft.rfftfreq(int_num, self.dt) 
+        self.int_num = int_num
+        self.freq = np.fft.rfftfreq(self.int_num, self.dt) 
         self.fft = np.fft.rfft(int_v)
         self.phase = np.angle(self.fft)
 
         self.get_bad_index()
-        del self.ant, self.evt
+        #del self.ant, self.evt
 
         self.get_interpolated_magnitude()
         del self.fft
 
         self.get_geometric_phase()
-        del self.bad_idx, self.good_idx, self.freq
+        del self.bad_idx, self.freq
 
         self.get_inverse_fft()
-        del self.int_mag, self.phase, self.gamma
+        del self.int_mag, self.phase, self.gamma, self.good_idx, self.int_num
 
 
 

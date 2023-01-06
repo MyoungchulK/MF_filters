@@ -118,7 +118,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     cw_phase1 = py_phase_variance(st, run, pad_freq, use_debug = True)
     evt_len = cw_phase1.evt_len
     start_evt = int(evt_len - 1)
-    phase_var_freq_range = cw_phase1.useful_freq_range
+    phase_var_freq_range = cw_phase1.useful_freq_range_debug
     cw_testbed = py_testbed(st, run, pad_freq, analyze_blind_dat = analyze_blind_dat, verbose = True, use_debug = True)
     baseline = cw_testbed.baseline_debug
     baseline_fft = cw_testbed.baseline_fft_debug
@@ -167,7 +167,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     testbed_bad_freqs_sum = np.full((len(testbed_freq_range), sel_evt_len), np.nan, dtype=float)
     testbed_bad_idx = np.full((bad_pad, sel_evt_len), np.nan, dtype = float)
     phase_variance = np.full((len(phase_var_freq_range), len(pairs), sel_evt_len), np.nan, dtype=float)
-    phase_difference = np.cop(phase_variance)
+    phase_difference = np.full((len(phase_var_freq_range), len(pairs), evt_len, sel_evt_len), np.nan, dtype=float)
     phase_var_median = np.full((len(pairs), sel_evt_len), np.nan, dtype=float)
     phase_var_sigma = np.copy(phase_var_median)
     sigma_variance = np.copy(phase_variance)
@@ -274,7 +274,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             sigmas = cw_phase1.bad_sigma
             phase_idxs = cw_phase1.bad_idx
             bad_len = len(phase_idxs)
-            phase_difference[:, :, rs_evts1] = phase_d
+            phase_difference[:, :, :, rs_evts1] = phase_d
             phase_variance[:, :, rs_evts1] = phase_v
             phase_var_median[:, rs_evts1] = phase_v_m
             phase_var_sigma[:, rs_evts1] = phase_v_s
