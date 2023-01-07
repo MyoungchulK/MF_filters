@@ -99,7 +99,7 @@ def rayl_collector(Data, Ped, st = None, run = None, analyze_blind_dat = False, 
         # loop over the antennas
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True, evt = clean_soft_entry[evt])
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True, evt = evt)
             del raw_t, raw_v 
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()
@@ -108,21 +108,9 @@ def rayl_collector(Data, Ped, st = None, run = None, analyze_blind_dat = False, 
         soft_len[:, evt] = wf_int.pad_num
         soft_ffts[:, :, evt] = wf_int.pad_fft
     del ara_root, num_clean_softs, wf_int, clean_soft_entry, num_ants
- 
-     
-    #freq_idx = np.logical_and(freq_range > 0.29, freq_range < 0.31)
-    rayl_copy = np.copy(soft_ffts[342, 1])
-    #rayl_copy = rayl_copy[freq_idx]
-    print(rayl_copy.shape)
-    argmax_i = np.where(rayl_copy == np.nanmax(rayl_copy))
-    print(argmax_i)
-    evt_numm = evt_num[clean_soft_idx]
-    print(evt_numm[argmax_i[0][0]]) 
-    print(rayl_copy[argmax_i])    
-
+   
     # rayl fit 
-    #soft_rayl = get_rayl_distribution(soft_ffts)[0]
-    soft_rayl, rfft_2d, dat_bin_edges = get_rayl_distribution(soft_ffts)
+    soft_rayl = get_rayl_distribution(soft_ffts)[0]
     del soft_ffts
 
     # signal chain gain
@@ -143,7 +131,5 @@ def rayl_collector(Data, Ped, st = None, run = None, analyze_blind_dat = False, 
             'rf_len':rf_len,
             'soft_len':soft_len,
             'soft_rayl':soft_rayl,
-            'soft_sc':soft_sc,#}
-            'rfft_2d':rfft_2d,
-            'dat_bin_edges':dat_bin_edges}
+            'soft_sc':soft_sc}
 

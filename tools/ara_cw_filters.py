@@ -1,5 +1,6 @@
 ## You can find original C++ version from here: https://github.com/clark2668/a23_analysis_tools/blob/master/tools_CW.h
-## all creadit to Brian and creator of the code:)
+## and here: https://github.com/osu-particle-astrophysics/RayTraceCorrelator/blob/a23_2019_analysis/RayTraceCorrelator.cxx
+## all creadit to Brian, OSU, and creator of the code:)
 
 import h5py
 import numpy as np
@@ -16,7 +17,10 @@ num_ants = ara_const.USEFUL_CHAN_PER_STATION
 num_pols = ara_const.POLARIZATION
 
 class py_testbed:
-    """! testbed in python version. checking bad frequencies in all channel pairs and all frequencies """
+    """! testbed in python version. checking bad frequencies in all channel pairs and all frequencies 
+    origianl C++ version: https://github.com/clark2668/a23_analysis_tools/blob/master/tools_CW.h, CWCut_TB()
+    original C++ srcipt that excuting CWCut_TB(): https://github.com/clark2668/a23_analysis_programs/blob/master/diffuse/v2_analysis_CWID.cxx
+    """
 
     def __init__(self, st, run, freq_range, dB_cut = 12, dB_cut_broad = 11, num_coinc = 3, freq_range_broad = 0.04, freq_range_near = 0.005,
                     freq_lower_limit = 0.12, freq_upper_limit = 0.85, analyze_blind_dat = False, verbose = False, use_debug = False):
@@ -73,6 +77,8 @@ class py_testbed:
     def get_baseline(self, use_roll_medi = False):
         """! get baseline (averaged frequency spectrum in amplitude unit (mV/sqrt(GHz))) 
         from pre-calculated h5 file and convert to dBm/Hz 
+
+        @param use_roll_medi  Boolean.  wanna smoothing out baseline by rolling median
         """
 
         from tools.ara_run_manager import run_info_loader
@@ -140,7 +146,7 @@ class py_testbed:
         if number of big peaks are more than 50 % in the 40 MHz frequency window from 'potentially' bad frequencies, 
         the 'potentially' bad frequencies are considered not narrow peak and not from CW. It is just looong 'hiccup'
         if it is less than 50 %, now it is 'really' bad frequencies
-        second, check the 'really' bad frequencies in each channel pairs are within 5 HMz or not(now we are comapring channel differences) 
+        second, check the 'really' bad frequencies in each channel pairs are within 5 HMz or not(now we are comparing channel by channel differences) 
         if it is, now the 'really' bad frequencies are 'really really' bad frequencies.
         third, if number of 'really really' bad frequencies from each channel pairs (coincidances) are bigger than 3,
         finally it is 'the' bad frequencies!
@@ -157,9 +163,9 @@ class py_testbed:
 
         ## 2nd, pair check
         ## using rolling sum with 5 MHz frequency window to compare the 'really' bad frequencies in each channel pair
-        ## to prevent the accidantal increase of coincidances by rolling sum of neighboring 'really' bad frequencies, if element is bigger than 1, now it is just 'True'
+        ## to prevent the accidantal increase of coincidances by rolling sum of neighboring 'really' bad frequencies, if rolling sum result in each frequency is bigger than 1, now it is just 'True'
         ## if each channel pair has 'really' bad frequencies in both channels (by logical_and()), now it is 'really really' bad frequencies
-        ## to prevent the accidantal increase of coincidances between two antennas by rolling sum, only oneside of pairs are spreaded by rolling sum
+        ## to prevent the accidantal increase of coincidances between two antennas by rolling sum, only oneside of pairs is spreaded by rolling sum
         bad_freq_1st_sum = np.round(fftconvolve(bad_freq_1st, self.freq_near_one, 'same', axes = 0)).astype(int) != 0 # it is Boolean array now
         bad_freq_2nd = np.logical_and(bad_freq_1st[:, self.pairs[:, 0]], bad_freq_1st_sum[:, self.pairs[:, 1]])
         del bad_freq_1st, bad_freq_1st_sum
@@ -194,7 +200,10 @@ class py_testbed:
         del self.fft_dB
 
 class py_phase_variance:
-    """! phase variance. checking phase differences in all channel pairs and neighboring events"""
+    """! phase variance. checking phase differences in all channel pairs and neighboring events
+    origianl C++ version: https://github.com/clark2668/a23_analysis_tools/blob/master/tools_CW.h, getPhaseDifference(), getMedian(), and getPhaseVariance()
+    original C++ srcipt that excuting above functions: https://github.com/clark2668/a23_analysis_programs/blob/master/diffuse/v2_analysis_CWID.cxx
+    """
 
     def __init__(self, st, run, freq_range, evt_len = 15, freq_lower_limit = 0.12, freq_upper_limit = 1., use_debug = False):
         """! phase variance initializer
@@ -300,9 +309,12 @@ class py_phase_variance:
         self.get_peak_above_threshold()
 
 class group_bad_frequency:
-    """! python version of grouping bad frequencies"""
+    """! python version of grouping bad frequencies
+    origianl C++ version: https://github.com/osu-particle-astrophysics/RayTraceCorrelator/blob/a23_2019_analysis/RayTraceCorrelator.cxx, pickFreqsAndBands() 
+    original C++ srcipt that excuting pickFreqsAndBands(): https://github.com/clark2668/a23_analysis_programs/blob/master/diffuse/v2_save_vals.cxx
+    """
 
-    def __init__(self, st, run, freq_range, freq_win = 0.01, verbose = False):
+    def __init__(self, st, run, freq_range, freq_win = 0.01, verbose = False, use_debug = False, manual_sigma = None):
         """! grouping bad frequencies initializer. super unnecessary classing...
 
         @param st  Integer.  station id
@@ -310,13 +322,18 @@ class group_bad_frequency:
         @param freq_range  Numpy array.  frequency range of rfft of zero padded wf
         @param freq_win  Float. expected cw distribution range 
         @param verbose  Boolean.  wanna print the message
+        @param use_debug  Boolean.  wanna return the interesting steps
+        @param manual_sigma  None.  wanna set sigma by yourself
         """
 
         if st == 2:
             self.sigma_thres = 1.5 # sigma threshold for selecting bad frequency from phase variance results
         elif st == 3:
             self.sigma_thres = 2
+        if manual_sigma is not None:
+            self.sigma_thres = manual_sigma # sigma threshold value by user
         self.verbose = verbose
+        self.use_debug = use_debug
         if self.verbose:
             print(f'phase variance sigma threshold: {self.sigma_thres}')
         self.freq_range = freq_range
@@ -335,10 +352,15 @@ class group_bad_frequency:
         ## choose bad frequencies that have sigma bigger than threshold
         sigma_cut = sigma > self.sigma_thres
         phase_idx_cut = phase_idx[sigma_cut]
+        if self.use_debug:
+            self.sigma_cut_debug = np.copy(sigma_cut)
+            self.phase_idx_cut_debug = np.copy(phase_idx_cut)
         del sigma_cut
 
         ## merging / sorting bad frequencies
         bad_idx = np.unique(np.concatenate((testbed_idx, phase_idx_cut))).astype(int)
+        if self.use_debug:
+            self.bad_idx_debug = np.copy(bad_idx)
         del phase_idx_cut
 
         ## exit when there is nothing to do
@@ -349,8 +371,10 @@ class group_bad_frequency:
 
         ## grouping bad frequencies in 10 MHz
         bad_freqs = self.freq_range[bad_idx]
-        diff_idx = np.diff(bad_freqs) > self.freq_win # if bin to bin differences are bigger then num_df_10s, that is baoundary of the frequency group
+        diff_idx = np.diff(bad_freqs) > self.freq_win # if frequency by frequency differences are bigger then 10 MHz, that is baoundary of the frequency group
         diff_idx_len = np.count_nonzero(diff_idx) + 1 # so... how many groups are there? Adding 1 for considering 1st group        
+        if self.use_debug:
+            self.diff_idx_debug = np.copy(diff_idx)
         del bad_idx
 
         ## identify range of the indexs.
@@ -366,68 +390,134 @@ class group_bad_frequency:
         return bad_range
 
 class py_geometric_filter:
+    """! python version of geometric filter for repairing / solving phase
+    technically, it is combination of interpolated filter and geometric filter
+    origianl C++ version: https://github.com/osu-particle-astrophysics/RayTraceCorrelator/blob/a23_2019_analysis/RayTraceCorrelator.cxx, interpolatedFilter(), GeometricFilter(), solveGamma_plus(), and solveGamma_minus()
+    original C++ srcipt that excuting above functions: https://github.com/clark2668/a23_analysis_programs/blob/master/diffuse/v2_save_vals.cxx
+    """
 
-    def __init__(self, st, run, freq_win = 0.01, dt = 0.5, analyze_blind_dat = False):
+    def __init__(self, st, run, freq_win = 0.01, dt = 0.5, analyze_blind_dat = False, use_debug = False):
+        """! grometric filter initializer.
+
+        @param st  Integer.  station id
+        @param run  Integer.  run number
+        @param freq_win  Float. expected cw distribution range
+        @param dt  Float. wf time bin width
+        @param analyze_blind_dat  Boolean.  whether we are using blinded or unblinded data
+        @param use_debug  Boolean.  wanna return the interesting steps
+        """
 
         self.dt = dt
+        self.use_debug = use_debug
 
+        ## load pre-identified bad frequencies        
         from tools.ara_run_manager import run_info_loader
         run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
         cw_dat = run_info.get_result_path(file_type = 'cw_flag', verbose = True) # get the h5 file path
         cw_hf = h5py.File(cw_dat, 'r')
-        self.cw_sigma = cw_hf['sigma'][:]
-        self.cw_phase = cw_hf['phase_idx'][:]
-        self.cw_testbed = cw_hf['testbed_idx'][:]
-        freq_range = cw_hf['freq_range'][:]
+        self.cw_sigma = cw_hf['sigma'][:] # sigma value for phase variance
+        self.cw_phase = cw_hf['phase_idx'][:] # bad frequency indexs by phase variance
+        self.cw_testbed = cw_hf['testbed_idx'][:] # bad freqency indexs by testbed method
+        freq_range = cw_hf['freq_range'][:] # frequency array that uesd for identification
+        if self.use_debug:
+            self.freq_range_debug = np.copy(freq_range)
         del run_info, cw_dat, cw_hf
 
-        self.freq_win = freq_win
-        self.cw_freq = group_bad_frequency(st, run, freq_range, freq_win = self.freq_win, verbose = True)
+        self.freq_win = freq_win # frequency window for averaging / grouping bad frequencies and pahses
+        self.cw_freq = group_bad_frequency(st, run, freq_range, freq_win = self.freq_win, verbose = True, use_debug = use_debug) # constructor for bad frequency grouping function
         del freq_range
 
     def get_bad_index(self): 
+        """! identify which frequencies are in bad freqeucny range (band)"""
 
-        if self.ant == 0:
+        ## grouping pre-identifed bad frequencies into several band
+        if self.ant == 0: # only do this for first channel. this results will be shared with all channels
+            ## it will be 2d array with 2nd dim is always 3 (lower, canter (cut frequncuy), upper)
+            ## bad_range[:, 0] -> lower baoundaries. bad_range[:, 1] -> center cut frequency. bad_range[:, 2] -> upper baoundaries
+            ## by using flatten(), bad_range values will be aligned in frequency incremental order
             self.bad_range = self.cw_freq.get_pick_freqs_n_bands(self.cw_sigma[self.evt], self.cw_phase[self.evt], self.cw_testbed[self.evt]).flatten()
-            
-        self.bad_idx = np.digitize(self.freq, self.bad_range) % 3
-        self.good_idx = self.bad_idx == 0
+            if self.use_debug:
+                self.bad_range_debug = np.copy(self.bad_range)            
 
-        if self.ant == 15:
-            del self.bad_range
+        ## identify whether each freqeucy is good or bad
+        ## by using np.digitize() and %3, we can put 'good/between lower and center/between center and upper' tags to all frequencies at once   
+        ## np.digitize(). Return the indices of the bins to which each value in input array belongs. please check numpy website
+        ## sine we do %3, 0 would be good frequencies. 1 would be between lower and center. And 2 would be between center and upper
+        ## since 'bad frequeny identification' only applied between 120 ~ 1000 MHz, frequency range 0~ 120 MHz would be always tagged as a '0'. So, 0 would be always guarantee to indicate good frequency 
+        self.bad_idx = np.digitize(self.freq, self.bad_range) % 3
+        self.good_idx = self.bad_idx == 0 # index of good frequncies
+        if self.use_debug:
+            self.bad_idx_debug = np.copy(self.bad_idx)
+
+        if self.ant == 15: 
+            del self.bad_range # lets delete it when we finish the looping all channels
 
     def get_interpolated_magnitude(self):
+        """! trim out the bad magnitudes by bad index range and filling up by interpolation. This is best we can do by hand"""
 
-        int_f = interp1d(self.freq[self.good_idx], np.abs(self.fft[self.good_idx]), fill_value = 'extrapolate')
-        self.int_mag = int_f(self.freq)
+        int_f = interp1d(self.freq[self.good_idx], np.abs(self.fft[self.good_idx]), fill_value = 'extrapolate') # trim out bad range and use as an interpolation 
+        self.int_mag = int_f(self.freq) # new magnitude by interpolation
+        if self.use_debug:
+            self.int_mag_debug = np.copy(self.int_mag)
         del int_f
 
     def get_geometric_phase(self):
+        """! actual geometric filter. solving estimated phase angle from thermal + impulse by measured phase and cw phase which is averaged bad phases
+        It is all about vector calculation and trigonometry:)
+        User can find more detail discription from Brian T. Dailey thesis section 3.4.4 Geometric Method: https://etd.ohiolink.edu/apexprod/rws_etd/send_file/send?accession=osu1483657450682456&disposition=inline
+        I guarantee that above link 'will' be much helpful rather than reading tons of comment in here
+        """
 
-        bad_idx_front = self.bad_idx == 1
-        bad_idx_back = self.bad_idx == 2
-
+        ## break down fft into real and imaginary part. we use new/fixed magnitude by interpolation
         fft_real = self.int_mag * np.cos(self.phase)
         fft_imag = self.int_mag * np.sin(self.phase)
 
-        fft_len = len(self.freq)
+        ## seperate bad frequencies into two group 
+        ## phases in the each bad frequency group usually have a step (flip or wrap) at the center of the group
+        ## if we average bad phases by using both before and after the step, result of this filter is usually bad
+        ## so, we seperate each group to front and back by center of frequency (step phase or cut frequency) and perform rolling mean seperatly
+        ## we already did that in get_bad_index()
+        bad_idx_front = self.bad_idx == 1 # front groups: lower baoundary to center
+        bad_idx_back = self.bad_idx == 2 # back group: center to upper baoundary
+
+        ## storing only bad fft values into zero pad by seperating 1) real/imaginary and 2)front/back
+        ## by stroing like this, when we apply rolling sum into entire array, each part will not interfered each other
+        ## also by storing into zero pad, good fft values will also not interfered rolling sum. rolling sum window will take '0' value for calculation from good fft regions
+        ## by storing all the front or back part from each group in one array, each group would be far each other compare to rolling sum window. So, it should be not interferring each other
+        fft_len = len(self.freq) # rfft length
         ffts = np.full((fft_len, 4), 0, dtype = float)
-        ffts[bad_idx_front, 0] = fft_real[bad_idx_front]
+        ffts[bad_idx_front, 0] = fft_real[bad_idx_front] 
         ffts[bad_idx_front, 1] = fft_imag[bad_idx_front]
         ffts[bad_idx_back, 2] = fft_real[bad_idx_back]
         ffts[bad_idx_back, 3] = fft_imag[bad_idx_back]
+        if self.use_debug:
+            self.ffts_debug = np.copy(ffts)
         del fft_real, fft_imag
 
+        ## storing which fft elemnts are identified as an bad frequency
+        ## by applying rolling sum into this array, we can 'count' how many elements are summed by rolling sum for each frequency 
+        ## and we can use this for calculating rolling mean (averaged phase) by dvideding rolling sum of phase
         ffts_01 = np.full((fft_len, 2), 0, dtype = int)
         ffts_01[:, 0] = bad_idx_front
         ffts_01[:, 1] = bad_idx_back
 
-        freq_win_len = np.round(self.freq_win / np.abs(self.freq[1] - self.freq[0])).astype(int)
-        freq_win_one = np.full((freq_win_len, 4), 1, dtype = float)
+        ## apply rolling sum to ffts and ffts_01 by magic fftconvolve()
+        ## original code is using maximum 5 bin for rolling sum window. But in this code, im using same window length that uesd for grouping bad frequencies which is 10 MHz
+        ## good frequency region would be filled with '0'. So dont worry about it
+        freq_win_len = np.round(self.freq_win / np.abs(self.freq[1] - self.freq[0])).astype(int) # how many bins are in the 10 MHz frequency window?
+        freq_win_one = np.full((freq_win_len, 4), 1, dtype = float) # creating array that has a same 2nd dim with the ffts and all the element in 1 to mimic rolling sum
         roll_sum = fftconvolve(ffts, freq_win_one, 'same', axes = 0)
-        roll_sum_01 = np.round(fftconvolve(ffts_01, freq_win_one[:, :2], 'same', axes = 0))
+        roll_sum_01 = np.round(fftconvolve(ffts_01, freq_win_one[:, :2], 'same', axes = 0)) # numpy round is applied to correct minor differences from 'fft'convolve...
+        if self.use_debug:
+            self.freq_win_len_debug = np.copy(freq_win_len)
+            self.roll_sum_debug = np.copy(roll_sum)
+            self.roll_sum_01_debug = np.copy(roll_sum_01)
         del freq_win_len, ffts, ffts_01, freq_win_one
 
+        ## apply rolling mean by dvide 'ffts' by 'ffts_01'
+        ## since rolling sum of front and back goup was done seperatly, now we put them into one array by using bad freqeuncy index. 
+        ## by using bad freqeuncy index, rolling sum values outside of the group boundaries will be ignored
+        ## and dvided by the 'counts' array (roll_sum_01)
         roll_mean = np.full((fft_len, 2), np.nan, dtype = float)
         roll_mean[bad_idx_front, 0] = roll_sum[bad_idx_front, 0]
         roll_mean[bad_idx_back, 0] = roll_sum[bad_idx_back, 2]
@@ -435,40 +525,65 @@ class py_geometric_filter:
         roll_mean[bad_idx_back, 1] = roll_sum[bad_idx_back, 3]
         roll_mean[bad_idx_front] /= roll_sum_01[bad_idx_front, 0][:, np.newaxis]
         roll_mean[bad_idx_back] /= roll_sum_01[bad_idx_back, 1][:, np.newaxis]
+        if self.use_debug:
+            self.roll_mean_debug = np.copy(roll_mean)
         del fft_len, bad_idx_front, bad_idx_back, roll_sum, roll_sum_01
 
-        roll_mean = roll_mean[~self.good_idx]
-        avg_phase = np.arctan2(roll_mean[:, 1], roll_mean[:, 0])
+        ## calculate extimated cw phase by arctangent
+        roll_mean = roll_mean[~self.good_idx] # trim out good frequency region. we dont need to solve that part
+        avg_phase = np.arctan2(roll_mean[:, 1], roll_mean[:, 0]) # now, it is finally 1d array...
+        if self.use_debug:
+            self.avg_phase_debug = np.copy(avg_phase)        
         del roll_mean
 
+        ## gamma calculation. please check Brian T. Dailey thesis section 3.4.4 Geometric Method: https://etd.ohiolink.edu/apexprod/rws_etd/send_file/send?accession=osu1483657450682456&disposition=inline
+        ## above link 'will' be much helpful rather than putting tons of comment in here
+        ## but few things for calculation in here
+        ## by following thesis p.92, delta is equal to psi - theta. it means 'arg' below is same as 'delta'.
+        ## so, 'sqrt_val' will be always zero. It means there is no two solutions for Eq 3.22. we dont have to do +/- option
+        ## by this one solution, we also dont have to do the selection in line 4915 to 4929 in the original C++ code: https://github.com/osu-particle-astrophysics/RayTraceCorrelator/blob/a23_2019_analysis/RayTraceCorrelator.cxx
         arg = self.phase[~self.good_idx] - avg_phase
         delta = abs(arg)
-        sqrt_val = np.sqrt(1 - (np.cos(delta) / np.cos(arg))**2)
+        sqrt_val = np.sqrt(1 - (np.cos(delta) / np.cos(arg))**2) # will be always zero
         self.gamma = avg_phase + np.arccos(np.sin(2 * arg) / (2 * np.sin(delta)) * (1 + sqrt_val))
-        #self.gamma = avg_phase + np.arccos(np.sin(2 * arg) / (2 * np.sin(delta)) * (1 - sqrt_val))
+        #self.gamma = avg_phase + np.arccos(np.sin(2 * arg) / (2 * np.sin(delta)) * (1 - sqrt_val)) # dont need it
         self.gamma += np.pi / 2
         nan_locator = np.isnan(self.gamma)
-        self.gamma[nan_locator] = self.phase[~self.good_idx][nan_locator]
+        self.gamma[nan_locator] = self.phase[~self.good_idx][nan_locator] # as same as origianl code if there is no solution, we just use original phase
+        if self.use_debug:
+            self.gamma_debug = np.copy(self.gamma)
         del avg_phase, arg, delta, sqrt_val, nan_locator
 
     def get_inverse_fft(self):
+        """! make time domain wf with new magnitude and phase by inverse fft """
 
-        self.phase[~self.good_idx] = self.gamma
-        new_fft = self.int_mag * np.cos(self.phase) + self.int_mag * np.sin(self.phase) * 1j
-        self.new_wf = np.fft.irfft(new_fft, n = self.int_num)
+        self.phase[~self.good_idx] = self.gamma # replace phase
+        new_fft = self.int_mag * np.cos(self.phase) + self.int_mag * np.sin(self.phase) * 1j # merging result into complex array
+        self.new_wf = np.fft.irfft(new_fft, n = self.int_num) # inverse fft. 'n' must be specified as time-domain wf length to make sure result of irfft also have a same length. THIS IS THE RESULT OF THIS WHOLE CLASS!
+        if self.use_debug:
+            self.new_fft_debug = np.copy(new_fft)    
         del new_fft
 
     def get_filtered_wf(self, int_v, int_num, ant, evt):
+        """! all the calculation will be excuted by this function
+
+        @param int_v  Numpy array.  interpolated time-domain wf
+        @param int_num  Integer.  interpolated time-domain wf length
+        @param ant  Integer.  channel index
+        @param evt  Integer.  entry (not event) number 
+        """
 
         self.ant = ant
         self.evt = evt
         self.int_num = int_num
+
+        ## calculate frequency, fft, phase of original wf in here
         self.freq = np.fft.rfftfreq(self.int_num, self.dt) 
         self.fft = np.fft.rfft(int_v)
         self.phase = np.angle(self.fft)
 
         self.get_bad_index()
-        #del self.ant, self.evt
+        del self.ant, self.evt
 
         self.get_interpolated_magnitude()
         del self.fft

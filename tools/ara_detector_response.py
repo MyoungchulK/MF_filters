@@ -10,7 +10,7 @@ from tools.ara_constant import ara_const
 ara_const = ara_const()
 num_ants = ara_const.USEFUL_CHAN_PER_STATION
 
-def get_rayl_distribution(dat, binning = 1000):
+def get_rayl_distribution(dat, binning = 100):
 
     fft_len = dat.shape[0]
     rfft_2d = np.full((fft_len, binning, num_ants), 0, dtype = int)

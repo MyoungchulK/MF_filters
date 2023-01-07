@@ -373,7 +373,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         # cw wf
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_cw = True, evt = evt)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_cw = True, evt = sel_entries[evt])
             wf_int_len = wf_int.pad_num[ant]
             cw_v = wf_int.pad_v[:wf_int_len, ant]
             cw_mean_blk[:blk_idx_len, ant, evt] = buffer_info.get_mean_blk(ant, cw_v, use_int_dat = True)
@@ -387,7 +387,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         # cw (and band-passed) wf
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_band_pass = True, use_cw = True, evt = evt)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_band_pass = True, use_cw = True, evt = sel_entries[evt])
             wf_int_len = wf_int.pad_num[ant]
             cw_bp_v = wf_int.pad_v[:wf_int_len, ant]
             cw_bp_mean_blk[:blk_idx_len, ant, evt] = buffer_info.get_mean_blk(ant, cw_bp_v, use_int_dat = True)
@@ -430,7 +430,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         # reco w/ cw wf
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_cw = True, evt = evt)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_cw = True, evt = sel_entries[evt])
             ara_root.del_TGraph()
         ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], sum_pol = False, return_debug_dat = True)
         cw_corr[:,:,evt] = ara_int.corr
@@ -444,7 +444,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         # reco w/ cw (and band-passed) wf
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True, evt = evt)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True, evt = sel_entries[evt])
             ara_root.del_TGraph()
         ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], sum_pol = False, return_debug_dat = True)
         cw_bp_corr[:,:,evt] = ara_int.corr
