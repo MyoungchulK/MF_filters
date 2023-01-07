@@ -109,19 +109,7 @@ def rayl_collector(Data, Ped, st = None, run = None, analyze_blind_dat = False, 
         soft_ffts[:, :, evt] = wf_int.pad_fft
     del ara_root, num_clean_softs, wf_int, clean_soft_entry, num_ants
  
-     
-    #freq_idx = np.logical_and(freq_range > 0.29, freq_range < 0.31)
-    rayl_copy = np.copy(soft_ffts[342, 1])
-    #rayl_copy = rayl_copy[freq_idx]
-    print(rayl_copy.shape)
-    argmax_i = np.where(rayl_copy == np.nanmax(rayl_copy))
-    print(argmax_i)
-    evt_numm = evt_num[clean_soft_idx]
-    print(evt_numm[argmax_i[0][0]]) 
-    print(rayl_copy[argmax_i])    
-
     # rayl fit 
-    #soft_rayl = get_rayl_distribution(soft_ffts)[0]
     soft_rayl, rfft_2d, dat_bin_edges = get_rayl_distribution(soft_ffts)
     del soft_ffts
 
@@ -143,7 +131,7 @@ def rayl_collector(Data, Ped, st = None, run = None, analyze_blind_dat = False, 
             'rf_len':rf_len,
             'soft_len':soft_len,
             'soft_rayl':soft_rayl,
-            'soft_sc':soft_sc,#}
+            'soft_sc':soft_sc,
             'rfft_2d':rfft_2d,
             'dat_bin_edges':dat_bin_edges}
 

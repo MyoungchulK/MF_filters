@@ -131,7 +131,7 @@ class wf_analyzer:
 
             if use_cw:
                 self.cw_geo.get_filtered_wf(int_v, int_num, ant, evt)
-                int_v = np.copy(self.cw_geo.new_wf)
+                int_v = self.cw_geo.new_wf
 
             if use_band_pass:
                 int_v = self.get_band_passed_wf(int_v)
