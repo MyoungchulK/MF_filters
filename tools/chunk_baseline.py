@@ -48,7 +48,7 @@ def baseline_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
         num_cleans[trig] = np.count_nonzero(cleans)
         clean_idx += cleans.astype(int)
         del cleans
-    print(f'number clean events by trigger: {num_cleans}')
+    print(f'number of clean events by trigger: {num_cleans}')
     del entry_num, daq_qual_cut, tot_qual_cut 
 
     # wf analyzer

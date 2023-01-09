@@ -52,7 +52,7 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     # cw class
     cw_testbed = py_testbed(st, run, freq_range, analyze_blind_dat = analyze_blind_dat, verbose = True)
     baseline_fft = cw_testbed.baseline_fft
-    testbed_params = np.array([cw_testbed.dB_cut, cw_testbed.dB_cut_broad, cw_testbed.num_coinc, cw_testbed.freq_range_broad, cw_testbed.freq_range_near])
+    teatbed_params = np.array([cw_testbed.dB_cut, cw_testbed.dB_cut_broad, num_coinc, cw_testbed.freq_range_broad, cw_testbed.freq_range_near])
     cw_phase = py_phase_variance(st, run, freq_range)
     evt_len = cw_phase.evt_len
     phase_params = np.array([cw_phase.sigma_thres, evt_len])
@@ -65,24 +65,15 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     empty = np.full((0), 0, dtype = int)
     empty_float = np.full((0), np.nan, dtype = float)
     clean_entry = entry_num[(daq_qual_cut_sum == 0) & (trig_type != 1)]
-    del entry_num
 
     # loop over the events
-    evt = 0
-    evt_backup = 0
     evt_counts = 0
-    pbar = tqdm(total = num_evts)
-    while evt < num_evts:
-  
-        if evt == evt_backup:
-            pbar.update(1)
- 
+    for evt in tqdm(range(num_evts)):
+        
         if daq_qual_cut_sum[evt]:
             sigma.append(empty_float)
             phase_idx.append(empty)
             testbed_idx.append(empty)
-            evt_backup += 1
-            evt = evt_backup
             continue
 
         # get entry and wf
@@ -101,42 +92,26 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
         rfft_dbmhz = wf_int.pad_fft
         rfft_phase = wf_int.pad_phase
 
+        cw_testbed.get_bad_magnitude(rfft_dbmhz, trig_type[evt])
+        testbed_idxs = cw_testbed.bad_idx
+        testbed_idx.append(testbed_idxs)
+        del rfft_dbmhz
+
         cw_phase.get_phase_differences(rfft_phase, evt_counts % evt_len, trig_type[evt])
         cw_phase.get_bad_phase()
         sigmas = cw_phase.bad_sigma 
         phase_idxs = cw_phase.bad_idx
-        if evt != evt_backup:
-            sigma[evt] = np.concatenate((sigma[evt], sigmas))
-            phase_idx[evt] = np.concatenate((phase_idx[evt], phase_idxs)) 
-        else:
-            cw_testbed.get_bad_magnitude(rfft_dbmhz, trig_type[evt])
-            testbed_idxs = cw_testbed.bad_idx
-            testbed_idx.append(testbed_idxs)
-            sigma.append(sigmas)
-            phase_idx.append(phase_idxs)
-        del rfft_phase, rfft_dbmhz
+        sigma.append(sigmas)
+        phase_idx.append(phase_idxs)
+        del rfft_phase,
         
-        if trig_type[evt] == 1:
-            evt_backup += 1
-            evt = evt_backup
-            continue
-        
-        time_travel_idx = evt_counts - evt_len + 1
-        time_travel_entry = clean_entry[time_travel_idx]
-        if time_travel_idx >= 0:
-            sigma[time_travel_entry] = np.concatenate((sigma[time_travel_entry], sigmas))
-            phase_idx[time_travel_entry] = np.concatenate((phase_idx[time_travel_entry], phase_idxs))
-        evt_counts += 1
-          
-        time_travel_cal_entry = time_travel_entry - 1
-        if time_travel_idx >= 0 and time_travel_cal_entry >= 0 and trig_type[time_travel_cal_entry] == 1:  
-            evt = time_travel_cal_entry
-        else:
-            evt_backup += 1
-            evt = evt_backup
-        del time_travel_idx, time_travel_entry#, time_travel_cal_entry
-    del ara_root, num_evts, num_ants, wf_int, cw_phase, cw_testbed, evt_len, daq_qual_cut_sum, clean_entry
-    pbar.close()
+        if trig_type[evt] != 1:
+            time_travel_idx = clean_entry[evt_counts - evt_len + 1]
+            sigma[time_travel_idx] = np.concatenate((sigma[time_travel_idx], sigmas))
+            phase_idx[time_travel_idx] = np.concatenate((phase_idx[time_travel_idx], phase_idxs))
+            evt_counts += 1
+            del time_travel_idx
+    del ara_root, num_evts, num_ants, wf_int, cw_phase, cw_testbed, daq_qual_cut_sum, clean_entry
 
     # to numpy array
     sigma = np.asarray(sigma)
