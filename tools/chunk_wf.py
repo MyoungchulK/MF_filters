@@ -131,6 +131,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     v_pairs_len = ara_int.v_pairs_len    
     lags = ara_int.lags
     wei_pairs = get_products(weights, pairs, v_pairs_len) 
+    print(weights[:,7677])
 
     # output array
     blk_max = 48
@@ -234,7 +235,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True)
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()
-        wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_phase = True, use_abs = True, use_norm = True, use_dbmHz = True)
+        wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_phase = True, use_abs = True, use_norm = True, use_dBmHz = True)
         rfft_phase = wf_int.pad_phase
         cw_phase1.get_phase_differences(rfft_phase, evt_counts % evt_len)
         rs_evts = np.where(sel_entries == rs_entry[evt])[0]
@@ -403,7 +404,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
             wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True)
             ara_root.del_TGraph()
-        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], sum_pol = False, return_debug_dat = True)
+        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, sel_entries[evt]], sum_pol = False, return_debug_dat = True)
         corr[:,:,evt] = ara_int.corr
         corr_nonorm[:,:,evt] = ara_int.corr_nonorm
         corr_01[:,:,evt] = ara_int.nor_fac
@@ -412,12 +413,14 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         sky_map[:,:,:,:,0,evt] = np.nansum(coval_evt[:, :, :, :, :v_pairs_len], axis = 4)
         sky_map[:,:,:,:,1,evt] = np.nansum(coval_evt[:, :, :, :, v_pairs_len:], axis = 4)
 
+        print(wei_pairs[:, sel_entries[evt]])
+
         # reco w/band-passed wf
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
             wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True)
             ara_root.del_TGraph()
-        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], sum_pol = False, return_debug_dat = True)
+        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, sel_entries[evt]], sum_pol = False, return_debug_dat = True)
         bp_corr[:,:,evt] = ara_int.corr
         bp_corr_nonorm[:,:,evt] = ara_int.corr_nonorm
         bp_corr_01[:,:,evt] = ara_int.nor_fac
@@ -432,7 +435,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
             wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_cw = True, evt = sel_entries[evt])
             ara_root.del_TGraph()
-        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], sum_pol = False, return_debug_dat = True)
+        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, sel_entries[evt]], sum_pol = False, return_debug_dat = True)
         cw_corr[:,:,evt] = ara_int.corr
         cw_corr_nonorm[:,:,evt] = ara_int.corr_nonorm
         cw_corr_01[:,:,evt] = ara_int.nor_fac
@@ -446,7 +449,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
             wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True, evt = sel_entries[evt])
             ara_root.del_TGraph()
-        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], sum_pol = False, return_debug_dat = True)
+        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, sel_entries[evt]], sum_pol = False, return_debug_dat = True)
         cw_bp_corr[:,:,evt] = ara_int.corr
         cw_bp_corr_nonorm[:,:,evt] = ara_int.corr_nonorm
         cw_bp_corr_01[:,:,evt] = ara_int.nor_fac

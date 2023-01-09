@@ -53,6 +53,7 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     cw_testbed = py_testbed(st, run, freq_range, analyze_blind_dat = analyze_blind_dat, verbose = True)
     baseline_fft = cw_testbed.baseline_fft
     dB_cut = cw_testbed.dB_cut
+    dB_cut_broad = 
     cw_phase = py_phase_variance(st, run, freq_range)
     evt_len = cw_phase.evt_len
     start_evt = int(evt_len - 1)
@@ -88,7 +89,7 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()   
 
-        wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_phase = True, use_abs = True, use_norm = True, use_dbmHz = True)
+        wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_phase = True, use_abs = True, use_norm = True, use_dBmHz = True)
         rfft_dbmhz = wf_int.pad_fft
         rfft_phase = wf_int.pad_phase
 

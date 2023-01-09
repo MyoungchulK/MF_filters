@@ -157,7 +157,7 @@ class wf_analyzer:
         self.pad_num[ant] = int_num
         del int_idx, int_v, int_num      
 
-    def get_fft_wf(self, use_zero_pad = False, use_rfft = False, use_abs = False, use_norm = False, use_dbmHz = False, use_dB = False, use_phase = False):
+    def get_fft_wf(self, use_zero_pad = False, use_rfft = False, use_abs = False, use_norm = False, use_dBmHz = False, use_dB = False, use_phase = False):
 
         if use_zero_pad:
             if use_rfft:
@@ -190,7 +190,7 @@ class wf_analyzer:
         if use_abs:
             self.pad_fft = np.abs(self.pad_fft)
         
-        if use_dbmHz:
+        if use_dBmHz:
             self.pad_fft = 10 * np.log10(self.pad_fft**2 * 1e-9 / 50 / 1e3)
         
         if use_dB:

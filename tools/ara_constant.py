@@ -22,4 +22,5 @@ class ara_const:
         self.USEFUL_CHAN_PER_STATION = 16
         self.BUFFER_BIT_RANGE = 4096 # 12bits
         self.POLARIZATION = 2
+        self.TRIGGER_TYPE = 3
         

@@ -462,13 +462,13 @@ class py_geometric_filter:
         del int_f
 
     def get_geometric_phase(self):
-        """! actual geometric filter. solving estimated phase angle from thermal + impulse by measured phase and cw phase which is averaged bad phases
+        """! actual geometric filter. solving estimated phase of thermal + impulse by measured phase and cw phase which is averaged bad phases
         It is all about vector calculation and trigonometry:)
         User can find more detail discription from Brian T. Dailey thesis section 3.4.4 Geometric Method: https://etd.ohiolink.edu/apexprod/rws_etd/send_file/send?accession=osu1483657450682456&disposition=inline
         I guarantee that above link 'will' be much helpful rather than reading tons of comment in here
         """
 
-        ## break down fft into real and imaginary part. we use new/fixed magnitude by interpolation
+        ## break down fft into real and imaginary part. we use new/fixed magnitude from interpolated filter
         fft_real = self.int_mag * np.cos(self.phase)
         fft_imag = self.int_mag * np.sin(self.phase)
 
@@ -476,14 +476,14 @@ class py_geometric_filter:
         ## phases in the each bad frequency group usually have a step (flip or wrap) at the center of the group
         ## if we average bad phases by using both before and after the step, result of this filter is usually bad
         ## so, we seperate each group to front and back by center of frequency (step phase or cut frequency) and perform rolling mean seperatly
-        ## we already did that in get_bad_index()
+        ## seperation is already done at the get_bad_index() though
         bad_idx_front = self.bad_idx == 1 # front groups: lower baoundary to center
         bad_idx_back = self.bad_idx == 2 # back group: center to upper baoundary
 
         ## storing only bad fft values into zero pad by seperating 1) real/imaginary and 2)front/back
-        ## by stroing like this, when we apply rolling sum into entire array, each part will not interfered each other
+        ## by storing like this, when we apply rolling sum into entire pad, each part will not interfered each other
         ## also by storing into zero pad, good fft values will also not interfered rolling sum. rolling sum window will take '0' value for calculation from good fft regions
-        ## by storing all the front or back part from each group in one array, each group would be far each other compare to rolling sum window. So, it should be not interferring each other
+        ## by storing all the front or back part from each group in one array, each group would be far each other compare to rolling sum window. So, it should not interferring each other
         fft_len = len(self.freq) # rfft length
         ffts = np.full((fft_len, 4), 0, dtype = float)
         ffts[bad_idx_front, 0] = fft_real[bad_idx_front] 
@@ -529,7 +529,7 @@ class py_geometric_filter:
             self.roll_mean_debug = np.copy(roll_mean)
         del fft_len, bad_idx_front, bad_idx_back, roll_sum, roll_sum_01
 
-        ## calculate extimated cw phase by arctangent
+        ## calculate estimated cw phase by arctangent
         roll_mean = roll_mean[~self.good_idx] # trim out good frequency region. we dont need to solve that part
         avg_phase = np.arctan2(roll_mean[:, 1], roll_mean[:, 0]) # now, it is finally 1d array...
         if self.use_debug:

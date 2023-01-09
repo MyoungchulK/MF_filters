@@ -51,7 +51,7 @@ def snr_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     del st, run, qual_dat, qual_hf, qual_evt, daq_qual_cut, tot_qual_cut, run_info
 
     # wf analyzer
-    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, use_l2 = use_l2)
+    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = False, use_l2 = use_l2)
 
     # output array  
     rms = np.full((num_ants, num_evts), np.nan, dtype = float)
@@ -72,7 +72,7 @@ def snr_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
         # loop over the antennas
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_band_pass = True, use_cw = True, use_p2p = True)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_band_pass = True, use_cw = False, use_p2p = True)
             p2p[ant, evt] = wf_int.int_p2p
             del raw_t, raw_v
             ara_root.del_TGraph()
@@ -84,12 +84,20 @@ def snr_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     clean_idx = np.logical_and(tot_qual_cut_sum == 0, trig_type == 2)
     if np.count_nonzero(clean_idx) == 0:
         clean_idx = np.logical_and(daq_qual_cut_sum == 0, trig_type == 2)
-        print(f'no clean soft events! all # of soft events: {np.count_nonzero(clean_idx)}')
+        print(f'no clean soft events! use all soft events: {np.count_nonzero(clean_idx)}')
+    if np.count_nonzero(clean_idx) == 0:
+        clean_idx = np.logical_and(tot_qual_cut_sum == 0, trig_type == 0)
+        print(f'no soft events! use clean rf events: {np.count_nonzero(clean_idx)}')
+    if np.count_nonzero(clean_idx) == 0:
+        clean_idx = np.logical_and(daq_qual_cut_sum == 0, trig_type == 0)
+        print(f'no clean rf events! use all rf events: {np.count_nonzero(clean_idx)}')
     rms_copy = np.copy(rms)
     rms_copy[:, ~clean_idx] = np.nan
     rms_mean = np.nanmean(rms_copy, axis = 1)
     snr = p2p / 2 / rms_mean[:, np.newaxis]
     del rms_copy, daq_qual_cut_sum, tot_qual_cut_sum, trig_type
+    print(np.count_nonzero(clean_idx))
+    print(rms_mean)
 
     print('SNR collecting is done!')
 
