@@ -355,7 +355,7 @@ class ara_uproot_loader:
     def get_trig_type(self):
 
         time_stamp = np.asarray(self.evtTree['event/timeStamp'],dtype=int)
-        trigger_info = np.asarray(self.evtTree['event/triggerInfo[4]'],dtype=int)
+        trigger_info = np.asarray(self.evtTree['event/triggerInfo[4]'],dtype=int)[:, 2]
 
         pulserTime = np.array([254,245,245,400,400], dtype = int)
 
@@ -364,8 +364,8 @@ class ara_uproot_loader:
             print('ARA Staton 1 ID!!!!!!!!!!!')
             self.station_id = 1
         trig_type[np.abs(time_stamp - pulserTime[self.station_id - 1]) < 1e4] = 1
-        trig_type[trigger_info[:,2] == 1] = 2
-        del pulserTime, trigger_info
+        trig_type[trigger_info == 1] = 2
+        del pulserTime, trigger_info, time_stamp
 
         return trig_type
 
