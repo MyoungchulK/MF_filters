@@ -326,7 +326,7 @@ class py_phase_variance:
         ## lets do traffic control at here. 
         ## if there is still empty seats on 'phase_diff_pad[:, :, :evt_len]' array, we dont do calculation
         ## return empty array... including debug arrays...
-        if np.any(np.isnan(self.phase_diff_pad[:, :, :self.evt_len])):
+        if np.isnan(np.sum(self.phase_diff_pad[:, :, :self.evt_len])):
             self.bad_sigma = np.full((0), np.nan, dtype = float)
             self.bad_idx = np.full((0), 0, dtype = int)
             self.sigma_variance_avg = np.full((self.useful_freq_len, num_pols), np.nan, dtype = float) 
