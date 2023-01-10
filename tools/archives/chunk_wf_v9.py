@@ -99,8 +99,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         sel_entries = entry_num[:20]
         sel_evts = evt_num[sel_entries]
         sel_trig = trig_type[sel_entries]
-    print(evt_num[np.arange(sel_entries - 10, sel_entries + 10)])
-    print(trig_type[np.arange(sel_entries - 10, sel_entries + 10)])
     print(f'Selected events are {sel_evts}')
     print(f'Selected entries are {sel_entries}')
     print(f'Selected triggers are {sel_trig}')
@@ -120,20 +118,20 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     cw_phase1 = py_phase_variance(st, run, pad_freq, use_debug = True)
     evt_len = cw_phase1.evt_len
     start_evt = int(evt_len - 1)
-    phase_var_freq_range = cw_phase1.useful_freq_range_sigma_debug
-    phase_var_freq_range_trim = cw_phase1.useful_freq_range_debug   
- 
+    phase_var_freq_range = cw_phase1.useful_freq_range_debug
     cw_testbed = py_testbed(st, run, pad_freq, analyze_blind_dat = analyze_blind_dat, verbose = True, use_debug = True)
     baseline = cw_testbed.baseline_debug
     baseline_fft = cw_testbed.baseline_fft_debug
     baseline_fft_medi = cw_testbed.baseline_fft_medi_debug
     testbed_freq_range = cw_testbed.useful_freq_range_debug
+
     # interferometers
     ara_int = py_interferometers(pad_len, dt[0], st, year, run = run, get_sub_file = True)
     pairs = ara_int.pairs
     v_pairs_len = ara_int.v_pairs_len    
     lags = ara_int.lags
     wei_pairs = get_products(weights, pairs, v_pairs_len) 
+    print(weights[:,7677])
 
     # output array
     blk_max = 48
@@ -169,16 +167,16 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     testbed_bad_freqs = np.full((len(testbed_freq_range), num_pols, sel_evt_len), np.nan, dtype=float)
     testbed_bad_freqs_sum = np.full((len(testbed_freq_range), sel_evt_len), np.nan, dtype=float)
     testbed_bad_idx = np.full((bad_pad, sel_evt_len), np.nan, dtype = float)
-    phase_variance = np.full((len(phase_var_freq_range), len(pairs), sel_evt_len, 2), np.nan, dtype=float)
-    phase_difference = np.full((len(phase_var_freq_range), len(pairs), evt_len + 1, sel_evt_len, 2), np.nan, dtype=float)
-    phase_var_median = np.full((len(pairs), sel_evt_len, 2), np.nan, dtype=float)
+    phase_variance = np.full((len(phase_var_freq_range), len(pairs), sel_evt_len), np.nan, dtype=float)
+    phase_difference = np.full((len(phase_var_freq_range), len(pairs), evt_len, sel_evt_len), np.nan, dtype=float)
+    phase_var_median = np.full((len(pairs), sel_evt_len), np.nan, dtype=float)
     phase_var_sigma = np.copy(phase_var_median)
     sigma_variance = np.copy(phase_variance)
-    sigma_variance_avg = np.full((len(phase_var_freq_range_trim), num_pols, sel_evt_len, 2), np.nan, dtype=float)
-    sigma_variance_avg_sum = np.full((len(phase_var_freq_range_trim), sel_evt_len, 2), np.nan, dtype=float)
-    phase_var_bad_freqs = np.full((len(phase_var_freq_range_trim), sel_evt_len, 2), np.nan, dtype=float)
-    phase_var_bad_idx = np.full((bad_pad, sel_evt_len, 2), np.nan, dtype = float)
-    phase_var_bad_sigma = np.copy(phase_var_bad_idx)
+    sigma_variance_avg = np.full((len(phase_var_freq_range), num_pols, sel_evt_len), np.nan, dtype=float)
+    sigma_variance_avg_sum = np.full((len(phase_var_freq_range), sel_evt_len), np.nan, dtype=float)
+    phase_var_bad_freqs = np.full((len(phase_var_freq_range), sel_evt_len), np.nan, dtype=float)
+    phase_var_bad_idx = np.copy(testbed_bad_idx)
+    phase_var_bad_sigma = np.copy(testbed_bad_idx)
     blk_est_range = 50
     blk_idx = np.full((blk_est_range, sel_evt_len), np.nan, dtype=float)
     samp_idx = np.full((num_samps, blk_est_range, num_ants, sel_evt_len), np.nan, dtype=float)
@@ -215,50 +213,38 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
 
     # cw detection
     evt_counts = 0
-    for r in range(2):
-      if r == 0:
-        min_rs = np.nanmin(sel_entries) - 50
-        if min_rs < 0:
-            min_rs = 0
-        max_rs = np.nanmax(sel_entries)
-        rs_entry = np.arange(min_rs, max_rs+1, 1, dtype = int)
-      else:
-        min_rs = np.nanmin(sel_entries) 
-        max_rs = np.nanmax(sel_entries) + 50
-        if max_rs > num_evts - 1:
-            max_rs = num_evts - 1
-        rs_entry = np.arange(max_rs, min_rs - 1, -1, dtype = int)
-      print(rs_entry)
-      rs_len = len(rs_entry)
-      trig_rs = trig_type[rs_entry]
-
-      for evt in tqdm(range(rs_len)):
-
+    rs_idx = np.logical_and(daq_qual_cut_sum == 0, trig_type != 1)
+    rs_entry = entry_num[rs_idx]
+    sel_idxs = np.in1d(rs_entry, sel_entries)
+    rs_idxs = np.arange(len(rs_entry), dtype = int)
+    rs_sel_idxs = rs_idxs[sel_idxs]
+    if len(rs_sel_idxs) == 0:
+        rs_entry_idx = np.full((0), False, dtype = bool)
+    else:
+        rs_entry_idx = np.logical_and(rs_idxs > np.nanmin(rs_sel_idxs) - 15, rs_idxs < np.nanmax(rs_sel_idxs) + 1)
+    rs_entry = rs_entry[rs_entry_idx]
+    rs_evt = evt_num[rs_idx]
+    rs_evt = rs_evt[sel_idxs]
+    print(f'rs_entry for phase vatriance: {len(rs_entry)}, {rs_entry}')
+    for evt in tqdm(range(len(rs_entry))):
         # get entry and wf
         ara_root.get_entry(rs_entry[evt])
         ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
-
-        # loop over the antennas
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
             wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True)
-            del raw_t, raw_v
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()
-
         wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_phase = True, use_abs = True, use_norm = True, use_dBmHz = True)
         rfft_phase = wf_int.pad_phase
-        cw_phase1.get_phase_differences(rfft_phase, evt_counts % evt_len, trig_rs[evt])
-        cw_phase1.get_bad_phase()
-        if trig_rs[evt] != 1: evt_counts += 1
-
+        cw_phase1.get_phase_differences(rfft_phase, evt_counts % evt_len)
         rs_evts = np.where(sel_entries == rs_entry[evt])[0]
-        if len(rs_evts) != 0 and r == 0:
+        if len(rs_evts) != 0:
             print('CW TestBed!!!!!!!!')
             rs_evts1 = rs_evts[0]
             rfft_dbmhz = wf_int.pad_fft
             fft_dB[:, :, rs_evts1] = np.copy(rfft_dbmhz)
-            cw_testbed.get_bad_magnitude(rfft_dbmhz, trig_rs[evt])
+            cw_testbed.get_bad_magnitude(rfft_dbmhz)
             fft_dB_t = cw_testbed.fft_dB_tilt_debug
             baseline_t = cw_testbed.baseline_tilt_debug
             delta_m = cw_testbed.delta_mag_debug
@@ -273,10 +259,11 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             testbed_bad_freqs_sum[:, rs_evts1] = testbed_bad_f_s
             testbed_bad_idx[:bad_len, rs_evts1] = testbed_bad_i
             print(testbed_bad_i)
-
-        if len(rs_evts) != 0:
+        if evt_counts < start_evt:
+            pass
+        else:
             print('CW Phase!!!!!!')
-            rs_evts1 = rs_evts[0]
+            cw_phase1.get_bad_phase()
             phase_d = cw_phase1.phase_diff_pad_debug
             phase_v = cw_phase1.phase_variance_debug
             phase_v_m = cw_phase1.median_debug
@@ -288,17 +275,18 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             sigmas = cw_phase1.bad_sigma
             phase_idxs = cw_phase1.bad_idx
             bad_len = len(phase_idxs)
-            phase_difference[:, :, :, rs_evts1, r] = phase_d
-            phase_variance[:, :, rs_evts1, r] = phase_v
-            phase_var_median[:, rs_evts1, r] = phase_v_m
-            phase_var_sigma[:, rs_evts1, r] = phase_v_s
-            sigma_variance[:, :, rs_evts1, r] = sigma_v
-            sigma_variance_avg[:, :, rs_evts1, r] = sigma_v_a
-            sigma_variance_avg_sum[:, rs_evts1, r] = sigma_v_a_s
-            phase_var_bad_freqs[:, rs_evts1, r] = phase_v_bad_f
-            phase_var_bad_idx[:bad_len, rs_evts1, r] = phase_idxs
-            phase_var_bad_sigma[:bad_len, rs_evts1, r] = sigmas
+            phase_difference[:, :, :, rs_evts1] = phase_d
+            phase_variance[:, :, rs_evts1] = phase_v
+            phase_var_median[:, rs_evts1] = phase_v_m
+            phase_var_sigma[:, rs_evts1] = phase_v_s
+            sigma_variance[:, :, rs_evts1] = sigma_v
+            sigma_variance_avg[:, :, rs_evts1] = sigma_v_a
+            sigma_variance_avg_sum[:, rs_evts1] = sigma_v_a_s
+            phase_var_bad_freqs[:, rs_evts1] = phase_v_bad_f
+            phase_var_bad_idx[:bad_len, rs_evts1] = phase_idxs
+            phase_var_bad_sigma[:bad_len, rs_evts1] = sigmas
             print(phase_idxs)
+        evt_counts += 1
 
     # loop over the events
     for evt in tqdm(range(sel_evt_len)):
@@ -425,6 +413,8 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         sky_map[:,:,:,:,0,evt] = np.nansum(coval_evt[:, :, :, :, :v_pairs_len], axis = 4)
         sky_map[:,:,:,:,1,evt] = np.nansum(coval_evt[:, :, :, :, v_pairs_len:], axis = 4)
 
+        print(wei_pairs[:, sel_entries[evt]])
+
         # reco w/band-passed wf
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
@@ -438,8 +428,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         bp_coval[:,:,:,:,:,evt] = bp_coval_evt
         bp_sky_map[:,:,:,:,0,evt] = np.nansum(bp_coval_evt[:, :, :, :, :v_pairs_len], axis = 4)
         bp_sky_map[:,:,:,:,1,evt] = np.nansum(bp_coval_evt[:, :, :, :, v_pairs_len:], axis = 4)
-       
-        print(wei_pairs[:, sel_entries[evt]]) 
+        
         
         # reco w/ cw wf
         for ant in range(num_ants):
@@ -541,8 +530,8 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'cw_bp_phase':cw_bp_phase,
             'ele_phase':ele_phase,
             'rs_entry':rs_entry,
+            'rs_evt':rs_evt,
             'phase_var_freq_range':phase_var_freq_range,
-            'phase_var_freq_range_trim':phase_var_freq_range_trim,
             'baseline':baseline,
             'baseline_fft':baseline_fft,
             'baseline_fft_medi':baseline_fft_medi,

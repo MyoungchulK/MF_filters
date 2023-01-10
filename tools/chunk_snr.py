@@ -96,8 +96,6 @@ def snr_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     rms_mean = np.nanmean(rms_copy, axis = 1)
     snr = p2p / 2 / rms_mean[:, np.newaxis]
     del rms_copy, daq_qual_cut_sum, tot_qual_cut_sum, trig_type
-    print(np.count_nonzero(clean_idx))
-    print(rms_mean)
 
     print('SNR collecting is done!')
 

@@ -98,7 +98,6 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
         ara_root.del_usefulEvt()   
 
         wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_phase = True, use_abs = True, use_norm = True, use_dBmHz = True)
-        rfft_dbmhz = wf_int.pad_fft
         rfft_phase = wf_int.pad_phase
 
         cw_phase.get_phase_differences(rfft_phase, evt_counts % evt_len, trig_type[evt])
@@ -109,12 +108,14 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
             sigma[evt] = np.concatenate((sigma[evt], sigmas))
             phase_idx[evt] = np.concatenate((phase_idx[evt], phase_idxs)) 
         else:
+            rfft_dbmhz = wf_int.pad_fft
             cw_testbed.get_bad_magnitude(rfft_dbmhz, trig_type[evt])
             testbed_idxs = cw_testbed.bad_idx
             testbed_idx.append(testbed_idxs)
             sigma.append(sigmas)
             phase_idx.append(phase_idxs)
-        del rfft_phase, rfft_dbmhz
+            del rfft_dbmhz
+        del rfft_phase
         
         if trig_type[evt] == 1:
             evt_backup += 1
