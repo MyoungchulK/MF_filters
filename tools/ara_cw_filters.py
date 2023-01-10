@@ -1,6 +1,12 @@
-## You can find original C++ version from here: https://github.com/clark2668/a23_analysis_tools/blob/master/tools_CW.h
-## and here: https://github.com/osu-particle-astrophysics/RayTraceCorrelator/blob/a23_2019_analysis/RayTraceCorrelator.cxx
-## all creadit to Brian, OSU, and creator of the code:)
+##
+# @file ara_cw_filters.py
+#
+# @section Created on 01/10/2023, mkim@icecube.wisc.edu
+#
+# @brief all the code that related to CW filtering
+# @brief you can find original C++ version from here: https://github.com/clark2668/a23_analysis_tools/blob/master/tools_CW.h
+# @brief and here: https://github.com/osu-particle-astrophysics/RayTraceCorrelator/blob/a23_2019_analysis/RayTraceCorrelator.cxx
+# @brief all creadit to Brian, OSU, and creator of the code:)
 
 import h5py
 import numpy as np

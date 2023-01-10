@@ -1,3 +1,10 @@
+##
+# @file ara_constant.py
+#
+# @section Created on 01/10/2023, mkim@icecube.wisc.edu
+#
+# @brief all the constant values we are often use. In the future, we hsould call them from AraRoot
+
 import numpy as np
 
 class ara_const:
