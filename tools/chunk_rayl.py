@@ -71,7 +71,7 @@ def rayl_collector(Data, Ped, st = None, run = None, analyze_blind_dat = False, 
     clean_soft_entry = entry_num[clean_soft_idx]
     num_clean_softs = np.count_nonzero(clean_soft_idx)
     print(f'Number of clean soft event is {num_clean_softs}') 
-    del tot_cuts, entry_num, trig_type, daq_cuts
+    del tot_cuts, entry_num, trig_type
 
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_band_pass = True, use_rfft = True, use_cw = True, use_l2 = use_l2, analyze_blind_dat = analyze_blind_dat, st = st, run = run)
