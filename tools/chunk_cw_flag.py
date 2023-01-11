@@ -128,7 +128,7 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
             sigma[time_travel_entry] = np.concatenate((sigma[time_travel_entry], sigmas))
             phase_idx[time_travel_entry] = np.concatenate((phase_idx[time_travel_entry], phase_idxs))
         else:
-            time_travel_entry = -1
+            time_travel_entry = 0
         evt_counts += 1
           
         time_travel_cal_entry = time_travel_entry - 1
