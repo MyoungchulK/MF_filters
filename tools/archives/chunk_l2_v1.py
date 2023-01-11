@@ -57,7 +57,7 @@ def l2_collector(Data, Ped, analyze_blind_dat = False, use_condor = False):
     del pre_qual, daq_sum, read_sum, ara_uproot
 
     # wf analyzer
-    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, st = st, run = run, analyze_blind_dat = analyze_blind_dat)
+    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True)
 
     # output
     blind_type = ''
@@ -91,7 +91,6 @@ def l2_collector(Data, Ped, analyze_blind_dat = False, use_condor = False):
     del blind_type, st, run, output_path, run_config, evt_num, entry_num, unix_time, pps_number, trig_type, year, month, date, unix
 
     num_bins = np.full((num_ants, num_evts), 0, dtype = int)
-    cw_ratio = np.full((num_ants, num_evts), np.nan, dtype = float)
     # loop over the events
     for evt in tqdm(range(num_evts)):
     #for evt in range(num_evts):
@@ -109,8 +108,7 @@ def l2_collector(Data, Ped, analyze_blind_dat = False, use_condor = False):
         # loop over the antennas
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_band_pass = True, use_cw = True, use_cw_ratio = True, evt = evt)
-            cw_ratio[ant, evt] = wf_int.cw_ratio
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_band_pass = True, use_cw = True)
             del raw_t, raw_v
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()   
@@ -122,7 +120,6 @@ def l2_collector(Data, Ped, analyze_blind_dat = False, use_condor = False):
         hf.create_dataset(f'entry{evt}', data=wfs, compression="gzip", compression_opts=9)
         del max_num_bins, wfs, pad_num
     hf.create_dataset(f'num_bins', data=num_bins, compression="gzip", compression_opts=9)
-    hf.create_dataset(f'cw_ratio', data=cw_ratio, compression="gzip", compression_opts=9)
     del ara_root, num_evts, num_ants, wf_int, daq_cut
     hf.close()
 

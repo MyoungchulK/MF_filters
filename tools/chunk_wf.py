@@ -99,8 +99,8 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         sel_entries = entry_num[:20]
         sel_evts = evt_num[sel_entries]
         sel_trig = trig_type[sel_entries]
-    print(evt_num[np.arange(sel_entries - 10, sel_entries + 10)])
-    print(trig_type[np.arange(sel_entries - 10, sel_entries + 10)])
+    print(evt_num[np.arange(sel_entries - 5, sel_entries + 5)])
+    print(trig_type[np.arange(sel_entries - 5, sel_entries + 5)])
     print(f'Selected events are {sel_evts}')
     print(f'Selected entries are {sel_entries}')
     print(f'Selected triggers are {sel_trig}')

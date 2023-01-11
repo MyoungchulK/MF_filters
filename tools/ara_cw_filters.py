@@ -612,13 +612,14 @@ class py_geometric_filter:
             self.new_fft_debug = np.copy(new_fft)    
         del new_fft
 
-    def get_filtered_wf(self, int_v, int_num, ant, evt):
+    def get_filtered_wf(self, int_v, int_num, ant, evt, use_pow_ratio = False):
         """! all the calculation will be excuted by this function
 
         @param int_v  Numpy array.  interpolated time-domain wf
         @param int_num  Integer.  interpolated time-domain wf length
         @param ant  Integer.  channel index
-        @param evt  Integer.  entry (not event) number 
+        @param evt  Integer.  entry (not event) number
+        @param use_pow_ratio  Boolean.  wanna calculate power ratio of before/after filtered wfs
         """
 
         self.ant = ant
@@ -642,7 +643,8 @@ class py_geometric_filter:
         self.get_inverse_fft()
         del self.int_mag, self.phase, self.gamma, self.good_idx, self.int_num
 
-
+        if use_pow_ratio:
+            self.pow_ratio = np.nansum(self.new_wf**2) / np.nansum(int_v**2) 
 
 
 

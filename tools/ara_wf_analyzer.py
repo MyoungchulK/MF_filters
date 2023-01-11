@@ -34,6 +34,7 @@ class wf_analyzer:
             self.get_band_pass_filter()
         if use_cw and not self.use_l2:
             from tools.ara_cw_filters import py_geometric_filter
+            print('Kill the CW!')
             self.cw_geo = py_geometric_filter(st, run, analyze_blind_dat = analyze_blind_dat)
 
     def get_band_pass_filter(self, low_freq_cut = 0.13, high_freq_cut = 0.85, order = 10, pass_type = 'band'):
@@ -113,7 +114,7 @@ class wf_analyzer:
 
         return int_t
 
-    def get_int_wf(self, raw_t, raw_v, ant, use_unpad = False, use_zero_pad = False, use_band_pass = False, use_cw = False, use_p2p = False, evt = None):
+    def get_int_wf(self, raw_t, raw_v, ant, use_unpad = False, use_zero_pad = False, use_band_pass = False, use_cw = False, use_p2p = False, use_cw_ratio = False, evt = None):
 
         if self.use_l2:
             int_idx = np.in1d(self.pad_idx, (raw_t / self.dt).astype(int))
@@ -130,7 +131,9 @@ class wf_analyzer:
             del akima
 
             if use_cw:
-                self.cw_geo.get_filtered_wf(int_v, int_num, ant, evt)
+                self.cw_geo.get_filtered_wf(int_v, int_num, ant, evt, use_pow_ratio = use_cw_ratio)
+                if use_cw_ratio:
+                    self.cw_ratio = self.cw_geo.pow_ratio
                 int_v = self.cw_geo.new_wf
 
             if use_band_pass:
