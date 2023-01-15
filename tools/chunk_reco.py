@@ -71,7 +71,7 @@ def reco_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     del run_info, wei_key, wei_dat, wei_hf
 
     # wf analyzer
-    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, use_l2 = use_l2)
+    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, use_l2 = use_l2, analyze_blind_dat = analyze_blind_dat, st = st, run = run)
 
     # interferometers
     ara_int = py_interferometers(wf_int.pad_len, wf_int.dt, st, yr, run = run, get_sub_file = True)
@@ -99,7 +99,7 @@ def reco_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
         # loop over the antennas
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True, evt = evt)
             del raw_t, raw_v
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()   
