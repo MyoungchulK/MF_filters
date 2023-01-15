@@ -10,6 +10,7 @@ from itertools import combinations
 
 # custom lib
 from tools.ara_known_issue import known_issue_loader
+from tools.ara_utility import size_checker
 
 def get_pair_info(st, run, verbose = False):
     """! get pair array by 'good' channels
@@ -94,7 +95,7 @@ class run_info_loader:
 
         if os.path.exists(result_path):
             if verbose:
-                print(f'{file_type}{blind_type}_path:{result_path}')
+                print(f'{file_type}{blind_type}_path:{result_path}.', size_checker(result_path))
         else:
             print(f'There is no desired {result_path}')
             if return_none == True:
@@ -110,7 +111,7 @@ class run_info_loader:
 
         if os.path.exists(ped_path):
             if verbose:
-                print(f'ped_path:{ped_path}')
+                print(f'ped_path:{ped_path}.', size_checker(ped_path))
         else:
             print(f'There is no desired {ped_path}')
             if return_none == True:
@@ -180,13 +181,13 @@ class run_info_loader:
 
         if os.path.exists(dat_path):
             if verbose:
-                print(f'{file_type}_dat_path:{dat_path}')
+                print(f'{file_type}_dat_path:{dat_path}.', size_checker(dat_path))
         else:
             temp_dat_path = dat_path.replace('exp', 'wipac')
             if os.path.exists(temp_dat_path):
                 dat_path = temp_dat_path
                 if verbose:
-                    print(f'{file_type}_dat_path:{dat_path} -> /exp/ is replaced to /wipac/!!')
+                    print(f'{file_type}_dat_path:{dat_path} -> /exp/ is replaced to /wipac/!!', size_checker(dat_path))
             else:
                 print(f'There is no desired {file_type} data!')
                 if return_none == True:
@@ -251,7 +252,7 @@ class run_info_loader:
       
         if os.path.exists(dat_path):
             if verbose:
-                print(f'{file_type}_dat_path:{dat_path}')
+                print(f'{file_type}_dat_path:{dat_path}.', size_checker(ped_path))
         else:
             print(f'There is no desired {file_type} data!')
             if return_none == True:

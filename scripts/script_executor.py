@@ -125,11 +125,8 @@ def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_overrid
 
     # move output from condor
     Output = condor_info.get_condor_to_target_path(h5_file_name, true_output_path)
-    print(f'output is {Output}')
+    print(f'output is {Output}.', size_checker(Output))
 
-    # quick size check
-    size_checker(Output)  
- 
 if __name__ == "__main__":
 
     script_loader()

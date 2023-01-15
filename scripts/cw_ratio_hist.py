@@ -27,7 +27,7 @@ del d_path, d_run_range
 cw_h5_path = os.path.expandvars("$OUTPUT_PATH") + '/OMF_filter/radiosonde_data/weather_balloon/radius_tot/'
 txt_name = f'{cw_h5_path}A{Station}_balloon_distance.h5'
 hf = h5py.File(txt_name, 'r')
-wb_table = hf['balloon_unix_time'][:]
+wb_table = hf['bad_unix_time'][:]
 wb_table = wb_table.flatten()
 wb_table = wb_table[~np.isnan(wb_table)]
 wb_table = wb_table.astype(int)
@@ -46,14 +46,19 @@ ratio_bad = np.copy(ratio)
 print('hist array done!')
 
 for r in tqdm(range(len(d_run_tot))):
-    
+  
+  #if r > 937:  
   #if r <10:
 
     ara_run = run_info_loader(Station, d_run_tot[r])
     g_idx = ara_run.get_config_number() - 1
     del ara_run
 
-    hf = h5py.File(d_list[r], 'r')
+    try:
+        hf = h5py.File(d_list[r], 'r')
+    except OSError:
+        print(d_list[r])
+        continue
     cw_ratio = 1 - hf['cw_ratio'][:]
     trig_type = hf['trig_type'][:]
     unix_time = hf['unix_time'][:]
@@ -87,7 +92,7 @@ for r in tqdm(range(len(d_run_tot))):
         ratio_bad[:, ant, 0, g_idx] += np.histogram(rf_cw_b[ant], bins = ratio_bins)[0].astype(int)
         ratio_bad[:, ant, 1, g_idx] += np.histogram(cal_cw_b[ant], bins = ratio_bins)[0].astype(int)
         ratio_bad[:, ant, 2, g_idx] += np.histogram(soft_cw_b[ant], bins = ratio_bins)[0].astype(int)
-    del g_idx
+    del g_idx, rf_cw, cal_cw, soft_cw, rf_cw_g, cal_cw_g, soft_cw_g, rf_cw_b, cal_cw_b, soft_cw_b
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
 if not os.path.exists(path):
