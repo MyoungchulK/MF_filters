@@ -164,7 +164,7 @@ class ara_root_loader:
 
         # get the number of entries in this file
         self.num_evts = int(self.evtTree.GetEntries())
-        self.entry_num = np.arange(self.num_evts, dtype = int)
+        self.entry_num = np.arange(self.num_evts)
         print('total events:', self.num_evts)
 
         # open a pedestal file
@@ -279,132 +279,6 @@ class ara_root_loader:
 
         return qual
 
-class ara_sim_loader:
-
-    def __init__(self, data, st, yrs):
-
-        #geom info
-        self.ara_geom = ara_geom_loader(st, yrs)
-
-        # open a data file
-        self.data = data
-        self.file = ROOT.TFile.Open(self.data)
-
-        # load in the event free for this file
-        self.evtTree = self.file.Get("eventTree")
-
-        # set the tree address to access our raw data type
-        self.realEvt = ROOT.UsefulAtriStationEvent()
-        self.evtTree.SetBranchAddress("UsefulAtriStationEvent", ROOT.AddressOf(self.realEvt))
-
-        # get the number of entries in this file
-        self.num_evts = int(self.evtTree.GetEntries())
-        self.entry_num = np.arange(self.num_evts, dtype = int)
-        print('total events:', self.num_evts)
-
-        # calibration mode
-        self.cal_type = ROOT.AraCalType
-
-    def get_sub_info(self, get_angle_info = False):
-
-        # tired of dealing with PyROOT.....
-        file_uproot = uproot.open(self.data)
-
-        ara_tree = file_uproot['AraTree']
-        settings = ara_tree['settings']
-        self.time_step = np.asarray(settings['TIMESTEP'], dtype = float) * 1e9
-        self.waveform_length = np.asarray(settings['WAVEFORM_LENGTH'], dtype = int)[0]
-        self.wf_time = np.arange(self.waveform_length) * self.time_step - self.waveform_length // 2 * self.time_step
-        self.posnu_radius = np.asarray(settings['POSNU_RADIUS'], dtype = int)
-
-        ara_tree_2 = file_uproot['AraTree2']
-        event = ara_tree_2['event']
-        self.pnu = np.asarray(event['pnu'], dtype = float)
-        self.nuflavorint = np.asarray(event['nuflavorint'], dtype = int)
-        self.nu_nubar = np.asarray(event['nu_nubar'], dtype = int)
-        self.inu_thrown = np.asarray(event['inu_thrown'], dtype = int)
-        self.weight = np.asarray(event['Nu_Interaction/Nu_Interaction.weight'], dtype = float)
-        self.probability = np.asarray(event['Nu_Interaction/Nu_Interaction.probability'], dtype = float)
-        self.currentint = np.asarray(event['Nu_Interaction/Nu_Interaction.currentint'], dtype = int)
-        self.elast_y = np.asarray(event['Nu_Interaction/Nu_Interaction.elast_y'], dtype = float)
-        self.posnu = np.full((6, self.num_evts), np.nan, dtype = float)
-        self.posnu[0] = np.asarray(event['Nu_Interaction/Nu_Interaction.posnu.x'], dtype = float)
-        self.posnu[1] = np.asarray(event['Nu_Interaction/Nu_Interaction.posnu.y'], dtype = float)
-        self.posnu[2] = np.asarray(event['Nu_Interaction/Nu_Interaction.posnu.z'], dtype = float)
-        self.posnu[3] = np.asarray(event['Nu_Interaction/Nu_Interaction.posnu.theta'], dtype = float)
-        self.posnu[4] = np.asarray(event['Nu_Interaction/Nu_Interaction.posnu.phi'], dtype = float)
-        self.posnu[5] = np.asarray(event['Nu_Interaction/Nu_Interaction.posnu.r'], dtype = float)
-        self.nnu = np.full((6, self.num_evts), np.nan, dtype = float)
-        self.nnu[0] = np.asarray(event['Nu_Interaction/Nu_Interaction.nnu.x'], dtype = float)
-        self.nnu[1] = np.asarray(event['Nu_Interaction/Nu_Interaction.nnu.y'], dtype = float)
-        self.nnu[2] = np.asarray(event['Nu_Interaction/Nu_Interaction.nnu.z'], dtype = float)
-        self.nnu[3] = np.asarray(event['Nu_Interaction/Nu_Interaction.nnu.theta'], dtype = float)
-        self.nnu[4] = np.asarray(event['Nu_Interaction/Nu_Interaction.nnu.phi'], dtype = float)
-        self.nnu[5] = np.asarray(event['Nu_Interaction/Nu_Interaction.nnu.r'], dtype = float)
-        del file_uproot, ara_tree, settings, ara_tree_2, event
-
-        if get_angle_info:
-            #if self.st == 2:
-            sim_st_index = [3,0,1,2,3,0,1,2,3,0,1,2,3,0,1,2]
-            sim_ant_index = [2,2,2,2,0,0,0,0,3,3,3,3,1,1,1,1]
-            self.rec_ang = np.full((2, num_ants, self.num_evts), np.nan, dtype = float)
-            self.view_ang = np.copy(self.rec_ang)
-            self.arrival_time = np.copy(self.rec_ang)
-
-            ROOT.gInterpreter.ProcessLine('#include "'+os.environ.get('ARA_UTIL_INSTALL_DIR')+'/../AraSim/Report.h"')
-            AraTree2 = self.file.AraTree2
-            for evt in tqdm(range(self.num_evts)):
-                AraTree2.GetEntry(evt)
-                for ant in range(num_ants):
-                    rec = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st_index[ant]].antennas[sim_ant_index[ant]].rec_ang[:]))
-                    view = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st_index[ant]].antennas[sim_ant_index[ant]].view_ang[:]))
-                    arrival = np.asarray(AraTree2.report.stations[0].strings[sim_st_index[ant]].antennas[sim_ant_index[ant]].arrival_time[:]) * 1e9
-
-                    self.rec_ang[:len(rec), ant, evt] = rec
-                    self.view_ang[:len(view), ant, evt] = view
-                    self.arrival_time[:len(arrival), ant, evt] = arrival
-                    del rec, view, arrival
-            del AraTree2, sim_st_index, sim_ant_index
-
-    def get_entry(self, evt):
-
-        # get the event
-        self.evtTree.GetEntry(evt)
-
-    def get_useful_evt(self, cal_mode):
-
-        # place holder
-        return
-
-    def get_rf_ch_wf(self, ant):
-
-        self.gr = self.realEvt.getGraphFromRFChan(ant)
-        raw_t = np.frombuffer(self.gr.GetX(),dtype=float,count=-1)
-        raw_v = np.frombuffer(self.gr.GetY(),dtype=float,count=-1)
-
-        return raw_t, raw_v
-
-    def del_TGraph(self):
-
-        self.gr.Delete()
-        del self.gr
-
-    def del_usefulEvt(self):
-
-        # place holder
-        return
-
-    def get_rf_wfs(self, evt):
-
-        wf_v = np.full((self.waveform_length, num_ants), 0, dtype = float)
-
-        self.get_entry(evt)
-        for ant in range(num_ants):
-            wf_v[:, ant] = self.get_rf_ch_wf(ant)[1]
-            self.del_TGraph()
-
-        return wf_v
-
 class ara_uproot_loader:
 
     def __init__(self, data):
@@ -417,8 +291,8 @@ class ara_uproot_loader:
             st_arr = np.asarray(self.evtTree['event/RawAraStationEvent/RawAraGenericHeader/stationId'],dtype=int)
             self.station_id = st_arr[0]
             self.num_evts = len(st_arr)
-            self.entry_num = np.arange(len(st_arr), dtype = int)
-            self.evt_num = np.asarray(self.evtTree['event/eventNumber'], dtype = int)
+            self.entry_num = np.arange(len(st_arr))
+            self.evt_num = np.asarray(self.evtTree['event/eventNumber'],dtype=int)
             self.run = self.get_run()
 
             evt_key = 'event'
