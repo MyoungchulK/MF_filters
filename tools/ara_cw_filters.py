@@ -93,7 +93,7 @@ class py_testbed:
 
         from tools.ara_run_manager import run_info_loader
         run_info = run_info_loader(self.st, self.run, analyze_blind_dat = self.analyze_blind_dat)
-        base_dat = run_info.get_result_path(file_type = 'baseline', verbose = self.verbose) # get the h5 file path
+        base_dat = run_info.get_result_path(file_type = 'baseline', verbose = self.verbose, force_unblind = True) # get the h5 file path
         base_hf = h5py.File(base_dat, 'r')
         self.baseline_fft = base_hf['baseline'][:]
         if self.use_debug:

@@ -62,7 +62,7 @@ def snr_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     for evt in tqdm(range(num_evts)):
     #for evt in range(num_evts):
       #if evt <100:        
-  
+
         if daq_qual_cut_sum[evt]:
             continue
  

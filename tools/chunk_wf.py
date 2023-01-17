@@ -128,6 +128,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     baseline_fft = cw_testbed.baseline_fft_debug
     baseline_fft_medi = cw_testbed.baseline_fft_medi_debug
     testbed_freq_range = cw_testbed.useful_freq_range_debug
+
     # interferometers
     ara_int = py_interferometers(pad_len, dt[0], st, year, run = run, get_sub_file = True)
     pairs = ara_int.pairs
@@ -212,7 +213,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     bp_sky_map = np.copy(sky_map)
     cw_sky_map = np.copy(sky_map)
     cw_bp_sky_map = np.copy(sky_map)
-
+    
     # cw detection
     evt_counts = 0
     for r in range(2):

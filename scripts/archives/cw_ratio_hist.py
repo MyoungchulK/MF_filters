@@ -26,6 +26,18 @@ d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/l2/*'
 d_list, d_run_tot, d_run_range = file_sorter(d_path)
 del d_path, d_run_range
 
+# balloon
+cw_h5_path = os.path.expandvars("$OUTPUT_PATH") + '/OMF_filter/radiosonde_data/weather_balloon/radius_tot/'
+txt_name = f'{cw_h5_path}A{Station}_balloon_distance.h5'
+hf = h5py.File(txt_name, 'r')
+wb_table = hf['bad_unix_time'][:]
+wb_table = wb_table.flatten()
+wb_table = wb_table[~np.isnan(wb_table)]
+wb_table = wb_table.astype(int)
+wb_table = np.unique(wb_table).astype(int)
+print(len(wb_table))
+del hf, cw_h5_path, txt_name
+
 #output
 ratio_bins = np.linspace(-2, 2, 400 + 1)
 ratio_bin_center = (ratio_bins[1:] + ratio_bins[:-1]) / 2
@@ -53,14 +65,15 @@ for r in tqdm(range(len(d_run_tot))):
         continue
     cw_ratio = 1 - hf['cw_ratio'][:]
     trig_type = hf['trig_type'][:]
+    unix_time = hf['unix_time'][:]
     del hf
 
     rf = trig_type == 0
     cal = trig_type == 1
     soft = trig_type == 2
-    bad = np.sort(cw_ratio, axis = 0)[-3] > 0.06
+    bad = np.in1d(unix_time, wb_table)
     good = ~bad
-    del trig_type   
+    del unix_time, trig_type   
 
     rf_cw = cw_ratio[:, rf]
     cal_cw = cw_ratio[:, cal]
@@ -92,7 +105,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'CW_Ratio_v1_A{Station}_R{count_i}.h5'
+file_name = f'CW_Ratio_A{Station}_R{count_i}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('ratio_bins', data=ratio_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('ratio_bin_center', data=ratio_bin_center, compression="gzip", compression_opts=9)

@@ -4,7 +4,7 @@ from tqdm import tqdm
 import h5py
 from scipy.interpolate import interp1d
 
-def rayl_collector(Data, Ped, st = None, run = None, analyze_blind_dat = False, use_l2 = False):
+def rayl_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, use_sim = False):
 
     print('Collecting rayl. starts!')
 
