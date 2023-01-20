@@ -127,12 +127,8 @@ def l2_collector(Data, Ped, analyze_blind_dat = False, use_condor = False):
     hf.close()
 
     Output = condor_info.get_condor_to_target_path(h5_file_name, true_output_path)
-    print(f'output is {Output}')
-    del true_output_path, condor_info, h5_file_name
-
-    # quick size check
-    size_checker(Output)
-    del Output
+    print(f'output is {Output}.', size_checker(Output))
+    del true_output_path, condor_info, h5_file_name, Output
 
     print('L2 collecting is done!')
 

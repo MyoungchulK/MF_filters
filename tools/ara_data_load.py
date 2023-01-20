@@ -113,8 +113,6 @@ class ara_l2_loader:
 
     def get_entry(self, evt):
 
-        #self.bin_evt = self.num_bins[:, evt]
-        #self.evt = evt
         self.evts = self.file[f'entry{evt}'][:]
         self.evts_nan = ~np.isnan(self.evts)
         self.times = self.buffer_info.get_time_arr(self.irs_block[evt], trim_1st_blk = True, use_int_dat = True, ch_shape = True)
@@ -129,8 +127,6 @@ class ara_l2_loader:
 
         raw_t = self.times[self.times_nan[:, ant], ant]
         raw_v = self.evts[self.evts_nan[:, ant], ant]
-        #raw_v = self.evts[:self.bin_evt[ant], ant]
-        #raw_v = self.evts[:self.num_bins[ant, self.evt], ant]
 
         return raw_t, raw_v
 
@@ -141,8 +137,6 @@ class ara_l2_loader:
 
     def del_usefulEvt(self):
 
-        #del self.bin_evt, self.evts, self.times, self.times_nan
-        #del self.evt, self.evts, self.times, self.times_nan
         del self.evts_nan, self.evts, self.times, self.times_nan
 
 class ara_root_loader:

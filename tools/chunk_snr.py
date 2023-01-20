@@ -51,7 +51,7 @@ def snr_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     del qual_dat, qual_hf, qual_evt, daq_qual_cut, tot_qual_cut, run_info
 
     # wf analyzer
-    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, use_l2 = use_l2, analyze_blind_dat = analyze_blind_dat, st = st, run = run)
+    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = False, use_l2 = use_l2, analyze_blind_dat = analyze_blind_dat, st = st, run = run)
     del st, run
 
     # output array  
@@ -73,7 +73,7 @@ def snr_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
         # loop over the antennas
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_band_pass = True, use_cw = True, use_p2p = True, evt = evt)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_band_pass = True, use_cw = False, use_p2p = True, evt = evt)
             p2p[ant, evt] = wf_int.int_p2p
             del raw_t, raw_v
             ara_root.del_TGraph()
