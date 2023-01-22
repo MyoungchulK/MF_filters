@@ -2,7 +2,7 @@ import os
 import numpy as np
 from tqdm import tqdm
 
-def qual_cut_collector(Data, Ped, analyze_blind_dat = False, qual_2nd = False):
+def qual_cut_collector(Data, Ped, analyze_blind_dat = False):
 
     print('Quality cut starts!')
 
@@ -32,7 +32,7 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False, qual_2nd = False):
 
     # pre quality cut
     pre_qual = pre_qual_cut_loader(ara_uproot, analyze_blind_dat = analyze_blind_dat, verbose = True)
-    pre_qual_cut = pre_qual.run_pre_qual_cut(use_cw = qual_2nd)
+    pre_qual_cut = pre_qual.run_pre_qual_cut()
     daq_qual_cut_sum = pre_qual.daq_qual_cut_sum
     del pre_qual
 

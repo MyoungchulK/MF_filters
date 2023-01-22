@@ -20,7 +20,8 @@ from tools.ara_utility import size_checker
 @click.option('-c', '--condor_run', default = False, type = bool)
 @click.option('-n', '--not_override', default = False, type = bool)
 @click.option('-l', '--l2_data', default = False, type = bool)
-def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_override, l2_data):
+@click.option('-q', '--qual_2nd', default = False, type = bool)
+def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_override, l2_data, qual_2nd):
 
     if not_override:
         blind_type = ''
@@ -69,6 +70,8 @@ def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_overrid
     method = getattr(module, f'{key}_collector')
     if key == 'wf':
         results = method(Data, Ped, analyze_blind_dat = blind_dat, sel_evts = act_evt)
+    elif key == 'qual_cut':
+        results = method(Data, Ped, analyze_blind_dat = blind_dat, qual_2nd = qual_2nd)
     elif key == 'rayl_lite':
         results = method(Data, Ped, station, Year, analyze_blind_dat = blind_dat)
     elif key == 'l1':

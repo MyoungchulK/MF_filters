@@ -12,7 +12,7 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     from tools.ara_wf_analyzer import wf_analyzer
     from tools.ara_cw_filters import py_phase_variance
     from tools.ara_cw_filters import py_testbed
-    from tools.ara_quality_cut import pre_qual_cut_loader
+    from tools.ara_run_manager import run_info_loader
     from tools.ara_known_issue import known_issue_loader
 
     # geom. info.
@@ -22,7 +22,6 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
 
     # data config
     ara_uproot = ara_uproot_loader(Data)
-    ara_uproot.get_sub_info()
     trig_type = ara_uproot.get_trig_type()
     evt_num = ara_uproot.evt_num
     entry_num = ara_uproot.entry_num
@@ -31,13 +30,16 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     yr = ara_uproot.year
     run = ara_uproot.run
     ara_root = ara_root_loader(Data, Ped, st, yr)
+    del ara_uproot
 
     # pre quality cut
-    pre_qual = pre_qual_cut_loader(ara_uproot, analyze_blind_dat = analyze_blind_dat, verbose = True)
-    daq_sum = np.nansum(pre_qual.get_daq_structure_errors(), axis = 1)
-    read_sum = np.nansum(pre_qual.get_readout_window_errors(), axis = 1)
-    daq_qual_cut_sum = (daq_sum + read_sum).astype(int)
-    del ara_uproot, pre_qual, daq_sum, read_sum
+    run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
+    daq_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True, force_blind = True)
+    daq_hf = h5py.File(daq_dat, 'r')
+    daq_evt = daq_hf['evt_num'][:]
+    daq_qual_cut = daq_hf['daq_qual_cut_sum'][:] != 0
+    daq_qual_cut_sum = np.in1d(evt_num, daq_evt[daq_qual_cut]).astype(int)
+    del run_info, daq_dat, daq_hf, daq_evt, daq_qual_cut
 
     known_issue = known_issue_loader(st)
     bad_ant = known_issue.get_bad_antenna(run, print_integer = True)
@@ -149,6 +151,7 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     return {'evt_num':evt_num,
             'bad_ant':bad_ant,
             'freq_range':freq_range,
+            'baseline_fft':baseline_fft,
             'sigma':sigma,
             'phase_idx':phase_idx,
             'testbed_idx':testbed_idx,

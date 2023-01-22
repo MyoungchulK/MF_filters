@@ -691,7 +691,7 @@ class pre_qual_cut_loader:
 
         return cut_com_idx
 
-    def run_pre_qual_cut(self, use_cw = False):
+    def run_pre_qual_cut(self):
 
         tot_pre_qual_cut = np.full((self.num_evts, 22), 0, dtype = int)
         tot_pre_qual_cut[:, :5] = self.get_daq_structure_errors()
@@ -704,9 +704,8 @@ class pre_qual_cut_loader:
         tot_pre_qual_cut[:, 16] = self.get_short_run_events()
         tot_pre_qual_cut[:, 17] = self.get_known_bad_unix_time_events(add_unchecked_unix_time = True)
         tot_pre_qual_cut[:, 18] = self.get_known_bad_run_events()
-        if use_cw:
-            tot_pre_qual_cut[:, 19] = self.get_cw_log_events()
-            tot_pre_qual_cut[:, 20:] = self.get_cw_threshold_events()
+        tot_pre_qual_cut[:, 19] = self.get_cw_log_events()
+        tot_pre_qual_cut[:, 20:] = self.get_cw_threshold_events()
 
         self.daq_qual_cut_sum = np.nansum(tot_pre_qual_cut[:, :9], axis = 1)
         self.pre_qual_cut_sum = np.nansum(tot_pre_qual_cut, axis = 1)
@@ -1058,7 +1057,7 @@ class run_qual_cut_loader:
     def get_bad_run_list(self):
 
         if self.analyze_blind_dat:
-            if self.qual_flag or self.ped_flag or self.known_flag:
+            if self.qual_flag or self.ped_flag:
                 if self.verbose:
                     print(f'A{self.st} R{self.run} is bad!!! Bad type 1) qual: {int(self.qual_flag)}, 2) bad: {int(self.ped_flag)}, 3) known: {int(self.known_flag)}')
                 bad_dir = f'../data/qual_runs/'
