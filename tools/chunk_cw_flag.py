@@ -1,8 +1,7 @@
 import numpy as np
 from tqdm import tqdm
-import h5py
 
-def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
+def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm = False):
 
     print('Collecting cw flag starts!')
 
@@ -69,7 +68,7 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     evt = 0
     evt_backup = 0
     evt_counts = 0
-    pbar = tqdm(total = num_evts)
+    pbar = tqdm(total = num_evts, disable = no_tqdm)
     while evt < num_evts:
   
         if evt == evt_backup:
