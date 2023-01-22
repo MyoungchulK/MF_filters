@@ -58,7 +58,7 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_t
     testbed_idx = []
     empty = np.full((0), 0, dtype = int)
     empty_float = np.full((0), np.nan, dtype = float)
-    clean_entry = entry_num[(np.logical_and(~daq_qual_cut_sum, trig_type != 1)]
+    clean_entry = entry_num[np.logical_and(~daq_qual_cut_sum, trig_type != 1)]
     del entry_num
 
     # loop over the events

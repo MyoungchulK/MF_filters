@@ -15,6 +15,7 @@ num_ants = ara_const.USEFUL_CHAN_PER_STATION
 num_eles = ara_const.CHANNELS_PER_ATRI
 num_samps = ara_const.SAMPLES_PER_BLOCK
 num_chs = ara_const.RFCHAN_PER_DDA
+num_trigs = ara_const.TRIGGER_TYPE
 
 def quick_qual_check(dat_bool, ser_val, dat_idx = None):
 
@@ -415,7 +416,7 @@ class pre_qual_cut_loader:
                 goal = 637
             else:
                 if self.verbose:
-                    print(f'Wrong!: A{self.sr} R{self.run}')
+                    print(f'Wrong!: A{self.st} R{self.run}')
                 sys.exit(1)
         if self.st == 3:
             if self.run < 800:
@@ -428,7 +429,7 @@ class pre_qual_cut_loader:
                 goal = 90
             else:
                 if self.verbose:
-                    print(f'Wrong!: A{self.sr} R{self.run}')
+                    print(f'Wrong!: A{self.st} R{self.run}')
                 sys.exit(1)
 
         return goal
@@ -575,12 +576,60 @@ class pre_qual_cut_loader:
             quick_qual_check(cw_log_events != 0, 'cw log events', self.evt_num)
 
         return cw_log_events
-    """
+    
     def get_cw_ratio(self):
+
+        config = self.run_info.get_config_number()
+
+        if self.st == 2:
+            if config == 1:
+                cut_val = np.array([11, 10, 15], dtype = int)
+            elif config == 2:
+                cut_val = np.array([11, 10, 15], dtype = int)
+            elif config == 3:
+                cut_val = np.array([10,  9, 15], dtype = int)
+            elif config == 4:
+                cut_val = np.array([15, 12, 18], dtype = int)
+            elif config == 5:
+                cut_val = np.array([12, 11, 18], dtype = int)
+            elif config == 6:
+                cut_val = np.array([12, 11, 14], dtype = int)
+            elif config == 7:
+                cut_val = np.array([15, 14, 19], dtype = int)
+        elif self.st == 3:
+            if config == 1:
+                cut_val = np.array([11,  8, 15], dtype = int)
+            elif config == 2:
+                cut_val = np.array([11,  8, 15], dtype = int)
+            elif config == 3:
+                cut_val = np.array([14,  8, 15], dtype = int)
+            elif config == 4:
+                cut_val = np.array([14,  8, 19], dtype = int)
+            elif config == 5:
+                cut_val = np.array([11,  8, 15], dtype = int)
+            elif config == 6:
+                cut_val = np.array([15, 10, 19], dtype = int)
+            elif config == 7:
+                cut_val = np.array([20, 13, 23], dtype = int)
+            elif config == 8:
+                cut_val = np.array([20, 13, 23], dtype = int)
+            elif config == 9:
+                cut_val = np.array([15, 9, 19], dtype = int)
+        else:
+            if self.verbose:
+                print(f'Wrong!: A{self.st} R{self.run}')
+                sys.exit(1)
+
+        if self.verbose:
+            print(f'Config: {config}, CW cut val: {cut_val}')
+        del config
+        
+        return cut_val
 
     def get_cw_ratio_events(self, num_ant_cut = 3):
 
         bad_ant = self.ara_known_issue.get_bad_antenna(self.run, good_ant_true = True)
+        cut_val = self.get_cw_ratio()
 
         ratio_dat = self.run_info.get_result_path(file_type = 'cw_ratio', verbose = self.verbose, force_blind = True)
         ratio_hf = h5py.File(ratio_dat, 'r')
@@ -588,23 +637,24 @@ class pre_qual_cut_loader:
         cw_ratio = ratio_hf['cw_ratio'][:]
         cw_ratio = cw_ratio[bad_ant]
         cw_ratio = np.sort(cw_ratio, axis = 0)[int(-1 * num_ant_cut)]
-        del bad_ant, ratio_dat
+        cw_ratio *= 100        
+
+        cw_ratio_events = np.full((len(ratio_trig)), 0, dtype = int)
+        for trigs in range(num_trigs):
+            cw_ratio_events += np.logical_and(ratio_trig == trigs, cw_ratio > cut_val[trigs]).astype(int)
+        del bad_ant, ratio_dat, cut_val, ratio_trig, cw_ratio
 
         if self.analyze_blind_dat == False:
             ratio_evt = ratio_hf['evt_num'][:]
-
-
+            cw_ratio_events = np.in1d(self.evt_num, ratio_evt[cw_ratio_events != 0]).astype(int)
             del ratio_evt
-
-
-
-        del ratio_hf, ratio_evt, ratio_trig, cw_ratio
+        del ratio_hf
 
         if self.verbose:
             quick_qual_check(cw_ratio_events != 0, 'cw ratio events', self.evt_num)
 
         return cw_ratio_events
-    """
+    
     def run_pre_qual_cut(self, use_cw = False):
 
         tot_pre_qual_cut = np.full((self.num_evts, 22), 0, dtype = int)
@@ -619,9 +669,10 @@ class pre_qual_cut_loader:
         tot_pre_qual_cut[:, 17] = self.get_known_bad_unix_time_events(add_unchecked_unix_time = True)
         tot_pre_qual_cut[:, 18] = self.get_known_bad_run_events()
         if use_cw:
+            print('Kill the CW!!!')
             tot_pre_qual_cut[:, 19] = self.get_cw_log_events()
-            #tot_pre_qual_cut[:, 20:] = self.get_cw_ratio_events()
-            #tot_pre_qual_cut[:, 20:] = 0 # empty for now
+            tot_pre_qual_cut[:, 20] = self.get_cw_ratio_events()
+            #tot_pre_qual_cut[:, 21] = 0 # empty for now
 
         self.daq_qual_cut_sum = np.nansum(tot_pre_qual_cut[:, :9], axis = 1)
         self.pre_qual_cut_sum = np.nansum(tot_pre_qual_cut, axis = 1)
@@ -789,8 +840,8 @@ class ped_qual_cut_loader:
         # 17 bad unix time
         # 18 bad run
         # 19 cw log cut
-        # 20 cw 04 cut
-        # 21 cw 0125/025 cut
+        # 20 cw ratio cut
+        # 21 cw empty
         # 22 unlock calpulser
 
         # turn on all cuts
@@ -803,7 +854,7 @@ class ped_qual_cut_loader:
         clean_evts[:, 1] = np.logical_and(np.nansum(self.total_qual_cut[:, qual_type], axis = 1) == 0, self.trig_type != 1).astype(int)
         del qual_type
 
-        # hardware error only. not use  1) 15 bad l1 rate, 2) 16 short run 3) 17 bad unix time, 4) 18 bad run, 5) 19 cw log cut, 6) 20 cw 04 cut, 7) 21 cw 0125/025 cut
+        # hardware error only. not use  1) 15 bad l1 rate, 2) 16 short run 3) 17 bad unix time, 4) 18 bad run, 5) 19 cw log cut, 6) 20 cw ratio cut, 7) 21 empty
         qual_type = np.array([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,22], dtype = int)
         clean_evts_qual_type[qual_type, 2] = 1
         clean_evts[:, 2] = np.logical_and(np.nansum(self.total_qual_cut[:, qual_type], axis = 1) == 0, self.trig_type != 1).astype(int)
@@ -1053,7 +1104,7 @@ def get_bad_live_time(trig_type, unix_time, time_bins, sec_per_min, cuts, verbos
             q_name = ['bad block length', 'bad block index', 'block gap', 'bad dda index', 'bad channel mask', 
                         'single block', 'rf win', 'cal win', 'soft win', 'first minute', 
                         'dda voltage', 'bad cal min rate', 'bad cal sec rate', 'bad soft sec rate', 'no rf cal sec rate', 'bad l1 rate', 
-                        'short runs', 'bad unix time', 'bad run', 'cw log', 'cw threshold 0.4', 'cw threshold 0.125/0.25', 'unlock calpulser', 
+                        'short runs', 'bad unix time', 'bad run', 'cw log', 'cw ratio', 'empty slot!', 'unlock calpulser', 
                         'zero ped', 'single ped', 'low ped', 'known bad ped']
             print(f'live time for each cuts. total number of cuts: {len(rough_tot_bad_time)}')
             for t in range(len(rough_tot_bad_time)):

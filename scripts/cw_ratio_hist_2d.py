@@ -46,7 +46,7 @@ unix_min_bins_i = unix_min_bins[0]
 unix_min_map = np.reshape(unix_min_bins[:-1], (-1, min_in_day))
 day_in_yrs = np.arange(unix_min_map.shape[0], dtype = int)
 del md_2013, md_2013_r, unix_2013, md_2020, md_2020_r, unix_2020 
-"""
+
 # balloon
 cw_h5_path = os.path.expandvars("$OUTPUT_PATH") + '/OMF_filter/radiosonde_data/weather_balloon/radius_tot/'
 txt_name = f'{cw_h5_path}A{Station}_balloon_distance.h5'
@@ -74,7 +74,7 @@ ratio_bin_center = (ratio_bins[1:] + ratio_bins[:-1]) / 2
 ratio_bin_center = ratio_bin_center.astype(int)
 print(ratio_bins)
 print(ratio_bin_center)
-"""
+
 def get_max_2d(x, y, x_bins):
 
     xy = np.histogram2d(x, y, bins = (x_bins, ratio_bins))[0].astype(int)
@@ -90,8 +90,7 @@ time_width = 60
 for r in tqdm(range(len(d_run_tot))):
     
   #if r <10:
-  #if r >= count_i and r < count_ff:
-  if d_run_tot[r] == 2915:
+  if r >= count_i and r < count_ff:
 
     ara_run = run_info_loader(Station, d_run_tot[r])
     g_idx = ara_run.get_config_number()
@@ -102,15 +101,6 @@ for r in tqdm(range(len(d_run_tot))):
     hf = h5py.File(d_list[r], 'r')
     cw_ratio = (1 - hf['cw_ratio'][:]) * 100
     cw_ratio[bad_ant] = np.nan
-
-    trig_type = hf['trig_type'][:] == 0
-    cw_ratio = cw_ratio[:, trig_type]
-    idxs = np.where(cw_ratio == np.nanmax(cw_ratio))
-    print(idxs[1][0])
-    evt_num = hf['evt_num'][:]
-    evt_num = evt_num[trig_type]
-    print(evt_num[idxs[1][0]])
-    """
     trig_type = hf['trig_type'][:]
     unix_time = hf['unix_time'][:]
     time_bins = np.arange(np.nanmin(unix_time), np.nanmax(unix_time) + 1, time_width, dtype = int)
@@ -130,9 +120,7 @@ for r in tqdm(range(len(d_run_tot))):
             ratio_map[unix_idx, ant, trig] = get_max_2d(unix_trig, ratio_trig[ant], time_bins)
         del trig_idx, unix_trig, ratio_trig
     del g_idx, hf, cw_ratio, trig_type, unix_time, time_bins, unix_idx
-    """
-    sys.exit(1)
-"""
+
 ratio_map = np.reshape(ratio_map, (-1, min_in_day, num_ants, num_trigs))
 config_map = np.reshape(config_map, (-1, min_in_day))
 run_map = np.reshape(run_map, (-1, min_in_day))
@@ -157,7 +145,6 @@ hf.close()
 print('file is in:',path+file_name)
 # quick size check
 size_checker(path+file_name)
-"""
 
 
 
