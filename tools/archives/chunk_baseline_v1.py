@@ -1,7 +1,8 @@
 import numpy as np
 from tqdm import tqdm
+import h5py
 
-def baseline_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm = False):
+def baseline_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
 
     print('Collecting baseline starts!')
 
@@ -9,7 +10,7 @@ def baseline_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_
     from tools.ara_data_load import ara_root_loader
     from tools.ara_constant import ara_const
     from tools.ara_wf_analyzer import wf_analyzer
-    from tools.ara_quality_cut import get_bad_events
+    from tools.ara_run_manager import run_info_loader
 
     # geom. info.
     ara_const = ara_const()
@@ -29,15 +30,21 @@ def baseline_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_
     del ara_uproot
 
     # pre quality cut
-    daq_qual_cut, tot_qual_cut = get_bad_events(st, run, verbose = True, evt_num = evt_num)
+    run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
+    qual_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True, force_blind = True)
+    qual_hf = h5py.File(qual_dat, 'r')
+    qual_evt = qual_hf['evt_num'][:]
+    daq_qual_cut = np.in1d(evt_num, qual_evt[qual_hf['daq_qual_cut_sum'][:] != 0])
+    tot_qual_cut = np.in1d(evt_num, qual_evt[qual_hf['tot_qual_cut_sum'][:] != 0])
+    del st, run, run_info, qual_dat, qual_hf, qual_evt
 
     # clean events
     clean_idx = np.full(num_evts, 0, dtype = int)
     num_cleans = np.full((num_trigs), 0, dtype = int)
     for trig in range(num_trigs):
-        cleans = np.logical_and(~tot_qual_cut, trig_type == trig)
+        cleans = np.logical_and(tot_qual_cut == 0, trig_type == trig)
         if np.count_nonzero(cleans) == 0:
-            cleans = np.logical_and(~daq_qual_cut, trig_type == trig)
+            cleans = np.logical_and(daq_qual_cut == 0, trig_type == trig)
         num_cleans[trig] = np.count_nonzero(cleans)
         clean_idx += cleans.astype(int)
         del cleans
@@ -52,7 +59,7 @@ def baseline_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_
     baseline = np.full((wf_int.pad_fft_len, num_ants, num_trigs), 0, dtype = float)
 
     # loop over the events
-    for evt in tqdm(range(num_evts), disable = no_tqdm):
+    for evt in tqdm(range(num_evts)):
       #if evt == 0:        
        
         # quality cut

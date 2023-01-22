@@ -21,7 +21,8 @@ from tools.ara_utility import size_checker
 @click.option('-n', '--not_override', default = False, type = bool)
 @click.option('-l', '--l2_data', default = False, type = bool)
 @click.option('-q', '--qual_2nd', default = False, type = bool)
-def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_override, l2_data, qual_2nd):
+@click.option('-t', '--no_tqdm', default = False, type = bool)
+def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_override, l2_data, qual_2nd, no_tqdm):
 
     if not_override:
         blind_type = ''
@@ -71,7 +72,7 @@ def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_overrid
     if key == 'wf':
         results = method(Data, Ped, analyze_blind_dat = blind_dat, sel_evts = act_evt)
     elif key == 'qual_cut':
-        results = method(Data, Ped, analyze_blind_dat = blind_dat, qual_2nd = qual_2nd)
+        results = method(Data, Ped, analyze_blind_dat = blind_dat, qual_2nd = qual_2nd, no_tqdm = no_tqdm)
     elif key == 'rayl_lite':
         results = method(Data, Ped, station, Year, analyze_blind_dat = blind_dat)
     elif key == 'l1':
@@ -86,7 +87,7 @@ def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_overrid
         results = method(Data, Ped, analyze_blind_dat = blind_dat, use_condor = condor_run)
         return 
     else:
-        results = method(Data, Ped, analyze_blind_dat = blind_dat, use_l2 = l2_data)
+        results = method(Data, Ped, analyze_blind_dat = blind_dat, use_l2 = l2_data, no_tqdm = no_tqdm)
     del module, method
 
     # create output dir

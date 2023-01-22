@@ -2,7 +2,7 @@ import os
 import numpy as np
 from tqdm import tqdm
 
-def qual_cut_collector(Data, Ped, analyze_blind_dat = False, qual_2nd = False):
+def qual_cut_collector(Data, Ped, analyze_blind_dat = False, qual_2nd = False, no_tqdm = False):
 
     print('Quality cut starts!')
 
@@ -41,7 +41,7 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False, qual_2nd = False):
 
     # loop over the events
     if ara_uproot.station_id == 3 and (ara_uproot.run > 1124 and ara_uproot.run < 1429):
-        for evt in tqdm(range(num_evts)):
+        for evt in tqdm(range(num_evts), disable = no_tqdm):
           #if evt<100:
             # post quality cut
             post_qual.run_post_qual_cut(evt)
