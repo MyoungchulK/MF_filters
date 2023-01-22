@@ -1,7 +1,10 @@
+import os
 import numpy as np
 from tqdm import tqdm
+import h5py
+from scipy.interpolate import interp1d
 
-def rayl_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, use_sim = False, no_tqdm = False):
+def rayl_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, use_sim = False):
 
     print('Collecting rayl. starts!')
 
@@ -11,11 +14,11 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, use_sim
         from tools.ara_data_load import ara_uproot_loader
         from tools.ara_data_load import ara_root_loader
     from tools.ara_constant import ara_const
+    from tools.ara_run_manager import run_info_loader
     from tools.ara_wf_analyzer import wf_analyzer
     from tools.ara_detector_response import get_rayl_distribution
     from tools.ara_detector_response import get_signal_chain_gain
     from tools.ara_detector_response import get_rayl_bad_run
-    from tools.ara_quality_cut import get_bad_events
 
     # geom. info.
     ara_const = ara_const()
@@ -30,6 +33,7 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, use_sim
         evt_num = ara_root.evt_num
         entry_num = ara_root.entry_num
         trig_type = ara_root.trig_type
+        unix_time = ara_root.unix_time
         st = ara_root.station_id
         run = ara_root.run
         num_evts = ara_root.num_evts
@@ -44,6 +48,7 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, use_sim
         evt_num = ara_uproot.evt_num
         entry_num = ara_uproot.entry_num
         trig_type = ara_uproot.get_trig_type()
+        unix_time = ara_uproot.unix_time
         blk_len = (ara_uproot.read_win // num_ddas).astype(float) - 1
         st = ara_uproot.station_id
         run = ara_uproot.run
@@ -52,11 +57,17 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, use_sim
     del num_ddas
 
     # pre quality cut
-    tot_cuts = get_bad_events(st, run, analyze_blind_dat = analyze_blind_dat, verbose = True, evt_num = evt_num)[1]
+    run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
+    daq_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True, force_blind = True)
+    daq_hf = h5py.File(daq_dat, 'r')
+    evt_full = daq_hf['evt_num'][:]
+    tot_cuts_full = daq_hf['tot_qual_cut_sum'][:] != 0
+    tot_cuts = np.in1d(evt_num, evt_full[tot_cuts_full]).astype(int)
+    del run_info, daq_dat, daq_hf, evt_full, tot_cuts_full
    
     # clean soft trigger 
-    clean_rf_idx = np.logical_and(~tot_cuts, trig_type == 0)
-    clean_soft_idx = np.logical_and(~tot_cuts, trig_type == 2)
+    clean_rf_idx = np.logical_and(tot_cuts == 0, trig_type == 0)
+    clean_soft_idx = np.logical_and(tot_cuts == 0, trig_type == 2)
     clean_soft_entry = entry_num[clean_soft_idx]
     num_clean_softs = np.count_nonzero(clean_soft_idx)
     print(f'Number of clean soft event is {num_clean_softs}') 
@@ -78,7 +89,7 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, use_sim
     del clean_rf_idx, blk_len, fft_len   
 
     # loop over the events
-    for evt in tqdm(range(num_clean_softs), disable = no_tqdm):
+    for evt in tqdm(range(num_clean_softs)):
       #if evt <100:
  
         # get entry and wf
@@ -112,6 +123,7 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, use_sim
     print('Rayl. collecting is done!')
 
     return {'evt_num':evt_num,
+            'unix_time':unix_time,
             'clean_soft_idx':clean_soft_idx,
             'bad_run':bad_run,
             'dt':dt,
