@@ -11,7 +11,7 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_t
     from tools.ara_wf_analyzer import wf_analyzer
     from tools.ara_cw_filters import py_phase_variance
     from tools.ara_cw_filters import py_testbed
-    from tools.ara_quality_cut import pre_qual_cut_loader
+    from tools.ara_quality_cut import get_bad_events
     from tools.ara_known_issue import known_issue_loader
 
     # geom. info.
@@ -30,13 +30,10 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_t
     yr = ara_uproot.year
     run = ara_uproot.run
     ara_root = ara_root_loader(Data, Ped, st, yr)
+    del ara_uproot
 
     # pre quality cut
-    pre_qual = pre_qual_cut_loader(ara_uproot, analyze_blind_dat = analyze_blind_dat, verbose = True)
-    daq_sum = np.nansum(pre_qual.get_daq_structure_errors(), axis = 1)
-    read_sum = np.nansum(pre_qual.get_readout_window_errors(), axis = 1)
-    daq_qual_cut_sum = (daq_sum + read_sum).astype(int)
-    del ara_uproot, pre_qual, daq_sum, read_sum
+    daq_qual_cut_sum = get_bad_events(st, run, analyze_blind_dat = analyze_blind_dat, verbose = True, evt_num = evt_num)[0]
 
     known_issue = known_issue_loader(st)
     bad_ant = known_issue.get_bad_antenna(run, print_integer = True)
@@ -61,7 +58,7 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_t
     testbed_idx = []
     empty = np.full((0), 0, dtype = int)
     empty_float = np.full((0), np.nan, dtype = float)
-    clean_entry = entry_num[(daq_qual_cut_sum == 0) & (trig_type != 1)]
+    clean_entry = entry_num[(np.logical_and(~daq_qual_cut_sum, trig_type != 1)]
     del entry_num
 
     # loop over the events
