@@ -644,7 +644,7 @@ class py_geometric_filter:
         del self.int_mag, self.phase, self.gamma, self.good_idx, self.int_num
 
         if use_pow_ratio:
-            self.pow_ratio = np.nansum(self.new_wf**2) / np.nansum(int_v**2) 
+            self.pow_ratio = 1 - np.nansum(self.new_wf**2) / np.nansum(int_v**2) 
 
 
 
