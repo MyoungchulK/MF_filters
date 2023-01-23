@@ -71,7 +71,7 @@ def qual_cut_collector(Data, Ped, analyze_blind_dat = False, qual_2nd = False, n
     del tot_qual_cut_copy
 
     # run quality cut
-    run_qual = run_qual_cut_loader(ara_uproot.station_id, ara_uproot.run, tot_qual_cut, analyze_blind_dat = analyze_blind_dat, verbose = True)
+    run_qual = run_qual_cut_loader(ara_uproot.station_id, ara_uproot.run, tot_qual_cut, analyze_blind_dat = analyze_blind_dat, qual_2nd = qual_2nd, verbose = True)
     bad_run = run_qual.get_bad_run_type()
     run_qual.get_bad_run_list()
     del run_qual, ara_uproot

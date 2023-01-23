@@ -993,13 +993,12 @@ class ped_qual_cut_loader:
 
 class run_qual_cut_loader:
 
-    def __init__(self, st, run, tot_cut, analyze_blind_dat = False, qual_2nd = False, verbose = False):
+    def __init__(self, st, run, tot_cut, analyze_blind_dat = False, verbose = False):
 
         self.analyze_blind_dat = analyze_blind_dat
         self.verbose = verbose
         self.st = st
         self.run = run
-        self.qual_2nd = qual_2nd
         
         self.known_flag = np.all(tot_cut[:, 18] != 0)
         self.ped_flag = np.all(tot_cut[:, -1] != 0)       
@@ -1031,10 +1030,7 @@ class run_qual_cut_loader:
                 bad_dir = f'../data/qual_runs/'
                 if not os.path.exists(bad_dir):
                     os.makedirs(bad_dir)
-                bad_name = f'qual_run_A{self.st}'
-                if self.qual_2nd:
-                    bad_name += '_v2'
-                bad_name += '.txt'
+                bad_name = f'qual_run_A{self.st}.txt'
                 bad_path = f'{bad_dir}{bad_name}'
                 bad_run_info = f'{self.run} {int(self.qual_flag)} {int(self.ped_flag)} {int(self.known_flag)}\n'
                 if os.path.exists(bad_path):
