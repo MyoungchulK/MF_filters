@@ -2,7 +2,7 @@ import numpy as np
 from tqdm import tqdm
 import h5py
 
-def reco_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
+def reco_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm = False):
 
     print('Collecting reco starts!')
 
@@ -85,8 +85,7 @@ def reco_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     coord = np.full((2, 2, 2, 2, num_evts), np.nan, dtype = float) # pol, thephi, rad, sol
 
     # loop over the events
-    for evt in tqdm(range(num_evts)):
-    #for evt in range(num_evts):
+    for evt in tqdm(range(num_evts), disable = no_tqdm):
       #if evt == 0:        
         
         if daq_qual_cut_sum[evt]:
