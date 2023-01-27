@@ -37,8 +37,15 @@ def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_overrid
         h5_file_name = f'{key}{blind_type}{sub_key}_A{station}_R{run}'
         done_path = f'{true_output_path}{h5_file_name}{file_format}'
         if os.path.exists(done_path):
-            print(f'{done_path} is already there!!')
-            return
+            try:
+                hf = h5py.File(f'{done_path}', 'r')
+                if len(list(hf)) == 0:
+                    print(f'{done_path} is empty!!')
+                else:
+                    print(f'{done_path} is already there!!')
+                    return
+            except OSError:
+                print(f'{done_path} is corrupted!!')
 
     # get run info
     run_info = run_info_loader(station, run, analyze_blind_dat = blind_dat)
