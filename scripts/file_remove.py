@@ -18,17 +18,29 @@ Station = int(sys.argv[1])
 d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_ratio_full/*'
 d_list, d_run_tot, d_run_range = file_sorter(d_path)
 
-b_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_flag_full/cw_flag_full_'
+b_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_ratio_full/cw_ratio_full_'
 
 for r in tqdm(range(len(d_run_tot))):
     
     b_name = f'{b_path}A{Station}_R{d_run_tot[r]}.h5'
+    try:
+            hf = h5py.File(f'{b_name}', 'r')
+            if len(list(hf)) == 0:
+                    print(f'List!!! {b_name}')
+                    RM_CMD = f'rm -rf {b_name}'
+                    call(RM_CMD.split(' '))
+    except OSError:
+                print(f'Error!!! {b_name}')
+                RM_CMD = f'rm -rf {b_name}'
+                call(RM_CMD.split(' '))
+
+
+    """
     if os.path.exists(b_name):
         print(b_name)
-
         RM_CMD = f'rm -rf {b_name}'
         call(RM_CMD.split(' '))
-
+    """
 
 
 

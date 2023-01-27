@@ -455,6 +455,32 @@ class batch_info_loader:
         print('Dag making is done!')
         print(f'output is {dag_file_name}')
 
+    def get_rest_dag_file_v2(self, path, run_lists, bad_path):
+
+        lists = []
+        with open(bad_path, 'r') as f:
+            for lines in f:
+                run_num = int(lines.split()[0])
+                lists.append(run_num)
+        lists = np.asarray(lists, dtype = int)
+
+        print('Dag making starts!')
+        dag_file_name = f'{path}A{self.st}.dag'
+        statements = ""
+
+        with open(dag_file_name, 'w') as f:
+            f.write(statements)
+
+            for w in tqdm(lists):
+                if int(w) in run_lists:
+                    continue
+
+                statements = self.get_dag_statement(int(w))
+                with open(dag_file_name, 'a') as f:
+                    f.write(statements)
+
+        print('Dag making is done!')
+        print(f'output is {dag_file_name}')    
 
     def get_list_in_txt(self, path, lists):
 

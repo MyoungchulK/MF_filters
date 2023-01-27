@@ -22,7 +22,9 @@ def batch_run_loader(Station = None, Output = None, Analyze_Blind = False, Key =
     d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/{Key}{blined}/*'
     d_list, d_run_tot, d_run_range = file_sorter(d_path)
 
-    batch_info.get_rest_dag_file(Output, d_run_tot, analyze_blind_dat = Analyze_Blind)    
+    bad_path = f'/home/mkim/analysis/MF_filters/data/run_list/A{Station}_run_list{blined}.txt'
+    print(bad_path)
+    batch_info.get_rest_dag_file_v2(Output, d_run_tot, bad_path)    
 
 if __name__ == "__main__":
 
