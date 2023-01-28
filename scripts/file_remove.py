@@ -35,13 +35,10 @@ for r in tqdm(range(len(d_run_tot))):
                 RM_CMD = f'rm -rf {b_name}'
                 call(RM_CMD.split(' '))
 
-
     """
     if os.path.exists(b_name):
         print(b_name)
         RM_CMD = f'rm -rf {b_name}'
         call(RM_CMD.split(' '))
     """
-
-
 
