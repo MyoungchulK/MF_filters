@@ -444,7 +444,7 @@ class py_geometric_filter:
     original C++ srcipt that excuting above functions: https://github.com/clark2668/a23_analysis_programs/blob/master/diffuse/v2_save_vals.cxx
     """
 
-    def __init__(self, st, run, freq_win = 0.01, dt = 0.5, analyze_blind_dat = False, use_debug = False):
+    def __init__(self, st, run, freq_win = 0.01, dt = 0.5, analyze_blind_dat = False, use_debug = False, use_cw_flag = False):
         """! grometric filter initializer.
 
         @param st  Integer.  station id
@@ -453,27 +453,34 @@ class py_geometric_filter:
         @param dt  Float. wf time bin width
         @param analyze_blind_dat  Boolean.  whether we are using blinded or unblinded data
         @param use_debug  Boolean.  wanna return the interesting steps
+        @param use_cw_flag  Boolean.  wanna not use pre-calculated bad frequency group 
         """
 
         self.dt = dt
         self.use_debug = use_debug
+        self.use_cw_flag = use_cw_flag
+        self.freq_win = freq_win # frequency window for averaging / grouping bad frequencies and pahses
 
         ## load pre-identified bad frequencies        
         from tools.ara_run_manager import run_info_loader
         run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
-        cw_dat = run_info.get_result_path(file_type = 'cw_flag', verbose = True) # get the h5 file path
-        cw_hf = h5py.File(cw_dat, 'r')
-        self.cw_sigma = cw_hf['sigma'][:] # sigma value for phase variance
-        self.cw_phase = cw_hf['phase_idx'][:] # bad frequency indexs by phase variance
-        self.cw_testbed = cw_hf['testbed_idx'][:] # bad freqency indexs by testbed method
-        freq_range = cw_hf['freq_range'][:] # frequency array that uesd for identification
-        if self.use_debug:
-            self.freq_range_debug = np.copy(freq_range)
-        del run_info, cw_dat, cw_hf
+        if self.use_cw_flag:
+            cw_dat = run_info.get_result_path(file_type = 'cw_flag', verbose = True) # get the h5 file path
+            cw_hf = h5py.File(cw_dat, 'r')
+            self.cw_sigma = cw_hf['sigma'][:] # sigma value for phase variance
+            self.cw_phase = cw_hf['phase_idx'][:] # bad frequency indexs by phase variance
+            self.cw_testbed = cw_hf['testbed_idx'][:] # bad freqency indexs by testbed method
+            freq_range = cw_hf['freq_range'][:] # frequency array that uesd for identification
+            if self.use_debug:
+                self.freq_range_debug = np.copy(freq_range)
 
-        self.freq_win = freq_win # frequency window for averaging / grouping bad frequencies and pahses
-        self.cw_freq = group_bad_frequency(st, run, freq_range, freq_win = self.freq_win, verbose = True, use_debug = use_debug) # constructor for bad frequency grouping function
-        del freq_range
+            self.cw_freq = group_bad_frequency(st, run, freq_range, freq_win = self.freq_win, verbose = True, use_debug = use_debug) # constructor for bad frequency grouping function
+            del freq_range
+        else:
+            cw_dat = run_info.get_result_path(file_type = 'cw_band', verbose = True) # get the h5 file path
+            cw_hf = h5py.File(cw_dat, 'r')
+            self.bad_range_tot = cw_hf['bad_range'][:]
+        del run_info, cw_dat, cw_hf
 
     def get_bad_index(self): 
         """! identify which frequencies are in bad freqeucny range (band)"""
@@ -483,7 +490,10 @@ class py_geometric_filter:
             ## it will be 2d array with 2nd dim is always 3 (lower, canter (cut frequncuy), upper)
             ## bad_range[:, 0] -> lower baoundaries. bad_range[:, 1] -> center cut frequency. bad_range[:, 2] -> upper baoundaries
             ## by using flatten(), bad_range values will be aligned in frequency incremental order
-            self.bad_range = self.cw_freq.get_pick_freqs_n_bands(self.cw_sigma[self.evt], self.cw_phase[self.evt], self.cw_testbed[self.evt]).flatten()
+            if self.use_cw_flag:
+                self.bad_range = self.cw_freq.get_pick_freqs_n_bands(self.cw_sigma[self.evt], self.cw_phase[self.evt], self.cw_testbed[self.evt]).flatten()
+            else:
+                self.bad_range = self.bad_range_tot[self.evt]
             if self.use_debug:
                 self.bad_range_debug = np.copy(self.bad_range)            
 
