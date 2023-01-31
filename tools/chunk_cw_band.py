@@ -19,8 +19,11 @@ def cw_band_collector(Data, Station, Run, analyze_blind_dat = False, no_tqdm = F
     cw_testbed = cw_hf['testbed_idx'][:] # bad freqency indexs by testbed method
     freq_range = cw_hf['freq_range'][:] # frequency array that uesd for identification
     evt_num = cw_hf['evt_num'][:]
-    num_evts = len(cw_sigma)
+    num_evts = len(evt_num)
     del run_info, cw_dat, cw_hf
+
+    if num_evts != len(cw_sigma):
+        print('Wrong!!!!!:', num_evts - len(cw_sigma), num_evts, len(cw_sigma), Station, Run)
 
     if analyze_blind_dat == False:
         evt_num_full = np.copy(evt_num)
