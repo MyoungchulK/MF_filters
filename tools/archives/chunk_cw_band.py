@@ -1,0 +1,62 @@
+import numpy as np
+import h5py
+from tqdm import tqdm
+
+def cw_band_collector(Station, Run, analyze_blind_dat = False, no_tqdm = False):
+
+    print('Collecting cw band starts!')
+
+    from tools.ara_run_manager import run_info_loader
+    from tools.ara_cw_filters import group_bad_frequency   
+    from tools.ara_quality_cut import get_bad_events 
+
+    # load cw flag
+    run_info = run_info_loader(Station, Run, analyze_blind_dat = analyze_blind_dat)
+    cw_dat = run_info.get_result_path(file_type = 'cw_flag', verbose = True) # get the h5 file path
+    cw_hf = h5py.File(cw_dat, 'r')
+    cw_sigma = cw_hf['sigma'][:] # sigma value for phase variance
+    cw_phase = cw_hf['phase_idx'][:] # bad frequency indexs by phase variance
+    cw_testbed = cw_hf['testbed_idx'][:] # bad freqency indexs by testbed method
+    freq_range = cw_hf['freq_range'][:] # frequency array that uesd for identification
+    evt_num = cw_hf['evt_num'][:]
+    num_evts = len(cw_sigma)
+    del run_info, cw_dat, cw_hf
+
+    # pre quality cut
+    daq_qual_cut = get_bad_events(Station, Run, analyze_blind_dat = analyze_blind_dat, verbose = True, evt_num = evt_num)[0]
+
+    # group bad frequency
+    cw_freq = group_bad_frequency(Station, Run, freq_range, verbose = True) # constructor for bad frequency grouping function
+    del freq_range
+
+    # output array  
+    bad_range = []
+    empty_float = np.full((0), np.nan, dtype = float)
+
+    # loop over the events
+    for evt in tqdm(range(num_evts), disable = no_tqdm):
+      #if evt == 0:        
+     
+        # quality cut
+        if daq_qual_cut[evt]:
+            bad_range.append(empty_float)
+            continue
+ 
+        bad_range_evt = cw_freq.get_pick_freqs_n_bands(cw_sigma[evt], cw_phase[evt], cw_testbed[evt]).flatten()
+        bad_range.append(bad_range_evt)
+    del cw_sigma, cw_phase, cw_testbed, num_evts, daq_qual_cut, cw_freq
+
+    # to numpy array
+    bad_range = np.asarray(bad_range)
+
+    print('cw band collecting is done!')
+
+    return {'evt_num':evt_num,
+            'bad_range':bad_range}
+
+
+
+
+
+
+

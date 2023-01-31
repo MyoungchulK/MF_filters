@@ -78,7 +78,11 @@ def get_rayl_bad_run(soft_len, rayl_nan, st, run, analyze_blind_dat = False, ver
         if soft_len == 0 or rayl_nan:
             if verbose:
                 print(f'A{st} R{run} is bad for noise modeling!!!')
-            bad_path = f'../data/rayl_runs/rayl_run_A{st}.txt'
+            bad_dir = f'../data/rayl_runs/'
+            if not os.path.exists(bad_dir):
+                os.makedirs(bad_dir)
+            bad_name = f'rayl_run_A{st}.txt'
+            bad_path = f'{bad_dir}{bad_name}'
             bad_run_info = f'{run}\n'
             if os.path.exists(bad_path):
                 if verbose:
@@ -106,7 +110,7 @@ def get_rayl_bad_run(soft_len, rayl_nan, st, run, analyze_blind_dat = False, ver
                     print(f'Add run{run} in {bad_path}!')
                 with open(bad_path, 'w') as f:
                     f.write(bad_run_info)
-            del bad_path, bad_run_info
+            del bad_path, bad_run_info, bad_dir, bad_name
             bad_run = np.array([1], dtype = int)
         else:
             bad_run = np.array([0], dtype = int)

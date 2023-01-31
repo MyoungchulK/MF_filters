@@ -106,7 +106,7 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, use_sim
     soft_sc = get_signal_chain_gain(np.nansum(soft_rayl, axis = 0), freq_range, dt, st)
 
     # set bad run
-    bad_run = get_rayl_bad_run(soft_len.shape[-1], np.any(np.isnan(soft_rayl.flatten())), st, run, analyze_blind_dat = analyze_blind_dat, verbose = True)
+    bad_run = get_rayl_bad_run(soft_len.shape[-1], np.isnan(np.sum(soft_rayl)), st, run, analyze_blind_dat = analyze_blind_dat, verbose = True)
     del st, run
 
     print('Rayl. collecting is done!')
