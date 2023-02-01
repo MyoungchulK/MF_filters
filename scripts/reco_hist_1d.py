@@ -105,13 +105,13 @@ for r in tqdm(range(len(d_run_tot))):
         for pol in range(2):
             for rad in range(2):
                 for sol in range(2):       
-                    map_r_z[r, :, t, pol, rad, sol] += np.histogram(coord[pol, 0, rad, sol][t_list[t]], bins = z_bins)[0].astype(int)
-                    map_r_a[r, :, t, pol, rad, sol] += np.histogram(coord[pol, 1, rad, sol][t_list[t]], bins = a_bins)[0].astype(int)
-                    map_r_c[r, :, t, pol, rad, sol] += np.histogram(coef[pol, rad, sol][t_list[t]], bins = c_bins)[0].astype(int)
+                    map_r_z[r, :, t, pol, rad, sol] = np.histogram(coord[pol, 0, rad, sol][t_list[t]], bins = z_bins)[0].astype(int)
+                    map_r_a[r, :, t, pol, rad, sol] = np.histogram(coord[pol, 1, rad, sol][t_list[t]], bins = a_bins)[0].astype(int)
+                    map_r_c[r, :, t, pol, rad, sol] = np.histogram(coef[pol, rad, sol][t_list[t]], bins = c_bins)[0].astype(int)
                     if bad_run: continue
-                    map_r_z_cut[r, :, t, pol, rad, sol] += np.histogram(coord_cut[pol, 0, rad, sol][t_list[t]], bins = z_bins)[0].astype(int)
-                    map_r_a_cut[r, :, t, pol, rad, sol] += np.histogram(coord_cut[pol, 1, rad, sol][t_list[t]], bins = a_bins)[0].astype(int)
-                    map_r_c_cut[r, :, t, pol, rad, sol] += np.histogram(coef_cut[pol, rad, sol][t_list[t]], bins = c_bins)[0].astype(int)
+                    map_r_z_cut[r, :, t, pol, rad, sol] = np.histogram(coord_cut[pol, 0, rad, sol][t_list[t]], bins = z_bins)[0].astype(int)
+                    map_r_a_cut[r, :, t, pol, rad, sol] = np.histogram(coord_cut[pol, 1, rad, sol][t_list[t]], bins = a_bins)[0].astype(int)
+                    map_r_c_cut[r, :, t, pol, rad, sol] = np.histogram(coef_cut[pol, rad, sol][t_list[t]], bins = c_bins)[0].astype(int)
     del g_idx, bad_run, coef, coef_cut, coord, coord_cut, t_list, rf_t, cal_t, soft_t
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
