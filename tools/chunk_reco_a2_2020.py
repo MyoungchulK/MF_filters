@@ -85,9 +85,12 @@ def reco_a2_2020_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False,
         ara_int.get_padded_wf(wf_int.pad_v)
         ara_int.get_cross_correlation()
         corr = ara_int.corr[:, ch_idx] * wei_pairs[evt]
-        max_idx = np.nanargmax(corr)
-        coef[evt] = corr[max_idx]
-        lag[evt] = lags[max_idx]
+        try:
+            max_idx = np.nanargmax(corr)
+            coef[evt] = corr[max_idx]
+            lag[evt] = lags[max_idx]
+        except ValueError:
+            pass
         del corr, max_idx
     del ara_root, num_evts, wf_int, ara_int, daq_qual_cut_sum, wei_pairs, lags, ch_idx, ants
 
