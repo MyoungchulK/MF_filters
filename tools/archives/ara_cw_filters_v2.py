@@ -486,11 +486,14 @@ class py_geometric_filter:
         """! identify which frequencies are in bad freqeucny range (band)"""
 
         ## grouping pre-identifed bad frequencies into several band
-        if self.ant == 0 and self.use_cw_flag: # only do this for first channel. this results will be shared with all channels
+        if self.ant == 0: # only do this for first channel. this results will be shared with all channels
             ## it will be 2d array with 2nd dim is always 3 (lower, canter (cut frequncuy), upper)
             ## bad_range[:, 0] -> lower baoundaries. bad_range[:, 1] -> center cut frequency. bad_range[:, 2] -> upper baoundaries
             ## by using flatten(), bad_range values will be aligned in frequency incremental order
-            self.bad_range = self.cw_freq.get_pick_freqs_n_bands(self.cw_sigma[self.evt], self.cw_phase[self.evt], self.cw_testbed[self.evt]).flatten()
+            if self.use_cw_flag:
+                self.bad_range = self.cw_freq.get_pick_freqs_n_bands(self.cw_sigma[self.evt], self.cw_phase[self.evt], self.cw_testbed[self.evt]).flatten()
+            else:
+                self.bad_range = self.bad_range_tot[self.evt]
             if self.use_debug:
                 self.bad_range_debug = np.copy(self.bad_range)            
 
@@ -499,17 +502,12 @@ class py_geometric_filter:
         ## np.digitize(). Return the indices of the bins to which each value in input array belongs. please check numpy website
         ## sine we do %3, 0 would be good frequencies. 1 would be between lower and center. And 2 would be between center and upper
         ## since 'bad frequeny identification' only applied between 120 ~ 1000 MHz, frequency range 0~ 120 MHz would be always tagged as a '0'. So, 0 would be always guarantee to indicate good frequency 
-        if self.use_cw_flag:
-            self.bad_idx = np.digitize(self.freq, self.bad_range) % 3
-        else:
-            self.bad_idx = np.digitize(self.freq, self.bad_range_tot[self.evt]) % 3
-            if self.use_debug:
-                self.bad_range_debug = np.copy(self.bad_range_tot[self.evt])
+        self.bad_idx = np.digitize(self.freq, self.bad_range) % 3
         self.good_idx = self.bad_idx == 0 # index of good frequncies
         if self.use_debug:
             self.bad_idx_debug = np.copy(self.bad_idx)
 
-        if self.ant == 15 and self.use_cw_flag: 
+        if self.ant == 15: 
             del self.bad_range # lets delete it when we finish the looping all channels
 
     def get_interpolated_magnitude(self):
