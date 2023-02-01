@@ -53,8 +53,10 @@ def reco_a2_2020_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False,
     ara_int = py_interferometers(wf_int.pad_len, wf_int.dt, st, yr, run = run, get_sub_file = True)
     lags = ara_int.lags
     pairs = ara_int.pairs
-    num_ants = np.array([6, 7], dtype = int)
+    ants = np.array([6, 7], dtype = int)
+    num_ants = len(ants)
     ch_idx = np.logical_and(pairs[:, 0] == num_ants[0], pairs[:, 1] == num_ants[1])
+    print(f'pair index for Ch {num_ants[0]} & Ch {num_ants[1]} is {np.arange(len(pairs[:, 0]), dtype = int)[ch_idx]}!!!')
     wei_pairs = get_products(weights, pairs, ara_int.v_pairs_len)[ch_idx]
     del st, yr, run, pairs, weights
 
@@ -75,8 +77,8 @@ def reco_a2_2020_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False,
         
         # loop over the antennas
         for ant in range(num_ants):
-            raw_t, raw_v = ara_root.get_rf_ch_wf(num_ants[ant])
-            wf_int.get_int_wf(raw_t, raw_v, num_ants[ant], use_zero_pad = True, use_band_pass = True, use_cw = True, evt = evt)
+            raw_t, raw_v = ara_root.get_rf_ch_wf(ants[ant])
+            wf_int.get_int_wf(raw_t, raw_v, ants[ant], use_zero_pad = True, use_band_pass = True, use_cw = True, evt = evt)
             del raw_t, raw_v
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()   
@@ -89,7 +91,7 @@ def reco_a2_2020_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False,
         coef[evt] = corr[max_idx]
         lag[evt] = lags[max_idx]
         del corr, max_idx
-    del ara_root, num_evts, num_ants, wf_int, ara_int, daq_qual_cut_sum, wei_pairs, lags, ch_idx
+    del ara_root, num_evts, num_ants, wf_int, ara_int, daq_qual_cut_sum, wei_pairs, lags, ch_idx, ants
 
     print('Reco collecting is done!')
 
