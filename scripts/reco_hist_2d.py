@@ -66,7 +66,7 @@ for r in tqdm(range(len(d_run_tot))):
     del b_name, hf_b
 
     ara_run = run_info_loader(Station, d_run_tot[r])
-    g_idx = ara_run.get_config_number()
+    g_idx = ara_run.get_config_number() - 1
     del ara_run
 
     bad_run = d_run_tot[r] in bad_runs

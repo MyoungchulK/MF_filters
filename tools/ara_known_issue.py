@@ -612,7 +612,8 @@ class known_issue_loader:
         knwon_bad_run = np.concatenate((bad_surface_run, bad_run, L0_to_L1_Processing, ARARunLogDataBase, software_dominant_run, ob_bad_run), axis = None, dtype = int)
         if use_qual:
             qual_bad_run = self.get_qual_bad_run()
-            knwon_bad_run = np.concatenate((knwon_bad_run, qual_bad_run), axis = None, dtype = int)
+            qual_bad_run_v2 = self.get_qual_bad_run(use_v2 = True)
+            knwon_bad_run = np.concatenate((knwon_bad_run, qual_bad_run, qual_bad_run_v2), axis = None, dtype = int)
             del qual_bad_run
         knwon_bad_run = np.unique(knwon_bad_run).astype(int)
         del bad_surface_run, bad_run, L0_to_L1_Processing, ARARunLogDataBase, software_dominant_run, ob_bad_run
@@ -717,9 +718,12 @@ class known_issue_loader:
 
         return bad_run
 
-    def get_qual_bad_run(self):
+    def get_qual_bad_run(self, use_v2 = False):
 
-        bad_path = f'../data/qual_runs/qual_run_A{self.st}.txt'
+        bad_path = f'../data/qual_runs/qual_run_A{self.st}'
+        if use_v2:
+            bad_path += '_v2'
+        bad_path += '.txt'
         bad_run = []
         bad_file = open(bad_path, "r")
         for lines in bad_file:
