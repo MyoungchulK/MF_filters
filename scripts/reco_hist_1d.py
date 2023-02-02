@@ -119,7 +119,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Reco_Map_New_1d_A{Station}_R{count_i}.h5'
+file_name = f'Reco_Map_New_1d_v2_A{Station}_R{count_i}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('a_bins', data=a_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('a_bin_center', data=a_bin_center, compression="gzip", compression_opts=9)
