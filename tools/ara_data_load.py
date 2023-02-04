@@ -472,6 +472,12 @@ class ara_uproot_loader:
         #self.unix_time_us = np.asarray(self.evtTree['event/unixTimeUs'],dtype=int)
         #self.time_stamp = np.asarray(self.evtTree['event/timeStamp'],dtype=int)
 
+    def get_time_stamp(self):
+
+        time_stamp = np.asarray(self.evtTree['event/timeStamp'],dtype=int)
+
+        return time_stamp
+
     def get_trig_type(self):
 
         time_stamp = np.asarray(self.evtTree['event/timeStamp'],dtype=int)

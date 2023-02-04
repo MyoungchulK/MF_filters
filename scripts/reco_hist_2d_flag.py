@@ -30,7 +30,7 @@ d_len = len(d_run_tot)
 q_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/qual_cut_full/'
 b_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/l2/'
 del d_run_range
-
+"""
 z_bins = np.linspace(0, 180, 180 + 1)
 z_bin_center = (z_bins[1:] + z_bins[:-1]) / 2
 z_bin_len = len(z_bin_center)
@@ -48,6 +48,15 @@ map_ac_cut = np.copy(map_ac)
 map_zc = np.full((z_bin_len, c_bin_len, 3, 2, 2, 2, num_configs), 0, dtype = int) # a, z, trig, pol, rad, sol, config
 map_zc_cut = np.copy(map_zc)
 del z_bin_len, a_bin_len, c_bin_len
+"""
+
+#sh_path = '/home/mkim/analysis/MF_filters/scripts/reco_surface_debug.sh'
+sh_path = '/home/mkim/analysis/MF_filters/scripts/reco_cal_debug.sh'
+cvm_path = 'source /cvmfs/ara.opensciencegrid.org/trunk/centos7/setup.sh\n'
+s_path = 'source ../setup.sh\n'
+with open(sh_path, 'w') as f:
+    f.write(cvm_path)
+    f.write(s_path)
 
 for r in tqdm(range(len(d_run_tot))):
     
@@ -85,7 +94,7 @@ for r in tqdm(range(len(d_run_tot))):
     evt_full = hf_q['evt_num'][:]
     qual = hf_q['tot_qual_cut_sum'][:] != 0
     cut = np.in1d(evt, evt_full[qual])
-    del q_name, hf_q, qual, evt_full, evt
+    del q_name, hf_q, qual, evt_full#, evt
 
     coord_cut = np.copy(coord)
     coord_cut[:, :, :, :, cut] = np.nan
@@ -97,15 +106,32 @@ for r in tqdm(range(len(d_run_tot))):
         for pol in range(2):
             for rad in range(2):
                 for sol in range(2):
-                    map_az[:, :, t, pol, rad, sol, g_idx] += np.histogram2d(coord[pol, 1, rad, sol][t_list[t]], coord[pol, 0, rad, sol][t_list[t]], bins = (a_bins, z_bins))[0].astype(int)
-                    map_ac[:, :, t, pol, rad, sol, g_idx] += np.histogram2d(coord[pol, 1, rad, sol][t_list[t]], coef[pol, rad, sol][t_list[t]], bins = (a_bins, c_bins))[0].astype(int)
-                    map_zc[:, :, t, pol, rad, sol, g_idx] += np.histogram2d(coord[pol, 0, rad, sol][t_list[t]], coef[pol, rad, sol][t_list[t]], bins = (z_bins, c_bins))[0].astype(int)
+                    #map_az[:, :, t, pol, rad, sol, g_idx] += np.histogram2d(coord[pol, 1, rad, sol][t_list[t]], coord[pol, 0, rad, sol][t_list[t]], bins = (a_bins, z_bins))[0].astype(int)
+                    #map_ac[:, :, t, pol, rad, sol, g_idx] += np.histogram2d(coord[pol, 1, rad, sol][t_list[t]], coef[pol, rad, sol][t_list[t]], bins = (a_bins, c_bins))[0].astype(int)
+                    #map_zc[:, :, t, pol, rad, sol, g_idx] += np.histogram2d(coord[pol, 0, rad, sol][t_list[t]], coef[pol, rad, sol][t_list[t]], bins = (z_bins, c_bins))[0].astype(int)
                     if bad_run: continue
-                    map_az_cut[:, :, t, pol, rad, sol, g_idx] += np.histogram2d(coord_cut[pol, 1, rad, sol][t_list[t]], coord_cut[pol, 0, rad, sol][t_list[t]], bins = (a_bins, z_bins))[0].astype(int)
-                    map_ac_cut[:, :, t, pol, rad, sol, g_idx] += np.histogram2d(coord_cut[pol, 1, rad, sol][t_list[t]], coef_cut[pol, rad, sol][t_list[t]], bins = (a_bins, c_bins))[0].astype(int)
-                    map_zc_cut[:, :, t, pol, rad, sol, g_idx] += np.histogram2d(coord_cut[pol, 0, rad, sol][t_list[t]], coef_cut[pol, rad, sol][t_list[t]], bins = (z_bins, c_bins))[0].astype(int)
-    del g_idx, bad_run, coef, coef_cut, coord, coord_cut, t_list, rf_t, cal_t, soft_t
+                    #if t == 0 and pol == 0 and rad == 1 and sol == 0:
+                    if t == 0 and pol == 0 and rad == 0 and sol == 0:
+                        #coef_flag = coef_cut[pol, rad, sol][t_list[t]] > 0.11
+                        #coord_flag = 90 - coord_cut[pol, 0, rad, sol][t_list[t]] > 25
+                        #mer_flag = np.logical_and(coef_flag, coord_flag)
+                        coef_flag = coef_cut[pol, rad, sol][t_list[t]] > 0.12
+                        coord_flag = 90 - coord_cut[pol, 0, rad, sol][t_list[t]] < 25
+                        coord_flag1 = 90 - coord_cut[pol, 0, rad, sol][t_list[t]] > -45
+                        mer_flag = np.all((coef_flag, coord_flag, coord_flag1), axis = 0)
+                        if np.count_nonzero(mer_flag) > 0:
+                            bad_evt = evt[t_list[t]][mer_flag]
+                            print(Station, d_run_tot[r], g_idx+1, len(bad_evt), bad_evt, coef_cut[pol, rad, sol][t_list[t]][mer_flag], 90 - coord_cut[pol, 0, rad, sol][t_list[t]][mer_flag])
+                            for d in range(len(bad_evt)):
+                                de_path = f'python3 -W ignore script_executor.py -k wf -s {Station} -r {d_run_tot[r]} -a {bad_evt[d]}\n'
+                                with open(sh_path, 'a') as f:
+                                    f.write(de_path)
 
+                    #map_az_cut[:, :, t, pol, rad, sol, g_idx] += np.histogram2d(coord_cut[pol, 1, rad, sol][t_list[t]], coord_cut[pol, 0, rad, sol][t_list[t]], bins = (a_bins, z_bins))[0].astype(int)
+                    #map_ac_cut[:, :, t, pol, rad, sol, g_idx] += np.histogram2d(coord_cut[pol, 1, rad, sol][t_list[t]], coef_cut[pol, rad, sol][t_list[t]], bins = (a_bins, c_bins))[0].astype(int)
+                    #map_zc_cut[:, :, t, pol, rad, sol, g_idx] += np.histogram2d(coord_cut[pol, 0, rad, sol][t_list[t]], coef_cut[pol, rad, sol][t_list[t]], bins = (z_bins, c_bins))[0].astype(int)
+    del g_idx, bad_run, coef, coef_cut, coord, coord_cut, t_list, rf_t, cal_t, soft_t
+"""
 path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
@@ -127,8 +153,8 @@ hf.create_dataset('map_zc', data=map_zc, compression="gzip", compression_opts=9)
 hf.create_dataset('map_zc_cut', data=map_zc_cut, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name, size_checker(path+file_name))
-
-
+"""
+print('Done!')
 
 
 

@@ -37,6 +37,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     unix_time = ara_uproot.unix_time
     pps_number = ara_uproot.pps_number
     trig_type = ara_uproot.get_trig_type()
+    time_stamp = ara_uproot.get_time_stamp()
     num_evts = ara_uproot.num_evts
     st = ara_uproot.station_id
     run = ara_uproot.run
@@ -503,6 +504,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'weights':weights,
             'wei_pairs':wei_pairs,
             'trig_type':trig_type,
+            'time_stamp':time_stamp,
             'pps_number':pps_number,
             'unix_time':unix_time,
             'run_info':run_info,
