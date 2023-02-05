@@ -631,11 +631,11 @@ def file_sorter(d_path):
     d_list = []
     for d in range(d_len):
         d_list.append(d_list_chaos[run_index[d]])
-    del d_list_chaos, d_len, run_index
+    del d_list_chaos, run_index
 
     run_range = np.arange(run_tot[0],run_tot[-1]+1)
 
-    return d_list, run_tot, run_range
+    return d_list, run_tot, run_range, d_len
 
 def get_path_info(dat_path, mask_key, end_key):
 

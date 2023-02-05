@@ -8,22 +8,6 @@ ara_const = ara_const()
 num_ants = ara_const.USEFUL_CHAN_PER_STATION
 num_ddas = ara_const.DDA_PER_ATRI
 
-def get_bad_run_list(bad_path, verbose = False):
-
-    bad_run = []
-    bad_file = open(bad_path, "r")
-    for lines in bad_file:
-        run_num = int(lines.split()[0])
-        bad_run.append(run_num)
-    bad_run = np.asarray(bad_run).astype(int)
-    bad_file.close()
-
-    if verbose:
-        print('Input file:', bad_path)
-        print('Nunber of bad runs:', len(bad_run))
-
-    return bad_run
-
 class known_issue_loader:
 
     def __init__(self, st, verbose = False):
@@ -1205,7 +1189,6 @@ class known_issue_loader:
             bad_run = np.append(bad_run, np.arange(8933, 8934 + 1, dtype = int)) # 8933 ~ 8934 2017/04/05 unknown signal
             bad_run = np.append(bad_run, np.arange(9402, 9848 + 1, dtype = int)) # short... and pole season...
             bad_run = np.append(bad_run, 9916) # 9916 2018/02/07 unknown signal
-            bad_run = np.append(bad_run, 9941) # 9941 bad noise model
             bad_run = np.append(bad_run, np.arange(11071, 11076 + 1, dtype = int)) # 11071 ~ 11076 2018/06/25 unknown signal
             bad_run = np.append(bad_run, np.arange(11654, 11655 + 1, dtype = int)) # 11654 ~ 11655 2018/09/10 unknown signal
             bad_run = np.append(bad_run, np.arange(12128, 12131 + 1, dtype = int)) # 12131 2018/11/01 unknown signal
@@ -1264,7 +1247,6 @@ class known_issue_loader:
             bad_run = np.append(bad_run, np.arange(3881, 3892 + 1, dtype = int)) # noise source test
             bad_run = np.append(bad_run, np.arange(3916, 3975 + 1, dtype = int)) # noise source test
             bad_run = np.append(bad_run, np.arange(4008, 4073 + 1, dtype = int)) # noise source test
-            bad_run = np.append(bad_run, 6270) # bad noise noise model
             bad_run = np.append(bad_run, np.arange(7122, 7153 + 1, dtype = int)) # 2016 Cal Pulser Sweep
             bad_run = np.append(bad_run, np.arange(10000, 10102 + 1, dtype = int)) # trim short runs
             bad_run = np.append(bad_run, np.arange(10158, 10160 + 1, dtype = int)) # 10158 2018/02/07 unknown signal
@@ -1315,9 +1297,6 @@ class known_issue_loader:
             bad_run = np.append(bad_run, np.arange(16518, 16520 + 1, dtype = int)) # unkown signal
             bad_run = np.append(bad_run, np.arange(16531, 16533 + 1, dtype = int)) # unkown signal
             bad_run = np.append(bad_run, np.arange(16538, 16540 + 1, dtype = int)) # unkown signal
-
-            bad_run = np.append(bad_run, np.array([6270, 13346, 13485, 13592, 13716, 13835, 14096, 14126, 14254, 15332, 16075, 16299, 
-                                                    16358, 16790, 16919, 17310, 17311, 17312, 17313, 17315, 17317, 17318, 17320, 17410, 17800, 17948], dtype = int))
 
         else:
             pass
