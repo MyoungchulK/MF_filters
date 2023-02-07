@@ -4,7 +4,7 @@ import h5py
 import sys
 from scipy.signal import medfilt
 
-def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
+def wf_ver2_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
 
     print('Collecting wf starts!')
 
@@ -214,7 +214,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     bp_sky_map = np.copy(sky_map)
     cw_sky_map = np.copy(sky_map)
     cw_bp_sky_map = np.copy(sky_map)
-       
+    
     # cw detection
     evt_counts = 0
     for r in range(2):
@@ -306,21 +306,21 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     for evt in tqdm(range(sel_evt_len)):
     
         # sample info and timing info
-        blk_idx_arr, blk_idx_len = ara_uproot.get_block_idx(sel_entries[evt], trim_1st_blk = True)
+        blk_idx_arr, blk_idx_len = ara_uproot.get_block_idx(sel_entries[evt], trim_1st_blk = False)
         blk_idx[:blk_idx_len, evt] = blk_idx_arr
         buffer_info.get_num_samp_in_blk(blk_idx_arr)
         buffer_info.get_num_samp_in_blk(blk_idx_arr, use_int_dat = True)
         num_samps_in_blk[:blk_idx_len, :, evt] = buffer_info.samp_in_blk
         num_int_samps_in_blk[:blk_idx_len, :, evt] = buffer_info.int_samp_in_blk
         samp_idx[:, :blk_idx_len, :, evt] = buffer_info.get_samp_idx(blk_idx_arr)
-        time_arr[:, :blk_idx_len, :, evt] = buffer_info.get_time_arr(blk_idx_arr, trim_1st_blk = True)
-        int_time_arr[:int_num_samples, :blk_idx_len, :, evt] = buffer_info.get_time_arr(blk_idx_arr, trim_1st_blk = True, use_int_dat = True)
+        time_arr[:, :blk_idx_len, :, evt] = buffer_info.get_time_arr(blk_idx_arr, trim_1st_blk = False)
+        int_time_arr[:int_num_samples, :blk_idx_len, :, evt] = buffer_info.get_time_arr(blk_idx_arr, trim_1st_blk = False, use_int_dat = True)
         
         # get entry and wf
         ara_root.get_entry(sel_entries[evt])
 
         # raw wfs 
-        ara_root.get_useful_evt(ara_root.cal_type.kOnlyADCWithOut1stBlock)
+        ara_root.get_useful_evt(ara_root.cal_type.kOnlyADC)
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
             wf_len = len(raw_t)
@@ -336,7 +336,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         ara_root.del_usefulEvt()
 
         # pedestal
-        ara_root.get_useful_evt(ara_root.cal_type.kOnlyPedWithOut1stBlock)
+        ara_root.get_useful_evt(ara_root.cal_type.kOnlyPed)
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
             wf_len = len(raw_t)
@@ -352,7 +352,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         ara_root.del_usefulEvt()
 
         # calibrated wf, interpolated wf and mean of wf 
-        ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
+        ara_root.get_useful_evt(ara_root.cal_type.kLatestCalibWithOutTrimFirstBlock)
         for ant in range(num_ants):        
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
             wf_len = len(raw_t)

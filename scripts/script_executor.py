@@ -76,7 +76,7 @@ def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_overrid
     # run the chunk code
     module = import_module(f'tools.chunk_{key}')
     method = getattr(module, f'{key}_collector')
-    if key == 'wf':
+    if key == 'wf' or key == 'wf_ver2':
         results = method(Data, Ped, analyze_blind_dat = blind_dat, sel_evts = act_evt)
     elif key == 'qual_cut':
         results = method(Data, Ped, analyze_blind_dat = blind_dat, qual_2nd = qual_2nd, no_tqdm = no_tqdm)
@@ -110,7 +110,7 @@ def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_overrid
         output_path = true_output_path
     print(f'Output path check:{output_path}')
     h5_file_name = f'{key}{blind_type}_A{station}_R{run}'
-    if key == 'wf' and act_evt is not None:
+    if (key == 'wf' or key == 'wf_ver2') and act_evt is not None:
         act_evt = act_evt.split(',')
         act_evt = np.asarray(act_evt).astype(int)
         if len(act_evt) == 1:

@@ -72,9 +72,10 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_t
             pbar.update(1)
  
         if daq_qual_cut_sum[evt]:
-            sigma.append(empty_float)
-            phase_idx.append(empty)
-            testbed_idx.append(empty)
+            if evt == evt_backup:
+                sigma.append(empty_float)
+                phase_idx.append(empty)
+                testbed_idx.append(empty)
             evt_backup += 1
             evt = evt_backup
             continue
@@ -82,7 +83,7 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_t
         # get entry and wf
         ara_root.get_entry(evt)
         ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
-        
+    
         # loop over the antennas
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)

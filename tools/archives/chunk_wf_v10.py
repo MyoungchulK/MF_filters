@@ -214,7 +214,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     bp_sky_map = np.copy(sky_map)
     cw_sky_map = np.copy(sky_map)
     cw_bp_sky_map = np.copy(sky_map)
-       
+    
     # cw detection
     evt_counts = 0
     for r in range(2):
@@ -301,7 +301,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             phase_var_bad_idx[:bad_len, rs_evts1, r] = phase_idxs
             phase_var_bad_sigma[:bad_len, rs_evts1, r] = sigmas
             print(phase_idxs)
-    
+
     # loop over the events
     for evt in tqdm(range(sel_evt_len)):
     
