@@ -78,7 +78,7 @@ def script_loader(key, station, run, act_evt, blind_dat, condor_run, not_overrid
     method = getattr(module, f'{key}_collector')
     if key == 'wf' or key == 'wf_ver2':
         results = method(Data, Ped, analyze_blind_dat = blind_dat, sel_evts = act_evt)
-    elif key == 'qual_cut':
+    elif key == 'qual_cut' or key == 'qual_cut_1st':
         results = method(Data, Ped, analyze_blind_dat = blind_dat, qual_2nd = qual_2nd, no_tqdm = no_tqdm)
     elif key == 'l1':
         results = method(Data, Ped, station, run, Year, analyze_blind_dat = blind_dat)
