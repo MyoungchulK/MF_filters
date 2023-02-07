@@ -28,7 +28,7 @@ def cw_ratio_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_
     del ara_uproot
 
     # pre quality cut
-    daq_qual_cut = get_bad_events(st, run, analyze_blind_dat = analyze_blind_dat, verbose = True, evt_num = evt_num, use_1st = True)[0]
+    daq_qual_cut = get_bad_events(st, run, analyze_blind_dat = analyze_blind_dat, verbose = True, evt_num = evt_num)[0]
 
     # bad antenna
     known_issue = known_issue_loader(st)
@@ -52,7 +52,7 @@ def cw_ratio_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_
  
         # get entry and wf
         ara_root.get_entry(evt)
-        ara_root.get_useful_evt(ara_root.cal_type.kLatestCalibWithOutTrimFirstBlock)
+        ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
         
         # loop over the antennas
         for ant in range(num_ants):

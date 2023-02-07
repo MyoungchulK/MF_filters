@@ -1,3 +1,5 @@
+import os
+import h5py
 import numpy as np
 from tqdm import tqdm
 
@@ -11,8 +13,10 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_t
     from tools.ara_wf_analyzer import wf_analyzer
     from tools.ara_cw_filters import py_phase_variance
     from tools.ara_cw_filters import py_testbed
+    from tools.ara_cw_filters import group_bad_frequency
     from tools.ara_quality_cut import get_bad_events
     from tools.ara_known_issue import known_issue_loader
+    from tools.ara_utility import size_checker
 
     # geom. info.
     ara_const = ara_const()
@@ -49,7 +53,6 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_t
     cw_phase = py_phase_variance(st, run, freq_range)
     evt_len = cw_phase.evt_len
     phase_params = np.array([cw_phase.sigma_thres, evt_len])
-    del st, run
 
     # output array  
     sigma = []
@@ -132,13 +135,48 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_t
             evt_backup += 1
             evt = evt_backup
         del time_travel_idx, time_travel_entry#, time_travel_cal_entry
-    del ara_root, num_evts, num_ants, wf_int, cw_phase, cw_testbed, evt_len, daq_qual_cut_sum, clean_entry
+    del ara_root, num_ants, wf_int, cw_phase, cw_testbed, evt_len, clean_entry
     pbar.close()
 
     # to numpy array
     sigma = np.asarray(sigma)
     phase_idx = np.asarray(phase_idx)
     testbed_idx = np.asarray(testbed_idx)
+
+    # group bad frequency
+    cw_freq = group_bad_frequency(st, run, freq_range, verbose = True) # constructor for bad frequency grouping function
+     
+    # output array
+    bad_range = []
+
+    # loop over the events
+    for evt in tqdm(range(num_evts), disable = no_tqdm):
+      #if evt == 0:
+
+        # quality cut
+        if daq_qual_cut_sum[evt]:
+            bad_range.append(empty_float)
+            continue
+
+        bad_range_evt = cw_freq.get_pick_freqs_n_bands(sigma[evt], phase_idx[evt], testbed_idx[evt]).flatten()
+        bad_range.append(bad_range_evt)
+    del num_evts, daq_qual_cut_sum, cw_freq
+
+    # to numpy array
+    bad_range = np.asarray(bad_range)
+    
+    blind_type = ''
+    if analyze_blind_dat:
+        blind_type = '_full'
+    output_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{st}/cw_band{blind_type}/'
+    h5_file_name = f'cw_band{blind_type}_A{st}_R{run}.h5'
+    hf = h5py.File(f'{output_path}{h5_file_name}', 'w')
+    hf.create_dataset('evt_num', data=evt_num, compression="gzip", compression_opts=9)
+    dt = h5py.vlen_dtype(np.dtype(float))
+    hf.create_dataset('bad_range', data=bad_range, dtype = dt, compression="gzip", compression_opts=9)    
+    hf.close()
+    print(f'output is {output_path}{h5_file_name}.', size_checker(f'{output_path}{h5_file_name}'))
+    del st, run, blind_type, output_path, h5_file_name
 
     print('CW flag collecting is done!')
 
@@ -148,6 +186,7 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_t
             'sigma':sigma,
             'phase_idx':phase_idx,
             'testbed_idx':testbed_idx,
+            'bad_range':bad_range,
             'testbed_params':testbed_params,
             'phase_params':phase_params}
 
