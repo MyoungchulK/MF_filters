@@ -46,10 +46,14 @@ def get_time_smearing(dat_t, smear_arr = None, smear_arr_2nd = None):
 
     return smear_time
 
-def get_bad_events(st, run, analyze_blind_dat = False, verbose = False, evt_num = None):
+def get_bad_events(st, run, analyze_blind_dat = False, verbose = False, evt_num = None, use_1st = False):
+
+    key_1st = ''
+    if use_1st:
+        key_1st = '_1st'
 
     run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
-    qual_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = verbose, force_blind = True)    
+    qual_dat = run_info.get_result_path(file_type = f'qual_cut{key_1st}', verbose = verbose, force_blind = True)    
     qual_hf = h5py.File(qual_dat, 'r')
     daq_qual_cut = qual_hf['daq_qual_cut_sum'][:] != 0
     tot_qual_cut = qual_hf['tot_qual_cut_sum'][:] != 0

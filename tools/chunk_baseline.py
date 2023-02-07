@@ -29,7 +29,7 @@ def baseline_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_
     del ara_uproot
 
     # pre quality cut
-    daq_qual_cut, tot_qual_cut = get_bad_events(st, run, analyze_blind_dat = analyze_blind_dat, verbose = True, evt_num = evt_num)
+    daq_qual_cut, tot_qual_cut = get_bad_events(st, run, analyze_blind_dat = analyze_blind_dat, verbose = True, evt_num = evt_num, use_1st = True)
 
     # clean events
     clean_idx = np.full(num_evts, 0, dtype = int)
@@ -61,7 +61,7 @@ def baseline_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_
  
         # get entry and wf
         ara_root.get_entry(evt)
-        ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
+        ara_root.get_useful_evt(ara_root.cal_type.kLatestCalibWithOutTrimFirstBlock)
         
         # loop over the antennas
         for ant in range(num_ants):
