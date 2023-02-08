@@ -57,6 +57,7 @@ def cobalt_run_loader(Station = None, Key = None, Act_Evt = None, analyze_blind_
             new_list.append(int(w))
     new_list = np.asarray(new_list, dtype = int)
     print('!!!!!!new runs!!!!!!', len(new_list))
+    new_list = new_list[::-1]
 
     count = 0
     for w in range(len(new_list)):
