@@ -164,7 +164,7 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_t
 
     # to numpy array
     bad_range = np.asarray(bad_range)
-    
+ 
     blind_type = ''
     if analyze_blind_dat:
         blind_type = '_full'
@@ -174,8 +174,11 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_t
     h5_file_name = f'cw_band{blind_type}_A{st}_R{run}.h5'
     hf = h5py.File(f'{output_path}{h5_file_name}', 'w')
     hf.create_dataset('evt_num', data=evt_num, compression="gzip", compression_opts=9)
-    dt = h5py.vlen_dtype(np.dtype(float))
-    hf.create_dataset('bad_range', data=bad_range, dtype = dt, compression="gzip", compression_opts=9)    
+    try:
+        hf.create_dataset('bad_range', data=bad_range, compression="gzip", compression_opts=9)
+    except TypeError:
+        dt = h5py.vlen_dtype(np.dtype(float))
+        hf.create_dataset('bad_range', data=bad_range, dtype = dt, compression="gzip", compression_opts=9)    
     hf.close()
     print(f'output is {output_path}{h5_file_name}.', size_checker(f'{output_path}{h5_file_name}'))
     del st, run, blind_type, output_path, h5_file_name
