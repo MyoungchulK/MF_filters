@@ -35,8 +35,8 @@ def cobalt_run_loader(Station = None, Key = None, Act_Evt = None, analyze_blind_
 
         if count >= Act_Evt[0] and count < Act_Evt[1]:
 
-            log_name = f'/home/mkim/log_3/A{Station}.R{int(w)}.log'
-            err_name = f'/home/mkim/log_3/A{Station}.R{int(w)}.err'
+            log_name = f'/home/mkim/log_5/A{Station}.R{int(w)}.log'
+            err_name = f'/home/mkim/log_5/A{Station}.R{int(w)}.err'
             log_flag = False
             err_flag = False
             if not os.path.exists(log_name) and not os.path.exists(err_name): continue
