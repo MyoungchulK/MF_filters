@@ -169,6 +169,8 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_t
     if analyze_blind_dat:
         blind_type = '_full'
     output_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{st}/cw_band{blind_type}/'
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
     h5_file_name = f'cw_band{blind_type}_A{st}_R{run}.h5'
     hf = h5py.File(f'{output_path}{h5_file_name}', 'w')
     hf.create_dataset('evt_num', data=evt_num, compression="gzip", compression_opts=9)

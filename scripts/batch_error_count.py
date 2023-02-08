@@ -29,6 +29,7 @@ def cobalt_run_loader(Station = None, Key = None, Act_Evt = None, analyze_blind_
     del list_path, list_name, list_file, blind_type
     lists = np.asarray(lists, dtype = int)
 
+    err_count = 0
     count = 0
     for w in tqdm(lists):
 
@@ -56,7 +57,9 @@ def cobalt_run_loader(Station = None, Key = None, Act_Evt = None, analyze_blind_
                         print(f'!!!!error in {err_name}')
 
             if log_flag == False and err_flag == False: continue
+            err_count += 1    
 
+            """
             CMD_line = f'python3 -W ignore script_executor.py -k qual_cut_1st -s {Station} -r {int(w)} -b {int(analyze_blind_dat)} -n 1'
             print(CMD_line)
             call(CMD_line.split(' '))
@@ -85,9 +88,10 @@ def cobalt_run_loader(Station = None, Key = None, Act_Evt = None, analyze_blind_
             #    print(f'{count} THERE IS NO {daq_dat}!!')
             #    break
             #    return
-
+            """
         count += 1
 
+    print(err_count)
     print('cobalt run is done!')
 
 if __name__ == "__main__":
