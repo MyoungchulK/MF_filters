@@ -52,9 +52,16 @@ class condor_info_loader:
     def get_target_to_condor_path(self, tar_path):
 
         if (tar_path is not None and tar_path != '0') and self.use_condor:
-            self.temp_tar_path = shutil.copy(tar_path, self.local_path)
-            if self.verbose:
-                print(f'{tar_path} is copied into {self.local_path}')
+            slash_idx = tar_path.rfind('/')
+            dat_name = tar_path[slash_idx+1:]
+            if os.path.exists(f'{self.local_path}{dat_name}'):
+                self.temp_tar_path = f'{self.local_path}{dat_name}'
+                if self.verbose:
+                    print(f'{tar_path} is already copied into {self.local_path}')
+            else:
+                self.temp_tar_path = shutil.copy(tar_path, self.local_path)
+                if self.verbose:
+                    print(f'{tar_path} is copied into {self.local_path}')
             condor_path = self.temp_tar_path
         else:
             condor_path = tar_path
