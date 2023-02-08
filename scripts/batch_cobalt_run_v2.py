@@ -29,23 +29,21 @@ def cobalt_run_loader(Station = None, Key = None, Act_Evt = None, analyze_blind_
     del list_path, list_name, list_file, blind_type
     lists = np.asarray(lists, dtype = int)
 
-    count = 0
-    for w in tqdm(lists):
+    new_list = []
 
-        if count >= Act_Evt[0] and count < Act_Evt[1]:
+    for w in tqdm(lists):
 
             log_name = f'/home/mkim/logs/A{Station}.R{int(w)}.log'
             err_name = f'/home/mkim/logs/A{Station}.R{int(w)}.err'
             log_flag = False
             err_flag = False
             if not os.path.exists(log_name) and not os.path.exists(err_name): continue
-
+            
             if os.path.exists(log_name):
                 with open(log_name,'r') as f:
                     f_read = f.read()
                     key_idx = f_read.find('Error')
                     if key_idx != -1: 
-                        print(f'!!!!error in {log_name}')
                         log_flag = True
             if os.path.exists(err_name):
                 with open(err_name,'r') as f:
@@ -53,9 +51,20 @@ def cobalt_run_loader(Station = None, Key = None, Act_Evt = None, analyze_blind_
                     key_idx = f_read.find('Error') 
                     if key_idx != -1: 
                         err_flag = True
-                        print(f'!!!!error in {err_name}')
 
             if log_flag == False and err_flag == False: continue
+
+            new_list.append(int(w))
+    new_list = np.asarray(new_list, dtype = int)
+    print('!!!!!!new runs!!!!!!', len(new_list))
+
+    count = 0
+    for w in tqdm(new_list):
+
+        if count >= Act_Evt[0] and count < Act_Evt[1]:
+            if Station == 2 and int(w) == 1451: continue
+            if Station == 3 and int(w) == 480: continue
+            if Station == 3 and int(w) == 1966: continue
 
             CMD_line = f'python3 -W ignore script_executor.py -k qual_cut_1st -s {Station} -r {int(w)} -b {int(analyze_blind_dat)} -n 1'
             print(CMD_line)
@@ -76,15 +85,6 @@ def cobalt_run_loader(Station = None, Key = None, Act_Evt = None, analyze_blind_
             CMD_line = f'python3 -W ignore script_executor.py -k qual_cut -s {Station} -r {int(w)} -b {int(analyze_blind_dat)} -q 1'
             print(CMD_line)
             call(CMD_line.split(' '))
-
-            #run_info = run_info_loader(Station, int(w), analyze_blind_dat = analyze_blind_dat)
-            #daq_dat = run_info.get_result_path(file_type = Key, verbose = True)
-            #if os.path.exists(daq_dat):
-            #    print(f'{daq_dat} is already there!!')
-            #else:
-            #    print(f'{count} THERE IS NO {daq_dat}!!')
-            #    break
-            #    return
 
         count += 1
 
