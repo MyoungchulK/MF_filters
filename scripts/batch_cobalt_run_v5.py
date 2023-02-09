@@ -33,8 +33,8 @@ def cobalt_run_loader(Station = None, Key = None, Act_Evt = None, analyze_blind_
 
     for w in tqdm(lists):
 
-            log_name = f'/home/mkim/log_4/A{Station}.R{int(w)}.log'
-            err_name = f'/home/mkim/log_4/A{Station}.R{int(w)}.err'
+            log_name = f'/home/mkim/logs/A{Station}.R{int(w)}.log'
+            err_name = f'/home/mkim/logs/A{Station}.R{int(w)}.err'
             log_flag = False
             err_flag = False
             if not os.path.exists(log_name) and not os.path.exists(err_name): continue
