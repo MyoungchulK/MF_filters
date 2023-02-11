@@ -22,7 +22,7 @@ if Blind:
 # sort
 d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/{Type}{dat_type}/'
 print('Tar path:', d_path)
-d_list, d_run_tot, d_run_range = file_sorter(f'{d_path}*')
+d_list, d_run_tot, d_run_range, d_len = file_sorter(f'{d_path}*')
 
 bad_path = f'../data/run_list/A{Station}_run_list{dat_type}.txt'
 print('Ref list:', bad_path)

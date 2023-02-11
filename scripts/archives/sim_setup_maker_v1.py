@@ -65,7 +65,7 @@ def main(key, station, blind_dat):
     d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{station}/rayl{blind}/' # rayl path
     d_list, d_run_tot, d_run_range = file_sorter(d_path+'*h5')
     e_path = f'../sim/sim_setup_example/{key}_rayl.txt' # setup ex path
-    r_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{station}/sim_{key}_setup{blind}/' # text output path
+    r_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{station}/sim_{key}_setup{blind}/' # output path
     if not os.path.exists(r_path):
         os.makedirs(r_path)
     if key == 'noise':
@@ -88,6 +88,10 @@ def main(key, station, blind_dat):
         pahse = np.loadtxt(f'../data/sc_info/SC_Phase_from_sim.txt')
         p_f = interp1d(pahse[:,0], pahse[:, 1:], axis = 0, fill_value = 'extrapolate')
         pahse_int = p_f(freq_mhz)
+        h_tot = np.loadtxt(f'../data/sc_info/A{station}_Htot.txt')
+        h_f = interp1d(h_tot[:,0], h_tot[:, 1:], axis = 0, fill_value = 'extrapolate')
+        h_tot_int = h_f(freq_mhz)
+        Htot = h_tot_int * np.sqrt(dt * 1e-9)
         
         sc_hf = h5py.File(f'../data/sc_info/A{station}_sc_tot.h5', 'r')
         freq = sc_hf['freq_range'][:]
