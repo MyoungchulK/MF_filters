@@ -17,7 +17,7 @@ Type = str(sys.argv[2])
 
 # sort
 d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/{Type}/*'
-d_list, d_run_tot, d_run_range = file_sorter(d_path)
+d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 
 for r in tqdm(range(len(d_run_tot))):
     
