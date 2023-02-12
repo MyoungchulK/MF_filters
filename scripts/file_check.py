@@ -13,9 +13,10 @@ from tools.ara_run_manager import run_info_loader
 from tools.ara_known_issue import known_issue_loader
 
 Station = int(sys.argv[1])
-Blind = bool(sys.argv[2])
+Blind = bool(int(sys.argv[2]))
 Type = str(sys.argv[3])
 
+dat_type = ''
 if Blind:
     dat_type = '_full'
 

@@ -20,28 +20,21 @@ def cw_band_collector(Data, Station, Run, analyze_blind_dat = False, no_tqdm = F
     freq_range = cw_hf['freq_range'][:] # frequency array that uesd for identification
     evt_num = cw_hf['evt_num'][:]
     num_evts = len(evt_num)
-    del cw_dat, cw_hf
+    del run_info, cw_dat, cw_hf
 
     if num_evts != len(cw_sigma):
         print('Wrong!!!!!:', num_evts - len(cw_sigma), num_evts, len(cw_sigma), Station, Run)
 
     if analyze_blind_dat == False:
         evt_num_full = np.copy(evt_num)
-        r_dat = run_info.get_result_path(file_type = 'reco', verbose = True) # get the h5 file path
-        r_hf = h5py.File(r_dat, 'r')
-        evt_num = r_hf['evt_num'][:]
-        num_evts = len(evt_num)
-        del r_dat, r_hf
-        #evt_num_full = np.copy(evt_num)
-        #from tools.ara_data_load import ara_uproot_loader
-        #ara_uproot = ara_uproot_loader(Data)
-        #num_evts = ara_uproot.num_evts
-        #evt_num = ara_uproot.evt_num
-        #del ara_uproot
-    del run_info
+        from tools.ara_data_load import ara_uproot_loader
+        ara_uproot = ara_uproot_loader(Data)
+        num_evts = ara_uproot.num_evts
+        evt_num = ara_uproot.evt_num
+        del ara_uproot
 
     # pre quality cut
-    daq_qual_cut = get_bad_events(Station, Run, analyze_blind_dat = analyze_blind_dat, verbose = True, evt_num = evt_num, use_1st = True)[0]
+    daq_qual_cut = get_bad_events(Station, Run, analyze_blind_dat = analyze_blind_dat, verbose = True, evt_num = evt_num)[0]
 
     # group bad frequency
     cw_freq = group_bad_frequency(Station, Run, freq_range, verbose = True) # constructor for bad frequency grouping function
