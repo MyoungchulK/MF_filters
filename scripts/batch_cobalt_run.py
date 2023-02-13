@@ -29,7 +29,11 @@ def cobalt_run_loader(Station = None, Key = None, Act_Evt = None, analyze_blind_
     del list_path, list_name, list_file, blind_type
     lists = np.asarray(lists, dtype = int)
 
-    lists = lists[::-1]
+    #lists = lists[::-1]
+    CMD_line = f'bash ../setup.sh'
+    #CMD_line = f'source ~../setup.sh'
+    print(CMD_line)
+    call(CMD_line.split(' '))
 
     count = 0
     for w in tqdm(lists):
@@ -59,7 +63,7 @@ def cobalt_run_loader(Station = None, Key = None, Act_Evt = None, analyze_blind_
 
             if log_flag == False and err_flag == False: continue
             """
-            CMD_line = f'python3 -W ignore script_executor.py -k {key} -s {Station} -r {int(w)} -b {int(analyze_blind_dat)} -n 1'
+            CMD_line = f'python3 -W ignore script_executor.py -k {key} -s {Station} -r {int(w)} -b {int(analyze_blind_dat)} -n 1 -q 1'
             print(CMD_line)
             call(CMD_line.split(' '))
             """
