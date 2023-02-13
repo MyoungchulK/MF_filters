@@ -24,9 +24,9 @@ def get_trig_win_len(sation, config):
 def get_thres(station, year):
     year_idx = int(year - 2013)
     if station == 2:
-        thres_arr = np.array([-6.428, -6.428, -6.6, -6.6, -6.603, -6.6, -6.6], dtype = float)
+        thres_arr = np.array([-6.428, -6.428, -6.6, -6.6, -6.603, -6.6, -6.6, -6.6], dtype = float)
     else:
-        thres_arr = np.array([-6.43, -6.43, -6.6, -6.6, -1, -6.608, -6.608, -6.608, -6.608], dtype = float)
+        thres_arr = np.array([-6.43, -6.43, -6.6, -6.6, -6.608, -6.608, -6.608, -6.608], dtype = float)
     thres_sel = thres_arr[year_idx]
     return thres_sel
 
