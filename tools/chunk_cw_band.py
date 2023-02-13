@@ -32,7 +32,6 @@ def cw_band_collector(Data, Station, Run, analyze_blind_dat = False, no_tqdm = F
         evt_num = r_hf['evt_num'][:]
         num_evts = len(evt_num)
         del r_dat, r_hf
-        #evt_num_full = np.copy(evt_num)
         #from tools.ara_data_load import ara_uproot_loader
         #ara_uproot = ara_uproot_loader(Data)
         #num_evts = ara_uproot.num_evts
