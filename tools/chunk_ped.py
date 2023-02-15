@@ -4,6 +4,10 @@ from subprocess import call
 
 def ped_collector(Data, Station, Run, analyze_blind_dat = False):
 
+    if analyze_blind_dat == False:
+        print('chunk_ped is not meant for burn sample! try with 100% data!')
+        sys.exit(1)
+
     print('Collecting Ped starts!')
 
     from tools.ara_utility import size_checker
@@ -34,12 +38,8 @@ def ped_collector(Data, Station, Run, analyze_blind_dat = False):
     del repeder_cmd
 
     print('Ped collecting is done!')
-    print(f'output is {out_path}')
-    del qual_path
-
-    # quick size check
-    size_checker(out_path)
-    del out_path
+    print(f'output is {out_path}.', size_checker(out_path))
+    del out_path, qual_path
 
     return
 
