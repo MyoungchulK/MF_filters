@@ -2,7 +2,7 @@ import numpy as np
 from tqdm import tqdm
 import h5py
 
-def snr_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
+def snr_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm = False):
 
     print('Collecting snr starts!')
     if use_l2:
@@ -37,6 +37,7 @@ def snr_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
         st = ara_uproot.station_id
         run = ara_uproot.run
         ara_root = ara_root_loader(Data, Ped, st, ara_uproot.year)
+        blk_len = (ara_uproot.read_win // 4) - 1
         del ara_uproot
 
     # pre quality cut
@@ -50,8 +51,11 @@ def snr_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     tot_qual_cut_sum = np.in1d(evt_num, qual_evt[tot_qual_cut]).astype(int)
     del qual_dat, qual_hf, qual_evt, daq_qual_cut, tot_qual_cut, run_info
 
+    for t in range(3):
+        print(np.count_nonzero(trig_type == t))
+
     # wf analyzer
-    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = False, use_l2 = use_l2, analyze_blind_dat = analyze_blind_dat, st = st, run = run)
+    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, use_l2 = use_l2, analyze_blind_dat = analyze_blind_dat, st = st, run = run)
     del st, run
 
     # output array  
@@ -59,8 +63,7 @@ def snr_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
     p2p = np.copy(rms)
 
     # loop over the events
-    for evt in tqdm(range(num_evts)):
-    #for evt in range(num_evts):
+    for evt in tqdm(range(num_evts), disable = no_tqdm):
       #if evt <100:        
 
         if daq_qual_cut_sum[evt]:
@@ -68,43 +71,52 @@ def snr_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False):
  
         # get entry and wf
         ara_root.get_entry(evt)
+        #ara_root.get_useful_evt(ara_root.cal_type.kLatestCalibWithOutTrimFirstBlock)
         ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
         
         # loop over the antennas
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_band_pass = True, use_cw = False, use_p2p = True, evt = evt)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_band_pass = True, use_cw = True, use_p2p = True, evt = evt)
             p2p[ant, evt] = wf_int.int_p2p
             del raw_t, raw_v
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()   
 
         rms[:, evt] = np.nanstd(wf_int.pad_v, axis = 0)
-    del ara_root, num_evts, num_ants, wf_int
+    del ara_root, num_ants, wf_int
 
-    clean_idx = np.logical_and(tot_qual_cut_sum == 0, trig_type == 2)
-    if np.count_nonzero(clean_idx) == 0:
-        clean_idx = np.logical_and(daq_qual_cut_sum == 0, trig_type == 2)
-        print(f'no clean soft events! use all soft events: {np.count_nonzero(clean_idx)}')
-    if np.count_nonzero(clean_idx) == 0:
-        clean_idx = np.logical_and(tot_qual_cut_sum == 0, trig_type == 0)
-        print(f'no soft events! use clean rf events: {np.count_nonzero(clean_idx)}')
-    if np.count_nonzero(clean_idx) == 0:
-        clean_idx = np.logical_and(daq_qual_cut_sum == 0, trig_type == 0)
-        print(f'no clean rf events! use all rf events: {np.count_nonzero(clean_idx)}')
+    rms_qual = np.full((num_evts, 4), False, dtype = bool)
+    rms_qual[:, 0] = np.logical_and(tot_qual_cut_sum == 0, trig_type == 2)
+    rms_qual[:, 1] = np.logical_and(tot_qual_cut_sum == 0, trig_type == 0)
+    rms_qual[:, 2] = np.logical_and(daq_qual_cut_sum == 0, trig_type == 2)
+    rms_qual[:, 3] = np.logical_and(daq_qual_cut_sum == 0, trig_type == 0)
+
+    clean_idx = np.full((num_evts), False, dtype = bool)
+    for q in range(rms_qual.shape[1]):
+        if np.count_nonzero(rms_qual[:, q]) > 0:
+            clean_idx = rms_qual[:, q]
+            break
+    rms_qual = np.count_nonzero(rms_qual, axis = 0)
+    print(f'rms quality: {rms_qual}')
     rms_copy = np.copy(rms)
     rms_copy[:, ~clean_idx] = np.nan
     rms_mean = np.nanmean(rms_copy, axis = 1)
     snr = p2p / 2 / rms_mean[:, np.newaxis]
-    del rms_copy, daq_qual_cut_sum, tot_qual_cut_sum, trig_type
+    del num_evts, rms_copy, daq_qual_cut_sum
 
     print('SNR collecting is done!')
 
     return {'evt_num':evt_num,
+            'trig_type':trig_type,
+            'clean_idx':clean_idx,
             'snr':snr,
             'p2p':p2p,
             'rms':rms,
-            'rms_mean':rms_mean}
+            'rms_mean':rms_mean,
+            'rms_qual':rms_qual,#}
+            'tot_qual_cut_sum':tot_qual_cut_sum,
+            'blk_len':blk_len}
 
 
 

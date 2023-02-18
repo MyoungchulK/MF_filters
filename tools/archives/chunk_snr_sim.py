@@ -34,7 +34,6 @@ def snr_sim_collector(Data, Station, Year):
     #elast_y = ara_root.elast_y
     #posnu = ara_root.posnu
     #nnu = ara_root.nnu
-    print(wf_time)
 
     # wf analyzer
     wf_int = wf_analyzer(dt = dt)

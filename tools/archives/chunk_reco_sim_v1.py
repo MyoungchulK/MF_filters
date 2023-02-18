@@ -17,7 +17,9 @@ def reco_sim_collector(Data, Station, Year):
     num_evts = ara_root.num_evts
     entry_num = ara_root.entry_num
     dt = ara_root.time_step
-    wf_len = ara_root.waveform_length
+    wf_len_ori = ara_root.waveform_length
+    wf_len = 2280 * 2
+    wf_len_pad = (wf_len - wf_len_ori) // 2
     wf_time = ara_root.wf_time    
     pnu = ara_root.pnu
     inu_thrown = ara_root.inu_thrown
@@ -76,11 +78,10 @@ def reco_sim_collector(Data, Station, Year):
       #if evt <100: # debug 
 
         wf_v = ara_root.get_rf_wfs(evt)
-        ara_int.get_sky_map(wf_v, weights = snr_weights[:, evt], sum_pol = True)
-        coef[:, :, :, evt] = ara_int.coval
-        coord[:, :, :, :, evt] = ara_int.coord
+        wf_v_double = np.pad(wf_v, [(wf_len_pad, wf_len_pad), (0, 0)], 'constant', constant_values = 0)
+        coef[:, :, :, evt], coord[:, :, :, :, evt] = ara_int.get_sky_map(wf_v_double, weights = snr_weights[:, evt])
         #print(coef[:, :, :, evt], coord[:, :, :, :, evt])
-        del wf_v
+        del wf_v, wf_v_double
     del ara_root, num_evts, ara_int
 
     print('Reco snr mf collecting is done!')

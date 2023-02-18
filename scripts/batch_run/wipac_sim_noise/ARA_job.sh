@@ -10,6 +10,13 @@ user_path=/misc/disk19/users/
 setup=${user_path}mkim/OMF_filter/ARA0${st}/sim_${key}_setup/${key}_A${st}_R${run}.txt
 result=${user_path}mkim/OMF_filter/ARA0${st}/sim_${key}
 
+if [ -d "$DIR" ]; then
+    echo "There is ${result}"
+else
+    echo "Make ${result}"
+    mkdir ${result}
+fi
+
 # run the reconstruction script
 export HDF5_USE_FILE_LOCKING='FALSE'
 source /cvmfs/ara.opensciencegrid.org/trunk/centos7/setup.sh
