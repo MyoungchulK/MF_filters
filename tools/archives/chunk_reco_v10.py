@@ -17,7 +17,6 @@ def reco_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm
     from tools.ara_py_interferometers import get_products
     from tools.ara_run_manager import run_info_loader
     from tools.ara_known_issue import known_issue_loader
-    from tools.ara_quality_cut import get_bad_events
 
     # geom. info.
     ara_const = ara_const()
@@ -44,15 +43,20 @@ def reco_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm
         del ara_uproot
 
     # pre quality cut
+    run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
     if use_l2 == False:
-        daq_qual_cut_sum = get_bad_events(st, run, analyze_blind_dat = analyze_blind_dat, verbose = True, evt_num = evt_num)[0]
+        daq_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True, force_blind = True)
+        daq_hf = h5py.File(daq_dat, 'r')
+        daq_evt = daq_hf['evt_num'][:]
+        daq_qual_cut = daq_hf['daq_qual_cut_sum'][:] != 0
+        daq_qual_cut_sum = np.in1d(evt_num, daq_evt[daq_qual_cut]).astype(int)
+        del daq_dat, daq_hf, daq_evt, daq_qual_cut
 
     known_issue = known_issue_loader(st)
     bad_ant = known_issue.get_bad_antenna(run, print_integer = True)
     del known_issue
 
     # snr info
-    run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
     wei_key = 'snr'
     wei_dat = run_info.get_result_path(file_type = wei_key, verbose = True)
     wei_hf = h5py.File(wei_dat, 'r')
@@ -89,8 +93,7 @@ def reco_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm
 
         # get entry and wf
         ara_root.get_entry(evt)
-        ara_root.get_useful_evt(ara_root.cal_type.kLatestCalibWithOutTrimFirstBlock)
-        #ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
+        ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
         
         # loop over the antennas
         for ant in range(num_ants):

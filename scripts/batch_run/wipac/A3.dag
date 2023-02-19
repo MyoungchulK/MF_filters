@@ -32047,9 +32047,6 @@ VARS job_ARA_S3_R16569 station="3" run="16569"
 JOB job_ARA_S3_R16571 ARA_job.sub 
 VARS job_ARA_S3_R16571 station="3" run="16571"
 
-JOB job_ARA_S3_R16572 ARA_job.sub 
-VARS job_ARA_S3_R16572 station="3" run="16572"
-
 JOB job_ARA_S3_R16573 ARA_job.sub 
 VARS job_ARA_S3_R16573 station="3" run="16573"
 
