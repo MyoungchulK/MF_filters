@@ -71,24 +71,11 @@ def reco_sim_collector(Data, Station, Year):
     coef = np.full((2, 2, 2, num_evts), np.nan, dtype = float) # pol, rad, sol
     coord = np.full((2, 2, 2, 2, num_evts), np.nan, dtype = float) # thephi, pol, rad, sol
 
-    use_cross_talk = True
-    if use_cross_talk:
-        offset = 75 #ns
-        off_idx = int(offset / dt)
-        top_ch_idx = np.array([0, 1, 2, 3, 8, 9, 10, 11], dtype = int)
-        bottom_ch_idx = np.array([4, 5, 6, 7, 12, 13, 14, 15], dtype = int)
-        ct_ratio = 0.3
-
     # loop over the events
     for evt in tqdm(range(num_evts)):
       #if evt <100: # debug 
 
         wf_v = ara_root.get_rf_wfs(evt)
-
-        if use_cross_talk:
-            #wf_v[:, top_ch_idx] *= (1 - ct_ratio)
-            wf_v[off_idx:, top_ch_idx] += wf_v[:-off_idx, bottom_ch_idx] * ct_ratio
-
         ara_int.get_sky_map(wf_v, weights = snr_weights[:, evt], sum_pol = True)
         coef[:, :, :, evt] = ara_int.coval
         coord[:, :, :, :, evt] = ara_int.coord

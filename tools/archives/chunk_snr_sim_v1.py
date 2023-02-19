@@ -38,15 +38,7 @@ def snr_sim_collector(Data, Station, Year):
 
     # wf analyzer
     wf_int = wf_analyzer(dt = dt)
-
-    use_cross_talk = True
-    if use_cross_talk:
-        offset = 75 #ns
-        off_idx = int(offset / dt)
-        top_ch_idx = np.array([0, 1, 2, 3, 8, 9, 10, 11], dtype = int)
-        bottom_ch_idx = np.array([4, 5, 6, 7, 12, 13, 14, 15], dtype = int)
-        ct_ratio = 0.3 
-
+ 
     # output array
     rms = np.full((num_ants, num_evts), np.nan, dtype = float)
     p2p = np.copy(rms)
@@ -55,16 +47,13 @@ def snr_sim_collector(Data, Station, Year):
     for evt in tqdm(range(num_evts)):
       #if evt <100: # debug 
 
-        wf_v = ara_root.get_rf_wfs(evt)
-    
-        if use_cross_talk:
-            #wf_v[:, top_ch_idx] *= (1 - ct_ratio)
-            wf_v[off_idx:, top_ch_idx] += wf_v[:-off_idx, bottom_ch_idx] * ct_ratio
-
-        rms[:, evt] = np.nanstd(wf_v, axis = 0)
+        ara_root.get_entry(evt)
         for ant in range(num_ants):
-            p2p[ant, evt] = wf_int.get_p2p(wf_v[:, ant], use_max = True)
-        del wf_v
+            wf_v = ara_root.get_rf_ch_wf(ant)[1]
+            rms[ant, evt] = np.nanstd(wf_v)
+            p2p[ant, evt] = wf_int.get_p2p(wf_v, use_max = True)
+            del wf_v
+            ara_root.del_TGraph()
     del ara_root, num_ants, num_evts
 
     rms_mean = np.nanmean(rms, axis = 1)
