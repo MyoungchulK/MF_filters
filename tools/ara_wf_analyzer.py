@@ -54,8 +54,7 @@ class wf_analyzer:
     def get_time_pad(self, add_double_pad = False, new_wf_time = None):
 
         # from a2/3 length
-        pad_i = -186.5
-        #pad_i = -210.5
+        pad_i = -210.5
         pad_f = 953
         #pad_i = self.dt * np.ceil((1/self.dt) * pad_i)
         #pad_f = self.dt * np.floor((1/self.dt) * pad_f)
