@@ -11626,7 +11626,6 @@
 17094 /data/exp/ARA/2020/unblinded/L1/ARA02/0620/run017094/event017094.root 
 17098 /data/exp/ARA/2020/unblinded/L1/ARA02/0620/run017098/event017098.root 
 17102 /data/exp/ARA/2020/unblinded/L1/ARA02/0621/run017102/event017102.root 
-17103 /data/exp/ARA/2020/unblinded/L1/ARA02/0621/run017103/event017103.root 
 17104 /data/exp/ARA/2020/unblinded/L1/ARA02/0621/run017104/event017104.root 
 17105 /data/exp/ARA/2020/unblinded/L1/ARA02/0621/run017105/event017105.root 
 17109 /data/exp/ARA/2020/unblinded/L1/ARA02/0621/run017109/event017109.root 
