@@ -39,7 +39,7 @@ def snr_sim_collector(Data, Station, Year):
     # wf analyzer
     wf_int = wf_analyzer(dt = dt)
 
-    use_cross_talk = True
+    use_cross_talk = False
     if use_cross_talk:
         offset = 75 #ns
         off_idx = int(offset / dt)

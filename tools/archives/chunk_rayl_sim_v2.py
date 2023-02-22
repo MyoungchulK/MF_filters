@@ -41,7 +41,7 @@ def rayl_sim_collector(Data, Station, Year):
     del wf, dt, wf_len
 
     # rayl fit
-    binning = np.array([100], dtype = int)
+    binning = np.array([1000], dtype = int)
     rayl, fft_2d, bin_edges = get_rayl_distribution(fft, binning = binning[0])
     del fft
 

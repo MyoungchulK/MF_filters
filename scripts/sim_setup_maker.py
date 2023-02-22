@@ -91,7 +91,7 @@ def main(key, station, blind_dat):
         flavor_old = 'SELECT_FLAVOR='
 
     for r in tqdm(range(len(d_run_tot))):
-      #if d_run_tot[r] == 12001:
+      if d_run_tot[r] == 12328:
 
         hf = h5py.File(d_list[r], 'r')
         bad_run = bool(int(hf['bad_run'][0]))
