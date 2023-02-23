@@ -60,7 +60,6 @@ def snr_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm 
         # get entry and wf
         ara_root.get_entry(evt)
         ara_root.get_useful_evt(ara_root.cal_type.kLatestCalibWithOutTrimFirstBlock)
-        #ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
         
         # loop over the antennas
         for ant in range(num_ants):

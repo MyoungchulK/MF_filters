@@ -12,7 +12,6 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, use_sim
         from tools.ara_data_load import ara_root_loader
     from tools.ara_constant import ara_const
     from tools.ara_wf_analyzer import wf_analyzer
-    #from tools.ara_wf_analyzer_sim import wf_analyzer
     from tools.ara_detector_response import get_rayl_distribution
     from tools.ara_detector_response import get_signal_chain_gain
     from tools.ara_detector_response import get_rayl_bad_run
@@ -45,7 +44,7 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, use_sim
         evt_num = ara_uproot.evt_num
         entry_num = ara_uproot.entry_num
         trig_type = ara_uproot.get_trig_type()
-        blk_len = (ara_uproot.read_win // num_ddas).astype(float) - 1
+        blk_len = (ara_uproot.read_win // num_ddas).astype(float)
         st = ara_uproot.station_id
         run = ara_uproot.run
         ara_root = ara_root_loader(Data, Ped, st, ara_uproot.year)
@@ -57,8 +56,8 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, use_sim
    
     # clean soft trigger 
     clean_rf_idx = np.logical_and(~tot_cuts, trig_type == 0)
-    clean_soft_idx = np.logical_and(~tot_cuts, trig_type == 2)
-    #clean_soft_idx = np.logical_and(~tot_cuts, trig_type == 0)
+    #clean_soft_idx = np.logical_and(~tot_cuts, trig_type == 2)
+    clean_soft_idx = np.logical_and(~tot_cuts, trig_type == 0)
     clean_soft_entry = entry_num[clean_soft_idx]
     num_clean_softs = np.count_nonzero(clean_soft_idx)
     print(f'Number of clean soft event is {num_clean_softs}') 
@@ -85,7 +84,7 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, use_sim
  
         # get entry and wf
         ara_root.get_entry(clean_soft_entry[evt])
-        ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
+        ara_root.get_useful_evt(ara_root.cal_type.kLatestCalibWithOutTrimFirstBlock)
             
         # loop over the antennas
         for ant in range(num_ants):
@@ -101,7 +100,7 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, use_sim
     del ara_root, num_clean_softs, wf_int, clean_soft_entry, num_ants
  
     # rayl fit 
-    soft_rayl, rfft_2d, dat_bin_edges = get_rayl_distribution(soft_ffts)
+    soft_rayl, rfft_2d, dat_bin_edges = get_rayl_distribution(soft_ffts, use_upper_95 = True)
     del soft_ffts
 
     # signal chain gain

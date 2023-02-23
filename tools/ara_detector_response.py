@@ -10,7 +10,7 @@ from tools.ara_constant import ara_const
 ara_const = ara_const()
 num_ants = ara_const.USEFUL_CHAN_PER_STATION
 
-def get_rayl_distribution(dat, binning = 100):
+def get_rayl_distribution(dat, binning = 100, use_upper_95 = False):
 
     fft_len = dat.shape[0]
     rfft_2d = np.full((fft_len, binning, num_ants), 0, dtype = int)
@@ -39,6 +39,10 @@ def get_rayl_distribution(dat, binning = 100):
 
             try:
                 dat_amp = dat[freq, ant][~np.isnan(dat[freq, ant])]
+                if use_upper_95:
+                    upper95_idx = int(float(len(dat_amp)) * 0.95)
+                    dat_amp = np.sort(dat_amp)[:upper95_idx]
+                    del upper95_idx
                 rayl_params[:, freq, ant] = rayleigh.fit(dat_amp, loc = dat_bin_edges[0, freq, ant], scale = mu_init)
                 del dat_amp
             except RuntimeError:
