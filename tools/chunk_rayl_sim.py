@@ -29,6 +29,14 @@ def rayl_sim_collector(Data, Station, Year):
     pad_len = wf_int.pad_len
     print('pad len:', pad_len)
 
+    use_cross_talk = True
+    if use_cross_talk:
+        offset = 75 #ns
+        off_idx = int(offset / dt)
+        top_ch_idx = np.array([0, 1, 2, 3, 8, 9, 10, 11], dtype = int)
+        bottom_ch_idx = np.array([4, 5, 6, 7, 12, 13, 14, 15], dtype = int)
+        ct_ratio = 0.3
+
     # wf arr
     wf = np.full((pad_len, num_ants, num_evts), 0, dtype = float)
     print(f'wf array dim.: {wf.shape}')
@@ -38,7 +46,13 @@ def rayl_sim_collector(Data, Station, Year):
     for evt in tqdm(range(num_evts)):
        #if evt <100:
 
-        wf[:wf_len,:,evt] = ara_root.get_rf_wfs(evt)
+        wf_v = ara_root.get_rf_wfs(evt)
+
+        if use_cross_talk:
+            #wf_v[:, top_ch_idx] *= (1 - ct_ratio)
+            wf_v[off_idx:, top_ch_idx] += wf_v[:-off_idx, bottom_ch_idx] * ct_ratio
+
+        wf[:wf_len,:,evt] = wf_v
     del ara_root, num_ants, num_evts
 
     freq = np.fft.rfftfreq(pad_len, dt)
