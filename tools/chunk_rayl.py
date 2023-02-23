@@ -56,8 +56,8 @@ def rayl_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, use_sim
    
     # clean soft trigger 
     clean_rf_idx = np.logical_and(~tot_cuts, trig_type == 0)
-    #clean_soft_idx = np.logical_and(~tot_cuts, trig_type == 2)
-    clean_soft_idx = np.logical_and(~tot_cuts, trig_type == 0)
+    clean_soft_idx = np.logical_and(~tot_cuts, trig_type == 2)
+    #clean_soft_idx = np.logical_and(~tot_cuts, trig_type == 0)
     clean_soft_entry = entry_num[clean_soft_idx]
     num_clean_softs = np.count_nonzero(clean_soft_idx)
     print(f'Number of clean soft event is {num_clean_softs}') 
