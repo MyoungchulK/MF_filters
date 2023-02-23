@@ -9,7 +9,7 @@ def snr_sim_collector(Data, Station, Year):
 
     from tools.ara_sim_load import ara_root_loader
     from tools.ara_constant import ara_const
-    from tools.ara_wf_analyzer import wf_analyzer
+    from tools.ara_wf_analyzer_sim import wf_analyzer
 
     # const. info.
     ara_const = ara_const()

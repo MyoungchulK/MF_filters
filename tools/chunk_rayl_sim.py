@@ -11,6 +11,7 @@ def rayl_sim_collector(Data, Station, Year):
     from tools.ara_sim_load import ara_root_loader
     from tools.ara_constant import ara_const
     from tools.ara_detector_response import get_rayl_distribution
+    from tools.ara_wf_analyzer_sim import wf_analyzer
 
     # geom. info.
     ara_const = ara_const()
@@ -21,11 +22,15 @@ def rayl_sim_collector(Data, Station, Year):
     ara_root = ara_root_loader(Data, Station, Year)
     num_evts = ara_root.num_evts
     ara_root.get_sub_info(Data)
-    dt = ara_root.time_step
+    dt = ara_root.time_step[0]
     wf_len = ara_root.waveform_length
 
+    wf_int = wf_analyzer(dt = dt, use_time_pad = True)
+    pad_len = wf_int.pad_len
+    print('pad len:', pad_len)
+
     # wf arr
-    wf = np.full((wf_len, num_ants, num_evts), np.nan, dtype = float)
+    wf = np.full((pad_len, num_ants, num_evts), 0, dtype = float)
     print(f'wf array dim.: {wf.shape}')
     print(f'wf array size: ~{np.round(wf.nbytes/1024/1024)} MB')
 
@@ -33,12 +38,12 @@ def rayl_sim_collector(Data, Station, Year):
     for evt in tqdm(range(num_evts)):
        #if evt <100:
 
-        wf[:,:,evt] = ara_root.get_rf_wfs(evt)
+        wf[:wf_len,:,evt] = ara_root.get_rf_wfs(evt)
     del ara_root, num_ants, num_evts
 
-    freq = np.fft.rfftfreq(wf_len, dt)
+    freq = np.fft.rfftfreq(pad_len, dt)
     fft = np.abs(np.fft.rfft(wf, axis = 0)) / np.sqrt(wf_len) * np.sqrt(dt)
-    del wf, dt, wf_len
+    del wf, dt, wf_len, pad_len
 
     # rayl fit
     binning = np.array([100], dtype = int)
