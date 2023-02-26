@@ -121,7 +121,10 @@ def main(key, station, blind_dat):
             context = context.replace(wf_len_old, wf_len_new)
             context = context.replace(thres_old, thres_new)
             context = context.replace(ele_old, ele_new)
-            nnu_pass = 'NNU_PASSED=500'
+            if key == 'signal':
+                nnu_pass = 'NNU_PASSED=5'
+            else:
+                nnu_pass = 'NNU_PASSED=500'
             nnu_pass_new = f'NNU_PASSED={num_evts}'
             context = context.replace(nnu_pass, nnu_pass_new)
             if key == 'signal':
