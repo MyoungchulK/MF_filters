@@ -1,3 +1,5 @@
+#!/bin/bash
+
 import numpy as np
 import os, sys
 from tqdm import tqdm
@@ -30,14 +32,15 @@ def cobalt_run_loader(Station = None, Key = None, Act_Evt = None, analyze_blind_
     lists = np.asarray(lists, dtype = int)
 
     #lists = lists[::-1]
-    CMD_line = f'bash ../setup.sh'
-    #CMD_line = f'source ~../setup.sh'
-    print(CMD_line)
-    call(CMD_line.split(' '))
+    #CMD_line = f'bash ../setup.sh'
+    #CMD_line = f'source ../setup.sh'
+    #print(CMD_line)
+    #call(CMD_line.split(' '))
 
     count = 0
     for w in tqdm(lists):
 
+        #if int(w) >= Act_Evt[0] and int(w) < Act_Evt[1]:
         if count >= Act_Evt[0] and count < Act_Evt[1]:
             """
             log_name = f'/home/mkim/logs/A{Station}.R{int(w)}.log'
@@ -63,7 +66,8 @@ def cobalt_run_loader(Station = None, Key = None, Act_Evt = None, analyze_blind_
 
             if log_flag == False and err_flag == False: continue
             """
-            CMD_line = f'python3 -W ignore script_executor.py -k {key} -s {Station} -r {int(w)} -b {int(analyze_blind_dat)} -n 0 -q 0'
+            CMD_line = f'python3 -W ignore script_executor.py -k {key} -s {Station} -r {int(w)} -b {int(analyze_blind_dat)} -n 1 -q 0'
+            print(count)
             print(CMD_line)
             call(CMD_line.split(' '))
             """

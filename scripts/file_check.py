@@ -33,6 +33,7 @@ with open(bad_path, 'r') as f:
         run_num = int(lines.split()[0])
         lists.append(run_num)
 lists = np.asarray(lists, dtype = int)
+#lists = lists[lists > 10000]
 print('Total runs:', len(lists))
 
 dat_idx = ~np.in1d(lists, d_run_tot)
