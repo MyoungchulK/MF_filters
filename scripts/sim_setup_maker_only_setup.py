@@ -62,7 +62,7 @@ def main(key, station, blind_dat):
     blind = ''
     if blind_dat:
         blind = '_full'
-    r_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{station}/sim_{key}_setup{blind}/' # text output path
+    r_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{station}/sim_{key}_setup{blind}1/' # text output path
     if not os.path.exists(r_path):
         os.makedirs(r_path)
     dag_path = f'/home/mkim/analysis/MF_filters/scripts/batch_run/wipac_sim_{key}_config/' # dag path
@@ -89,7 +89,7 @@ def main(key, station, blind_dat):
         num_configs = 9
     if key == 'signal':
         num_evts = 10
-        num_runs = 3000
+        num_runs = 1000
     else:
         num_evts = 1000
         num_runs = 1000
