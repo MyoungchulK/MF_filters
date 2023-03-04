@@ -26,7 +26,7 @@ def main(station):
     en_range = np.arange(16, 21+1, 1, dtype = int)
     en_len = len(en_range)
 
-    num_runs = 1000
+    num_runs = 200
 
     for r in tqdm(range(en_len)):
         for s in tqdm(range(num_runs)):
