@@ -88,7 +88,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Rayl_Map_1d_A{Station}_R{count_i}.h5'
+file_name = f'Rayl_Map_1st_blk_1d_A{Station}_R{count_i}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('r_bins', data=r_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('r_bin_center', data=r_bin_center, compression="gzip", compression_opts=9)
