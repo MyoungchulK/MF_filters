@@ -30,7 +30,7 @@ del list_path, list_name, list_file, blind_type
 lists = np.asarray(lists, dtype = int)
 
 # sort
-r_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_ratio_full/*'
+r_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/rayl_full/*'
 r_list, r_run_tot, r_run_range, r_len = file_sorter(r_path)
 
 c_runs = lists[~np.in1d(lists, r_run_tot)]

@@ -34,7 +34,6 @@ def snr_sim_collector(Data, Station, Year):
     #elast_y = ara_root.elast_y
     #posnu = ara_root.posnu
     #nnu = ara_root.nnu
-    print(wf_time)
 
     # wf analyzer
     wf_int = wf_analyzer(dt = dt)
@@ -69,12 +68,15 @@ def snr_sim_collector(Data, Station, Year):
 
     rms_mean = np.nanmean(rms, axis = 1)
 
-    signal_key = 'signal_F'
+    signal_key = 'signal'
     if Data.find(signal_key) != -1:
         r_idx = Data.find('_R')
         e_idx = Data.find('.txt', r_idx + 2)
         run = int(Data[r_idx + 2:e_idx])
-        n_path =  os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/snr_sim/snr_AraOut.noise_A{Station}_R{run}.txt.run0.h5'
+        r_idx = Data.find('.run')
+        e_idx = Data.find('.h5', r_idx + 4)
+        sim_run = int(Data[r_idx + 4:e_idx])
+        n_path =  os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/snr_sim/snr_AraOut.noise_A{Station}_R{run}.txt.run{sim_run}.h5'
         print('noise_snr_path:', n_path)
         n_hf = h5py.File(n_path, 'r')
         noise_rms_mean = n_hf['rms_mean'][:]
