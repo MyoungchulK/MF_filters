@@ -8,7 +8,7 @@ curr_path = os.getcwd()
 sys.path.append(curr_path+'/../')
 from tools.ara_run_manager import file_sorter
 from tools.ara_utility import size_checker
-from tools.ara_run_manager import run_info_loader
+#from tools.ara_run_manager import run_info_loader
 from tools.ara_known_issue import known_issue_loader
 
 Station = int(sys.argv[1])
@@ -25,10 +25,9 @@ del known_issue
 
 # sort
 d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/reco/*'
-d_list, d_run_tot, d_run_range = file_sorter(d_path)
-d_len = len(d_run_tot)
+d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 q_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/qual_cut_full/'
-b_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/l2/'
+b_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/snr/'
 del d_run_range
 
 z_bins = np.linspace(0, 180, 180 + 1)
@@ -50,8 +49,9 @@ map_r_c_cut = np.full((d_len, c_bin_len, 3, 2, 2, 2), 0, dtype = int)
 
 runs = np.copy(d_run_tot)
 configs = np.full((d_len), 0, dtype = int)
-b_runs = np.copy(configs)
+b_runs = np.in1d(runs, bad_runs).astype(int)
 years = np.copy(configs)
+del bad_runs
 
 for r in tqdm(range(len(d_run_tot))):
     
@@ -63,30 +63,22 @@ for r in tqdm(range(len(d_run_tot))):
     except OSError: 
         print(d_list[r])
         continue
+    con = hf['config'][:]
+    configs[r] = con[2]
+    years[r] = con[3]
+    coord = hf['coord'][:] # pol, thephi, rad, sol, evt
+    coef = hf['coef'][:]
+    evt = hf['evt_num'][:]
+    del hf, con
 
-    b_name = f'{b_path}l2_A{Station}_R{d_run_tot[r]}.h5'
+    b_name = f'{b_path}snr_A{Station}_R{d_run_tot[r]}.h5'
     hf_b = h5py.File(b_name, 'r')
     trig = hf_b['trig_type'][:]
-    del b_name, hf_b
-
-    ara_run = run_info_loader(Station, d_run_tot[r])
-    g_idx = ara_run.get_config_number()
-    configs[r] = g_idx
-    del ara_run
-
-    bad_run = d_run_tot[r] in bad_runs
-    b_runs[r] = bad_run
-
     rf_t = trig == 0
     cal_t = trig == 1
     soft_t = trig == 2
     t_list = [rf_t, cal_t, soft_t]
-    yr = hf['config'][3]
-    years[r] = yr
-    coord = hf['coord'][:] # pol, thephi, rad, sol, evt
-    coef = hf['coef'][:]
-    evt = hf['evt_num'][:]
-    del hf, trig, yr
+    del b_name, hf_b, trig
 
     q_name = f'{q_path}qual_cut_full_A{Station}_R{d_run_tot[r]}.h5'
     hf_q = h5py.File(q_name, 'r')
@@ -108,18 +100,18 @@ for r in tqdm(range(len(d_run_tot))):
                     map_r_z[r, :, t, pol, rad, sol] = np.histogram(coord[pol, 0, rad, sol][t_list[t]], bins = z_bins)[0].astype(int)
                     map_r_a[r, :, t, pol, rad, sol] = np.histogram(coord[pol, 1, rad, sol][t_list[t]], bins = a_bins)[0].astype(int)
                     map_r_c[r, :, t, pol, rad, sol] = np.histogram(coef[pol, rad, sol][t_list[t]], bins = c_bins)[0].astype(int)
-                    if bad_run: continue
+                    if b_runs[r]: continue
                     map_r_z_cut[r, :, t, pol, rad, sol] = np.histogram(coord_cut[pol, 0, rad, sol][t_list[t]], bins = z_bins)[0].astype(int)
                     map_r_a_cut[r, :, t, pol, rad, sol] = np.histogram(coord_cut[pol, 1, rad, sol][t_list[t]], bins = a_bins)[0].astype(int)
                     map_r_c_cut[r, :, t, pol, rad, sol] = np.histogram(coef_cut[pol, rad, sol][t_list[t]], bins = c_bins)[0].astype(int)
-    del g_idx, bad_run, coef, coef_cut, coord, coord_cut, t_list, rf_t, cal_t, soft_t
+    del coef, coef_cut, coord, coord_cut, t_list, rf_t, cal_t, soft_t
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Reco_Map_New_1d_v2_A{Station}_R{count_i}.h5'
+file_name = f'Reco_Map_New_1st_blk_1d_A{Station}_R{count_i}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('a_bins', data=a_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('a_bin_center', data=a_bin_center, compression="gzip", compression_opts=9)

@@ -74,7 +74,7 @@ def snr_sim_collector(Data, Station, Year):
         e_idx = Data.find('.txt', r_idx + 2)
         run = int(Data[r_idx + 2:e_idx])
         r_idx = Data.find('.run')
-        e_idx = Data.find('.h5', r_idx + 4)
+        e_idx = Data.find('.root', r_idx + 4)
         sim_run = int(Data[r_idx + 4:e_idx])
         n_path =  os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/snr_sim/snr_AraOut.noise_A{Station}_R{run}.txt.run{sim_run}.h5'
         print('noise_snr_path:', n_path)
