@@ -9,7 +9,8 @@ def reco_sim_collector(Data, Station, Year):
 
     from tools.ara_sim_load import ara_root_loader
     from tools.ara_py_interferometers import py_interferometers
-    from tools.ara_run_manager import run_info_loader
+    from tools.ara_run_manager import get_path_info_v2
+    from tools.ara_run_manager import get_example_run
 
     # data config
     ara_root = ara_root_loader(Data, Station, Year)
@@ -31,33 +32,29 @@ def reco_sim_collector(Data, Station, Year):
     nnu = ara_root.nnu
 
     # config
-    i_key = '_R'
-    i_key_len = len(i_key)
-    i_idx = Data.find(i_key)
-    f_idx = Data.find('.txt', i_idx + i_key_len)
-    run = int(Data[i_idx + i_key_len:f_idx])
-    o_key = 'AraOut.'
-    o_key_len = len(o_key)
-    o_idx = Data.find(o_key)
-    f_idx = Data.find('_A', o_idx + o_key_len)
-    sim_type = Data[o_idx + o_key_len:f_idx]
-    ara_run = run_info_loader(Station, run)
-    config = ara_run.get_config_number()
+    sim_type = get_path_info_v2(Data, 'AraOut.', '_')
+    config = int(get_path_info_v2(Data, '_R', '.txt'))
+    flavor = get_path_info_v2(Data, 'AraOut.signal_F', '_A')
+    sim_run = int(get_path_info_v2(Data, 'txt.run', '.root'))
     if config < 6:
         year = 2015
     else:
         year = 2018
-    print(Station, run, sim_type, config, year)
-    del i_key, i_key_len, i_idx, f_idx, o_key, o_key_len, o_idx
+    print('St:', Station, 'Type:', sim_type, 'Flavor:', flavor, 'Config:', config, 'Year:', year, 'Sim Run:', sim_run)
 
     # snr
-    s_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/snr_sim/snr_AraOut.{sim_type}_A{Station}_R{run}.txt.run0.h5'
+    if flavor is not None:
+        flavor = int(flavor)
+        s_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/snr_sim/snr_AraOut.{sim_type}_F{flavor}_A{Station}_R{config}.txt.run{sim_run}.h5'
+    else:
+        s_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/snr_sim/snr_AraOut.{sim_type}_A{Station}_R{config}.txt.run{sim_run}.h5'
     print('snr_path:', s_path)
     snr_hf = h5py.File(s_path, 'r')
     snr = snr_hf['snr'][:]
     del s_path, snr_hf
 
-    ara_int = py_interferometers(wf_len, dt, Station, year, run = run, get_sub_file = True)
+    ex_run = get_example_run(Station, config)
+    ara_int = py_interferometers(wf_len, dt, Station, year, run = ex_run, get_sub_file = True)
     pairs = ara_int.pairs
     v_pairs_len = ara_int.v_pairs_len
     snr_weights = snr[pairs[:, 0]] * snr[pairs[:, 1]]
@@ -71,7 +68,7 @@ def reco_sim_collector(Data, Station, Year):
     coef = np.full((2, 2, 2, num_evts), np.nan, dtype = float) # pol, rad, sol
     coord = np.full((2, 2, 2, 2, num_evts), np.nan, dtype = float) # thephi, pol, rad, sol
 
-    use_cross_talk = True
+    use_cross_talk = False
     if use_cross_talk:
         offset = 75 #ns
         off_idx = int(offset / dt)

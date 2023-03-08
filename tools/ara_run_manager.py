@@ -12,6 +12,32 @@ from itertools import combinations
 from tools.ara_known_issue import known_issue_loader
 from tools.ara_utility import size_checker
 
+def get_path_info_v2(dat_path, mask_key, end_key):
+
+    mask_idx = dat_path.find(mask_key)
+    if mask_idx == -1:
+        print('Cannot scrap the info from path!')
+        return None
+    mask_len = len(mask_key)
+    end_idx = dat_path.find(end_key, mask_idx + mask_len)
+    val = dat_path[mask_idx + mask_len:end_idx]
+    del mask_idx, mask_len, end_idx
+
+    return val
+
+def get_example_run(st, config):
+
+    con_idx = int(config - 1)
+
+    if st == 2:
+        ex_runs = np.array([3000, 2000, 4000, 5000, 7000, 10000, 16000], dtype = int)
+    elif st == 3:
+        ex_runs = np.array([1500, 1000, 4000, 7000, 2000, 11000, 13000, 15000, 17000], dtype = int)
+
+    ex_run = ex_runs[con_idx]
+
+    return ex_run
+
 def get_pair_info(st, run, verbose = False):
     """! get pair array by 'good' channels
 
