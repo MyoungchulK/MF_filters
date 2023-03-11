@@ -79,9 +79,8 @@ class ara_root_loader:
         del file_uproot, ara_tree, settings, ara_tree_2, event
        
         if get_angle_info:
-            if self.st == 2:
-                sim_st_index = [3,0,1,2,3,0,1,2,3,0,1,2,3,0,1,2]
-                sim_ant_index = [2,2,2,2,0,0,0,0,3,3,3,3,1,1,1,1]
+            sim_st_index = [3,0,1,2,3,0,1,2,3,0,1,2,3,0,1,2]
+            sim_ant_index = [2,2,2,2,0,0,0,0,3,3,3,3,1,1,1,1]
             self.rec_ang = np.full((2, num_ants, self.num_evts), np.nan, dtype = float)
             self.view_ang = np.copy(self.rec_ang)
             self.arrival_time = np.copy(self.rec_ang)
