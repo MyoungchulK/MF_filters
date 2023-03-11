@@ -9,6 +9,7 @@ from tqdm import tqdm
 curr_path = os.getcwd()
 sys.path.append(curr_path+'/../')
 from tools.ara_utility import size_checker
+from tools.ara_run_manager import get_path_info_v2
 
 @click.command()
 @click.option('-k', '--key', type = str)
@@ -32,6 +33,17 @@ def script_loader(key, station, year, data, evt_range, not_override):
         if os.path.exists(h5_file_name_out):
             print(f'{h5_file_name_out} is already there!!')
             return    
+
+    sim_type = get_path_info_v2(data, 'AraOut.', '_')
+    config = int(get_path_info_v2(data, '_R', '.txt'))
+    flavor = int(get_path_info_v2(data, 'AraOut.signal_F', '_A'))
+    sim_run = int(get_path_info_v2(data, 'txt.run', '.root'))
+    if config < 6:
+        year = 2015
+    else:
+        year = 2018
+    print('St:', station, 'Type:', sim_type, 'Flavor:', flavor, 'Config:', config, 'Year:', year, 'Sim Run:', sim_run)
+    del sim_type
 
     # run the chunk code
     module = import_module(f'tools.chunk_{key}_sim')
@@ -63,7 +75,7 @@ def script_loader(key, station, year, data, evt_range, not_override):
     hf = h5py.File(h5_file_name_out, 'w')
 
     #saving result
-    hf.create_dataset('config', data=np.array([station]), compression="gzip", compression_opts=9)
+    hf.create_dataset('config', data=np.array([station, sim_run, config, year, flavor]), compression="gzip", compression_opts=9)
     for r in results:
         print(r, results[r].shape)
         hf.create_dataset(r, data=results[r], compression="gzip", compression_opts=9)

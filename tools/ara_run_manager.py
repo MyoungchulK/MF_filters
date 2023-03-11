@@ -12,12 +12,13 @@ from itertools import combinations
 from tools.ara_known_issue import known_issue_loader
 from tools.ara_utility import size_checker
 
-def get_path_info_v2(dat_path, mask_key, end_key):
+def get_path_info_v2(dat_path, mask_key, end_key, verbose = False):
 
     mask_idx = dat_path.find(mask_key)
     if mask_idx == -1:
-        print('Cannot scrap the info from path!')
-        return None
+        if verbose:
+            print('Cannot scrap the info from path!')
+        return -1
     mask_len = len(mask_key)
     end_idx = dat_path.find(end_key, mask_idx + mask_len)
     val = dat_path[mask_idx + mask_len:end_idx]

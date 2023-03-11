@@ -56,7 +56,7 @@ map_zc_cut = np.copy(map_zc)
 map_zc_cut_cal = np.copy(map_zc)
 del z_bin_len, a_bin_len, c_bin_len
 
-def get_calpulser_cut(st, config, run):
+def get_calpulser_cut(st, run):
 
     if st == 2:
         cp6 = np.full((2, 2), np.nan, dtype = float)
@@ -65,8 +65,8 @@ def get_calpulser_cut(st, config, run):
         cp6[1, 0] = 56.65
         cp6[1, 1] = 69.15
         cp5 = np.full((2, 2), np.nan, dtype = float)
-        cp5[0, 0] = -27.45
-        cp5[0, 1] = -19.75
+        cp5[0, 0] = -28
+        cp5[0, 1] = -19
         cp5[1, 0] = -29.35
         cp5[1, 1] = -21.75
         cp5_m = np.full((2, 2), np.nan, dtype = float)
@@ -85,17 +85,30 @@ def get_calpulser_cut(st, config, run):
         cp5_m_2020[1, 0] = -45.85
         cp5_m_2020[1, 1] = -38.35
 
-        if config < 5:
+        if run < 1901:
             cp_cut = np.full((1, 2, 2), np.nan, dtype = float)
             cp_cut[0] = cp6
-        elif config == 5:
+        elif run > 1900 and run < 1935:
+            cp_cut = np.full((1, 2, 2), np.nan, dtype = float)
+            cp_cut[0] = cp5
+        elif run == 1935:
+            cp_cut = np.full((2, 2, 2), np.nan, dtype = float)
+            cp_cut[0] = cp5
+            cp_cut[1] = cp6
+        elif run > 1935 and run < 7006:
+            cp_cut = np.full((1, 2, 2), np.nan, dtype = float)
+            cp_cut[0] = cp6
+        elif run > 7005 and run < 8098:
             cp_cut = np.full((2, 2, 2), np.nan, dtype = float)
             cp_cut[0] = cp5
             cp_cut[1] = cp5_m
-        elif config == 6:
+        elif run > 8097 and run < 9505:
+            cp_cut = np.full((1, 2, 2), np.nan, dtype = float)
+            cp_cut[0] = cp6
+        elif run > 9504 and run < 15527:
             cp_cut = np.full((1, 2, 2), np.nan, dtype = float)
             cp_cut[0] = cp5
-        elif config == 7:
+        elif run > 15526:
             cp_cut = np.full((2, 2, 2), np.nan, dtype = float)
             cp_cut[0] = cp5_2020
             cp_cut[1] = cp5_m_2020
@@ -123,20 +136,19 @@ def get_calpulser_cut(st, config, run):
         cp6_m_2019[1, 0] = -117.75
         cp6_m_2019[1, 1] = -113.95
 
-        if config < 7:
+        if run < 12873:
             cp_cut = np.full((1, 2, 2), np.nan, dtype = float)
             cp_cut[0] = cp6
-        elif config == 9:
+        elif run > 12872 and run < 13901:
+            cp_cut = np.full((2, 2, 2), np.nan, dtype = float)
+            cp_cut[0] = cp6
+            cp_cut[1] = cp6_m_2019
+        elif run > 13900 and run < 16487:
+            cp_cut = np.full((1, 2, 2), np.nan, dtype = float)
+            cp_cut[0] = cp5_2019
+        elif run > 16486:
             cp_cut = np.full((1, 2, 2), np.nan, dtype = float)
             cp_cut[0] = cp5_2020
-        elif config == 7 or config == 8:
-            if run > 13900:
-                cp_cut = np.full((1, 2, 2), np.nan, dtype = float)
-                cp_cut[0] = cp5_2019
-            else:
-                cp_cut = np.full((2, 2, 2), np.nan, dtype = float)
-                cp_cut[0] = cp6
-                cp_cut[1] = cp6_m_2019
         num_cuts = cp_cut.shape[0]
 
     return cp_cut, num_cuts
@@ -198,7 +210,7 @@ for r in tqdm(range(len(d_run_tot))):
     del cut
 
     pol_idx = get_calpulser_pol(Station, d_run_tot[r])
-    cp_cut, num_cuts = get_calpulser_cut(Station, config, d_run_tot[r])
+    cp_cut, num_cuts = get_calpulser_cut(Station, d_run_tot[r])
     cal_cut = np.full((len(evt)), False, dtype = bool)
     for c in range(num_cuts):
         ele_flag = np.digitize(89.5 - coord_cut_cal[pol_idx, 0, 0, 0], cp_cut[c, 0]) == 1

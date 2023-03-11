@@ -34,7 +34,7 @@ def reco_sim_collector(Data, Station, Year):
     # config
     sim_type = get_path_info_v2(Data, 'AraOut.', '_')
     config = int(get_path_info_v2(Data, '_R', '.txt'))
-    flavor = get_path_info_v2(Data, 'AraOut.signal_F', '_A')
+    flavor = int(get_path_info_v2(Data, 'AraOut.signal_F', '_A'))
     sim_run = int(get_path_info_v2(Data, 'txt.run', '.root'))
     if config < 6:
         year = 2015
@@ -43,8 +43,7 @@ def reco_sim_collector(Data, Station, Year):
     print('St:', Station, 'Type:', sim_type, 'Flavor:', flavor, 'Config:', config, 'Year:', year, 'Sim Run:', sim_run)
 
     # snr
-    if flavor is not None:
-        flavor = int(flavor)
+    if flavor != -1:
         s_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/snr_sim/snr_AraOut.{sim_type}_F{flavor}_A{Station}_R{config}.txt.run{sim_run}.h5'
     else:
         s_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/snr_sim/snr_AraOut.{sim_type}_A{Station}_R{config}.txt.run{sim_run}.h5'

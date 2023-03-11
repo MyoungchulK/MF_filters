@@ -1316,6 +1316,7 @@ class known_issue_loader:
             bad_run = np.append(bad_run, np.arange(16531, 16533 + 1, dtype = int)) # unkown signal
             bad_run = np.append(bad_run, np.arange(16538, 16540 + 1, dtype = int)) # unkown signal
 
+            bad_run = np.append(bad_run, np.arange(924, 933 + 1, dtype = int)) # small Hpol runs
             bad_run = np.append(bad_run, np.array([6270, 13346, 13485, 13592, 13716, 13835, 14096, 14126, 14254, 15332, 16075, 16299, 
                                                     16358, 16790, 16919, 17310, 17311, 17312, 17313, 17315, 17317, 17318, 17320, 17410, 17800, 17948], dtype = int))
             bad_run = np.append(bad_run, np.array([16487, 16488, 16489, 16490, 16491, 16492, 16493, 16494, 16495, 16497, 16499, 16500,
