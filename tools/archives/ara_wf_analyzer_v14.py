@@ -56,18 +56,24 @@ class wf_analyzer:
         # from a2/3 length
         pad_i = -210.5
         pad_f = 953
+        #pad_i = self.dt * np.ceil((1/self.dt) * pad_i)
+        #pad_f = self.dt * np.floor((1/self.dt) * pad_f)
         pad_w = int((pad_f - pad_i) / self.dt) + 1
 
         if new_wf_time is not None:
-            print(f'New WF time! {new_wf_time[0]} ~ {new_wf_time[-1]} ns' )
-            self.new_pad_w = len(new_wf_time)
-            pad_diff = int(pad_w - self.new_pad_w)
-            pad_diff_half = int(pad_diff // 2)
+            new_wf_i = self.dt * np.ceil((1/self.dt) * new_wf_time[0])
+            new_wf_f = self.dt * np.floor((1/self.dt) * new_wf_time[-1])
+            #new_wf_time = np.linspace(new_wf_i, new_wf_f, int((new_wf_f - new_wf_i)/self.dt) + 1, dtype = float)
+            new_wf_time = np.arange(new_wf_i, new_wf_f+self.dt/2, self.dt, dtype = float)
+            new_wf_len = len(new_wf_time)
+            pad_diff = pad_w - new_wf_len
+            pad_front = pad_diff // 2
+            pad_end = pad_diff - pad_front           
 
-            pad_i = -pad_diff_half * self.dt + new_wf_time[0]
-            pad_f = pad_diff_half * self.dt + new_wf_time[-1]
+            pad_i = -pad_front * self.dt + new_wf_time[0]
+            pad_f = pad_end * self.dt + new_wf_time[-1]
             pad_w = np.copy(int((pad_f - pad_i) / self.dt) + 1)
-            del pad_diff, pad_diff_half
+            del new_wf_i, new_wf_f, new_wf_len, pad_diff, pad_front, pad_end
 
         if add_double_pad:
             half_pad_t = pad_w * self.dt / 2
@@ -84,8 +90,6 @@ class wf_analyzer:
         self.pad_num = np.full((self.num_chs), 0, dtype = int)
         if self.use_l2:
             self.pad_idx = (self.pad_zero_t / self.dt).astype(int)
-        if new_wf_time is not None:
-            self.pad_idx = np.in1d((self.pad_zero_t / self.dt).astype(int), (new_wf_time / self.dt).astype(int))
         print(f'time pad length: {self.pad_len * self.dt} ns')
 
     def get_freq_pad(self, use_rfft = False):
@@ -110,17 +114,13 @@ class wf_analyzer:
 
         return int_t
 
-    def get_int_wf(self, raw_t, raw_v, ant, use_sim = False, use_unpad = False, use_zero_pad = False, use_band_pass = False, use_cw = False, use_p2p = False, use_cw_ratio = False, evt = None):
+    def get_int_wf(self, raw_t, raw_v, ant, use_unpad = False, use_zero_pad = False, use_band_pass = False, use_cw = False, use_p2p = False, use_cw_ratio = False, evt = None):
 
         if self.use_l2:
             int_idx = np.in1d(self.pad_idx, (raw_t / self.dt).astype(int))
             #int_idx = np.in1d(self.pad_zero_t, raw_t)
             int_num = len(raw_v)
-            int_v = raw_v           
-        elif use_sim:
-            int_idx = self.pad_idx
-            int_num = self.new_pad_w
-            int_v = raw_v  
+            int_v = raw_v            
         else:
             # akima interpolation!
             akima = Akima1DInterpolator(raw_t, raw_v)
@@ -130,14 +130,14 @@ class wf_analyzer:
             int_v = int_v[int_idx]
             del akima
 
-        if use_cw == True and self.use_l2 == False:
-            self.cw_geo.get_filtered_wf(int_v, int_num, ant, evt, use_pow_ratio = use_cw_ratio)
-            if use_cw_ratio:
-                self.cw_ratio = self.cw_geo.pow_ratio
-            int_v = self.cw_geo.new_wf
+            if use_cw:
+                self.cw_geo.get_filtered_wf(int_v, int_num, ant, evt, use_pow_ratio = use_cw_ratio)
+                if use_cw_ratio:
+                    self.cw_ratio = self.cw_geo.pow_ratio
+                int_v = self.cw_geo.new_wf
 
-        if use_band_pass == True and self.use_l2 == False:
-            int_v = self.get_band_passed_wf(int_v)
+            if use_band_pass:
+                int_v = self.get_band_passed_wf(int_v)
 
         if use_p2p:
             self.int_p2p = self.get_p2p(int_v, use_max = True) 

@@ -23,7 +23,7 @@ class ara_root_loader:
         #geom info
         from tools.ara_data_load import ara_geom_loader
         self.st = st
-        self.ara_geom = ara_geom_loader(self.st, yrs)
+        self.ara_geom = ara_geom_loader(self.st, yrs) # maybe no need this....
 
         # open a data file
         self.file = ROOT.TFile.Open(data)
@@ -66,9 +66,9 @@ class ara_root_loader:
         self.posnu[0] = np.asarray(event['Nu_Interaction/Nu_Interaction.posnu.x'], dtype = float)
         self.posnu[1] = np.asarray(event['Nu_Interaction/Nu_Interaction.posnu.y'], dtype = float)
         self.posnu[2] = np.asarray(event['Nu_Interaction/Nu_Interaction.posnu.z'], dtype = float)
-        self.posnu[3] = np.asarray(event['Nu_Interaction/Nu_Interaction.posnu.theta'], dtype = float)
-        self.posnu[4] = np.asarray(event['Nu_Interaction/Nu_Interaction.posnu.phi'], dtype = float)
-        self.posnu[5] = np.asarray(event['Nu_Interaction/Nu_Interaction.posnu.r'], dtype = float)
+        self.posnu[3] = np.asarray(event['Nu_Interaction/Nu_Interaction.posnu.theta'], dtype = float) # from earth center. If user want to get theta,phi,and r from antenna center, user have to get from xyz...
+        self.posnu[4] = np.asarray(event['Nu_Interaction/Nu_Interaction.posnu.phi'], dtype = float) # from earth center
+        self.posnu[5] = np.asarray(event['Nu_Interaction/Nu_Interaction.posnu.r'], dtype = float) # radius from earth center
         self.nnu = np.full((6, self.num_evts), np.nan, dtype = float)
         self.nnu[0] = np.asarray(event['Nu_Interaction/Nu_Interaction.nnu.x'], dtype = float)
         self.nnu[1] = np.asarray(event['Nu_Interaction/Nu_Interaction.nnu.y'], dtype = float)

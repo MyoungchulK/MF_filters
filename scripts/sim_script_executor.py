@@ -34,6 +34,7 @@ def script_loader(key, station, year, data, evt_range, not_override):
             print(f'{h5_file_name_out} is already there!!')
             return    
 
+    print(data, size_checker(data))
     sim_type = get_path_info_v2(data, 'AraOut.', '_')
     config = int(get_path_info_v2(data, '_R', '.txt'))
     flavor = int(get_path_info_v2(data, 'AraOut.signal_F', '_A'))
@@ -80,10 +81,7 @@ def script_loader(key, station, year, data, evt_range, not_override):
         print(r, results[r].shape)
         hf.create_dataset(r, data=results[r], compression="gzip", compression_opts=9)
     hf.close()
-    print(f'output is {h5_file_name_out}')
-
-    # quick size check
-    size_checker(h5_file_name_out)
+    print(f'output is {h5_file_name_out}.', size_checker(h5_file_name_out))
 
 if __name__ == "__main__":
 
