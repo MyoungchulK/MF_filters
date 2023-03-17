@@ -97,7 +97,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'One_Weight_A{Station}.h5'
+file_name = f'One_Weight_Pad_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('pnu', data=pnu, compression="gzip", compression_opts=9)
 hf.create_dataset('cos_angle', data=cos_angle, compression="gzip", compression_opts=9)

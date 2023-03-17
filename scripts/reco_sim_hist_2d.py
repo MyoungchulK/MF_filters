@@ -59,11 +59,12 @@ for r in tqdm(range(len(d_run_tot))):
         continue
     coord = hf['coord'][:] # pol, thephi, rad, sol, evt
     coef = hf['coef'][:] # pol, rad, sol, evt
+    cons = hf['config'][:]
     del hf
 
-    config = int(get_path_info_v2(d_list[r], '_R', '.txt')) - 1
+    config = cons[2] - 1
     if sim_type == 'signal':
-        flavor = int(get_path_info_v2(d_list[r], 'AraOut.signal_F', '_A')) - 1
+        flavor = cons[4] - 1
     else:
         flavor = 0
 
@@ -73,14 +74,14 @@ for r in tqdm(range(len(d_run_tot))):
                     map_az[flavor, config, :, :, pol, rad, sol] += np.histogram2d(coord[pol, 1, rad, sol], coord[pol, 0, rad, sol], bins = (a_bins, z_bins))[0].astype(int)
                     map_ac[flavor, config, :, :, pol, rad, sol] += np.histogram2d(coord[pol, 1, rad, sol], coef[pol, rad, sol], bins = (a_bins, c_bins))[0].astype(int)
                     map_zc[flavor, config, :, :, pol, rad, sol] += np.histogram2d(coord[pol, 0, rad, sol], coef[pol, rad, sol], bins = (z_bins, c_bins))[0].astype(int)
-    del coef, coord, config, flavor
+    del cons, coef, coord, config, flavor
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Reco_Sim_Map_New_Cal_2d_A{Station}_R{count_i}.h5'
+file_name = f'Reco_Sim_Map_New_Pad_2d_A{Station}_R{count_i}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('a_bins', data=a_bins1, compression="gzip", compression_opts=9)
 hf.create_dataset('a_bin_center', data=a_bin_center1, compression="gzip", compression_opts=9)
