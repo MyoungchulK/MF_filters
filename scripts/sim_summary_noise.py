@@ -26,12 +26,18 @@ z_bins = np.linspace(90, -90, 180 + 1)
 z_bin_center = (z_bins[1:] + z_bins[:-1]) / 2
 a_bins = np.linspace(-180, 180, 360 + 1)
 a_bin_center = (a_bins[1:] + a_bins[:-1]) / 2
+c_bins = np.linspace(0, 1.2, 120 + 1)
+c_bin_center = (c_bins[1:] + c_bins[:-1]) / 2
 
 for r in tqdm(range(len(d_run_tot))):
     
   #if r < 10:
 
-    hf = h5py.File(d_list[r], 'r')
+    try:
+        hf = h5py.File(d_list[r], 'r')
+    except OSError:
+        print(d_list[r])
+        continue
     cons = hf['config'][:]
     sim_run[r] = cons[1]
     config[r] = cons[2]
@@ -56,6 +62,8 @@ hf.create_dataset('z_bins', data=z_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('z_bin_center', data=z_bin_center, compression="gzip", compression_opts=9)
 hf.create_dataset('a_bins', data=a_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('a_bin_center', data=a_bin_center, compression="gzip", compression_opts=9)
+hf.create_dataset('c_bins', data=c_bins, compression="gzip", compression_opts=9)
+hf.create_dataset('c_bin_center', data=c_bin_center, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name, size_checker(path+file_name))
 

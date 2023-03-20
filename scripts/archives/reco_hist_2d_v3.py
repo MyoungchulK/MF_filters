@@ -48,15 +48,12 @@ a_bin_center1 = (a_bins1[1:] + a_bins1[:-1]) / 2
 map_az = np.full((a_bin_len, z_bin_len, 3, 2, 2, 2, num_configs), 0, dtype = int) # a, z, trig, pol, rad, sol, config
 map_az_cut = np.copy(map_az)
 map_az_cut_cal = np.copy(map_az)
-map_az_cut_cal_sur = np.copy(map_az)
 map_ac = np.full((a_bin_len, c_bin_len, 3, 2, 2, 2, num_configs), 0, dtype = int) # a, z, trig, pol, rad, sol, config
 map_ac_cut = np.copy(map_ac)
 map_ac_cut_cal = np.copy(map_ac)
-map_ac_cut_cal_sur = np.copy(map_ac)
 map_zc = np.full((z_bin_len, c_bin_len, 3, 2, 2, 2, num_configs), 0, dtype = int) # a, z, trig, pol, rad, sol, config
 map_zc_cut = np.copy(map_zc)
 map_zc_cut_cal = np.copy(map_zc)
-map_zc_cut_cal_sur = np.copy(map_zc)
 map_zc_max = np.full((z_bin_len, c_bin_len, 3, num_configs), 0, dtype = int)
 map_ac_max = np.full((a_bin_len, c_bin_len, 3, num_configs), 0, dtype = int)
 map_az_max = np.full((a_bin_len, z_bin_len, 3, num_configs), 0, dtype = int)
@@ -224,15 +221,6 @@ for r in tqdm(range(len(d_run_tot))):
     coef_cut_cal[:, :, :, cal_cut] = np.nan
     del pol_idx, cp_cut, num_cuts, evt
 
-    coord_cut_cal_sur = np.copy(coord_cut_cal)
-    coef_cut_cal_sur = np.copy(coef_cut_cal)
-    scut_val = 35
-    zenith_deg = 89.5 - coord_cut_cal_sur[:, 0, 1, :, :] # pol, thetaphi, rad, sol, evt
-    zenith_deg = np.reshape(zenith_deg, (4, -1))
-    scut = np.any(zenith_deg > scut_val, axis = 0)
-    coord_cut_cal_sur[:, :, :, :, scut] = np.nan
-    coef_cut_cal_sur[:, :, :, scut] = np.nan
-
     g_idx = int(config - 1)
     for t in range(3):
         for pol in range(2):
@@ -248,14 +236,11 @@ for r in tqdm(range(len(d_run_tot))):
                     map_az_cut_cal[:, :, t, pol, rad, sol, g_idx] += np.histogram2d(coord_cut_cal[pol, 1, rad, sol][t_list[t]], coord_cut_cal[pol, 0, rad, sol][t_list[t]], bins = (a_bins, z_bins))[0].astype(int)
                     map_ac_cut_cal[:, :, t, pol, rad, sol, g_idx] += np.histogram2d(coord_cut_cal[pol, 1, rad, sol][t_list[t]], coef_cut_cal[pol, rad, sol][t_list[t]], bins = (a_bins, c_bins))[0].astype(int)
                     map_zc_cut_cal[:, :, t, pol, rad, sol, g_idx] += np.histogram2d(coord_cut_cal[pol, 0, rad, sol][t_list[t]], coef_cut_cal[pol, rad, sol][t_list[t]], bins = (z_bins, c_bins))[0].astype(int)
-                    map_az_cut_cal_sur[:, :, t, pol, rad, sol, g_idx] += np.histogram2d(coord_cut_cal_sur[pol, 1, rad, sol][t_list[t]], coord_cut_cal_sur[pol, 0, rad, sol][t_list[t]], bins = (a_bins, z_bins))[0].astype(int)
-                    map_ac_cut_cal_sur[:, :, t, pol, rad, sol, g_idx] += np.histogram2d(coord_cut_cal_sur[pol, 1, rad, sol][t_list[t]], coef_cut_cal_sur[pol, rad, sol][t_list[t]], bins = (a_bins, c_bins))[0].astype(int)
-                    map_zc_cut_cal_sur[:, :, t, pol, rad, sol, g_idx] += np.histogram2d(coord_cut_cal_sur[pol, 0, rad, sol][t_list[t]], coef_cut_cal_sur[pol, rad, sol][t_list[t]], bins = (z_bins, c_bins))[0].astype(int)
 
     if b_runs[r]: continue
-    nan_idx = ~np.any((cut, cal_cut, scut), axis = 0)
+    nan_idx = ~np.logical_or(cut, cal_cut)
     rf_idx = np.logical_and(rf_t, nan_idx)
-    coef_rf = coef_cut_cal_sur[:, :, :, rf_idx]
+    coef_rf = coef_cut_cal[:, :, :, rf_idx]
     
     coef_rf_v = coef_rf[0]
     coef_rf_h = coef_rf[1]
@@ -271,7 +256,7 @@ for r in tqdm(range(len(d_run_tot))):
     coef_rf_v_max = np.full((rf_len), np.nan, dtype = float)
     coef_rf_h_max = np.full((rf_len), np.nan, dtype = float)
 
-    coord_rf = coord_cut_cal_sur[:, :, :, :, rf_idx]
+    coord_rf = coord_cut_cal[:, :, :, :, rf_idx]
     coord_rf_v = np.reshape(coord_rf[0], (2, 4, -1))
     coord_rf_h = np.reshape(coord_rf[1], (2, 4, -1))
     coord_rf_trans = np.transpose(coord_rf, (1,0,2,3,4))
@@ -304,7 +289,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Reco_Map_New_Cal_Sur_Max_2d_A{Station}_R{count_i}.h5'
+file_name = f'Reco_Map_New_Cal_Max_2d_A{Station}_R{count_i}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('a_bins', data=a_bins1, compression="gzip", compression_opts=9)
 hf.create_dataset('a_bin_center', data=a_bin_center1, compression="gzip", compression_opts=9)
@@ -315,15 +300,12 @@ hf.create_dataset('c_bin_center', data=c_bin_center, compression="gzip", compres
 hf.create_dataset('map_az', data=map_az, compression="gzip", compression_opts=9)
 hf.create_dataset('map_az_cut', data=map_az_cut, compression="gzip", compression_opts=9)
 hf.create_dataset('map_az_cut_cal', data=map_az_cut_cal, compression="gzip", compression_opts=9)
-hf.create_dataset('map_az_cut_cal_sur', data=map_az_cut_cal_sur, compression="gzip", compression_opts=9)
 hf.create_dataset('map_ac', data=map_ac, compression="gzip", compression_opts=9)
 hf.create_dataset('map_ac_cut', data=map_ac_cut, compression="gzip", compression_opts=9)
 hf.create_dataset('map_ac_cut_cal', data=map_ac_cut_cal, compression="gzip", compression_opts=9)
-hf.create_dataset('map_ac_cut_cal_sur', data=map_ac_cut_cal_sur, compression="gzip", compression_opts=9)
 hf.create_dataset('map_zc', data=map_zc, compression="gzip", compression_opts=9)
 hf.create_dataset('map_zc_cut', data=map_zc_cut, compression="gzip", compression_opts=9)
 hf.create_dataset('map_zc_cut_cal', data=map_zc_cut_cal, compression="gzip", compression_opts=9)
-hf.create_dataset('map_zc_cut_cal_sur', data=map_zc_cut_cal_sur, compression="gzip", compression_opts=9)
 hf.create_dataset('map_zc_max', data=map_zc_max, compression="gzip", compression_opts=9)
 hf.create_dataset('map_ac_max', data=map_ac_max, compression="gzip", compression_opts=9)
 hf.create_dataset('map_az_max', data=map_az_max, compression="gzip", compression_opts=9)

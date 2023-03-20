@@ -903,7 +903,7 @@ class known_issue_loader:
             bad_run = np.append(bad_run, 3505)
 
             # 2014 Trigger Length Window Sweep, http://ara.icecube.wisc.edu/wiki/index.php/Run_Log_2014
-            bad_run = np.append(bad_run, np.arange(3578, 3598+1))
+            bad_run = np.append(bad_run, np.arange(3577, 3598+1))
 
             
             # http://ara.icecube.wisc.edu/wiki/index.php/Run_Log_2014
@@ -1263,6 +1263,7 @@ class known_issue_loader:
             bad_run = np.append(bad_run, np.arange(3843, 3861 + 1, dtype = int)) # noise source test
             bad_run = np.append(bad_run, np.arange(3881, 3892 + 1, dtype = int)) # noise source test
             bad_run = np.append(bad_run, np.arange(3916, 3975 + 1, dtype = int)) # noise source test
+            bad_run = np.append(bad_run, 3982) # st1 spike
             bad_run = np.append(bad_run, np.arange(4008, 4073 + 1, dtype = int)) # noise source test
             bad_run = np.append(bad_run, 6270) # bad noise noise model
             bad_run = np.append(bad_run, np.arange(7122, 7153 + 1, dtype = int)) # 2016 Cal Pulser Sweep
