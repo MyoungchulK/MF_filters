@@ -1,2 +1,0 @@
-JOB job_ARA_S2_R2319 ARA_job.sub 
-VARS job_ARA_S2_R2319 data="/misc/disk20/data/exp/ARA/2013/filtered/full2013Data/ARA02/root/run2319/event2319.root" station="2" run="2319"
