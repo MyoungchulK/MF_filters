@@ -11,6 +11,11 @@ from itertools import combinations
 # custom lib
 from tools.ara_known_issue import known_issue_loader
 from tools.ara_utility import size_checker
+from tools.ara_constant import ara_const
+
+ara_const = ara_const()
+num_ants = ara_const.USEFUL_CHAN_PER_STATION
+num_ddas = ara_const.DDA_PER_ATRI
 
 def get_path_info_v2(dat_path, mask_key, end_key, verbose = False):
 
@@ -39,7 +44,7 @@ def get_example_run(st, config):
 
     return ex_run
 
-def get_pair_info(st, run, verbose = False):
+def get_pair_info(st, run, verbose = False, use_st_pair = False):
     """! get pair array by 'good' channels
 
     @param st  Integer.  station id
@@ -54,6 +59,22 @@ def get_pair_info(st, run, verbose = False):
     del known_issue
     if verbose:
         print('useful antenna chs for reco:', good_ant)
+
+    if use_st_pair:
+        pairs = np.full((0, 2), 0, dtype = int)
+        v_pairs_len = np.full((0), 0, dtype = int)
+        for d in range(num_ddas):
+            st_pairs = np.asarray(list(combinations(good_ant[good_ant % num_ddas == d], 2)))
+            if len(st_pairs) == 0: continue
+            v_pairs_len = np.append(v_pairs_len, np.full((len(st_pairs)), d, dtype = int))
+            pairs = np.append(pairs, st_pairs, axis = 0)
+            del st_pairs
+        pair_len = len(pairs) # number of whole pairs
+        del good_ant
+        if verbose:
+            print('number of pairs:', len(pairs))
+
+        return pairs, pair_len, v_pairs_len
 
     # get combination for each polarization
     v_pairs = np.asarray(list(combinations(good_ant[good_ant < 8], 2)))

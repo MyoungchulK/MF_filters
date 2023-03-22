@@ -10,6 +10,7 @@ from tools.ara_run_manager import file_sorter
 from tools.ara_utility import size_checker
 #from tools.ara_run_manager import run_info_loader
 from tools.ara_known_issue import known_issue_loader
+from tools.ara_quality_cut import get_calpulser_cut
 
 Station = int(sys.argv[1])
 count_i = int(sys.argv[2])
@@ -62,113 +63,6 @@ map_ac_max = np.full((a_bin_len, c_bin_len, 3, num_configs), 0, dtype = int)
 map_az_max = np.full((a_bin_len, z_bin_len, 3, num_configs), 0, dtype = int)
 del z_bin_len, a_bin_len, c_bin_len
 
-def get_calpulser_cut(st, run):
-
-    if st == 2:
-        cp6 = np.full((2, 2), np.nan, dtype = float)
-        cp6[0, 0] = -1.45
-        cp6[0, 1] = 10.45
-        cp6[1, 0] = 56.65
-        cp6[1, 1] = 69.15
-        cp5 = np.full((2, 2), np.nan, dtype = float)
-        cp5[0, 0] = -28
-        cp5[0, 1] = -19
-        cp5[1, 0] = -29.35
-        cp5[1, 1] = -21.75
-        cp5_m = np.full((2, 2), np.nan, dtype = float)
-        cp5_m[0, 0] = 27.15
-        cp5_m[0, 1] = 37.75
-        cp5_m[1, 0] = -29.35
-        cp5_m[1, 1] = -21.75
-        cp5_2020 = np.full((2, 2), np.nan, dtype = float)
-        cp5_2020[0, 0] = -27.85
-        cp5_2020[0, 1] = -20.25
-        cp5_2020[1, 0] = -31.05
-        cp5_2020[1, 1] = -21.65
-        cp5_m_2020 = np.full((2, 2), np.nan, dtype = float)
-        cp5_m_2020[0, 0] = 28.65
-        cp5_m_2020[0, 1] = 37.15
-        cp5_m_2020[1, 0] = -45.85
-        cp5_m_2020[1, 1] = -38.35
-
-        if run < 1901:
-            cp_cut = np.full((1, 2, 2), np.nan, dtype = float)
-            cp_cut[0] = cp6
-        elif run > 1900 and run < 1935:
-            cp_cut = np.full((1, 2, 2), np.nan, dtype = float)
-            cp_cut[0] = cp5
-        elif run == 1935:
-            cp_cut = np.full((2, 2, 2), np.nan, dtype = float)
-            cp_cut[0] = cp5
-            cp_cut[1] = cp6
-        elif run > 1935 and run < 7006:
-            cp_cut = np.full((1, 2, 2), np.nan, dtype = float)
-            cp_cut[0] = cp6
-        elif run > 7005 and run < 8098:
-            cp_cut = np.full((2, 2, 2), np.nan, dtype = float)
-            cp_cut[0] = cp5
-            cp_cut[1] = cp5_m
-        elif run > 8097 and run < 9505:
-            cp_cut = np.full((1, 2, 2), np.nan, dtype = float)
-            cp_cut[0] = cp6
-        elif run > 9504 and run < 15527:
-            cp_cut = np.full((1, 2, 2), np.nan, dtype = float)
-            cp_cut[0] = cp5
-        elif run > 15526:
-            cp_cut = np.full((2, 2, 2), np.nan, dtype = float)
-            cp_cut[0] = cp5_2020
-            cp_cut[1] = cp5_m_2020
-        num_cuts = cp_cut.shape[0]
-
-    elif st == 3:
-        cp6 = np.full((2, 2), np.nan, dtype = float)
-        cp6[0, 0] = -16.75
-        cp6[0, 1] = -12.25
-        cp6[1, 0] = 61.25
-        cp6[1, 1] = 65.75
-        cp5_2020 = np.full((2, 2), np.nan, dtype = float)
-        cp5_2020[0, 0] = -18.25
-        cp5_2020[0, 1] = -12.65
-        cp5_2020[1, 0] = -27.65
-        cp5_2020[1, 1] = -18.45
-        cp5_2019 = np.full((2, 2), np.nan, dtype = float)
-        cp5_2019[0, 0] = -18.25
-        cp5_2019[0, 1] = -12.65
-        cp5_2019[1, 0] = -35.05
-        cp5_2019[1, 1] = 1.75
-        cp6_m_2019 = np.full((2, 2), np.nan, dtype = float)
-        cp6_m_2019[0, 0] = -21.25
-        cp6_m_2019[0, 1] = -16.35
-        cp6_m_2019[1, 0] = -117.75
-        cp6_m_2019[1, 1] = -113.95
-
-        if run < 12873:
-            cp_cut = np.full((1, 2, 2), np.nan, dtype = float)
-            cp_cut[0] = cp6
-        elif run > 12872 and run < 13901:
-            cp_cut = np.full((2, 2, 2), np.nan, dtype = float)
-            cp_cut[0] = cp6
-            cp_cut[1] = cp6_m_2019
-        elif run > 13900 and run < 16487:
-            cp_cut = np.full((1, 2, 2), np.nan, dtype = float)
-            cp_cut[0] = cp5_2019
-        elif run > 16486:
-            cp_cut = np.full((1, 2, 2), np.nan, dtype = float)
-            cp_cut[0] = cp5_2020
-        num_cuts = cp_cut.shape[0]
-
-    return cp_cut, num_cuts
-
-def get_calpulser_pol(st, run):
-
-    pol_idx = 0
-    if st == 2 and (run > 1877 and run < 1887):
-        pol_idx = 1
-    elif st == 3 and (run > 923 and run < 934):
-        pol_idx = 1
-
-    return pol_idx
-
 runs = np.copy(d_run_tot)
 b_runs = np.in1d(runs, bad_runs).astype(int)
 del bad_runs, runs
@@ -212,8 +106,7 @@ for r in tqdm(range(len(d_run_tot))):
     coef_cut[:, :, :, cut] = np.nan
     coef_cut_cal = np.copy(coef_cut)
 
-    pol_idx = get_calpulser_pol(Station, d_run_tot[r])
-    cp_cut, num_cuts = get_calpulser_cut(Station, d_run_tot[r])
+    cp_cut, num_cuts, pol_idx = get_calpulser_cut(Station, d_run_tot[r])
     cal_cut = np.full((len(evt)), False, dtype = bool)
     for c in range(num_cuts):
         ele_flag = np.digitize(89.5 - coord_cut_cal[pol_idx, 0, 0, 0], cp_cut[c, 0]) == 1

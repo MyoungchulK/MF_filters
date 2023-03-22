@@ -1122,118 +1122,83 @@ def get_bad_live_time(trig_type, unix_time, time_bins, sec_per_min, cuts, verbos
 
     return total_live_time, bad_live_time
 
-def get_calpulser_cut(st, run):
+class qual_cut_loader:
 
-    if st == 2:
-        cp6 = np.full((2, 2), np.nan, dtype = float)
-        cp6[0, 0] = -1.45
-        cp6[0, 1] = 10.45
-        cp6[1, 0] = 56.65
-        cp6[1, 1] = 69.15
-        cp5 = np.full((2, 2), np.nan, dtype = float)
-        cp5[0, 0] = -28
-        cp5[0, 1] = -19
-        cp5[1, 0] = -29.35
-        cp5[1, 1] = -21.75
-        cp5_m = np.full((2, 2), np.nan, dtype = float)
-        cp5_m[0, 0] = 27.15
-        cp5_m[0, 1] = 37.75
-        cp5_m[1, 0] = -29.35
-        cp5_m[1, 1] = -21.75
-        cp5_2020 = np.full((2, 2), np.nan, dtype = float)
-        cp5_2020[0, 0] = -27.85
-        cp5_2020[0, 1] = -20.25
-        cp5_2020[1, 0] = -31.05
-        cp5_2020[1, 1] = -21.65
-        cp5_m_2020 = np.full((2, 2), np.nan, dtype = float)
-        cp5_m_2020[0, 0] = 28.65
-        cp5_m_2020[0, 1] = 37.15
-        cp5_m_2020[1, 0] = -45.85
-        cp5_m_2020[1, 1] = -38.35
+    def __init__(self, analyze_blind_dat = False, verbose = False):
 
-        if run < 1936:
-            cp_cut = np.full((2, 2, 2), np.nan, dtype = float)
-            cp_cut[0] = cp5
-            cp_cut[1] = cp6
-        elif run > 1935 and run < 7006:
-            cp_cut = np.full((1, 2, 2), np.nan, dtype = float)
-            cp_cut[0] = cp6
-        elif run > 7005 and run < 8098:
-            cp_cut = np.full((2, 2, 2), np.nan, dtype = float)
-            cp_cut[0] = cp5
-            cp_cut[1] = cp5_m
-        elif run > 8097 and run < 9505:
-            cp_cut = np.full((1, 2, 2), np.nan, dtype = float)
-            cp_cut[0] = cp6
-        elif run > 9504 and run < 15527:
-            cp_cut = np.full((1, 2, 2), np.nan, dtype = float)
-            cp_cut[0] = cp5
-        elif run > 15526:
-            cp_cut = np.full((2, 2, 2), np.nan, dtype = float)
-            cp_cut[0] = cp5_2020
-            cp_cut[1] = cp5_m_2020
-        num_cuts = cp_cut.shape[0]
+        self.analyze_blind_dat = analyze_blind_dat
+        self.verbose = verbose
 
-    elif st == 3:
-        cp6 = np.full((2, 2), np.nan, dtype = float)
-        cp6[0, 0] = -16.75
-        cp6[0, 1] = -12.25
-        cp6[1, 0] = 61.25
-        cp6[1, 1] = 65.75
-        cp5_2020 = np.full((2, 2), np.nan, dtype = float)
-        cp5_2020[0, 0] = -18.25
-        cp5_2020[0, 1] = -12.65
-        cp5_2020[1, 0] = -27.65
-        cp5_2020[1, 1] = -18.45
-        cp5_2019 = np.full((2, 2), np.nan, dtype = float)
-        cp5_2019[0, 0] = -18.25
-        cp5_2019[0, 1] = -12.65
-        cp5_2019[1, 0] = -35.05
-        cp5_2019[1, 1] = 1.75
-        cp6_m_2019 = np.full((2, 2), np.nan, dtype = float)
-        cp6_m_2019[0, 0] = -21.25
-        cp6_m_2019[0, 1] = -16.35
-        cp6_m_2019[1, 0] = -117.75
-        cp6_m_2019[1, 1] = -113.95
+    def load_qual_cut_result(self, st, run):
 
-        if run < 12873:
-            cp_cut = np.full((1, 2, 2), np.nan, dtype = float)
-            cp_cut[0] = cp6
-        elif run > 12872 and run < 13901:
-            cp_cut = np.full((2, 2, 2), np.nan, dtype = float)
-            cp_cut[0] = cp6
-            cp_cut[1] = cp6_m_2019
-        elif run > 13900 and run < 16487:
-            cp_cut = np.full((1, 2, 2), np.nan, dtype = float)
-            cp_cut[0] = cp5_2019
-        elif run > 16486:
-            cp_cut = np.full((1, 2, 2), np.nan, dtype = float)
-            cp_cut[0] = cp5_2020
-        num_cuts = cp_cut.shape[0]
+        if self.analyze_blind_dat:
+            d_key = 'qual_cut_full'
+        else:
+            d_key = 'qual_cut'
 
-    pol_idx = 0
-    if st == 2 and (run > 1877 and run < 1887):
-        pol_idx = 1
-    elif st == 3 and (run > 923 and run < 934):
-        pol_idx = 1
+        d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{st}/'
+        d_path += f'{d_key}/'
+        d_path += f'{d_key}_A{st}_R{run}.h5'
+        qual_file = h5py.File(d_path, 'r')
+        if self.verbose:
+            print(f'quality cut path:', d_path)
 
-    return cp_cut, num_cuts, pol_idx
+        self.evt_num = qual_file['evt_num'][:]
+        self.entry_num = qual_file['entry_num'][:]
+        self.trig_type = qual_file['trig_type'][:]
+        self.unix_time = qual_file['unix_time'][:]
+        total_qual_cut = qual_file['total_qual_cut'][:]
+        self.daq_qual_cut_sum = qual_file['daq_qual_cut_sum'][:]
+        self.total_qual_cut_sum = qual_file['total_qual_cut_sum'][:]
+        self.rp_ants = qual_file['rp_ants'][:]
 
+        if self.verbose:
+            quick_qual_check(self.daq_qual_cut_sum != 0, 'daq error cut!', self.evt_num)
+            quick_qual_check(self.total_qual_cut_sum != 0, 'total qual cut!', self.evt_num)
+        del d_key, d_path, qual_file
 
+        return total_qual_cut
 
+    def get_useful_events(self, use_entry = False, use_qual = False, use_rp_ants = False, trig_idx = None):
 
+        if use_entry:
+            evt_idx = self.entry_num
+        else:
+            evt_idx = self.evt_num
 
+        if trig_idx is not None:
+            if use_qual:
+                clean_idx = np.logical_and(self.trig_type == trig_idx, self.total_qual_cut_sum == 0)
+            else:
+                clean_idx = np.logical_and(self.trig_type == trig_idx, self.daq_qual_cut_sum == 0)
+        else:
+            if use_qual:
+                clean_idx = self.total_qual_cut_sum == 0
+            else:
+                clean_idx = self.daq_qual_cut_sum == 0
+        evt_idx = evt_idx[clean_idx]
 
+        self.num_useful_evts = len(evt_idx)
+        if use_rp_ants:
+            self.clean_rp_ants = self.rp_ants[:, clean_idx]
 
+        return evt_idx
 
+    """
+    def get_qual_cut_class(self, ara_root, ara_uproot, dt = 0.5):
 
+        self.pre_qual = pre_qual_cut_loader(ara_uproot, analyze_blind_dat = self.analyze_blind_dat, verbose = self.verbose)
+        self.post_qual = post_qual_cut_loader(ara_uproot, ara_root, dt = dt)
 
+    def get_qual_cut_result(self):
 
+        pre_qual_cut = self.pre_qual.run_pre_qual_cut()
+        post_qual_cut = self.post_qual.run_post_qual_cut()
+        total_qual_cut = np.append(pre_qual_cut, post_qual_cut, axis = 1)
+        del pre_qual_cut, post_qual_cut
 
+        if self.verbose:
+            quick_qual_check(np.nansum(total_qual_cut, axis = 1) != 0, self.pre_qual.evt_num, 'total qual cut!')
 
-
-
-
-
-
-
+        return total_qual_cut
+    """
