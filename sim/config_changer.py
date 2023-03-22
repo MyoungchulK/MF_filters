@@ -3,12 +3,16 @@ import os, sys
 from tqdm import tqdm
 from glob import glob
 
-#d_path = f'/data/user/mkim/OMF_filter/ARA02/sim_noise_setup/*txt'
-d_path = f'/data/user/mkim/OMF_filter/ARA02/sim_signal_setup_full/*old*txt'
+#d_path = f'/misc/disk19/users/mkim/OMF_filter/ARA0*/sim_signal_setup_full/*.txt'
+d_path = f'/misc/disk19/users/mkim/OMF_filter/ARA0*/sim_noise_setup_full/*.txt'
 d_list = glob(d_path)
 
-old_line = 'CUSTOM_ELECTRONICS=3'
-new_line = 'CUSTOM_ELECTRONICS=0'
+common = 'ANALYTIC_RAYTRACE_MODE='
+old_line = f'{common}1'
+new_line = f'{common}0'
+
+old_line = 'RANDOM_MODE=1'
+new_line = 'NFOUR=2048\nRANDOM_MODE=1'
 
 for t in tqdm(range(len(d_list))):
 

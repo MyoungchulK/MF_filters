@@ -1,0 +1,72 @@
+//---ARA02 TYPE 1 SPECIFIC PARAMETERS---
+//---DETECTOR---
+DETECTOR=4                           //actual deployed station
+DETECTOR_STATION=3                   //ARA02
+DETECTOR_STATION_LIVETIME_CONFIG=3  //emulate config 1
+DETECTOR_RUN=3
+number_of_stations=1
+TIMESTEP=5E-10
+core_x=10000
+core_y=10000
+READGEOM=1
+BH_ANT_SEP_DIST_ON=0
+BORE_HOLE_ANTENNA_LAYOUT=0  //HVHV
+ANTENNA_MODE=4              //apply TM antenna measurements
+ALL_ANT_V_ON=0              //apply Hpol and Vpol gains respectively
+
+//---PRIMARY AND SHOWER---
+EXPONENT=610                            //E^-2 spectrum
+//NNU=1000                   //number of neutrino events
+ONLY_PASSED_EVENTS=1        //0 (default): AraSim throws NNU events whether or not they pass; 1: AraSim throws events until the number of events that pass the trigger is equal to NNU_PASSED
+NNU_PASSED=15
+NU_NUBAR_SELECT_MODE=3      //random
+SELECT_FLAVOR=0             //electron neutrino events
+SELECT_CURRENT=2            //force charged current
+SECONDARIES=1               //enable secondaries
+TAUDECAY=1                  //account for tau decay in secondaries
+SHOWER_MODE=2               //both EM and hadronic shower in t-domain signal
+POSNU_RADIUS=12000
+RAYSOL_RANGE=15000
+INTERACTION_MODE=0          //Veff cylinder mode
+SIGMA_SELECT=0                          //cross section (0=nominal, 1=upper bound, 2=lower bound)
+SHOWER_STEP=0.001
+
+//---SIGNAL AND PROPAGATION---
+SIMULATION_MODE=1    //time-domain mode
+WAVE_TYPE=0          //plane wave in-ice
+
+//---ICE---
+NOFZ=1                                                  //yes ray bending
+RAY_TRACE_ICE_MODEL_PARAMS=0    //which exp ice model (0=default=SP from RICE, 1=SP from RICE other, 2=SP Eisen, 3=SP Gow)
+USE_ARA_ICEATTENU=2                             //use ARA-measured attenuation data
+ANALYTIC_RAYTRACE_MODE=0
+Z_THIS_TOLERANCE=1 // raytracing setting
+
+//---NOISE---
+NOISE_WAVEFORM_GENERATE_MODE=0  //generate new noise waveforms for each event
+NOISE_EVENTS=1                  //number of pure noise waveforms
+NOISE=2                         //flat thermal noise
+NOISE_CHANNEL_MODE=1            //using different noise temperature for each channel
+TRIG_ANALYSIS_MODE=0            //0 = signal + noise, 1 = signal only, 2 = noise only
+CUSTOM_ELECTRONICS=3            // using custom SC model
+
+//---TRIGGER---
+TRIG_WINDOW=1.7E-7                   //110ns
+POWERTHRESHOLD=-6.6                 //5Hz RF trigger rate with 110ns trigger window 3/8 Hpol/Vpol trigger
+TRIG_MODE=1              //use vpol, hpol separated trigger mode
+N_TRIG_V=3
+N_TRIG_H=3
+
+//---READOUT---
+V_SATURATION=1.5        //readout voltage saturation 1.5V
+WAVEFORM_LENGTH=840    //number of samples in final waveform (normally ~1280)
+V_MIMIC_MODE=0          //0 : global trig is located center of readout windows
+DATA_SAVE_MODE=0        //save final waveforms + physics data
+DATA_LIKE_OUTPUT=1      //do data like output for all events (even untriggered)
+FILL_TREE_MODE=2        //fill tree for all events
+
+//---REPRODUCIBILITY---
+EVENT_GENERATION_MODE=0
+NFOUR=2048
+RANDOM_MODE=1
+
