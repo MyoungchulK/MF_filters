@@ -10691,7 +10691,6 @@
 16568 /data/exp/ARA/2020/blinded/L1/ARA03/0109/run016568/event016568.root 
 16569 /data/exp/ARA/2020/blinded/L1/ARA03/0109/run016569/event016569.root 
 16571 /data/exp/ARA/2020/blinded/L1/ARA03/0109/run016571/event016571.root 
-16572 /data/exp/ARA/2020/blinded/L1/ARA03/0109/run016572/event016572.root 
 16573 /data/exp/ARA/2020/blinded/L1/ARA03/0109/run016573/event016573.root 
 16574 /data/exp/ARA/2020/blinded/L1/ARA03/0109/run016574/event016574.root 
 16575 /data/exp/ARA/2020/blinded/L1/ARA03/0109/run016575/event016575.root 

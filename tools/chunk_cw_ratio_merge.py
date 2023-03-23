@@ -15,8 +15,6 @@ def cw_ratio_merge_collector(Data, Station, Run, analyze_blind_dat = False, no_t
     if analyze_blind_dat:
         blind_type = '_full'
     output_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_ratio_old{blind_type}/'
-    if not os.path.exists(output_path):
-        os.makedirs(output_path)
     cw_dat = f'{output_path}cw_ratio{blind_type}_A{Station}_R{Run}.h5'
     print(f'cw_ratio_old_path:{cw_dat}', size_checker(f'{cw_dat}'))
     cw_hf = h5py.File(cw_dat, 'r')
