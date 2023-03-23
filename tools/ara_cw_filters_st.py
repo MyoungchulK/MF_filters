@@ -199,7 +199,6 @@ class py_testbed:
             self.bad_freq_pol_sum_debug = np.copy(bad_freq_pol_sum)
         self.bad_idx = self.freq_range_idx[bad_freq_pol_sum]
         del bad_freq_pol, bad_freq_pol_sum
-        print(self.bad_idx)
 
     def get_bad_magnitude(self, fft_dB, trig_type):
         """! all the calculation will be excuted by this function
