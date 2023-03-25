@@ -1,8 +1,10 @@
+import os
 import numpy as np
 from tqdm import tqdm
 import h5py
 
 def snr_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm = False):
+
 
     print('Collecting snr starts!')
     if use_l2:
@@ -13,6 +15,8 @@ def snr_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm 
     from tools.ara_constant import ara_const
     from tools.ara_wf_analyzer import wf_analyzer
     from tools.ara_quality_cut import get_bad_events
+    from tools.ara_run_manager import run_info_loader
+    from tools.ara_utility import size_checker
 
     # geom. info.
     ara_const = ara_const()
@@ -44,15 +48,40 @@ def snr_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm 
 
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, use_l2 = use_l2, analyze_blind_dat = analyze_blind_dat, st = st, run = run)
-    del st, run
 
     # output array  
-    rms = np.full((num_ants, num_evts), np.nan, dtype = float)
-    p2p = np.copy(rms)
+    run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
+    cw_dat = run_info.get_result_path(file_type = 'qual_cut', verbose = True, force_blind = True)
+    cw_hf = h5py.File(cw_dat, 'r')
+    evt_tot = cw_hf['evt_num'][:]
+    del cw_dat, cw_hf
+    cw_dat = run_info.get_result_path(file_type = 'cw_check', verbose = True, force_blind = True) # get the h5 file path
+    cw_hf = h5py.File(cw_dat, 'r')
+    evt_ch = cw_hf['evt_check'][:]
+    evt_ch1 = evt_tot[evt_ch == 1]
+    evt_check = np.in1d(evt_num, evt_ch1)
+    del evt_ch, evt_tot, evt_ch1
+    if num_evts != len(evt_check):
+        print('Wrong!!!!!:', num_evts, len(evt_check), st, run)
+        sys.exit(1)
+    else:
+        print(f'tot_evt: {num_evts}, bad_evt: {np.sum(evt_check)}, bad_ratio{np.round(np.sum(evt_check)/num_evts, 2)}')
+    blind_type = ''
+    if analyze_blind_dat:
+        blind_type = '_full'
+    cw_dat = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{st}/snr_old{blind_type}/snr{blind_type}_A{st}_R{run}.h5' # get the h5 file path
+    print(f'snr_old_path:{cw_dat}', size_checker(f'{cw_dat}'))
+    cw_hf = h5py.File(cw_dat, 'r')
+    p2p = cw_hf['p2p'][:]
+    rms = cw_hf['rms'][:]
+    del cw_dat, cw_hf, run_info
 
     # loop over the events
     for evt in tqdm(range(num_evts), disable = no_tqdm):
       #if evt <100:        
+
+        if evt_check[evt] == 0:
+            continue
 
         if daq_qual_cut_sum[evt]:
             continue
