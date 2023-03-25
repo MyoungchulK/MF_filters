@@ -17,7 +17,7 @@ d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 r_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/reco_sim/'
 del d_run_range
 
-num_evts = 10
+num_evts = 15
 num_ants = 16
 
 sim_run = np.full((d_len), 0, dtype = int)

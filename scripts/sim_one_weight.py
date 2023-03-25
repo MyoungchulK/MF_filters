@@ -18,7 +18,7 @@ d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 del d_run_range
 
 num_flas = 3
-num_evts = 10
+num_evts = 15
 if Station == 2: num_configs = 7
 if Station == 3: num_configs = 9
 

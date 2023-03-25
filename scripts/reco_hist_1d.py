@@ -29,7 +29,6 @@ del known_issue
 d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/reco/*'
 d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 q_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/qual_cut_full/'
-b_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/snr/'
 del d_run_range
 
 z_bins = np.linspace(0, 180, 180 + 1)
@@ -84,16 +83,12 @@ for r in tqdm(range(len(d_run_tot))):
     coord = hf['coord'][:] # pol, thephi, rad, sol, evt
     coef = hf['coef'][:] # pol, rad, sol, evt
     evt = hf['evt_num'][:]
-    del hf
-
-    b_name = f'{b_path}snr_A{Station}_R{d_run_tot[r]}.h5'
-    hf_b = h5py.File(b_name, 'r')
-    trig = hf_b['trig_type'][:]
+    trig = hf['trig_type'][:]
     rf_t = trig == 0
     cal_t = trig == 1
     soft_t = trig == 2
     t_list = [rf_t, cal_t, soft_t]
-    del b_name, hf_b, trig
+    del hf, trig
 
     q_name = f'{q_path}qual_cut_full_A{Station}_R{d_run_tot[r]}.h5'
     hf_q = h5py.File(q_name, 'r')
@@ -171,7 +166,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Reco_Map_New_Cal_Sur_Max_1d_A{Station}_R{count_i}.h5'
+file_name = f'Reco_Map_New_Cal_Sur_St_Max_1d_A{Station}_R{count_i}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('a_bins', data=a_bins1, compression="gzip", compression_opts=9)
 hf.create_dataset('a_bin_center', data=a_bin_center1, compression="gzip", compression_opts=9)

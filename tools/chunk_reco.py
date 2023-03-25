@@ -30,6 +30,7 @@ def reco_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm
         num_evts = ara_root.num_evts
         evt_num = ara_root.evt_num
         daq_qual_cut_sum = ara_root.daq_cut
+        trig_type = ara_root.trig_type
         st = ara_root.station_id
         yr = ara_root.year
         run = ara_root.run
@@ -37,6 +38,7 @@ def reco_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm
         ara_uproot = ara_uproot_loader(Data)
         evt_num = ara_uproot.evt_num
         num_evts = ara_uproot.num_evts
+        trig_type = ara_uproot.get_trig_type()
         st = ara_uproot.station_id
         yr = ara_uproot.year
         run = ara_uproot.run
@@ -108,6 +110,7 @@ def reco_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm
     print('Reco collecting is done!')
 
     return {'evt_num':evt_num,
+            'trig_type':trig_type,
             'bad_ant':bad_ant,
             'coef':coef,
             'coord':coord}

@@ -124,7 +124,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     phase_var_freq_range = cw_phase1.useful_freq_range_sigma_debug
     phase_var_freq_range_trim = cw_phase1.useful_freq_range_debug   
  
-    cw_testbed = py_testbed(st, run, pad_freq, analyze_blind_dat = analyze_blind_dat, verbose = True, use_debug = True)
+    cw_testbed = py_testbed(st, run, pad_freq, analyze_blind_dat = analyze_blind_dat, verbose = True, use_debug = True, use_st_pair = True)
     baseline = cw_testbed.baseline_debug
     baseline_fft = cw_testbed.baseline_fft_debug
     baseline_fft_medi = cw_testbed.baseline_fft_medi_debug

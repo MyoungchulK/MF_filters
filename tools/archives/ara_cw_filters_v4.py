@@ -22,7 +22,6 @@ ara_const = ara_const()
 num_ants = ara_const.USEFUL_CHAN_PER_STATION
 num_pols = ara_const.POLARIZATION
 num_trigs = ara_const.TRIGGER_TYPE
-num_sts = ara_const.DDA_PER_ATRI
 
 class py_testbed:
     """! testbed in python version. checking bad frequencies in all channel pairs and all frequencies 
@@ -31,7 +30,7 @@ class py_testbed:
     """
 
     def __init__(self, st, run, freq_range, dB_cut = 12, dB_cut_broad = 11, num_coinc = 3, freq_range_broad = 0.04, freq_range_near = 0.005,
-                    freq_lower_limit = 0.12, freq_upper_limit = 0.85, analyze_blind_dat = False, verbose = False, use_debug = False, use_st_pair = False):
+                    freq_lower_limit = 0.12, freq_upper_limit = 0.85, analyze_blind_dat = False, verbose = False, use_debug = False):
         """! testbed initializer
 
         @param st  Integer.  station id
@@ -79,9 +78,6 @@ class py_testbed:
         del df, freq_broad_len, freq_near_len
 
         self.pairs, self.pair_len, self.v_pairs_len = get_pair_info(self.st, self.run)
-        self.use_st_pair = use_st_pair
-        if self.use_st_pair:
-            self.pairs_st, self.pair_len_st, self.v_pairs_len_st = get_pair_info(self.st, self.run, use_st_pair = self.use_st_pair)
         self.get_baseline(use_roll_medi = True) # prepare the baseline at the beginning
 
         if self.use_debug:
@@ -183,30 +179,19 @@ class py_testbed:
         ## to prevent the accidantal increase of coincidances between two antennas by rolling sum, only oneside of pairs is spreaded by rolling sum
         bad_freq_1st_sum = np.round(fftconvolve(bad_freq_1st, self.freq_near_one, 'same', axes = 0)).astype(int) != 0 # it is Boolean array now
         bad_freq_2nd = np.logical_and(bad_freq_1st[:, self.pairs[:, 0]], bad_freq_1st_sum[:, self.pairs[:, 1]])
-        if self.use_st_pair:
-            bad_freq_2nd_st = np.logical_and(bad_freq_1st[:, self.pairs_st[:, 0]], bad_freq_1st_sum[:, self.pairs_st[:, 1]]) 
         del bad_freq_1st, bad_freq_1st_sum
 
         ## 3ed, count coinc
         ## If more than 3 channel pairs are having 'really really' bad frequencies in any polarization, now it is 'the' bad frequencies!
-        len_2dim = num_pols
-        if self.use_st_pair:
-            len_2dim += num_sts 
-        bad_freq_pol = np.full((self.useful_freq_len, len_2dim), False, dtype = bool)
+        bad_freq_pol = np.full((self.useful_freq_len, num_pols), False, dtype = bool)
         bad_freq_pol[:, 0] = np.count_nonzero(bad_freq_2nd[:, :self.v_pairs_len], axis = 1) >= self.num_coinc
         bad_freq_pol[:, 1] = np.count_nonzero(bad_freq_2nd[:, self.v_pairs_len:], axis = 1) >= self.num_coinc
-        if self.use_st_pair:
-            bad_freq_pol[:, 2] = np.count_nonzero(bad_freq_2nd_st[:, self.v_pairs_len_st == 0], axis = 1) >= self.num_coinc
-            bad_freq_pol[:, 3] = np.count_nonzero(bad_freq_2nd_st[:, self.v_pairs_len_st == 1], axis = 1) >= self.num_coinc
-            bad_freq_pol[:, 4] = np.count_nonzero(bad_freq_2nd_st[:, self.v_pairs_len_st == 2], axis = 1) >= self.num_coinc
-            bad_freq_pol[:, 5] = np.count_nonzero(bad_freq_2nd_st[:, self.v_pairs_len_st == 3], axis = 1) >= self.num_coinc        
-            del bad_freq_2nd_st 
         if self.use_debug:
             self.bad_freq_pol_debug = np.copy(bad_freq_pol)
-        del bad_freq_2nd, len_2dim
+        del bad_freq_2nd
 
         ## save 'the' bad frequency indexs
-        bad_freq_pol_sum = np.any(bad_freq_pol, axis = 1) # merging both pol results
+        bad_freq_pol_sum = np.logical_or(bad_freq_pol[:, 0], bad_freq_pol[:, 1]) # merging both pol results
         if self.use_debug:
             self.bad_freq_pol_sum_debug = np.copy(bad_freq_pol_sum)
         self.bad_idx = self.freq_range_idx[bad_freq_pol_sum]
