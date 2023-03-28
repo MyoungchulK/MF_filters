@@ -28,7 +28,6 @@ del known_issue
 d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/reco/*'
 d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 q_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/qual_cut_full/'
-b_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/snr/'
 del d_run_range
 
 runs = np.copy(d_run_tot)
@@ -53,13 +52,9 @@ for r in tqdm(range(len(d_run_tot))):
     coord = hf['coord'][:] # pol, thephi, rad, sol, evt
     coef = hf['coef'][:] # pol, rad, sol, evt
     evt = hf['evt_num'][:]
-    del hf
-
-    b_name = f'{b_path}snr_A{Station}_R{d_run_tot[r]}.h5'
-    hf_b = h5py.File(b_name, 'r')
-    trig = hf_b['trig_type'][:]
+    trig = hf['trig_type'][:]
     rf_t = trig != 0
-    del b_name, hf_b, trig
+    del hf, trig
 
     q_name = f'{q_path}qual_cut_full_A{Station}_R{d_run_tot[r]}.h5'
     hf_q = h5py.File(q_name, 'r')

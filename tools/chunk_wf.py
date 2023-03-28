@@ -168,7 +168,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     fft_dB_tilt = np.full((len(testbed_freq_range), num_ants, sel_evt_len), np.nan, dtype=float)
     baseline_tilt = np.copy(fft_dB_tilt)
     delta_mag = np.copy(fft_dB_tilt)
-    testbed_bad_freqs = np.full((len(testbed_freq_range), num_pols, sel_evt_len), np.nan, dtype=float)
+    testbed_bad_freqs = np.full((len(testbed_freq_range), num_pols+4, sel_evt_len), np.nan, dtype=float)
     testbed_bad_freqs_sum = np.full((len(testbed_freq_range), sel_evt_len), np.nan, dtype=float)
     testbed_bad_idx = np.full((bad_pad, sel_evt_len), np.nan, dtype = float)
     phase_variance = np.full((len(phase_var_freq_range), len(pairs), sel_evt_len, 2), np.nan, dtype=float)
