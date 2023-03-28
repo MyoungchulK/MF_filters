@@ -101,9 +101,9 @@ def reco_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()   
 
-        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt])
-        coef[:, :, :, evt] = ara_int.coval_max
-        coord[:, :, :, :, evt] = ara_int.coord_max
+        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], sum_pol = True)
+        coef[:, :, :, evt] = ara_int.coval
+        coord[:, :, :, :, evt] = ara_int.coord
         #print(coef[:, :, :, evt], coord[:, :, :, :, evt])       
     del ara_root, num_evts, num_ants, wf_int, ara_int, daq_qual_cut_sum, wei_pairs
 

@@ -20,7 +20,6 @@ def wf_sim_collector(Data, Station, Year):
     ara_const = ara_const()
     num_ants = ara_const.USEFUL_CHAN_PER_STATION
     num_samps = ara_const.SAMPLES_PER_BLOCK
-    num_pols = ara_const.POLARIZATION
     del ara_const
 
     # data config
@@ -84,7 +83,7 @@ def wf_sim_collector(Data, Station, Year):
     bad_ant = known_issue.get_bad_antenna(ex_run, print_integer = True)
     del known_issue
 
-    ara_int = py_interferometers(pad_len, dt, Station, year, run = ex_run, use_debug = True, get_sub_file = True)
+    ara_int = py_interferometers(pad_len, dt, Station, year, run = ex_run, get_sub_file = True)
     pairs = ara_int.pairs
     v_pairs_len = ara_int.v_pairs_len
     lags = ara_int.lags
@@ -107,10 +106,10 @@ def wf_sim_collector(Data, Station, Year):
     bp_corr = np.copy(corr)
     bp_corr_nonorm = np.copy(corr)
     bp_corr_01 = np.copy(corr)
-    coval = np.full(ara_int.table_ori_shape, np.nan, dtype = float)
+    coval = np.full(ara_int.table_shape, np.nan, dtype = float)
     coval = np.repeat(coval[:, :, :, :, :, np.newaxis], sel_evt_len, axis = 5)
     bp_coval = np.copy(coval)
-    sky_map = np.full((ara_int.table_ori_shape[0], ara_int.table_ori_shape[1], ara_int.table_ori_shape[2], ara_int.table_ori_shape[3], num_pols, sel_evt_len), np.nan, dtype = float)
+    sky_map = np.full((ara_int.table_shape[0], ara_int.table_shape[1], 2, 2, 2, sel_evt_len), np.nan, dtype = float)
     bp_sky_map = np.copy(sky_map)
     
     # loop over the events
@@ -140,25 +139,25 @@ def wf_sim_collector(Data, Station, Year):
         
         for ant in range(num_ants):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True)
-        ara_int.get_sky_map(wf_int.pad_v, weights = snr_weights[:, evt])
+        ara_int.get_sky_map(wf_int.pad_v, weights = snr_weights[:, evt], sum_pol = False, return_debug_dat = True)
         corr[:,:,evt] = ara_int.corr
         corr_nonorm[:,:,evt] = ara_int.corr_nonorm
-        corr_01[:,:,evt] = ara_int.nor_fac   
-        coval[:,:,:,:,:,evt] = ara_int.coval
-        sky_map_evt = ara_int.sky_map
-        sky_map[:,:,:,:,0,evt] = sky_map_evt[0]
-        sky_map[:,:,:,:,1,evt] = sky_map_evt[1] 
+        corr_01[:,:,evt] = ara_int.nor_fac    
+        coval_evt = ara_int.coval
+        coval[:,:,:,:,:,evt] = coval_evt
+        sky_map[:,:,:,:,0,evt] = np.nansum(coval_evt[:, :, :, :, :v_pairs_len], axis = 4)
+        sky_map[:,:,:,:,1,evt] = np.nansum(coval_evt[:, :, :, :, v_pairs_len:], axis = 4)    
 
         for ant in range(num_ants):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_band_pass = True)
-        ara_int.get_sky_map(wf_int.pad_v, weights = snr_weights[:, evt])
+        ara_int.get_sky_map(wf_int.pad_v, weights = snr_weights[:, evt], sum_pol = False, return_debug_dat = True)
         bp_corr[:,:,evt] = ara_int.corr
         bp_corr_nonorm[:,:,evt] = ara_int.corr_nonorm
         bp_corr_01[:,:,evt] = ara_int.nor_fac
-        bp_coval[:,:,:,:,:,evt] = ara_int.coval
-        bp_sky_map_evt = ara_int.sky_map
-        bp_sky_map[:,:,:,:,0,evt] = bp_sky_map_evt[0]
-        bp_sky_map[:,:,:,:,1,evt] = bp_sky_map_evt[1]
+        bp_coval_evt = ara_int.coval
+        bp_coval[:,:,:,:,:,evt] = bp_coval_evt
+        bp_sky_map[:,:,:,:,0,evt] = np.nansum(bp_coval_evt[:, :, :, :, :v_pairs_len], axis = 4)
+        bp_sky_map[:,:,:,:,1,evt] = np.nansum(bp_coval_evt[:, :, :, :, v_pairs_len:], axis = 4)
     del ara_root, num_ants, num_evts
 
     print('Sim wf collecting is done!')

@@ -68,9 +68,9 @@ def reco_sim_collector(Data, Station, Year):
         wf_v = ara_root.get_rf_wfs(evt)
         for ant in range(num_ants):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_band_pass = True)
-        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt])
-        coef[:, :, :, evt] = ara_int.coval_max
-        coord[:, :, :, :, evt] = ara_int.coord_max
+        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], sum_pol = True)
+        coef[:, :, :, evt] = ara_int.coval
+        coord[:, :, :, :, evt] = ara_int.coord
         #print(coef[:, :, :, evt], coord[:, :, :, :, evt])
         del wf_v
     del ara_root, num_evts, wf_int, ara_int, num_ants, wf_time, wei_pairs

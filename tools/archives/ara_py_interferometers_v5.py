@@ -13,24 +13,22 @@ from tools.ara_run_manager import get_pair_info
 
 ara_const = ara_const()
 num_ants = ara_const.USEFUL_CHAN_PER_STATION
-num_pols = ara_const.POLARIZATION
 
 class py_interferometers:
 
-    def __init__(self, pad_len, dt, st, yrs, run = None, get_sub_file = False, use_debug = False):
+    def __init__(self, pad_len, dt, st, yrs, run = None, get_sub_file = False):
 
         self.dt = dt
         self.st = st
         self.yrs = yrs
         self.run = run
-        self.use_debug = use_debug
 
         if get_sub_file:
             self.get_zero_pad(pad_len)
             self.lags = correlation_lags(self.double_pad_len, self.double_pad_len, 'same') * self.dt
             self.lag_len = len(self.lags)
             self.pairs, self.pair_len, self.v_pairs_len = get_pair_info(self.st, self.run, verbose = True)
-            self.get_arrival_time_tables(verbose = True)
+            self.get_arrival_time_tables()
             self.get_coval_time()
         else:                
             self.lags = correlation_lags(pad_len, pad_len, 'full') * self.dt    
@@ -43,7 +41,7 @@ class py_interferometers:
         self.zero_pad = np.full((self.double_pad_len, num_ants), 0, dtype = float)
         self.quater_idx = pad_len // 2
 
-    def get_arrival_time_tables(self, verbose = False):
+    def get_arrival_time_tables(self):
 
         if self.st == 2 or (self.st == 3 and self.yrs <= 1515974400):
             year = 2015
@@ -52,22 +50,18 @@ class py_interferometers:
 
         table_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{self.st}/arr_time_table/'
         table_name = f'arr_time_table_A{self.st}_Y{year}.h5'
-        if verbose:
-            print('arrival time table:', table_path + table_name)        
+        print('arrival time table:', table_path + table_name)        
         del year
 
         table_hf = h5py.File(table_path + table_name, 'r')
-        self.theta = 90 - table_hf['theta_bin'][:] # nadir to elevation angle
-        num_thetas = len(self.theta)
-        self.phi = table_hf['phi_bin'][:]
-        self.num_phis = len(self.phi)
+        theta = table_hf['theta_bin'][:] - 90 # zenith to elevation angle
+        phi = table_hf['phi_bin'][:]
         radius_arr = table_hf['radius_bin'][:]
-        num_rads = len(radius_arr)
         num_ray_sol = table_hf['num_ray_sol'][0]
         arr_table = table_hf['arr_time_table'][:]
         del table_path, table_name, table_hf
  
-        self.table = np.full((num_thetas, self.num_phis, num_rads, num_ray_sol, self.pair_len), np.nan, dtype = float)
+        self.table = np.full((len(theta), len(phi), len(radius_arr), num_ray_sol, self.pair_len), np.nan, dtype = float)
         table_p1 = np.copy(self.table)
         table_p2 = np.copy(self.table)
         for p in range(self.pair_len):
@@ -77,18 +71,11 @@ class py_interferometers:
             table_p1[:, :, :, :, p] = arr_table[:, :, :, p_1st, :]
             table_p2[:, :, :, :, p] = arr_table[:, :, :, p_2nd, :]
             del p_1st, p_2nd
-        self.table_ori_shape = self.table.shape
-        self.table_pol_shape = (num_pols, num_thetas, self.num_phis, num_rads, num_ray_sol)
-        self.coord_shape = (num_pols, 2, num_rads, num_ray_sol)
-        self.table = np.reshape(self.table, (-1, num_rads, num_ray_sol, self.pair_len))
-        self.table_shape = self.table.shape
-        if verbose:
-            print('arr table shape:', self.table_shape)
-        del radius_arr, arr_table, num_thetas, num_rads, num_ray_sol
+        del theta, phi, radius_arr, num_ray_sol, arr_table
 
-        table_p1 = np.reshape(table_p1, self.table_shape)
-        table_p2 = np.reshape(table_p2, self.table_shape)
         self.bad_arr = np.logical_or(table_p1 < -100, table_p2 < -100)
+        self.table_shape = self.table.shape
+        print('arr table shape:', self.table_shape)
         del table_p1, table_p2
 
     def get_coval_time(self):
@@ -99,42 +86,41 @@ class py_interferometers:
 
         self.int_factor = (self.table - self.lags[self.p0_idx])/self.dt
 
-    def get_coval_sample(self):
+    def get_coval_sample(self, sum_pol = False):
 
         corr_diff = self.corr[1:] - self.corr[:-1]
-        
-        coval = np.full(self.table_shape, 0, dtype=float)
+
+        self.coval = np.full(self.table_shape, 0, dtype=float)
         for p in range(self.pair_len):
-            coval[:, :, :, p] = corr_diff[:, p][self.p0_idx[:, :, :, p]] * self.int_factor[:, :, :, p] + self.corr[:, p][self.p0_idx[:, :, :, p]]
-        coval[self.bad_arr] = 0
-        if self.use_debug:
-            self.coval = np.reshape(coval, self.table_ori_shape)
+            self.coval[:, :, :, :, p] = corr_diff[:, p][self.p0_idx[:, :, :, :, p]] * self.int_factor[:, :, :, :, p] + self.corr[:, p][self.p0_idx[:, :, :, :, p]]
+        self.coval[self.bad_arr] = 0
         del corr_diff
 
-        corr_v_sum = np.nansum(coval[:, :, :, :self.v_pairs_len], axis = 3)
-        corr_h_sum = np.nansum(coval[:, :, :, self.v_pairs_len:], axis = 3)
-        sky_map = np.asarray([corr_v_sum, corr_h_sum]) # array dim (# of pols, # of thetas X # of phis, # of rs, # of rays) 
-        if self.use_debug:
-            self.sky_map = np.reshape(sky_map, self.table_pol_shape)
-        del coval
+        if sum_pol:
+            corr_v_sum = np.nansum(self.coval[:, :, :, :, :self.v_pairs_len], axis = 4)
+            corr_h_sum = np.nansum(self.coval[:, :, :, :, self.v_pairs_len:], axis = 4)
 
-        self.coval_max = np.nanmax(sky_map, axis = 1) # array dim (# of pols, # of rs, # of rays)
-        coord = np.nanargmax(sky_map, axis = 1)
-        self.coord_max = np.full(self.coord_shape, np.nan, dtype = float) # array dim (# of pols, theta and phi, # of rs, # of rays)
-        self.coord_max[0] = self.theta[coord // self.num_phis]
-        self.coord_max[1] = self.phi[coord % self.num_phis]
-        del corr_v_sum, corr_h_sum, sky_map, coord
+            corr_v_max = np.nanmax(corr_v_sum, axis = (0,1))
+            corr_h_max = np.nanmax(corr_h_sum, axis = (0,1))
+            self.coval = np.asarray([corr_v_max, corr_h_max]) # pol, rad, sol
+
+            self.coord = np.full((2, 2, 2, 2), np.nan, dtype = float) # pol, thetapi, rad, sol
+            for r in range(2):
+                for s in range(2):
+                    self.coord[0, :, r, s] = np.asarray(np.where(corr_v_sum[:, :, r, s] == corr_v_max[r, s]), dtype = float).flatten()                 
+                    self.coord[1, :, r, s] = np.asarray(np.where(corr_h_sum[:, :, r, s] == corr_h_max[r, s]), dtype = float).flatten()
+            del corr_v_sum, corr_h_sum
 
     def get_padded_wf(self, pad_v):
 
         self.zero_pad[:] = 0
         self.zero_pad[self.quater_idx:-self.quater_idx] = pad_v
 
-    def get_cross_correlation(self):
+    def get_cross_correlation(self, return_debug_dat = False):
 
         # fft correlation w/ multiple array at once
         self.corr = fftconvolve(self.zero_pad[:, self.pairs[:, 0]], self.zero_pad[::-1, self.pairs[:, 1]], 'same', axes = 0)
-        if self.use_debug:
+        if return_debug_dat:
             self.corr_nonorm = np.copy(self.corr)
 
         # normalization factor by wf weight
@@ -142,28 +128,29 @@ class py_interferometers:
         nor_fac = np.sqrt(nor_fac[::-1, self.pairs[:, 0]] * nor_fac[:, self.pairs[:, 1]])
         self.corr /= nor_fac
         self.corr[np.isnan(self.corr) | np.isinf(self.corr)] = 0 # convert x/nan result
-        if self.use_debug:
-            self.nor_fac = nor_fac
-        else:
-            del nor_fac
 
         # hilbert
         self.corr = np.abs(hilbert(self.corr, axis = 0))
+
+        if return_debug_dat:
+            self.nor_fac = nor_fac
+        else:
+            del nor_fac
     
-    def get_sky_map(self, pad_v, weights = None):
+    def get_sky_map(self, pad_v, weights = None, sum_pol = False, return_debug_dat = False):
 
         #zero pad
         self.get_padded_wf(pad_v)
         
         # correlation
-        self.get_cross_correlation()
+        self.get_cross_correlation(return_debug_dat = return_debug_dat)
 
         if weights is not None:
            self.corr *= weights
 
         # coval
-        self.get_coval_sample()
-        if self.use_debug == False:
+        self.get_coval_sample(sum_pol = sum_pol)
+        if return_debug_dat == False:
             del self.corr
 
 def get_products(weights, pairs, v_pairs_len):

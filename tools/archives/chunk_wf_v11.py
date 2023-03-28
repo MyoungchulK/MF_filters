@@ -131,7 +131,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     testbed_freq_range = cw_testbed.useful_freq_range_debug
 
     # interferometers
-    ara_int = py_interferometers(pad_len, dt[0], st, year, run = run, use_debug = True, get_sub_file = True)
+    ara_int = py_interferometers(pad_len, dt[0], st, year, run = run, get_sub_file = True)
     pairs = ara_int.pairs
     v_pairs_len = ara_int.v_pairs_len    
     lags = ara_int.lags
@@ -205,12 +205,12 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     cw_bp_corr = np.copy(corr)
     cw_bp_corr_nonorm = np.copy(corr)
     cw_bp_corr_01 = np.copy(corr)
-    coval = np.full(ara_int.table_ori_shape, np.nan, dtype = float)
+    coval = np.full(ara_int.table_shape, np.nan, dtype = float)
     coval = np.repeat(coval[:, :, :, :, :, np.newaxis], sel_evt_len, axis = 5)
     bp_coval = np.copy(coval)
     cw_coval = np.copy(coval)
     cw_bp_coval = np.copy(coval)
-    sky_map = np.full((ara_int.table_ori_shape[0], ara_int.table_ori_shape[1], ara_int.table_ori_shape[2], ara_int.table_ori_shape[3], num_pols, sel_evt_len), np.nan, dtype = float) 
+    sky_map = np.full((ara_int.table_shape[0], ara_int.table_shape[1], 2, 2, 2, sel_evt_len), np.nan, dtype = float) 
     bp_sky_map = np.copy(sky_map)
     cw_sky_map = np.copy(sky_map)
     cw_bp_sky_map = np.copy(sky_map)
@@ -418,28 +418,28 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
             wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True)
             ara_root.del_TGraph()
-        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, sel_entries[evt]])
+        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, sel_entries[evt]], sum_pol = False, return_debug_dat = True)
         corr[:,:,evt] = ara_int.corr
         corr_nonorm[:,:,evt] = ara_int.corr_nonorm
         corr_01[:,:,evt] = ara_int.nor_fac
-        coval[:,:,:,:,:,evt] = ara_int.coval
-        sky_map_evt = ara_int.sky_map 
-        sky_map[:,:,:,:,0,evt] = sky_map_evt[0]
-        sky_map[:,:,:,:,1,evt] = sky_map_evt[1]
+        coval_evt = ara_int.coval
+        coval[:,:,:,:,:,evt] = coval_evt
+        sky_map[:,:,:,:,0,evt] = np.nansum(coval_evt[:, :, :, :, :v_pairs_len], axis = 4)
+        sky_map[:,:,:,:,1,evt] = np.nansum(coval_evt[:, :, :, :, v_pairs_len:], axis = 4)
 
         # reco w/band-passed wf
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
             wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True)
             ara_root.del_TGraph()
-        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, sel_entries[evt]])
+        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, sel_entries[evt]], sum_pol = False, return_debug_dat = True)
         bp_corr[:,:,evt] = ara_int.corr
         bp_corr_nonorm[:,:,evt] = ara_int.corr_nonorm
         bp_corr_01[:,:,evt] = ara_int.nor_fac
-        bp_coval[:,:,:,:,:,evt] = ara_int.coval
-        bp_sky_map_evt = ara_int.sky_map
-        bp_sky_map[:,:,:,:,0,evt] = bp_sky_map_evt[0]
-        bp_sky_map[:,:,:,:,1,evt] = bp_sky_map_evt[1] 
+        bp_coval_evt = ara_int.coval
+        bp_coval[:,:,:,:,:,evt] = bp_coval_evt
+        bp_sky_map[:,:,:,:,0,evt] = np.nansum(bp_coval_evt[:, :, :, :, :v_pairs_len], axis = 4)
+        bp_sky_map[:,:,:,:,1,evt] = np.nansum(bp_coval_evt[:, :, :, :, v_pairs_len:], axis = 4)
        
         print(wei_pairs[:, sel_entries[evt]]) 
         
@@ -448,28 +448,28 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
             wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_cw = True, evt = sel_entries[evt])
             ara_root.del_TGraph()
-        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, sel_entries[evt]])
+        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, sel_entries[evt]], sum_pol = False, return_debug_dat = True)
         cw_corr[:,:,evt] = ara_int.corr
         cw_corr_nonorm[:,:,evt] = ara_int.corr_nonorm
         cw_corr_01[:,:,evt] = ara_int.nor_fac
-        cw_coval[:,:,:,:,:,evt] = ara_int.coval
-        cw_sky_map_evt = ara_int.sky_map
-        cw_sky_map[:,:,:,:,0,evt] = cw_sky_map_evt[0]
-        cw_sky_map[:,:,:,:,1,evt] = cw_sky_map_evt[1]
+        cw_coval_evt = ara_int.coval
+        cw_coval[:,:,:,:,:,evt] = cw_coval_evt
+        cw_sky_map[:,:,:,:,0,evt] = np.nansum(cw_coval_evt[:, :, :, :, :v_pairs_len], axis = 4)
+        cw_sky_map[:,:,:,:,1,evt] = np.nansum(cw_coval_evt[:, :, :, :, v_pairs_len:], axis = 4)
         
         # reco w/ cw (and band-passed) wf
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
             wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True, evt = sel_entries[evt])
             ara_root.del_TGraph()
-        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, sel_entries[evt]])
+        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, sel_entries[evt]], sum_pol = False, return_debug_dat = True)
         cw_bp_corr[:,:,evt] = ara_int.corr
         cw_bp_corr_nonorm[:,:,evt] = ara_int.corr_nonorm
         cw_bp_corr_01[:,:,evt] = ara_int.nor_fac
-        cw_bp_coval[:,:,:,:,:,evt] = ara_int.coval
-        cw_bp_sky_map_evt = ara_int.sky_map
-        cw_bp_sky_map[:,:,:,:,0,evt] = cw_bp_sky_map_evt[0]
-        cw_bp_sky_map[:,:,:,:,1,evt] = cw_bp_sky_map_evt[1]
+        cw_bp_coval_evt = ara_int.coval
+        cw_bp_coval[:,:,:,:,:,evt] = cw_bp_coval_evt
+        cw_bp_sky_map[:,:,:,:,0,evt] = np.nansum(cw_bp_coval_evt[:, :, :, :, :v_pairs_len], axis = 4)
+        cw_bp_sky_map[:,:,:,:,1,evt] = np.nansum(cw_bp_coval_evt[:, :, :, :, v_pairs_len:], axis = 4)
 
     # interpolated all ele chs
     wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_rfft = True, use_ele_ch = True)
