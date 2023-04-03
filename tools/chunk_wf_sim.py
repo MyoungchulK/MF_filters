@@ -23,11 +23,26 @@ def wf_sim_collector(Data, Station, Year):
     num_pols = ara_const.POLARIZATION
     del ara_const
 
+    # config
+    sim_type = get_path_info_v2(Data, 'AraOut.', '_')
+    config = int(get_path_info_v2(Data, '_R', '.txt'))
+    flavor = int(get_path_info_v2(Data, 'AraOut.signal_F', '_A'))
+    sim_run = int(get_path_info_v2(Data, 'txt.run', '.root'))
+    if config < 6:
+        year = 2015
+    else:
+        year = 2018
+    print('St:', Station, 'Type:', sim_type, 'Flavor:', flavor, 'Config:', config, 'Year:', year, 'Sim Run:', sim_run)
+
+    if sim_type == 'signal': get_angle_info = True
+    else: get_angle_info = False
+
     # data config
     ara_root = ara_root_loader(Data, Station, Year)
-    ara_root.get_sub_info(Data, get_angle_info = True)
+    ara_root.get_sub_info(Data, get_angle_info = get_angle_info)
     num_evts = ara_root.num_evts
     sel_evt_len = num_evts
+    sel_evt_len = 1
     entry_num = ara_root.entry_num
     dt = ara_root.time_step
     wf_len = ara_root.waveform_length
@@ -45,17 +60,6 @@ def wf_sim_collector(Data, Station, Year):
     rec_ang = ara_root.rec_ang
     view_ang = ara_root.view_ang
     arrival_time = ara_root.arrival_time
- 
-    # config
-    sim_type = get_path_info_v2(Data, 'AraOut.', '_')
-    config = int(get_path_info_v2(Data, '_R', '.txt'))
-    flavor = int(get_path_info_v2(Data, 'AraOut.signal_F', '_A'))
-    sim_run = int(get_path_info_v2(Data, 'txt.run', '.root'))
-    if config < 6:
-        year = 2015
-    else:
-        year = 2018
-    print('St:', Station, 'Type:', sim_type, 'Flavor:', flavor, 'Config:', config, 'Year:', year, 'Sim Run:', sim_run)
 
     # snr
     if flavor != -1:
@@ -112,9 +116,10 @@ def wf_sim_collector(Data, Station, Year):
     bp_coval = np.copy(coval)
     sky_map = np.full((ara_int.table_ori_shape[0], ara_int.table_ori_shape[1], ara_int.table_ori_shape[2], ara_int.table_ori_shape[3], num_pols, sel_evt_len), np.nan, dtype = float)
     bp_sky_map = np.copy(sky_map)
-    
+   
+    print(sel_evt_len) 
     # loop over the events
-    for evt in tqdm(range(num_evts)):
+    for evt in tqdm(range(sel_evt_len)):
       #if evt <100: # debug 
 
         wf_v = ara_root.get_rf_wfs(evt)

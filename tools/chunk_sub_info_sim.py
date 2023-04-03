@@ -28,6 +28,7 @@ def sub_info_sim_collector(Data, Station, Year):
     elast_y = ara_root.elast_y
     posnu = ara_root.posnu
     nnu = ara_root.nnu
+    nnu_tot = ara_root.nnu_tot
     rec_ang = ara_root.rec_ang
     view_ang = ara_root.view_ang
     arrival_time = ara_root.arrival_time
@@ -50,6 +51,7 @@ def sub_info_sim_collector(Data, Station, Year):
             'elast_y':elast_y,
             'posnu':posnu,
             'nnu':nnu,
+            'nnu_tot':nnu_tot,
             'rec_ang':rec_ang,    
             'view_ang':view_ang,
             'arrival_time':arrival_time}

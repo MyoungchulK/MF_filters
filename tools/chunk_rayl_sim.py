@@ -11,7 +11,7 @@ def rayl_sim_collector(Data, Station, Year):
     from tools.ara_sim_load import ara_root_loader
     from tools.ara_constant import ara_const
     from tools.ara_detector_response import get_rayl_distribution
-    from tools.ara_wf_analyzer_sim import wf_analyzer
+    from tools.ara_wf_analyzer import wf_analyzer
 
     # geom. info.
     ara_const = ara_const()
@@ -29,7 +29,7 @@ def rayl_sim_collector(Data, Station, Year):
     pad_len = wf_int.pad_len
     print('pad len:', pad_len)
 
-    use_cross_talk = True
+    use_cross_talk = False
     if use_cross_talk:
         offset = 75 #ns
         off_idx = int(offset / dt)

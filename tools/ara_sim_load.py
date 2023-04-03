@@ -51,6 +51,7 @@ class ara_root_loader:
         self.waveform_length = np.asarray(settings['WAVEFORM_LENGTH'], dtype = int)[0]
         self.wf_time = np.arange(self.waveform_length) * self.time_step - self.waveform_length // 2 * self.time_step
         self.posnu_radius = np.asarray(settings['POSNU_RADIUS'], dtype = int)
+        self.nnu_tot = np.asarray(settings['NNU'], dtype = int)
  
         ara_tree_2 = file_uproot['AraTree2']
         event = ara_tree_2['event']
@@ -78,12 +79,12 @@ class ara_root_loader:
         self.nnu[5] = np.asarray(event['Nu_Interaction/Nu_Interaction.nnu.r'], dtype = float)
         del file_uproot, ara_tree, settings, ara_tree_2, event
        
+        self.rec_ang = np.full((2, num_ants, self.num_evts), np.nan, dtype = float)
+        self.view_ang = np.copy(self.rec_ang)
+        self.arrival_time = np.copy(self.rec_ang)
         if get_angle_info:
             sim_st_index = [3,0,1,2,3,0,1,2,3,0,1,2,3,0,1,2]
             sim_ant_index = [2,2,2,2,0,0,0,0,3,3,3,3,1,1,1,1]
-            self.rec_ang = np.full((2, num_ants, self.num_evts), np.nan, dtype = float)
-            self.view_ang = np.copy(self.rec_ang)
-            self.arrival_time = np.copy(self.rec_ang)
             
             ROOT.gInterpreter.ProcessLine('#include "'+os.environ.get('ARA_UTIL_INSTALL_DIR')+'/../AraSim/Report.h"')
             AraTree2 = self.file.AraTree2

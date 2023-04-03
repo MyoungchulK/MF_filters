@@ -11,14 +11,15 @@ from tools.ara_run_manager import file_sorter
 from tools.ara_utility import size_checker
 
 Station = int(sys.argv[1])
+key = str(sys.argv[2])
 
 # sort
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/sub_info_sim/*signal*'
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/sub_info_sim_{key}/*signal*'
 d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 del d_run_range
 
 num_flas = 3
-num_evts = 15
+num_evts = 5
 if Station == 2: num_configs = 7
 if Station == 3: num_configs = 9
 
@@ -41,7 +42,8 @@ for r in tqdm(range(len(d_run_tot))):
     config[r] = cons[2]
     flavor[r] = cons[4]
     radius[r] = hf['radius'][:]
-    inu_thrown[r] = hf['inu_thrown'][-1]
+    #inu_thrown[r] = hf['inu_thrown'][-1] + 1
+    inu_thrown[r] = hf['nnu_tot'][0]
     pnu[r] = hf['pnu'][:]   
     probability[r] = hf['probability'][:]
     cos_angle[r] = hf['nnu'][3]
@@ -52,11 +54,12 @@ cos_angle = np.cos(cos_angle)
 
 solid_angle = 4 * np.pi
 area = np.pi * (radius**2)
-log_emax = 1e12 # 12 GeV
+log_emax0 = 1e12 # 12 GeV
+log_emax = 10**(12.5) # 12 GeV
 log_emin = 1e7 # 7 Gev
 one_weight = probability * pnu * area[:, np.newaxis] * solid_angle * (np.log(log_emax) - np.log(log_emin))
 
-energy_bins = np.logspace(np.log10(log_emin), np.log10(log_emax), 40 + 1)
+energy_bins = np.logspace(np.log10(log_emin), np.log10(log_emax0), 40 + 1)
 cos_bins = np.linspace(-1, 1, 100 + 1)
 
 aeff_1d = np.full((len(energy_bins) - 1, num_flas, num_configs), 0, dtype = float)
@@ -97,7 +100,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'One_Weight_Pad_A{Station}.h5'
+file_name = f'One_Weight_Pad_{key}_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('pnu', data=pnu, compression="gzip", compression_opts=9)
 hf.create_dataset('cos_angle', data=cos_angle, compression="gzip", compression_opts=9)
