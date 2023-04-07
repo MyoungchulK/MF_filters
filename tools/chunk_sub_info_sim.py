@@ -11,7 +11,7 @@ def sub_info_sim_collector(Data, Station, Year):
 
     # data config
     ara_root = ara_root_loader(Data, Station, Year)
-    ara_root.get_sub_info(Data, get_angle_info = True)
+    ara_root.get_sub_info(Data, get_angle_info = False)
     num_evts = ara_root.num_evts
     entry_num = ara_root.entry_num
     dt = ara_root.time_step

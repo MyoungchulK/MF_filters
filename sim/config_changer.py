@@ -7,9 +7,9 @@ d_path = f'/home/mkim/analysis/MF_filters/sim/ARA0*/sim_signal_setup_full/*.txt'
 #d_path = f'/home/mkim/analysis/MF_filters/sim/ARA0*/sim_noise_setup_full/*.txt'
 d_list = glob(d_path)
 
-common = 'SELECT_FLAVOR='
-old_line = f'{common}2'
-new_line = f'{common}0'
+common = 'NNU_PASSED='
+old_line = f'{common}15'
+new_line = f'{common}12'
 
 #old_line = 'RANDOM_MODE=1'
 #new_line = 'RANDOM_MODE=1\nDETECTOR_CH_MASK=0\nDETECTOR_TRIG_DELAY=0'

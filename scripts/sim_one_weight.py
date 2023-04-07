@@ -19,7 +19,7 @@ d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 del d_run_range
 
 num_flas = 3
-num_evts = 5
+num_evts = 2
 if Station == 2: num_configs = 7
 if Station == 3: num_configs = 9
 
@@ -55,9 +55,18 @@ cos_angle = np.cos(cos_angle)
 solid_angle = 4 * np.pi
 area = np.pi * (radius**2)
 log_emax0 = 1e12 # 12 GeV
-log_emax = 10**(12.5) # 12 GeV
+log_emax = 10**(8) # 12 GeV
 log_emin = 1e7 # 7 Gev
-one_weight = probability * pnu * area[:, np.newaxis] * solid_angle * (np.log(log_emax) - np.log(log_emin))
+#one_weight = probability * pnu * area[:, np.newaxis] * solid_angle * (np.log(log_emax) - np.log(log_emin))
+one_weight = np.full(pnu.shape, np.nan, dtype = float)
+idx1 = np.logical_and(flavor == 1, config == 3)
+idx2 = np.logical_and(flavor == 2, config == 3)
+print(np.count_nonzero(idx1), np.count_nonzero(idx2))
+one_weight[idx1] = probability[idx1] * pnu[idx1] * area[idx1, np.newaxis] * solid_angle * (np.log(10**8) - np.log(10**7))
+one_weight[idx2] = probability[idx2] * pnu[idx2] * area[idx2, np.newaxis] * solid_angle * (np.log(10**8) - np.log(10**7))
+print(np.log10(np.nanmax(pnu)))
+print(np.log10(np.nanmax(pnu[idx1])))
+print(np.log10(np.nanmax(pnu[idx2])))
 
 energy_bins = np.logspace(np.log10(log_emin), np.log10(log_emax0), 40 + 1)
 cos_bins = np.linspace(-1, 1, 100 + 1)

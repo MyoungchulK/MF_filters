@@ -4,9 +4,10 @@
 key=signal
 st=$1
 run=$2
-fla=$3
-sim_run=$4
-setup=/home/mkim/analysis/MF_filters/sim/ARA0${st}/sim_${key}_setup_full/${key}_F${fla}_A${st}_R${run}.txt
+en=$3
+fla=$4
+sim_run=$5
+setup=/home/mkim/analysis/MF_filters/sim/ARA0${st}/sim_${key}_setup_full/${key}_E${en}_F${fla}_A${st}_R${run}.txt
 user_path=/misc/disk19/users/
 if [ -d "$user_path" ]; then
     echo "There is ${user_path}"
