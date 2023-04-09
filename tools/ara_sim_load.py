@@ -52,7 +52,10 @@ class ara_root_loader:
         self.wf_time = np.arange(self.waveform_length) * self.time_step - self.waveform_length // 2 * self.time_step
         self.posnu_radius = np.asarray(settings['POSNU_RADIUS'], dtype = int)
         self.nnu_tot = np.asarray(settings['NNU'], dtype = int)
- 
+        self.exponent_range = np.full((2), 0, dtype = int)
+        self.exponent_range[0] = np.asarray(settings['EXPONENT_MIN'], dtype = int)[0]
+        self.exponent_range[1] = np.asarray(settings['EXPONENT_MAX'], dtype = int)[0]
+
         ara_tree_2 = file_uproot['AraTree2']
         event = ara_tree_2['event']
         self.pnu = np.asarray(event['pnu'], dtype = float)

@@ -19,6 +19,7 @@ def sub_info_sim_collector(Data, Station, Year):
     wf_time = ara_root.wf_time    
     radius = ara_root.posnu_radius
     pnu = ara_root.pnu
+    exponent_range = ara_root.exponent_range
     inu_thrown = ara_root.inu_thrown
     weight = ara_root.weight
     probability = ara_root.probability
@@ -42,6 +43,7 @@ def sub_info_sim_collector(Data, Station, Year):
             'wf_time':wf_time,
             'radius':radius,
             'pnu':pnu,
+            'exponent_range':exponent_range,
             'inu_thrown':inu_thrown,
             'weight':weight,
             'probability':probability,

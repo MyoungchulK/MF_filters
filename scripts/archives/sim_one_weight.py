@@ -14,12 +14,12 @@ Station = int(sys.argv[1])
 key = str(sys.argv[2])
 
 # sort
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/sub_info_sim/*signal*'
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/sub_info_sim_{key}/*signal*'
 d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 del d_run_range
 
 num_flas = 3
-num_evts = 100
+num_evts = 2
 if Station == 2: num_configs = 7
 if Station == 3: num_configs = 9
 
@@ -31,7 +31,6 @@ radius = np.copy(inu_thrown)
 sim_run = np.full((d_len), 0, dtype = int)
 config = np.copy(sim_run)
 flavor = np.copy(sim_run)
-exponent = np.full((d_len, 2), 0, dtype = int)
 
 for r in tqdm(range(len(d_run_tot))):
     
@@ -41,49 +40,55 @@ for r in tqdm(range(len(d_run_tot))):
     cons = hf['config'][:]
     sim_run[r] = cons[1]
     config[r] = cons[2]
-    #flavor[r] = cons[4]
-    flavor[r] = hf['nuflavorint'][0]
+    flavor[r] = cons[4]
     radius[r] = hf['radius'][:]
     #inu_thrown[r] = hf['inu_thrown'][-1] + 1
     inu_thrown[r] = hf['nnu_tot'][0]
     pnu[r] = hf['pnu'][:]   
     probability[r] = hf['probability'][:]
     cos_angle[r] = hf['nnu'][3]
-    exponent[r] = hf['exponent_range'][:]
     del hf, cons
 
 pnu /= 1e9
-exponent -= 9
 cos_angle = np.cos(cos_angle)
-exponent_lin = 10 ** (exponent)
+
 solid_angle = 4 * np.pi
 area = np.pi * (radius**2)
-one_weight = probability * pnu * area[:, np.newaxis] * solid_angle * (np.log(exponent_lin[:, 1][:, np.newaxis]) - np.log(exponent_lin[:, 0][:, np.newaxis]))
+log_emax0 = 1e12 # 12 GeV
+log_emax = 10**(8) # 12 GeV
+log_emin = 1e7 # 7 Gev
+#one_weight = probability * pnu * area[:, np.newaxis] * solid_angle * (np.log(log_emax) - np.log(log_emin))
+one_weight = np.full(pnu.shape, np.nan, dtype = float)
+idx1 = np.logical_and(flavor == 1, config == 3)
+idx2 = np.logical_and(flavor == 2, config == 3)
+print(np.count_nonzero(idx1), np.count_nonzero(idx2))
+one_weight[idx1] = probability[idx1] * pnu[idx1] * area[idx1, np.newaxis] * solid_angle * (np.log(10**8) - np.log(10**7))
+one_weight[idx2] = probability[idx2] * pnu[idx2] * area[idx2, np.newaxis] * solid_angle * (np.log(10**8) - np.log(10**7))
+print(np.log10(np.nanmax(pnu)))
+print(np.log10(np.nanmax(pnu[idx1])))
+print(np.log10(np.nanmax(pnu[idx2])))
 
-ex_range = np.arange(7, 13, 1, dtype = int)
-num_ens = len(ex_range)
-energy_bins = np.logspace(ex_range[0], ex_range[-1], 40 + 1)
+energy_bins = np.logspace(np.log10(log_emin), np.log10(log_emax0), 40 + 1)
 cos_bins = np.linspace(-1, 1, 100 + 1)
 
-aeff_1d = np.full((len(energy_bins) - 1, num_flas, num_configs, num_ens), 0, dtype = float)
-aeff_2d = np.full((len(energy_bins) - 1, len(cos_bins) - 1, num_flas, num_configs, num_ens), 0, dtype = float)
-inu_thrown_tot = np.full((num_flas, num_configs, num_ens), 0, dtype = float)
+aeff_1d = np.full((len(energy_bins) - 1, num_flas, num_configs), 0, dtype = float)
+aeff_2d = np.full((len(energy_bins) - 1, len(cos_bins) - 1, num_flas, num_configs), 0, dtype = float)
+inu_thrown_tot = np.full((num_flas, num_configs), 0, dtype = float)
 
 for f in range(num_flas):
     for c in range(num_configs):
-        for e in range(num_ens):
-            idxs = np.all((flavor == int(f + 1), config == int(c + 1), exponent[:, 0] == ex_range[e]), axis = 0)
-            tot_evt = np.nansum(inu_thrown[idxs])
-            tot_pnu = pnu[idxs].flatten()
-            tot_cos = cos_angle[idxs].flatten()
-            tot_wei = one_weight[idxs].flatten()
-            inu_thrown_tot[f, c, e] = tot_evt
+        idxs = np.logical_and(flavor == int(f + 1), config == int(c + 1))
+        tot_evt = np.nansum(inu_thrown[idxs])
+        tot_pnu = pnu[idxs].flatten()
+        tot_cos = cos_angle[idxs].flatten()
+        tot_wei = one_weight[idxs].flatten()
+        inu_thrown_tot[f, c] = tot_evt
 
-            aeff_1d[:, f, c, e] = np.histogram(tot_pnu, weights = tot_wei, bins = energy_bins)[0]
-            aeff_1d[:, f, c, e] /= tot_evt * np.diff(energy_bins) * solid_angle
+        aeff_1d[:, f, c] = np.histogram(tot_pnu, weights = tot_wei, bins = energy_bins)[0]
+        aeff_1d[:, f, c] /= tot_evt * np.diff(energy_bins) * solid_angle
 
-            aeff_2d[:, :, f, c, e] = np.histogram2d(tot_pnu, tot_cos, weights = tot_wei, bins=(energy_bins, cos_bins))[0]
-            aeff_2d[:, :, f, c, e] /= tot_evt * np.diff(energy_bins)[:, np.newaxis] * np.diff(cos_bins)[np.newaxis, :] * solid_angle
+        aeff_2d[:, :, f, c] = np.histogram2d(tot_pnu, tot_cos, weights = tot_wei, bins=(energy_bins, cos_bins))[0]
+        aeff_2d[:, :, f, c] /= tot_evt * np.diff(energy_bins)[:, np.newaxis] * np.diff(cos_bins)[np.newaxis, :] * solid_angle
 
 flux_model = np.loadtxt('/home/mkim/analysis/MF_filters/data/flux_data/gzkKoteraSFR1.txt')
 energy = flux_model[:,0]
@@ -96,9 +101,8 @@ for f in range(num_flas):
     nu_model_int = model_f(np.log10(pnu[fla_idx])) / pnu[fla_idx]
     evt_rate[fla_idx] = one_weight[fla_idx] * nu_model_int
     for c in range(num_configs):
-        for e in range(num_ens):
-            idxs = np.all((fla_idx, config == int(c + 1), exponent[:, 0] == ex_range[e]), axis = 0)
-            evt_rate[idxs] /= inu_thrown_tot[f, c, e]
+        idxs = np.logical_and(fla_idx, config == int(c + 1))  
+        evt_rate[idxs] /= inu_thrown_tot[f, c]
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
 if not os.path.exists(path):
@@ -108,7 +112,6 @@ os.chdir(path)
 file_name = f'One_Weight_Pad_{key}_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('pnu', data=pnu, compression="gzip", compression_opts=9)
-hf.create_dataset('exponent', data=exponent, compression="gzip", compression_opts=9)
 hf.create_dataset('cos_angle', data=cos_angle, compression="gzip", compression_opts=9)
 hf.create_dataset('probability', data=probability, compression="gzip", compression_opts=9)
 hf.create_dataset('inu_thrown', data=inu_thrown, compression="gzip", compression_opts=9)

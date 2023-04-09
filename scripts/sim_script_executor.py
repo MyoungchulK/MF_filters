@@ -37,7 +37,7 @@ def script_loader(key, station, year, data, evt_range, not_override):
     print(data, size_checker(data))
     sim_type = get_path_info_v2(data, 'AraOut.', '_')
     config = int(get_path_info_v2(data, '_R', '.txt'))
-    flavor = int(get_path_info_v2(data, 'AraOut.signal_F', '_A'))
+    flavor = int(get_path_info_v2(data, '_F', '_A'))
     sim_run = int(get_path_info_v2(data, 'txt.run', '.root'))
     if config < 6:
         year = 2015
