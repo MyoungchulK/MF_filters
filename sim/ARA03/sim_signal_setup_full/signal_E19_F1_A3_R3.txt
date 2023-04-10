@@ -19,7 +19,7 @@ ALL_ANT_V_ON=0              //apply Hpol and Vpol gains respectively
 //---PRIMARY AND SHOWER---
 EXPONENT=1                            //E^-2 spectrum
 EXPONENT_MIN=19
-EXPONENT_MAX=21
+EXPONENT_MAX=20
 //NNU=1000                   //number of neutrino events
 ONLY_PASSED_EVENTS=1        //0 (default): AraSim throws NNU events whether or not they pass; 1: AraSim throws events until the number of events that pass the trigger is equal to NNU_PASSED
 NNU_PASSED=100
@@ -29,7 +29,7 @@ SELECT_CURRENT=2            //force charged current
 SECONDARIES=1               //enable secondaries
 TAUDECAY=1                  //account for tau decay in secondaries
 SHOWER_MODE=2               //both EM and hadronic shower in t-domain signal
-POSNU_RADIUS=12000
+POSNU_RADIUS=9000
 RAYSOL_RANGE=13000
 INTERACTION_MODE=0          //Veff cylinder mode
 SIGMA_SELECT=0                          //cross section (0=nominal, 1=upper bound, 2=lower bound)
