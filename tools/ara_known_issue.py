@@ -738,7 +738,7 @@ class known_issue_loader:
 
         bad_path = f'../data/qual_runs/qual_run_A{self.st}'
         if use_v2:
-            bad_path += '_v2'
+            bad_path += '_v3'
         bad_path += '.txt'
         bad_run = []
         bad_file = open(bad_path, "r")

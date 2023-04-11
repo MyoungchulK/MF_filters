@@ -2,9 +2,9 @@ import os
 import numpy as np
 from tqdm import tqdm
 
-def qual_cut_1st_collector(Data, Ped, qual_type = 1, analyze_blind_dat = False, no_tqdm = False):
+def qual_cut_2nd_collector(Data, Ped, qual_type = 2, analyze_blind_dat = False, no_tqdm = False):
 
-    print('Quality cut 1st starts!')
+    print('Quality cut 2nd starts!')
 
     from tools.ara_data_load import ara_uproot_loader
     from tools.ara_data_load import ara_root_loader
@@ -80,7 +80,7 @@ def qual_cut_1st_collector(Data, Ped, qual_type = 1, analyze_blind_dat = False, 
     tot_qual_live_time, tot_qual_bad_live_time = get_bad_live_time(trig_type, unix_time, time_bins_sec, sec_per_sec, tot_qual_cut, verbose = True)
     tot_qual_sum_bad_live_time = get_bad_live_time(trig_type, unix_time, time_bins_sec, sec_per_sec, np.nansum(tot_qual_cut, axis = 1), verbose = True)[1]
  
-    print('Quality cut 1st is done!')
+    print('Quality cut 2nd is done!')
 
     return {'evt_num':evt_num,
             'entry_num':entry_num,

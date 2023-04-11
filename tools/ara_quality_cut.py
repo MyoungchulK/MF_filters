@@ -46,11 +46,14 @@ def get_time_smearing(dat_t, smear_arr = None, smear_arr_2nd = None):
 
     return smear_time
 
-def get_bad_events(st, run, analyze_blind_dat = False, verbose = False, evt_num = None, use_1st = False):
+def get_bad_events(st, run, qual_type = 1, analyze_blind_dat = False, verbose = False, evt_num = None):
 
-    key_1st = ''
-    if use_1st:
+    if qual_type == 1:
         key_1st = '_1st'
+    elif qual_type == 2:
+        key_1st = '_2nd'
+    elif qual_type == 3:
+        key_1st = '_3rd'
 
     run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
     qual_dat = run_info.get_result_path(file_type = f'qual_cut{key_1st}', verbose = verbose, force_blind = True)    
@@ -672,7 +675,7 @@ class pre_qual_cut_loader:
         tot_pre_qual_cut[:, 16] = self.get_short_run_events()
         tot_pre_qual_cut[:, 17] = self.get_known_bad_unix_time_events(add_unchecked_unix_time = True)
         tot_pre_qual_cut[:, 18] = self.get_known_bad_run_events()
-        if use_cw:
+        if use_cw == 2:
             print('Kill the CW!!!')
             tot_pre_qual_cut[:, 19] = self.get_cw_log_events()
             tot_pre_qual_cut[:, 20] = self.get_cw_ratio_events()
@@ -997,20 +1000,20 @@ class ped_qual_cut_loader:
 
 class run_qual_cut_loader:
 
-    def __init__(self, st, run, tot_cut, analyze_blind_dat = False, qual_2nd = False, verbose = False):
+    def __init__(self, st, run, tot_cut, qual_type = 1, analyze_blind_dat = False, verbose = False):
 
         self.analyze_blind_dat = analyze_blind_dat
         self.verbose = verbose
         self.st = st
         self.run = run
-        self.qual_2nd = qual_2nd
+        self.qual_type = qual_type
         
         self.known_flag = np.all(tot_cut[:, 18] != 0)
-        self.ped_flag = np.all(tot_cut[:, -1] != 0)       
+        self.ped_flag = np.all(tot_cut[:, 26] != 0)       
         cut_copy = np.copy(tot_cut)
         cut_copy[:, 14] = 0 # no cal rf
         cut_copy[:, 18] = 0 # bad run
-        cut_copy[:, -1] = 0 # bad ped
+        cut_copy[:, 26] = 0 # bad ped
         cut_copy = np.nansum(cut_copy, axis = 1)
         self.qual_flag = np.all(cut_copy != 0)
         del cut_copy
@@ -1036,8 +1039,7 @@ class run_qual_cut_loader:
                 if not os.path.exists(bad_dir):
                     os.makedirs(bad_dir)
                 bad_name = f'qual_run_A{self.st}'
-                if self.qual_2nd:
-                    bad_name += '_v2'
+                bad_name += f'_v{self.qual_type}'
                 bad_name += '.txt'
                 bad_path = f'{bad_dir}{bad_name}'
                 bad_run_info = f'{self.run} {int(self.qual_flag)} {int(self.ped_flag)} {int(self.known_flag)}\n'
@@ -1113,7 +1115,7 @@ def get_bad_live_time(trig_type, unix_time, time_bins, sec_per_min, cuts, verbos
                         'single block', 'rf win', 'cal win', 'soft win', 'first minute', 
                         'dda voltage', 'bad cal min rate', 'bad cal sec rate', 'bad soft sec rate', 'no rf cal sec rate', 'bad l1 rate', 
                         'short runs', 'bad unix time', 'bad run', 'cw log', 'cw ratio', 'empty slot!', 'unlock calpulser', 
-                        'zero ped', 'single ped', 'low ped', 'known bad ped']
+                        'zero ped', 'single ped', 'low ped', 'known bad ped', 'calpuler cut', 'surface cut', 'op antenna cut']
             print(f'live time for each cuts. total number of cuts: {len(rough_tot_bad_time)}')
             for t in range(len(rough_tot_bad_time)):
                 print(f'{t}) {q_name[t]}: ~{np.round(rough_tot_bad_time[t]/60, 1)} min.')

@@ -25,7 +25,7 @@ bad_runs = known_issue.get_knwon_bad_run(use_qual = True)
 # sort
 d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/snr/*'
 d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
-q_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/qual_cut_full/'
+q_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/qual_cut_3rd_full/'
 del d_run_range, d_path 
 
 r_bins = np.linspace(0, 30, 300 + 1)
@@ -77,7 +77,7 @@ for r in tqdm(range(len(d_run_tot))):
     pow_ratio = pow_n_avg_sort[0] / pow_n_avg_sort[1]
     del pow_n_avg_sort
 
-    q_name = f'{q_path}qual_cut_full_A{Station}_R{d_run_tot[r]}.h5'
+    q_name = f'{q_path}qual_cut_3rd_full_A{Station}_R{d_run_tot[r]}.h5'
     hf_q = h5py.File(q_name, 'r')
     evt_full = hf_q['evt_num'][:]
     qual = hf_q['tot_qual_cut_sum'][:] != 0
