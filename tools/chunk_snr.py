@@ -40,7 +40,7 @@ def snr_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm 
         del ara_uproot
 
     # pre quality cut
-    daq_qual_cut_sum, tot_qual_cut_sum = get_bad_events(st, run, analyze_blind_dat = analyze_blind_dat, verbose = True, evt_num = evt_num)
+    daq_qual_cut_sum, tot_qual_cut_sum = get_bad_events(st, run, analyze_blind_dat = analyze_blind_dat, verbose = True, evt_num = evt_num, qual_type = 2)
 
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, use_l2 = use_l2, analyze_blind_dat = analyze_blind_dat, st = st, run = run)
