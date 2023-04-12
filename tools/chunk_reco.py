@@ -22,6 +22,7 @@ def reco_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm
     # geom. info.
     ara_const = ara_const()
     num_ants = ara_const.USEFUL_CHAN_PER_STATION
+    num_pols = ara_const.POLARIZATION
     del ara_const
 
     # data config
@@ -75,12 +76,15 @@ def reco_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm
     ara_int = py_interferometers(wf_int.pad_len, wf_int.dt, st, yr, run = run, get_sub_file = True)
     pairs = ara_int.pairs
     v_pairs_len = ara_int.v_pairs_len
+    num_rads = ara_int.num_rads
+    num_ray_sol = ara_int.num_ray_sol
     wei_pairs = get_products(weights, pairs, v_pairs_len)
     del st, yr, run, pairs, v_pairs_len, weights
 
     # output array  
-    coef = np.full((2, 2, 2, num_evts), np.nan, dtype = float) # pol, rad, sol
-    coord = np.full((2, 2, 2, 2, num_evts), np.nan, dtype = float) # pol, thephi, rad, sol
+    coef = np.full((num_pols, num_rads, num_ray_sol, num_evts), np.nan, dtype = float) # pol, rad, sol
+    coord = np.full((num_pols, 2, num_rads, num_ray_sol, num_evts), np.nan, dtype = float) # pol, thephi, rad, sol
+    del num_pols, num_rads, num_ray_sol
 
     # loop over the events
     for evt in tqdm(range(num_evts), disable = no_tqdm):

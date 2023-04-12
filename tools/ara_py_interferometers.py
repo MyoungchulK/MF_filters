@@ -62,12 +62,12 @@ class py_interferometers:
         self.phi = table_hf['phi_bin'][:]
         self.num_phis = len(self.phi)
         radius_arr = table_hf['radius_bin'][:]
-        num_rads = len(radius_arr)
-        num_ray_sol = table_hf['num_ray_sol'][0]
+        self.num_rads = len(radius_arr)
+        self.num_ray_sol = table_hf['num_ray_sol'][0]
         arr_table = table_hf['arr_time_table'][:]
         del table_path, table_name, table_hf
  
-        self.table = np.full((num_thetas, self.num_phis, num_rads, num_ray_sol, self.pair_len), np.nan, dtype = float)
+        self.table = np.full((num_thetas, self.num_phis, self.num_rads, self.num_ray_sol, self.pair_len), np.nan, dtype = float)
         table_p1 = np.copy(self.table)
         table_p2 = np.copy(self.table)
         for p in range(self.pair_len):
@@ -78,13 +78,13 @@ class py_interferometers:
             table_p2[:, :, :, :, p] = arr_table[:, :, :, p_2nd, :]
             del p_1st, p_2nd
         self.table_ori_shape = self.table.shape
-        self.table_pol_shape = (num_pols, num_thetas, self.num_phis, num_rads, num_ray_sol)
-        self.coord_shape = (num_pols, 2, num_rads, num_ray_sol)
-        self.table = np.reshape(self.table, (-1, num_rads, num_ray_sol, self.pair_len))
+        self.table_pol_shape = (num_pols, num_thetas, self.num_phis, self.num_rads, self.num_ray_sol)
+        self.coord_shape = (num_pols, 2, self.num_rads, self.num_ray_sol)
+        self.table = np.reshape(self.table, (-1, self.num_rads, self.num_ray_sol, self.pair_len))
         self.table_shape = self.table.shape
         if verbose:
             print('arr table shape:', self.table_shape)
-        del radius_arr, arr_table, num_thetas, num_rads, num_ray_sol
+        del radius_arr, arr_table, num_thetas
 
         table_p1 = np.reshape(table_p1, self.table_shape)
         table_p2 = np.reshape(table_p2, self.table_shape)

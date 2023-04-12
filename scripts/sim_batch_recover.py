@@ -35,8 +35,8 @@ tot_counts = 0
 miss_counts = 0
 dag_file_name = f'/home/mkim/A{Station}.dag'
 statements = ""
-with open(dag_file_name, 'w') as f:
-    f.write(statements)
+with open(dag_file_name, 'w') as ff:
+    ff.write(statements)
 
 pbar = tqdm(total = num_configs * num_flas * num_sim_runs * num_ens)
 for c in range(num_configs):
@@ -57,22 +57,30 @@ for c in range(num_configs):
                         file_uproot = uproot.open(file_name)
                     except ValueError: 
                         statements = get_dag_statement(Station, con, run, fla, en)
-                        with open(dag_file_name, 'a') as f:
-                            f.write(statements)
+                        with open(dag_file_name, 'a') as ff:
+                            ff.write(statements)
                         err_counts += 1
                         print('Error!:', file_name)          
                         continue
-                    pnu = np.asarray(file_uproot['AraTree2/event/pnu'], dtype = float)
+                    try:
+                        pnu = np.asarray(file_uproot['AraTree2/event/pnu'], dtype = float)
+                    except uproot.exceptions.KeyInFileError:
+                        statements = get_dag_statement(Station, con, run, fla, en)
+                        with open(dag_file_name, 'a') as ff:
+                            ff.write(statements)
+                        err_counts += 1
+                        print('Error v2!:', file_name)
+                        continue
                     if len(pnu) != 100:
                         statements = get_dag_statement(Station, con, run, fla, en)
-                        with open(dag_file_name, 'a') as f:
-                            f.write(statements)                
+                        with open(dag_file_name, 'a') as ff:
+                            ff.write(statements)                
                         num_counts += 1
                         print('Number!:', file_name) 
                 else:
                     statements = get_dag_statement(Station, con, run, fla, en)
-                    with open(dag_file_name, 'a') as f:
-                        f.write(statements)
+                    with open(dag_file_name, 'a') as ff:
+                        ff.write(statements)
                     miss_counts += 1
                     print('MISS!:', file_name)
 pbar.close()
