@@ -43,7 +43,7 @@ def cw_flag_sim_collector(Data, Station, Year):
     freq_range = wf_int.pad_zero_freq
 
     # cw class
-    baseline_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/baseline_sim/baseline_AraOut.noise_A{Station}_R{config}.txt.run{sim_run}.h5' 
+    baseline_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/baseline_sim/baseline_A{Station}_R{config}.h5' 
     cw_testbed = py_testbed(Station, ex_run, freq_range, verbose = True, use_st_pair = True, sim_path = baseline_path)
     testbed_params = np.array([cw_testbed.dB_cut, cw_testbed.dB_cut_broad, cw_testbed.num_coinc, cw_testbed.freq_range_broad, cw_testbed.freq_range_near])
     cw_phase = py_phase_variance(Station, ex_run, freq_range)

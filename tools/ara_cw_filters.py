@@ -466,7 +466,7 @@ class py_geometric_filter:
     original C++ srcipt that excuting above functions: https://github.com/clark2668/a23_analysis_programs/blob/master/diffuse/v2_save_vals.cxx
     """
 
-    def __init__(self, st, run, freq_win = 0.01, dt = 0.5, analyze_blind_dat = False, use_debug = False, use_cw_flag = False):
+    def __init__(self, st, run, freq_win = 0.01, dt = 0.5, analyze_blind_dat = False, use_debug = False, use_cw_flag = False, sim_path = None):
         """! grometric filter initializer.
 
         @param st  Integer.  station id
@@ -499,7 +499,10 @@ class py_geometric_filter:
             self.cw_freq = group_bad_frequency(st, run, freq_range, freq_win = self.freq_win, verbose = True, use_debug = use_debug) # constructor for bad frequency grouping function
             del freq_range
         else:
-            cw_dat = run_info.get_result_path(file_type = 'cw_band', verbose = True) # get the h5 file path
+            if sim_path is None:
+                cw_dat = run_info.get_result_path(file_type = 'cw_band', verbose = True) # get the h5 file path
+            else:
+                cw_dat = sim_path
             cw_hf = h5py.File(cw_dat, 'r')
             self.bad_range_tot = cw_hf['bad_range'][:]
         del run_info, cw_dat, cw_hf

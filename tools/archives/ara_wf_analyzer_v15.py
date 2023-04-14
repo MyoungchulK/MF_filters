@@ -19,7 +19,7 @@ class wf_analyzer:
                     use_time_pad = False, add_double_pad = False, use_band_pass = False,
                     use_freq_pad = False, use_rfft = False,
                     use_cw = False, analyze_blind_dat = False,
-                    new_wf_time = None, st = None, run = None, sim_path = None):
+                    new_wf_time = None, st = None, run = None):
 
         self.use_l2 = use_l2
         self.dt = dt
@@ -35,7 +35,7 @@ class wf_analyzer:
         if use_cw and not self.use_l2:
             from tools.ara_cw_filters import py_geometric_filter
             print('Kill the CW!')
-            self.cw_geo = py_geometric_filter(st, run, analyze_blind_dat = analyze_blind_dat, sim_path = sim_path)
+            self.cw_geo = py_geometric_filter(st, run, analyze_blind_dat = analyze_blind_dat)
 
     def get_band_pass_filter(self, low_freq_cut = 0.13, high_freq_cut = 0.85, order = 10, pass_type = 'band'):
 
