@@ -37,7 +37,7 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_t
     del ara_uproot
 
     # pre quality cut
-    daq_qual_cut_sum = get_bad_events(st, run, analyze_blind_dat = analyze_blind_dat, verbose = True, evt_num = evt_num, use_1st = True)[0]
+    daq_qual_cut_sum = get_bad_events(st, run, analyze_blind_dat = analyze_blind_dat, verbose = True, evt_num = evt_num, qual_type = 1)[0]
 
     known_issue = known_issue_loader(st)
     bad_ant = known_issue.get_bad_antenna(run, print_integer = True)

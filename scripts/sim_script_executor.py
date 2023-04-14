@@ -79,7 +79,11 @@ def script_loader(key, station, year, data, evt_range, not_override):
     hf.create_dataset('config', data=np.array([station, sim_run, config, year, flavor]), compression="gzip", compression_opts=9)
     for r in results:
         print(r, results[r].shape)
-        hf.create_dataset(r, data=results[r], compression="gzip", compression_opts=9)
+        try:
+            hf.create_dataset(r, data=results[r], compression="gzip", compression_opts=9)
+        except TypeError:
+            dt = h5py.vlen_dtype(np.dtype(float))
+            hf.create_dataset(r, data=results[r], dtype = dt, compression="gzip", compression_opts=9)
     hf.close()
     print(f'output is {h5_file_name_out}.', size_checker(h5_file_name_out))
 

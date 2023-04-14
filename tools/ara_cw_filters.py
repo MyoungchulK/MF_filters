@@ -31,7 +31,7 @@ class py_testbed:
     """
 
     def __init__(self, st, run, freq_range, dB_cut = 12, dB_cut_broad = 11, num_coinc = 3, freq_range_broad = 0.04, freq_range_near = 0.005,
-                    freq_lower_limit = 0.12, freq_upper_limit = 0.85, analyze_blind_dat = False, verbose = False, use_debug = False, use_st_pair = False):
+                    freq_lower_limit = 0.12, freq_upper_limit = 0.85, analyze_blind_dat = False, verbose = False, use_debug = False, use_st_pair = False, sim_path = None):
         """! testbed initializer
 
         @param st  Integer.  station id
@@ -51,6 +51,7 @@ class py_testbed:
 
         self.st = st
         self.run = run
+        self.sim_path = sim_path
         self.analyze_blind_dat = analyze_blind_dat # whether we are using blinded or unblinded data
         self.verbose = verbose # wanna print the message
         self.use_debug = use_debug
@@ -95,11 +96,17 @@ class py_testbed:
         @param use_roll_medi  Boolean.  wanna smoothing out baseline by rolling median
         """
 
-        from tools.ara_run_manager import run_info_loader
-        run_info = run_info_loader(self.st, self.run, analyze_blind_dat = self.analyze_blind_dat)
-        base_dat = run_info.get_result_path(file_type = 'baseline', verbose = self.verbose, force_blind = True) # get the h5 file path
-        base_hf = h5py.File(base_dat, 'r')
-        self.baseline_fft = base_hf['baseline'][:]
+        if self.sim_path is None:   
+            from tools.ara_run_manager import run_info_loader
+            run_info = run_info_loader(self.st, self.run, analyze_blind_dat = self.analyze_blind_dat)
+            base_dat = run_info.get_result_path(file_type = 'baseline', verbose = self.verbose, force_blind = True) # get the h5 file path
+            base_hf = h5py.File(base_dat, 'r')
+            self.baseline_fft = base_hf['baseline'][:]
+            del run_info, base_dat
+        else:
+            base_hf = h5py.File(self.sim_path, 'r')
+            self.baseline_fft = base_hf['baseline'][:]
+            self.baseline_fft = np.repeat(self.baseline_fft[:, :, np.newaxis], 3, axis = 2)
         if self.use_debug:
             self.baseline_fft_debug = np.copy(self.baseline_fft)
 
@@ -117,7 +124,7 @@ class py_testbed:
         if self.use_debug:
             self.baseline_debug = np.copy(self.baseline)
         self.baseline = self.baseline[self.useful_freq_idx] # trim the edge frequencies 
-        del run_info, base_dat, base_hf
+        del base_hf
 
         ## get mean of frequency spectrum in three different ranges
         self.base_mean = np.nanmean(self.baseline, axis = 0) # whole range

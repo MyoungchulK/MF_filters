@@ -29,6 +29,8 @@ num_sim_runs = 80
 energy = np.arange(16, 21, 1, dtype = int)
 num_ens = len(energy)
 
+num_configs = 1
+
 err_counts = 0
 num_counts = 0
 tot_counts = 0
