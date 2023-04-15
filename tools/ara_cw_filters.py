@@ -668,11 +668,12 @@ class py_geometric_filter:
         self.get_bad_index()
         del self.ant, self.evt
 
-        ## noting bad, let not do all... below things...
+        ## if there is noting to filter, let not do all... below things...
         if np.all(self.good_idx):
             self.new_wf = int_v
             if use_pow_ratio:
                 self.pow_ratio = 0
+            del self.int_num, self.freq
             return
 
         self.fft = np.fft.rfft(int_v)
