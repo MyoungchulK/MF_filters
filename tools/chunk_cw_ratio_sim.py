@@ -53,6 +53,7 @@ def cw_ratio_sim_collector(Data, Station, Year):
         for ant in range(num_ants):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_cw = True, use_cw_ratio = True, evt = evt)
             cw_ratio[ant, evt] = wf_int.cw_ratio
+        #print(cw_ratio[:, evt]) # for debug
         del wf_v
     del ara_root, num_ants, num_evts, wf_time, wf_int
 

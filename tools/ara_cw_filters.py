@@ -658,18 +658,25 @@ class py_geometric_filter:
         @param evt  Integer.  entry (not event) number
         @param use_pow_ratio  Boolean.  wanna calculate power ratio of before/after filtered wfs
         """
-
+        
         self.ant = ant
         self.evt = evt
         self.int_num = int_num
 
-        ## calculate frequency, fft, phase of original wf in here
+        ## calculate frequency, fft, and phase of original wf in here
         self.freq = np.fft.rfftfreq(self.int_num, self.dt) 
-        self.fft = np.fft.rfft(int_v)
-        self.phase = np.angle(self.fft)
-
         self.get_bad_index()
         del self.ant, self.evt
+
+        ## noting bad, let not do all... below things...
+        if np.all(self.good_idx):
+            self.new_wf = int_v
+            if use_pow_ratio:
+                self.pow_ratio = 0
+            return
+
+        self.fft = np.fft.rfft(int_v)
+        self.phase = np.angle(self.fft)
 
         self.get_interpolated_magnitude()
         del self.fft
