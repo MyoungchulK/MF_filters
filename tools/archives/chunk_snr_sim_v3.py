@@ -5,7 +5,7 @@ import h5py
 
 def snr_sim_collector(Data, Station, Year):
 
-    print('Collecting snr sim starts!')
+    print('Collecting sim snr starts!')
 
     from tools.ara_sim_load import ara_root_loader
     from tools.ara_constant import ara_const
@@ -25,14 +25,7 @@ def snr_sim_collector(Data, Station, Year):
     wf_time = ara_root.wf_time    
 
     # wf analyzer
-    slash_idx = Data.rfind('/')
-    dot_idx = Data.rfind('.')
-    data_name = Data[slash_idx+1:dot_idx]
-    h5_file_name = f'cw_band_{data_name}.h5'
-    band_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_band_sim/{h5_file_name}'
-    print('cw band sim path:', band_path)
-    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, new_wf_time = wf_time, sim_path = band_path)
-    del band_path, slash_idx, dot_idx, data_name, h5_file_name
+    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, new_wf_time = wf_time)
 
     # output array
     rms = np.full((num_ants, num_evts), np.nan, dtype = float)
@@ -44,7 +37,7 @@ def snr_sim_collector(Data, Station, Year):
 
         wf_v = ara_root.get_rf_wfs(evt)
         for ant in range(num_ants):
-            wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_band_pass = True, use_p2p = True, use_cw = True, evt = evt)
+            wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_band_pass = True, use_p2p = True)
             p2p[ant, evt] = wf_int.int_p2p
 
         rms[:, evt] = np.nanstd(wf_int.pad_v, axis = 0)
