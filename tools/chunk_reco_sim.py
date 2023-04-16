@@ -39,12 +39,12 @@ def reco_sim_collector(Data, Station, Year):
     # sub files
     slash_idx = Data.rfind('/')
     dot_idx = Data.rfind('.')
-    data_name = Data[slash_idx+1:dot_idx]
+    h5_file_name = Data[slash_idx+1:dot_idx]
     band_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_band_sim/cw_band_{h5_file_name}.h5'
     snr_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/snr_sim/snr_{h5_file_name}.h5'
     print('cw band sim path:', band_path)
     print('snr sim path:', snr_path)
-    del slash_idx, dot_idx, data_name 
+    del slash_idx, dot_idx, h5_file_name 
 
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, new_wf_time = wf_time, sim_path = band_path)
@@ -56,7 +56,7 @@ def reco_sim_collector(Data, Station, Year):
     snr_hf = h5py.File(snr_path, 'r')
     snr = snr_hf['snr'][:]
     wei_pairs = get_products(snr, ara_int.pairs, ara_int.v_pairs_len)
-    del Year, snr, ex_run, snr_path, snr_hf, snr
+    del Year, ex_run, snr_path, snr_hf, snr
 
     # output array
     coef = np.full((num_pols, num_rads, num_ray_sol, num_evts), np.nan, dtype = float) # pol, rad, sol
@@ -77,7 +77,7 @@ def reco_sim_collector(Data, Station, Year):
         del wf_v
     del ara_root, num_evts, wf_int, ara_int, num_ants, wf_time, wei_pairs
 
-    print('Reco snr mf collecting is done!')
+    print('Reco sim collecting is done!')
 
     return {'entry_num':entry_num,
             'bad_ant':bad_ant,
