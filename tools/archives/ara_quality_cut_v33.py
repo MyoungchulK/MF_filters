@@ -810,131 +810,6 @@ class post_qual_cut_loader:
         
         return tot_post_qual_cut
 
-class filt_qual_cut_loader:
-
-    def __init__(self, st, run, evt_num, analyze_blind_dat = False, verbose = False, spark_unblind = False, cal_sur_unblind = False):
-
-        self.st = st
-        self.run = run
-        self.evt_num = evt_num
-        self.num_evts = len(self.evt_num)
-        self.verbose = verbose
-
-        self.spark_unblind = spark_unblind
-        self.cal_sur_unblind = cal_sur_unblind
-        self.run_info = run_info_loader(self.st, self.run, analyze_blind_dat = analyze_blind_dat)
-       
-    def get_spark_events(self, cut_ratio = 5): 
-
-        spark_evts = np.full((self.num_evts), 0, dtype = int)
-
-        snr_dat = self.run_info.get_result_path(file_type = 'snr', verbose = self.verbose, force_unblind = self.spark_unblind, return_none = True)
-        if snr_dat is None:
-            return spark_evts 
-        else:
-            known_issue = known_issue_loader(self.st, verbose = self.verbose)
-            bad_ant = known_issue.get_bad_antenna(self.run)
-            del known_issue
-
-            snr_hf = h5py.File(snr_dat, 'r')
-            evt_num_snr = snr_hf['evt_num'][:]
-            num_evts_snr = len(evt_num_snr)
-            trig_type_snr = snr_hf['trig_type'][:]
-            rms = snr_hf['rms'][:]
-            rms[bad_ant] = np.nan
-            rms[:, trig_type_snr == 1] = np.nan
-            del snr_dat, snr_hf, bad_ant, trig_type_snr
-
-            pow_n = rms ** 2
-            pow_n_avg = np.full((num_ddas, num_evts_snr), np.nan, dtype = float)
-            for dda in range(num_ddas):
-                pow_n_avg[dda] = np.nanmean(pow_n[dda::num_ddas], axis = 0)
-            pow_n_avg_sort = -np.sort(-pow_n_avg, axis = 0)
-            pow_ratio = pow_n_avg_sort[0] / pow_n_avg_sort[1]
-            op_cuts = (pow_ratio > cut_ratio).astype(int)
-            del rms, pow_n_avg_sort, pow_n_avg, pow_n, pow_ratio
-
-            if self.num_evts != num_evts_snr:
-                evt_idx = np.in1d(self.evt_num, evt_num_snr)
-            else:
-                evt_idx = np.full((self.num_evts), True, dtype = bool)
-            try:
-                spark_evts[:] = op_cuts
-            except ValueError:
-                for evt in range(num_evts_snr):
-                    evt_idx = np.where(self.evt_num == evt_num_snr[evt])[0]
-                    if len(evt_idx) > 0:
-                        spark_evts[evt_idx] = op_cuts[evt]
-            del op_cuts, num_evts_snr, evt_num_snr, evt_idx
-
-            if self.verbose:
-                quick_qual_check(spark_evts != 0, 'op antenna cut', self.evt_num)
-
-            return spark_evts
-
-    def get_calpulser_surface_events(self, cut_surface = 35):
-
-        cal_sur_evts = np.full((self.num_evts, 2), 0, dtype = int)
-
-        reco_dat = self.run_info.get_result_path(file_type = 'reco', verbose = self.verbose, force_unblind = self.cal_sur_unblind, return_none = True)
-        if reco_dat is None:
-            return cal_sur_evts
-        else:
-            reco_hf = h5py.File(reco_dat, 'r')
-            evt_num_reco = reco_hf['evt_num'][:]
-            num_evts_reco = len(evt_num_reco)
-            coord_max = reco_hf['coord'][:]
-            trig_type_reco = reco_hf['trig_type'][:]
-            del reco_dat, reco_hf
-
-            cp_cut, num_cuts, pol_idx = get_calpulser_cut(self.st, self.run)
-            cal_cuts = np.full((num_evts_reco), 0, dtype = int)
-            for cal in range(num_cuts):
-                ele_flag = np.digitize(coord_max[pol_idx, 0, 0, 0], cp_cut[cal, 0]) == 1
-                azi_flag = np.digitize(coord_max[pol_idx, 1, 0, 0], cp_cut[cal, 1]) == 1
-                cal_cuts += np.logical_and(ele_flag, azi_flag).astype(int)
-                del ele_flag, azi_flag
-            cal_cuts[trig_type_reco == 1] = 0
-            del cp_cut, num_cuts, pol_idx, trig_type_reco
-
-            coord_max_flat = np.reshape(coord_max[:, 0, 1, :, :], (4, -1))
-            sur_cuts = np.any(coord_max_flat > cut_surface, axis = 0).astype(int)
-            del coord_max, coord_max_flat
-
-            if self.num_evts != num_evts_reco:
-                evt_idx = np.in1d(self.evt_num, evt_num_reco)
-            else:
-                evt_idx = np.full((self.num_evts), True, dtype = bool)
-            try:
-                cal_sur_evts[evt_idx, 0] = cal_cuts
-                cal_sur_evts[evt_idx, 1] = sur_cuts
-            except ValueError:
-                for evt in tqdm(range(num_evts_reco)):
-                    evt_idx = np.where(self.evt_num == evt_num_reco[evt])[0]
-                    if len(evt_idx) > 0:
-                        cal_sur_evts[evt_idx, 0] = cal_cuts[evt]
-                        cal_sur_evts[evt_idx, 1] = sur_cuts[evt]
-            del evt_num_reco, num_evts_reco, evt_idx, cal_cuts, sur_cuts
-
-            if self.verbose:
-                quick_qual_check(cal_sur_evts[:, 0] != 0, 'calpulser cut', self.evt_num)
-                quick_qual_check(cal_sur_evts[:, 1] != 0, 'surface cut', self.evt_num)
-
-            return cal_sur_evts
-
-    def run_filt_qual_cut(self):
-
-        tot_filt_qual_cut = np.full((self.num_evts, 3), 0, dtype = int)
-        tot_filt_qual_cut[:, :2] = self.get_calpulser_surface_events()
-        tot_filt_qual_cut[:, 2] = self.get_spark_events()
-
-        self.filt_qual_cut_sum = np.nansum(tot_filt_qual_cut, axis = 1)
-
-        if self.verbose:
-            quick_qual_check(self.filt_qual_cut_sum != 0, 'total filt qual cut!', self.evt_num)
-
-        return tot_filt_qual_cut
-
 class ped_qual_cut_loader:
 
     def __init__(self, ara_uproot, total_qual_cut, daq_cut_sum, analyze_blind_dat = False, verbose = False):
@@ -1243,7 +1118,7 @@ def get_bad_live_time(trig_type, unix_time, time_bins, sec_per_min, cuts, verbos
                         'zero ped', 'single ped', 'low ped', 'known bad ped', 'calpuler cut', 'surface cut', 'op antenna cut']
             print(f'live time for each cuts. total number of cuts: {len(rough_tot_bad_time)}')
             for t in range(len(rough_tot_bad_time)):
-                print(f'{t + 1}) {q_name[t]}: ~{np.round(rough_tot_bad_time[t] / 60, 1)} min.')
+                print(f'{t}) {q_name[t]}: ~{np.round(rough_tot_bad_time[t]/60, 1)} min.')
             print(f'total live time: ~{np.round(np.nansum(total_live_time)/60, 1)} min.')
     del rough_tot_bad_time, dim_len
 
