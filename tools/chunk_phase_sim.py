@@ -1,11 +1,10 @@
 import os
 import numpy as np
 from tqdm import tqdm
-import h5py
 
-def baseline_sim_collector(Data, Station, Year):
+def phase_sim_collector(Data, Station, Year):
 
-    print('Collectin baseline sim starts!')
+    print('Collectin phase sim starts!')
 
     from tools.ara_sim_load import ara_root_loader
     from tools.ara_constant import ara_const
@@ -27,9 +26,9 @@ def baseline_sim_collector(Data, Station, Year):
     freq_range = wf_int.pad_zero_freq
 
     # wf arr
-    rfft = np.full((wf_int.pad_fft_len, num_ants, num_evts), np.nan, dtype = float)
-    print(f'rfft array dim.: {rfft.shape}')
-    print(f'rfft array size: ~{np.round(rfft.nbytes/1024/1024)} MB')
+    phase_arr = np.full((wf_int.pad_fft_len, num_ants, num_evts), np.nan, dtype = float)
+    print(f'phase array dim.: {phase_arr.shape}')
+    print(f'phase array size: ~{np.round(phase_arr.nbytes/1024/1024)} MB')
 
     # loop over the events
     for evt in tqdm(range(num_evts)):
@@ -40,20 +39,15 @@ def baseline_sim_collector(Data, Station, Year):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True)
         del wf_v
 
-        wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_abs = True, use_norm = True)
-        rffts = wf_int.pad_fft
-        rfft[:, :, evt] = rffts
-        del rffts
+        wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_phase = True)
+        phases = wf_int.pad_phase
+        phase_arr[:, :, evt] = phases
+        del phases
     del ara_root, num_ants, num_evts, wf_time, wf_int
 
-    rfft_sum = np.nansum(rfft, axis = 2)
-    baseline = np.nanmean(rfft, axis = 2)
-    del rfft
-
-    print('Baseline sim collecting is done!')
+    print('phase sim collecting is done!')
 
     return {'entry_num':entry_num,
             'freq_range':freq_range,
-            'rfft_sum':rfft_sum,
-            'baseline':baseline}
+            'phase_arr':phase_arr}
 

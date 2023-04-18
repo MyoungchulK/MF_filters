@@ -52,19 +52,15 @@ def cw_flag_signal_sim_collector(Data, Station, Year):
     evt_len = cw_phase.evt_len
     evt_len_s = int(evt_len - 1)
     phase_params = np.array([cw_phase.sigma_thres, evt_len])
-    del config, sim_run, baseline_path
+    del baseline_path
 
-    phase_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/phase_sim/'
-    slash_idx = Data.rfind('/')
-    dot_idx = Data.rfind('.')
-    data_name = Data[slash_idx+1:dot_idx]
-    h5_file_name = f'phase_{data_name}.h5'    
-    print('phase path: {phase_path}{h5_file_name}')
-    hf = h5py.File(f'{phase_path}{h5_file_name}', 'r')
+    phase_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/phase_sim/phase_AraOut.noise_A{Station}_R{config}.txt.run{sim_run}.h5'
+    print('phase path:', phase_path)
+    hf = h5py.File(phase_path, 'r')
     phase_arr = hf['phase_arr'][:]
     num_phases = int(phase_arr.shape[-1])
     print(phase_arr.shape)
-    del hf, h5_file_name, phase_path
+    del hf, phase_path, config, sim_run
 
     # output array
     sigma = []
@@ -96,6 +92,7 @@ def cw_flag_signal_sim_collector(Data, Station, Year):
         ran_idx = np.random.choice(num_phases, size = evt_len_s * 2, replace=False) 
         ran_idx_f = ran_idx[:evt_len_s]
         ran_idx_b = ran_idx[evt_len_s:]
+        #print(ran_idx) # for debug
         phase_n_idx[:, 0, evt] = ran_idx_f
         phase_n_idx[:, 1, evt] = ran_idx_b
         phase_tot_front = np.full((fft_len, num_ants, evt_len), np.nan, dtype = float)
@@ -123,7 +120,7 @@ def cw_flag_signal_sim_collector(Data, Station, Year):
         sigma[evt] = np.concatenate((sigma[evt], sigmas))
         phase_idx[evt] = np.concatenate((phase_idx[evt], phase_idxs))
         del rfft_phase, rfft_dbmhz, phase_tot_back
-        print(sigma[evt], phase_idx[evt], testbed_idx[evt]) # for debug
+        #print(sigma[evt], phase_idx[evt], testbed_idx[evt]) # for debug
     del ara_root, num_ants, wf_time, wf_int, cw_testbed, cw_phase, evt_len, phase_arr, fft_len, evt_len_s, num_phases
 
     # to numpy array
@@ -152,6 +149,9 @@ def cw_flag_signal_sim_collector(Data, Station, Year):
     output_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_band_sim/'
     if not os.path.exists(output_path):
         os.makedirs(output_path)
+    slash_idx = Data.rfind('/')
+    dot_idx = Data.rfind('.')
+    data_name = Data[slash_idx+1:dot_idx]
     h5_file_name = f'cw_band_{data_name}.h5'
     hf = h5py.File(f'{output_path}{h5_file_name}', 'w')
     hf.create_dataset('entry_num', data=entry_num, compression="gzip", compression_opts=9)
