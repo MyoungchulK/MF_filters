@@ -300,14 +300,6 @@ class py_phase_variance:
         self.phase_diff_pad[:, :, evt_counts] = phase[:, self.pairs[:, 0]] - phase[:, self.pairs[:, 1]] # calculate differences of each pairs and fill into array
         del phase
 
-    def get_phase_differences_at_once(self, phase):
-
-        phase = phase[self.useful_freq_sigma_idx] # trim the edge frequencies
-
-        self.phase_diff_pad[:] = np.nan 
-        self.phase_diff_pad[:, :, :evt_len] = phase[:, self.pairs[:, 0]] - phase[:, self.pairs[:, 1]]
-        del phase
-
     def get_phase_variance(self):
         """! phase variance. checking phase differences in all channel pairs and neighboring events"""
 

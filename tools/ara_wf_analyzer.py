@@ -18,23 +18,33 @@ class wf_analyzer:
     def __init__(self, dt = 0.5, use_debug = False, use_l2 = False, use_ele_ch = False,  
                     use_time_pad = False, add_double_pad = False, use_band_pass = False,
                     use_freq_pad = False, use_rfft = False,
-                    use_cw = False, analyze_blind_dat = False,
+                    use_cw = False, analyze_blind_dat = False, verbose = False,
                     new_wf_time = None, st = None, run = None, sim_path = None):
 
+        self.verbose = verbose
         self.use_l2 = use_l2
         self.dt = dt
         self.num_chs = num_ants
         if use_ele_ch:
+            if self.verbose:
+                print('Electronic channel is on!')
             self.num_chs = num_eles        
         if use_time_pad:
+            if self.verbose:
+                print('Time pad is on!')
             self.get_time_pad(add_double_pad = add_double_pad, new_wf_time = new_wf_time)
         if use_freq_pad:
+            if self.verbose:
+                print('Freq pad is on!')
             self.get_freq_pad(use_rfft = use_rfft)
         if use_band_pass and not self.use_l2:
+            if self.verbose:
+                print('Band-pass is on!')
             self.get_band_pass_filter()
         if use_cw and not self.use_l2:
             from tools.ara_cw_filters import py_geometric_filter
-            print('Kill the CW!')
+            if self.verbose:
+                print('Kill the CW!')
             self.cw_geo = py_geometric_filter(st, run, analyze_blind_dat = analyze_blind_dat, sim_path = sim_path)
 
     def get_band_pass_filter(self, low_freq_cut = 0.13, high_freq_cut = 0.85, order = 10, pass_type = 'band'):
@@ -59,7 +69,8 @@ class wf_analyzer:
         pad_w = int((pad_f - pad_i) / self.dt) + 1
 
         if new_wf_time is not None:
-            print(f'New WF time! {new_wf_time[0]} ~ {new_wf_time[-1]} ns' )
+            if self.verbose:
+                print(f'New WF time! {new_wf_time[0]} ~ {new_wf_time[-1]} ns' )
             self.new_pad_w = len(new_wf_time)
             pad_diff = int(pad_w - self.new_pad_w)
             pad_diff_half = int(pad_diff // 2)
@@ -86,7 +97,8 @@ class wf_analyzer:
             self.pad_idx = (self.pad_zero_t / self.dt).astype(int)
         if new_wf_time is not None:
             self.pad_idx = np.in1d((self.pad_zero_t / self.dt).astype(int), (new_wf_time / self.dt).astype(int))
-        print(f'time pad length: {self.pad_len * self.dt} ns')
+        if self.verbose:
+            print(f'time pad length: {self.pad_len * self.dt} ns')
 
     def get_freq_pad(self, use_rfft = False):
 

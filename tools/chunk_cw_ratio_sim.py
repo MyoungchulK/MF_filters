@@ -39,7 +39,7 @@ def cw_ratio_sim_collector(Data, Station, Year):
     h5_file_name = f'cw_band_{data_name}.h5'
     band_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_band_sim/{h5_file_name}'
     print('cw band sim path:', band_path)
-    wf_int = wf_analyzer(use_time_pad = True, use_cw = True, new_wf_time = wf_time, sim_path = band_path)
+    wf_int = wf_analyzer(use_time_pad = True, use_cw = True, verbose = True, new_wf_time = wf_time, sim_path = band_path)
     del band_path, slash_idx, dot_idx, data_name, h5_file_name
 
     # output array
