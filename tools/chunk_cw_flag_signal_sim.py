@@ -59,7 +59,7 @@ def cw_flag_signal_sim_collector(Data, Station, Year):
     hf = h5py.File(phase_path, 'r')
     phase_arr = hf['phase_arr'][:]
     num_phases = int(phase_arr.shape[-1])
-    print(phase_arr.shape)
+    print('phase array size:', phase_arr.shape)
     del hf, phase_path, config, sim_run
 
     # output array
@@ -104,7 +104,7 @@ def cw_flag_signal_sim_collector(Data, Station, Year):
         del ran_idx, ran_idx_f, ran_idx_b
 
         ## pahse front
-        cw_phase.get_phase_differences_at_once(phase_tot_front)
+        cw_phase.get_phase_differences_at_once(phase_tot_front, 0)
         cw_phase.get_bad_phase()
         sigmas = cw_phase.bad_sigma
         phase_idxs = cw_phase.bad_idx
@@ -113,7 +113,7 @@ def cw_flag_signal_sim_collector(Data, Station, Year):
         del phase_tot_front
 
         ## phase_back
-        cw_phase.get_phase_differences_at_once(phase_tot_back)
+        cw_phase.get_phase_differences_at_once(phase_tot_back, 0)
         cw_phase.get_bad_phase()
         sigmas = cw_phase.bad_sigma
         phase_idxs = cw_phase.bad_idx
