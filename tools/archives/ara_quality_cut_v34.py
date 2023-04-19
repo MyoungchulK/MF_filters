@@ -73,34 +73,28 @@ def get_bad_events(st, run, qual_type = 1, analyze_blind_dat = False, verbose = 
 
 class pre_qual_cut_loader:
 
-    def __init__(self, ara_uproot, analyze_blind_dat = False, verbose = False, sim_st = None, sim_run = None, sim_evt = None):
+    def __init__(self, ara_uproot, analyze_blind_dat = False, verbose = False):
 
-        if sim_st is None:
-            self.st = ara_uproot.station_id
-            self.run = ara_uproot.run
-            self.evt_num = ara_uproot.evt_num 
-            self.num_evts = ara_uproot.num_evts
-            self.trig_type = ara_uproot.get_trig_type()
-            self.unix_time = ara_uproot.unix_time
-            self.pps_number = ara_uproot.pps_number
-            self.irs_block_number = ara_uproot.irs_block_number
-            self.channel_mask = ara_uproot.channel_mask
-            self.verbose = verbose
-            self.analyze_blind_dat = analyze_blind_dat
-        else:
-            self.st = int(sim_st)
-            self.run = int(sim_run)
-            self.evt_num = sim_evt.astype(int)
+        self.st = ara_uproot.station_id
+        self.run = ara_uproot.run
+        self.evt_num = ara_uproot.evt_num 
+        self.num_evts = ara_uproot.num_evts
+        self.trig_type = ara_uproot.get_trig_type()
+        self.unix_time = ara_uproot.unix_time
+        self.pps_number = ara_uproot.pps_number
+        self.irs_block_number = ara_uproot.irs_block_number
+        self.channel_mask = ara_uproot.channel_mask
+        self.verbose = verbose
+        self.analyze_blind_dat = analyze_blind_dat
 
         self.run_info = run_info_loader(self.st, self.run, analyze_blind_dat = self.analyze_blind_dat)
-        if sim_st is None:
-            sub_info_dat = self.run_info.get_result_path(file_type = 'sub_info', verbose = self.verbose, force_blind = True)
-            self.sub_info_hf = h5py.File(sub_info_dat, 'r')
-            self.evt_sort = self.sub_info_hf['evt_num_sort'][:]
-            self.unix_sort = self.sub_info_hf['unix_time_sort'][:]
-            self.pps_sort = self.sub_info_hf['pps_number_sort_reset'][:]
-            self.trig_sort = self.sub_info_hf['trig_type_sort'][:]
-            del sub_info_dat
+        sub_info_dat = self.run_info.get_result_path(file_type = 'sub_info', verbose = self.verbose, force_blind = True)
+        self.sub_info_hf = h5py.File(sub_info_dat, 'r')
+        self.evt_sort = self.sub_info_hf['evt_num_sort'][:]
+        self.unix_sort = self.sub_info_hf['unix_time_sort'][:]
+        self.pps_sort = self.sub_info_hf['pps_number_sort_reset'][:]
+        self.trig_sort = self.sub_info_hf['trig_type_sort'][:]
+        del sub_info_dat
 
         self.ara_known_issue = known_issue_loader(self.st)
 
@@ -639,35 +633,29 @@ class pre_qual_cut_loader:
         
         return cut_val
 
-    def get_cw_ratio_events(self, num_ant_cut = 3, sim_path = None):
+    def get_cw_ratio_events(self, num_ant_cut = 3):
 
         bad_ant = self.ara_known_issue.get_bad_antenna(self.run, good_ant_true = True)
         cut_val = self.get_cw_ratio()
 
-        if sim_path is None:
-            ratio_dat = self.run_info.get_result_path(file_type = 'cw_ratio', verbose = self.verbose, force_blind = True)
-        else:
-            ratio_dat = sim_path 
+        ratio_dat = self.run_info.get_result_path(file_type = 'cw_ratio', verbose = self.verbose, force_blind = True)
         ratio_hf = h5py.File(ratio_dat, 'r')
+        ratio_trig = ratio_hf['trig_type'][:]
         cw_ratio = ratio_hf['cw_ratio'][:]
         cw_ratio = cw_ratio[bad_ant]
         cw_ratio = np.sort(cw_ratio, axis = 0)[int(-1 * num_ant_cut)]
-        cw_ratio *= 100       
+        cw_ratio *= 100        
 
-        if sim_path is None:
-            ratio_trig = ratio_hf['trig_type'][:] 
-            cw_ratio_events = np.full((len(ratio_trig)), 0, dtype = int)
-            for trigs in range(num_trigs):
-                cw_ratio_events += np.logical_and(ratio_trig == trigs, cw_ratio > cut_val[trigs]).astype(int)
-            del ratio_trig 
+        cw_ratio_events = np.full((len(ratio_trig)), 0, dtype = int)
+        for trigs in range(num_trigs):
+            cw_ratio_events += np.logical_and(ratio_trig == trigs, cw_ratio > cut_val[trigs]).astype(int)
+        del bad_ant, ratio_dat, cut_val, ratio_trig, cw_ratio
 
-            if self.analyze_blind_dat == False:
-                ratio_evt = ratio_hf['evt_num'][:]
-                cw_ratio_events = np.in1d(self.evt_num, ratio_evt[cw_ratio_events != 0]).astype(int)
-                del ratio_evt
-        else:
-            cw_ratio_events = (cw_ratio > cut_val[0]).astype(int)    
-        del ratio_hf, bad_ant, ratio_dat, cut_val, cw_ratio
+        if self.analyze_blind_dat == False:
+            ratio_evt = ratio_hf['evt_num'][:]
+            cw_ratio_events = np.in1d(self.evt_num, ratio_evt[cw_ratio_events != 0]).astype(int)
+            del ratio_evt
+        del ratio_hf
 
         if self.verbose:
             quick_qual_check(cw_ratio_events != 0, 'cw ratio events', self.evt_num)
@@ -824,8 +812,7 @@ class post_qual_cut_loader:
 
 class filt_qual_cut_loader:
 
-    def __init__(self, st, run, evt_num, analyze_blind_dat = False, verbose = False, spark_unblind = False, cal_sur_unblind = False,
-                sim_spark_path = None, sim_cal_sur_path = None):
+    def __init__(self, st, run, evt_num, analyze_blind_dat = False, verbose = False, spark_unblind = False, cal_sur_unblind = False):
 
         self.st = st
         self.run = run
@@ -835,22 +822,13 @@ class filt_qual_cut_loader:
 
         self.spark_unblind = spark_unblind
         self.cal_sur_unblind = cal_sur_unblind
-        if sim_spark_path is not None and sim_cal_sur_path is not None:
-            if self.verbose:
-                print('We are analyzing SIM!!!')
-            self.sim_spark_path = sim_spark_path
-            self.sim_cal_sur_path = sim_cal_sur_path
-        else:
-            self.run_info = run_info_loader(self.st, self.run, analyze_blind_dat = analyze_blind_dat)
+        self.run_info = run_info_loader(self.st, self.run, analyze_blind_dat = analyze_blind_dat)
        
     def get_spark_events(self, cut_ratio = 5): 
 
         spark_evts = np.full((self.num_evts), 0, dtype = int)
 
-        if self.sim_spark_path is not None:
-            snr_dat = self.sim_spark_path
-        else:
-            snr_dat = self.run_info.get_result_path(file_type = 'snr', verbose = self.verbose, force_unblind = self.spark_unblind, return_none = True)
+        snr_dat = self.run_info.get_result_path(file_type = 'snr', verbose = self.verbose, force_unblind = self.spark_unblind, return_none = True)
         if snr_dat is None:
             return spark_evts 
         else:
@@ -859,16 +837,13 @@ class filt_qual_cut_loader:
             del known_issue
 
             snr_hf = h5py.File(snr_dat, 'r')
+            evt_num_snr = snr_hf['evt_num'][:]
+            num_evts_snr = len(evt_num_snr)
+            trig_type_snr = snr_hf['trig_type'][:]
             rms = snr_hf['rms'][:]
             rms[bad_ant] = np.nan
-            if self.sim_spark_path is not None:
-                evt_num_snr = snr_hf['evt_num'][:]
-                trig_type_snr = snr_hf['trig_type'][:]
-                rms[:, trig_type_snr == 1] = np.nan   
-                del trig_type_snr 
-            else:
-                evt_num_snr = snr_hf['entry_num'][:]
-            del snr_dat, snr_hf, bad_ant
+            rms[:, trig_type_snr == 1] = np.nan
+            del snr_dat, snr_hf, bad_ant, trig_type_snr
 
             pow_n = rms ** 2
             pow_n_avg = np.full((num_ddas, num_evts_snr), np.nan, dtype = float)
@@ -879,22 +854,18 @@ class filt_qual_cut_loader:
             op_cuts = (pow_ratio > cut_ratio).astype(int)
             del rms, pow_n_avg_sort, pow_n_avg, pow_n, pow_ratio
 
-            if self.sim_spark_path is not None:
-                spark_evts[:] = op_cuts
+            if self.num_evts != num_evts_snr:
+                evt_idx = np.in1d(self.evt_num, evt_num_snr)
             else:
-                if self.num_evts != num_evts_snr:
-                    evt_idx = np.in1d(self.evt_num, evt_num_snr)
-                else:
-                    evt_idx = np.full((self.num_evts), True, dtype = bool)
-                try:
-                    spark_evts[:] = op_cuts
-                except ValueError:
-                    for evt in range(num_evts_snr):
-                        evt_idx = np.where(self.evt_num == evt_num_snr[evt])[0]
-                        if len(evt_idx) > 0:
-                            spark_evts[evt_idx] = op_cuts[evt]
-                del evt_idx
-            del op_cuts, num_evts_snr, evt_num_snr
+                evt_idx = np.full((self.num_evts), True, dtype = bool)
+            try:
+                spark_evts[:] = op_cuts
+            except ValueError:
+                for evt in range(num_evts_snr):
+                    evt_idx = np.where(self.evt_num == evt_num_snr[evt])[0]
+                    if len(evt_idx) > 0:
+                        spark_evts[evt_idx] = op_cuts[evt]
+            del op_cuts, num_evts_snr, evt_num_snr, evt_idx
 
             if self.verbose:
                 quick_qual_check(spark_evts != 0, 'op antenna cut', self.evt_num)
@@ -904,22 +875,16 @@ class filt_qual_cut_loader:
     def get_calpulser_surface_events(self, cut_surface = 35):
 
         cal_sur_evts = np.full((self.num_evts, 2), 0, dtype = int)
-        
-        if self.sim_cal_sur_path is not None:
-            reco_dat = self.sim_cal_sur_path
-        else:
-            reco_dat = self.run_info.get_result_path(file_type = 'reco', verbose = self.verbose, force_unblind = self.cal_sur_unblind, return_none = True)
+
+        reco_dat = self.run_info.get_result_path(file_type = 'reco', verbose = self.verbose, force_unblind = self.cal_sur_unblind, return_none = True)
         if reco_dat is None:
             return cal_sur_evts
         else:
             reco_hf = h5py.File(reco_dat, 'r')
-            if self.sim_spark_path is not None:
-                evt_num_reco = reco_hf['evt_num'][:]    
-                trig_type_reco = reco_hf['trig_type'][:]
-            else:
-                evt_num_reco = reco_hf['entry_num'][:]
+            evt_num_reco = reco_hf['evt_num'][:]
             num_evts_reco = len(evt_num_reco)
             coord_max = reco_hf['coord'][:]
+            trig_type_reco = reco_hf['trig_type'][:]
             del reco_dat, reco_hf
 
             cp_cut, num_cuts, pol_idx = get_calpulser_cut(self.st, self.run)
@@ -929,34 +894,27 @@ class filt_qual_cut_loader:
                 azi_flag = np.digitize(coord_max[pol_idx, 1, 0, 0], cp_cut[cal, 1]) == 1
                 cal_cuts += np.logical_and(ele_flag, azi_flag).astype(int)
                 del ele_flag, azi_flag
-            if self.sim_spark_path is not None:
-                cal_cuts[trig_type_reco == 1] = 0
-                del trig_type_reco
-            del cp_cut, num_cuts, pol_idx
+            cal_cuts[trig_type_reco == 1] = 0
+            del cp_cut, num_cuts, pol_idx, trig_type_reco
 
             coord_max_flat = np.reshape(coord_max[:, 0, 1, :, :], (4, -1))
             sur_cuts = np.any(coord_max_flat > cut_surface, axis = 0).astype(int)
             del coord_max, coord_max_flat
 
-            if self.sim_spark_path is not None:
-                cal_sur_evts[:, 0] = cal_cuts
-                cal_sur_evts[:, 1] = sur_cuts
+            if self.num_evts != num_evts_reco:
+                evt_idx = np.in1d(self.evt_num, evt_num_reco)
             else:
-                if self.num_evts != num_evts_reco:
-                    evt_idx = np.in1d(self.evt_num, evt_num_reco)
-                else:
-                    evt_idx = np.full((self.num_evts), True, dtype = bool)
-                try:
-                    cal_sur_evts[evt_idx, 0] = cal_cuts
-                    cal_sur_evts[evt_idx, 1] = sur_cuts
-                except ValueError:
-                    for evt in tqdm(range(num_evts_reco)):
-                        evt_idx = np.where(self.evt_num == evt_num_reco[evt])[0]
-                        if len(evt_idx) > 0:
-                            cal_sur_evts[evt_idx, 0] = cal_cuts[evt]
-                            cal_sur_evts[evt_idx, 1] = sur_cuts[evt]
-                del evt_idx
-            del evt_num_reco, num_evts_reco, cal_cuts, sur_cuts
+                evt_idx = np.full((self.num_evts), True, dtype = bool)
+            try:
+                cal_sur_evts[evt_idx, 0] = cal_cuts
+                cal_sur_evts[evt_idx, 1] = sur_cuts
+            except ValueError:
+                for evt in tqdm(range(num_evts_reco)):
+                    evt_idx = np.where(self.evt_num == evt_num_reco[evt])[0]
+                    if len(evt_idx) > 0:
+                        cal_sur_evts[evt_idx, 0] = cal_cuts[evt]
+                        cal_sur_evts[evt_idx, 1] = sur_cuts[evt]
+            del evt_num_reco, num_evts_reco, evt_idx, cal_cuts, sur_cuts
 
             if self.verbose:
                 quick_qual_check(cal_sur_evts[:, 0] != 0, 'calpulser cut', self.evt_num)

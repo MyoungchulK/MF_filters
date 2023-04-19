@@ -73,34 +73,28 @@ def get_bad_events(st, run, qual_type = 1, analyze_blind_dat = False, verbose = 
 
 class pre_qual_cut_loader:
 
-    def __init__(self, ara_uproot, analyze_blind_dat = False, verbose = False, sim_st = None, sim_run = None, sim_evt = None):
+    def __init__(self, ara_uproot, analyze_blind_dat = False, verbose = False):
 
-        if sim_st is None:
-            self.st = ara_uproot.station_id
-            self.run = ara_uproot.run
-            self.evt_num = ara_uproot.evt_num 
-            self.num_evts = ara_uproot.num_evts
-            self.trig_type = ara_uproot.get_trig_type()
-            self.unix_time = ara_uproot.unix_time
-            self.pps_number = ara_uproot.pps_number
-            self.irs_block_number = ara_uproot.irs_block_number
-            self.channel_mask = ara_uproot.channel_mask
-            self.verbose = verbose
-            self.analyze_blind_dat = analyze_blind_dat
-        else:
-            self.st = int(sim_st)
-            self.run = int(sim_run)
-            self.evt_num = sim_evt.astype(int)
+        self.st = ara_uproot.station_id
+        self.run = ara_uproot.run
+        self.evt_num = ara_uproot.evt_num 
+        self.num_evts = ara_uproot.num_evts
+        self.trig_type = ara_uproot.get_trig_type()
+        self.unix_time = ara_uproot.unix_time
+        self.pps_number = ara_uproot.pps_number
+        self.irs_block_number = ara_uproot.irs_block_number
+        self.channel_mask = ara_uproot.channel_mask
+        self.verbose = verbose
+        self.analyze_blind_dat = analyze_blind_dat
 
         self.run_info = run_info_loader(self.st, self.run, analyze_blind_dat = self.analyze_blind_dat)
-        if sim_st is None:
-            sub_info_dat = self.run_info.get_result_path(file_type = 'sub_info', verbose = self.verbose, force_blind = True)
-            self.sub_info_hf = h5py.File(sub_info_dat, 'r')
-            self.evt_sort = self.sub_info_hf['evt_num_sort'][:]
-            self.unix_sort = self.sub_info_hf['unix_time_sort'][:]
-            self.pps_sort = self.sub_info_hf['pps_number_sort_reset'][:]
-            self.trig_sort = self.sub_info_hf['trig_type_sort'][:]
-            del sub_info_dat
+        sub_info_dat = self.run_info.get_result_path(file_type = 'sub_info', verbose = self.verbose, force_blind = True)
+        self.sub_info_hf = h5py.File(sub_info_dat, 'r')
+        self.evt_sort = self.sub_info_hf['evt_num_sort'][:]
+        self.unix_sort = self.sub_info_hf['unix_time_sort'][:]
+        self.pps_sort = self.sub_info_hf['pps_number_sort_reset'][:]
+        self.trig_sort = self.sub_info_hf['trig_type_sort'][:]
+        del sub_info_dat
 
         self.ara_known_issue = known_issue_loader(self.st)
 
@@ -639,35 +633,29 @@ class pre_qual_cut_loader:
         
         return cut_val
 
-    def get_cw_ratio_events(self, num_ant_cut = 3, sim_path = None):
+    def get_cw_ratio_events(self, num_ant_cut = 3):
 
         bad_ant = self.ara_known_issue.get_bad_antenna(self.run, good_ant_true = True)
         cut_val = self.get_cw_ratio()
 
-        if sim_path is None:
-            ratio_dat = self.run_info.get_result_path(file_type = 'cw_ratio', verbose = self.verbose, force_blind = True)
-        else:
-            ratio_dat = sim_path 
+        ratio_dat = self.run_info.get_result_path(file_type = 'cw_ratio', verbose = self.verbose, force_blind = True)
         ratio_hf = h5py.File(ratio_dat, 'r')
+        ratio_trig = ratio_hf['trig_type'][:]
         cw_ratio = ratio_hf['cw_ratio'][:]
         cw_ratio = cw_ratio[bad_ant]
         cw_ratio = np.sort(cw_ratio, axis = 0)[int(-1 * num_ant_cut)]
-        cw_ratio *= 100       
+        cw_ratio *= 100        
 
-        if sim_path is None:
-            ratio_trig = ratio_hf['trig_type'][:] 
-            cw_ratio_events = np.full((len(ratio_trig)), 0, dtype = int)
-            for trigs in range(num_trigs):
-                cw_ratio_events += np.logical_and(ratio_trig == trigs, cw_ratio > cut_val[trigs]).astype(int)
-            del ratio_trig 
+        cw_ratio_events = np.full((len(ratio_trig)), 0, dtype = int)
+        for trigs in range(num_trigs):
+            cw_ratio_events += np.logical_and(ratio_trig == trigs, cw_ratio > cut_val[trigs]).astype(int)
+        del bad_ant, ratio_dat, cut_val, ratio_trig, cw_ratio
 
-            if self.analyze_blind_dat == False:
-                ratio_evt = ratio_hf['evt_num'][:]
-                cw_ratio_events = np.in1d(self.evt_num, ratio_evt[cw_ratio_events != 0]).astype(int)
-                del ratio_evt
-        else:
-            cw_ratio_events = (cw_ratio > cut_val[0]).astype(int)    
-        del ratio_hf, bad_ant, ratio_dat, cut_val, cw_ratio
+        if self.analyze_blind_dat == False:
+            ratio_evt = ratio_hf['evt_num'][:]
+            cw_ratio_events = np.in1d(self.evt_num, ratio_evt[cw_ratio_events != 0]).astype(int)
+            del ratio_evt
+        del ratio_hf
 
         if self.verbose:
             quick_qual_check(cw_ratio_events != 0, 'cw ratio events', self.evt_num)
