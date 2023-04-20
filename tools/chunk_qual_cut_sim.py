@@ -11,12 +11,13 @@ def qual_cut_sim_collector(Data, Station, Year):
     from tools.ara_run_manager import get_path_info_v2
     from tools.ara_quality_cut import pre_qual_cut_loader
     from tools.ara_quality_cut import filt_qual_cut_loader
+    from tools.ara_run_manager import get_example_run
 
     ## file name
-    exponent = int(get_path_info_v2(data, '_E', '_F'))
-    config = int(get_path_info_v2(data, '_R', '.txt'))
-    flavor = int(get_path_info_v2(data, '_F', '_A'))
-    sim_run = int(get_path_info_v2(data, 'txt.run', '.root'))
+    exponent = int(get_path_info_v2(Data, '_E', '_F'))
+    config = int(get_path_info_v2(Data, '_R', '.txt'))
+    flavor = int(get_path_info_v2(Data, '_F', '_A'))
+    sim_run = int(get_path_info_v2(Data, 'txt.run', '.root'))
     ex_run = get_example_run(Station, config)
     slash_idx = Data.rfind('/')
     dot_idx = Data.rfind('.')
@@ -40,8 +41,9 @@ def qual_cut_sim_collector(Data, Station, Year):
 
     ## cw ratio 
     pre_qual = pre_qual_cut_loader(0, sim_st = Station, sim_run = ex_run, sim_evt = entry_num)
-    pre_qual_cut = pre_qual.get_cw_ratio_events(sim_path = cw_r_path)
-    pre_qual_cut_sum = np.copy(pre_qual_cut)
+    pre_qual_cut = np.full((len(entry_num), 1), 0, dtype = int) 
+    pre_qual_cut[:, 0] = pre_qual.get_cw_ratio_events(sim_path = cw_r_path)
+    pre_qual_cut_sum = np.nansum(pre_qual_cut, axis = 1)
     del cw_r_path, pre_qual
 
     ## spark and cal, surface
@@ -66,9 +68,9 @@ def qual_cut_sim_collector(Data, Station, Year):
         config_tot = wei_hf['config'][:]
         sim_run_tot = wei_hf['sim_run'][:]
         exponent_tot = wei_hf['exponent'][:, 0]
-        idxs = np.all((sim_run_tot == sim_run, flavor_tot == flavor, config_tot == config, exponent_tot == exponent), axis = 0)       
+        idxs = np.all((sim_run_tot == sim_run, flavor_tot == flavor, config_tot == config, exponent_tot == int(exponent - 9)), axis = 0)       
         one_weight = one_weight_tot[idxs]
-        evt_rate = evt_rate_tot[idxs] 
+        evt_rate = evt_rate_tot[idxs]
         del wei_path, wei_hf, flavor_tot, config_tot, sim_run_tot, one_weight_tot, evt_rate_tot, exponent_tot, idxs
     else:
         one_weight = np.full((num_evts), 1, dtype = float)        

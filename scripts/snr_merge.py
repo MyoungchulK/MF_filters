@@ -52,7 +52,7 @@ for r in tqdm(range(len(d_run_tot))):
     hf.create_dataset('entry_num', data=entry_num, compression="gzip", compression_opts=9)
     hf.create_dataset('snr', data=snr, compression="gzip", compression_opts=9)
     hf.close()
-    #print(snr_path, size_checker(snr_path))
+    print(snr_path, size_checker(snr_path))
     del snr_path, entry_num, snr, p2p
 
 print('done!')

@@ -85,12 +85,12 @@ class pre_qual_cut_loader:
             self.pps_number = ara_uproot.pps_number
             self.irs_block_number = ara_uproot.irs_block_number
             self.channel_mask = ara_uproot.channel_mask
-            self.verbose = verbose
-            self.analyze_blind_dat = analyze_blind_dat
         else:
             self.st = int(sim_st)
             self.run = int(sim_run)
             self.evt_num = sim_evt.astype(int)
+        self.analyze_blind_dat = analyze_blind_dat
+        self.verbose = verbose
 
         self.run_info = run_info_loader(self.st, self.run, analyze_blind_dat = self.analyze_blind_dat)
         if sim_st is None:
@@ -861,13 +861,14 @@ class filt_qual_cut_loader:
             snr_hf = h5py.File(snr_dat, 'r')
             rms = snr_hf['rms'][:]
             rms[bad_ant] = np.nan
-            if self.sim_spark_path is not None:
+            if self.sim_spark_path is None:
                 evt_num_snr = snr_hf['evt_num'][:]
                 trig_type_snr = snr_hf['trig_type'][:]
                 rms[:, trig_type_snr == 1] = np.nan   
                 del trig_type_snr 
             else:
                 evt_num_snr = snr_hf['entry_num'][:]
+            num_evts_snr = len(evt_num_snr)
             del snr_dat, snr_hf, bad_ant
 
             pow_n = rms ** 2
@@ -913,7 +914,7 @@ class filt_qual_cut_loader:
             return cal_sur_evts
         else:
             reco_hf = h5py.File(reco_dat, 'r')
-            if self.sim_spark_path is not None:
+            if self.sim_cal_sur_path is None:
                 evt_num_reco = reco_hf['evt_num'][:]    
                 trig_type_reco = reco_hf['trig_type'][:]
             else:
@@ -929,7 +930,7 @@ class filt_qual_cut_loader:
                 azi_flag = np.digitize(coord_max[pol_idx, 1, 0, 0], cp_cut[cal, 1]) == 1
                 cal_cuts += np.logical_and(ele_flag, azi_flag).astype(int)
                 del ele_flag, azi_flag
-            if self.sim_spark_path is not None:
+            if self.sim_cal_sur_path is None:
                 cal_cuts[trig_type_reco == 1] = 0
                 del trig_type_reco
             del cp_cut, num_cuts, pol_idx
@@ -938,7 +939,7 @@ class filt_qual_cut_loader:
             sur_cuts = np.any(coord_max_flat > cut_surface, axis = 0).astype(int)
             del coord_max, coord_max_flat
 
-            if self.sim_spark_path is not None:
+            if self.sim_cal_sur_path is not None:
                 cal_sur_evts[:, 0] = cal_cuts
                 cal_sur_evts[:, 1] = sur_cuts
             else:
