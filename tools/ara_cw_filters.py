@@ -537,7 +537,7 @@ class py_geometric_filter:
         if self.use_cw_flag:
             self.bad_idx = np.digitize(self.freq, self.bad_range) % 3
         else:
-            self.bad_idx = np.digitize(self.freq, self.bad_range_tot[self.evt]) % 3
+            self.bad_idx = np.digitize(self.freq, self.bad_range_tot[self.evt].astype(float)) % 3
             if self.use_debug:
                 self.bad_range_debug = np.copy(self.bad_range_tot[self.evt])
         self.good_idx = self.bad_idx == 0 # index of good frequncies

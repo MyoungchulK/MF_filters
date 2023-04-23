@@ -25,6 +25,7 @@ for c in range(num_configs):
     file_name = f'{r_path}rms_A{Station}_R{c + 1}.h5'
     hf = h5py.File(file_name, 'r')
     rms_mean[:, c] = hf['rms_mean'][:]
+    print(rms_mean[:, c])
     print(file_name, size_checker(file_name))
     del file_name, hf
 
@@ -52,7 +53,7 @@ for r in tqdm(range(len(d_run_tot))):
     hf.create_dataset('entry_num', data=entry_num, compression="gzip", compression_opts=9)
     hf.create_dataset('snr', data=snr, compression="gzip", compression_opts=9)
     hf.close()
-    print(snr_path, size_checker(snr_path))
+    #print(snr_path, size_checker(snr_path))
     del snr_path, entry_num, snr, p2p
 
 print('done!')

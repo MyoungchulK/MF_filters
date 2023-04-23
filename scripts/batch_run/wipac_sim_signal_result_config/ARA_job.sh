@@ -5,8 +5,9 @@ key=snr
 sim_key=signal
 st=$1
 run=$2
-fla=$3
-sim_run=$4
+en=$3
+fla=$4
+sim_run=$5
 year=2015
 not_override=0
 user_path=/misc/disk19/users/
@@ -16,7 +17,7 @@ else
     echo "Switch to /data/user/"
     user_path=/data/user/
 fi
-data=${user_path}mkim/OMF_filter/ARA0${st}/sim_${sim_key}_full/AraOut.${sim_key}_F${fla}_A${st}_R${run}.txt.run${sim_run}.root
+data=${user_path}mkim/OMF_filter/ARA0${st}/sim_${sim_key}_full/AraOut.${sim_key}_E${en}_F${fla}_A${st}_R${run}.txt.run${sim_run}.root
 
 # run the reconstruction script
 export HDF5_USE_FILE_LOCKING='FALSE'
