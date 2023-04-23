@@ -835,11 +835,11 @@ class filt_qual_cut_loader:
 
         self.spark_unblind = spark_unblind
         self.cal_sur_unblind = cal_sur_unblind
-        if sim_spark_path is not None and sim_cal_sur_path is not None:
+        self.sim_spark_path = sim_spark_path
+        self.sim_cal_sur_path = sim_cal_sur_path
+        if self.sim_spark_path is not None and seif.sim_cal_sur_path is not None:
             if self.verbose:
                 print('We are analyzing SIM!!!')
-            self.sim_spark_path = sim_spark_path
-            self.sim_cal_sur_path = sim_cal_sur_path
         else:
             self.run_info = run_info_loader(self.st, self.run, analyze_blind_dat = analyze_blind_dat)
        
@@ -965,11 +965,11 @@ class filt_qual_cut_loader:
 
             return cal_sur_evts
 
-    def run_filt_qual_cut(self):
+    def run_filt_qual_cut(self, cut_ratio = 5):
 
         tot_filt_qual_cut = np.full((self.num_evts, 3), 0, dtype = int)
         tot_filt_qual_cut[:, :2] = self.get_calpulser_surface_events()
-        tot_filt_qual_cut[:, 2] = self.get_spark_events()
+        tot_filt_qual_cut[:, 2] = self.get_spark_events(cut_ratio = cut_ratio)
 
         self.filt_qual_cut_sum = np.nansum(tot_filt_qual_cut, axis = 1)
 
@@ -1175,7 +1175,7 @@ class run_qual_cut_loader:
         self.st = st
         self.run = run
         self.qual_type = qual_type
-        
+ 
         self.known_flag = np.all(tot_cut[:, 18] != 0)
         self.ped_flag = np.all(tot_cut[:, 26] != 0)       
         cut_copy = np.copy(tot_cut)

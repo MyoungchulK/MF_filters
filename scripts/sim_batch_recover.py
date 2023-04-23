@@ -38,6 +38,8 @@ statements = ""
 with open(dag_file_name, 'w') as ff:
     ff.write(statements)
 
+num_configs = 6
+
 pbar = tqdm(total = num_configs * num_flas * num_sim_runs * num_ens)
 for c in range(num_configs):
     for f in range(num_flas):
