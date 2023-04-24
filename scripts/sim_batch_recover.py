@@ -38,14 +38,14 @@ statements = ""
 with open(dag_file_name, 'w') as ff:
     ff.write(statements)
 
-num_configs = 6
-
 pbar = tqdm(total = num_configs * num_flas * num_sim_runs * num_ens)
 for c in range(num_configs):
     for f in range(num_flas):
         for r in range(num_sim_runs):
             for e in range(num_ens):
                 pbar.update(1)
+
+                if c != 7 and c != 8: continue
 
                 con = int(c + 1)
                 fla = int(f + 1)

@@ -66,7 +66,7 @@ def cobalt_run_loader(Station = None, Key = None, Act_Evt = None, analyze_blind_
 
             if log_flag == False and err_flag == False: continue
             """
-            CMD_line = f'python3 -W ignore script_executor.py -k {key} -s {Station} -r {int(w)} -b {int(analyze_blind_dat)} -n 0'
+            CMD_line = f'python3 -W ignore script_executor.py -k {key} -s {Station} -r {int(w)} -b {int(analyze_blind_dat)} -n 0 -q 3'
             print(count)
             print(CMD_line)
             call(CMD_line.split(' '))

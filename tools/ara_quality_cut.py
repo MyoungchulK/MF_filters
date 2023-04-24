@@ -674,7 +674,7 @@ class pre_qual_cut_loader:
 
         return cw_ratio_events
     
-    def run_pre_qual_cut(self, use_cw = False):
+    def run_pre_qual_cut(self, use_cw = 1):
 
         tot_pre_qual_cut = np.full((self.num_evts, 22), 0, dtype = int)
         tot_pre_qual_cut[:, :5] = self.get_daq_structure_errors()
