@@ -26,9 +26,9 @@ def qual_cut_sim_collector(Data, Station, Year):
     del slash_idx, dot_idx, data_name
 
     ## result paths
-    cw_r_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/cw_ratio_sim/cw_ratio_{h5_file_name}'
-    rms_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/rms_sim/rms_{h5_file_name}'
-    reco_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco_sim/reco_{h5_file_name}'
+    cw_r_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_ratio_sim/cw_ratio_{h5_file_name}'
+    rms_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/rms_sim/rms_{h5_file_name}'
+    reco_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/reco_sim/reco_{h5_file_name}'
     print('cw ratio path:', cw_r_path)
     print('rms path:', rms_path)
     print('reco path:', reco_path)
@@ -59,7 +59,7 @@ def qual_cut_sim_collector(Data, Station, Year):
     ## one weight
     signal_key = 'signal'
     if Data.find(signal_key) != -1:
-        wei_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/One_Weight_Pad_A{Station}.h5'
+        wei_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/One_Weight_Pad_A{Station}.h5'
         print('weight path:', wei_path)
         wei_hf = h5py.File(wei_path, 'r') 
         one_weight_tot = wei_hf['one_weight'][:] 

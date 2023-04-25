@@ -15,7 +15,7 @@ def ped_collector(Data, Station, Run, analyze_blind_dat = False):
     blind_type = ''
     if analyze_blind_dat:
         blind_type = '_full'
-    ped_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/ped{blind_type}/'
+    ped_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/ped{blind_type}/'
     if not os.path.exists(ped_path):
         os.makedirs(ped_path)
 

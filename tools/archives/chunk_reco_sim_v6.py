@@ -40,8 +40,8 @@ def reco_sim_collector(Data, Station, Year):
     slash_idx = Data.rfind('/')
     dot_idx = Data.rfind('.')
     h5_file_name = Data[slash_idx+1:dot_idx]
-    band_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/cw_band_sim/cw_band_{h5_file_name}.h5'
-    snr_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/snr_sim/snr_{h5_file_name}.h5'
+    band_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_band_sim/cw_band_{h5_file_name}.h5'
+    snr_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/snr_sim/snr_{h5_file_name}.h5'
     print('cw band sim path:', band_path)
     print('snr sim path:', snr_path)
     del slash_idx, dot_idx, h5_file_name 

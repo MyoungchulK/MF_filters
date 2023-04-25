@@ -81,7 +81,7 @@ class ara_matched_filter:
 
     def get_template(self, use_sc = False):
     
-        temp_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{self.st}/temp_sim/temp_AraOut.A{self.st}_C{self.config}_temp_rayl.txt.run0.h5'
+        temp_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{self.st}/temp_sim/temp_AraOut.A{self.st}_C{self.config}_temp_rayl.txt.run0.h5'
         print('temp_path:', temp_path)
         temp_hf = h5py.File(temp_path, 'r')
         temp_arr = temp_hf['temp'][:] 
@@ -140,7 +140,7 @@ class ara_matched_filter:
 
     def get_arr_table(self):
 
-        a_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{self.st}/arr_time_table/arr_time_table_A{self.st}_Y{self.year}.h5'
+        a_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{self.st}/arr_time_table/arr_time_table_A{self.st}_Y{self.year}.h5'
         print('arr_table_path:', a_path) 
         hf_a = h5py.File(a_path, 'r')
         arr_time_table = hf_a['arr_time_table'][:]

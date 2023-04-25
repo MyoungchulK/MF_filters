@@ -28,7 +28,7 @@ def script_loader(key, station, run, qual_type, act_evt, blind_dat, condor_run, 
         blind_type = ''
         if blind_dat:
             blind_type = '_full'
-        true_output_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{station}/{key}{blind_type}/'
+        true_output_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{station}/{key}{blind_type}/'
         file_format = '.h5'
         sub_key = ''
         if key == 'ped':
@@ -106,7 +106,7 @@ def script_loader(key, station, run, qual_type, act_evt, blind_dat, condor_run, 
     blind_type = ''
     if blind_dat:
         blind_type = '_full'
-    true_output_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{station}/{key}{blind_type}/'
+    true_output_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{station}/{key}{blind_type}/'
     if not os.path.exists(true_output_path):
         os.makedirs(true_output_path)
     if condor_run:

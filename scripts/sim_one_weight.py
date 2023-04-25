@@ -14,7 +14,7 @@ Station = int(sys.argv[1])
 key = str(sys.argv[2])
 
 # sort
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/sub_info_sim/*signal*'
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/sub_info_sim/*signal*'
 d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 del d_run_range
 
@@ -47,10 +47,12 @@ for r in tqdm(range(len(d_run_tot))):
     #inu_thrown[r] = hf['inu_thrown'][-1] + 1
     inu_thrown[r] = hf['nnu_tot'][0]
     pnu[r] = hf['pnu'][:]   
-    probability[r] = hf['probability'][:]
+    prob = hf['probability'][:]
+    prob[prob >= 1] = 0
+    probability[r] = prob
     cos_angle[r] = hf['nnu'][3]
     exponent[r] = hf['exponent_range'][:]
-    del hf, cons
+    del hf, cons, prob
 
 pnu /= 1e9
 exponent -= 9
@@ -100,7 +102,7 @@ for f in range(num_flas):
             idxs = np.all((fla_idx, config == int(c + 1), exponent[:, 0] == ex_range[e]), axis = 0)
             evt_rate[idxs] /= inu_thrown_tot[f, c, e]
 
-path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
+path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
