@@ -36,6 +36,10 @@ if not os.path.exists(output_path):
 for r in tqdm(range(len(d_run_tot))):
     
   #if r < 10:
+    
+    snr_path = d_list[r].replace('rms', 'snr')
+    if os.path.exists(snr_path):
+        continue
 
     hf = h5py.File(d_list[r], 'r')
     config = hf['config'][:]
@@ -47,7 +51,7 @@ for r in tqdm(range(len(d_run_tot))):
     snr = p2p / 2 / rms_mean[:, configs][:, np.newaxis]
     del configs
 
-    snr_path = d_list[r].replace('rms', 'snr')
+    #snr_path = d_list[r].replace('rms', 'snr')
     hf = h5py.File(snr_path, 'w')
     hf.create_dataset('config', data=config, compression="gzip", compression_opts=9)
     hf.create_dataset('entry_num', data=entry_num, compression="gzip", compression_opts=9)
