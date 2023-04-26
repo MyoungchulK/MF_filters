@@ -15,8 +15,8 @@ def cobalt_run_loader(Key = None, Station = None, Act_Evt = None):
     print('event range:', Act_Evt)
     Yrs = 2015
   
-    #d_path = '/data/user/brianclark/for_Uzair/E2_nomag_art/AraOut.setup_nue_cc_art_E2.txt.run*'
-    d_path = f'/misc/disk19/users/mkim/OMF_filter/ARA0{Station}/sim_signal_full/AraOut*root'
+    d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/sim_signal_full/AraOut*root'
+    #d_path = f'/misc/disk19/users/mkim/OMF_filter/ARA0{Station}/sim_signal_full/AraOut*root'
     #d_path = f'/misc/disk19/users/mkim/OMF_filter/ARA0{Station}/sim_noise_full/AraOut*root'
     lists = glob(d_path)
     print(len(lists))
