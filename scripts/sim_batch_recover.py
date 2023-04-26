@@ -20,7 +20,7 @@ def get_dag_statement(st, run, sim_run, flavors_int, energy_int):
 Station = int(sys.argv[1])
 
 # sort
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/sim_signal_full/'
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/sim_signal_full/'
 
 if Station == 2: num_configs = 7
 if Station == 3: num_configs = 9
@@ -44,8 +44,6 @@ for c in range(num_configs):
         for r in range(num_sim_runs):
             for e in range(num_ens):
                 pbar.update(1)
-
-                if c != 7 and c != 8: continue
 
                 con = int(c + 1)
                 fla = int(f + 1)
