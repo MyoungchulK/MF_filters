@@ -50,7 +50,7 @@ class py_interferometers:
         else:
             year = 2018
 
-        table_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{self.st}/arr_time_table/'
+        table_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{self.st}/arr_time_table/'
         table_name = f'arr_time_table_A{self.st}_Y{year}.h5'
         if verbose:
             print('arrival time table:', table_path + table_name)        

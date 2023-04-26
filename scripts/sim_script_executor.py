@@ -27,6 +27,9 @@ def script_loader(key, station, year, data, evt_range, not_override):
         data_name = data[slash_idx+1:dot_idx]
         if key == 'mf_noise' or key == 'mf_noise_debug':
             h5_file_name = f'{output}{key}_sim_A{station}_Evt{evt_range[0]}_{evt_range[1]}_{data_name}'
+        elif key == 'cw_flag_signal':
+            key_p = key[:-7]
+            h5_file_name = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{station}/{key_p}_sim/' + f'{key_p}_{data_name}'
         else:
             h5_file_name = f'{output}{key}_{data_name}'
         h5_file_name_out = h5_file_name + '.h5'
@@ -56,6 +59,8 @@ def script_loader(key, station, year, data, evt_range, not_override):
     del module, method
 
     # create output dir
+    if key == 'cw_flag_signal':
+        key = key[:-7]
     output = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{station}/{key}_sim/'
     print(f'Output path check:{output}')
     if not os.path.exists(output):
@@ -70,9 +75,6 @@ def script_loader(key, station, year, data, evt_range, not_override):
         print(evt_range)
     if key == 'mf_noise' or key == 'mf_noise_debug':
         h5_file_name = f'{output}{key}_sim_A{station}_Evt{evt_range[0]}_{evt_range[1]}_{data_name}'
-    elif key == 'cw_flag_signal':
-        key_p = key[:-7] 
-        h5_file_name = f'{output}{key_p}_{data_name}'
     else:
         h5_file_name = f'{output}{key}_{data_name}'
     h5_file_name_out = h5_file_name + '.h5'

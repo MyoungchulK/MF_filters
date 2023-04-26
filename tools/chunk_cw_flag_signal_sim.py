@@ -44,7 +44,7 @@ def cw_flag_signal_sim_collector(Data, Station, Year):
     fft_len = len(freq_range)
 
     # cw class
-    baseline_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/baseline_sim_merge/baseline_A{Station}_R{config}.h5' 
+    baseline_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/baseline_sim_merge/baseline_A{Station}_R{config}.h5' 
     print('baseline path:', baseline_path)
     cw_testbed = py_testbed(Station, ex_run, freq_range, verbose = True, use_st_pair = True, sim_path = baseline_path)
     testbed_params = np.array([cw_testbed.dB_cut, cw_testbed.dB_cut_broad, cw_testbed.num_coinc, cw_testbed.freq_range_broad, cw_testbed.freq_range_near])
@@ -54,7 +54,7 @@ def cw_flag_signal_sim_collector(Data, Station, Year):
     phase_params = np.array([cw_phase.sigma_thres, evt_len])
     del baseline_path
 
-    phase_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/phase_sim/phase_AraOut.noise_A{Station}_R{config}.txt.run{sim_run}.h5'
+    phase_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/phase_sim/phase_AraOut.noise_A{Station}_R{config}.txt.run{sim_run}.h5'
     print('phase path:', phase_path)
     hf = h5py.File(phase_path, 'r')
     phase_arr = hf['phase_arr'][:]
@@ -146,7 +146,7 @@ def cw_flag_signal_sim_collector(Data, Station, Year):
     # to numpy array
     bad_range = np.asarray(bad_range, dtype=object)
 
-    output_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_band_sim/'
+    output_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/cw_band_sim/'
     if not os.path.exists(output_path):
         os.makedirs(output_path)
     slash_idx = Data.rfind('/')

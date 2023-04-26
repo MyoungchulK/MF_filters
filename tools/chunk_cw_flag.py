@@ -168,7 +168,7 @@ def cw_flag_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_t
     blind_type = ''
     if analyze_blind_dat:
         blind_type = '_full'
-    output_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{st}/cw_band{blind_type}/'
+    output_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{st}/cw_band{blind_type}/'
     if not os.path.exists(output_path):
         os.makedirs(output_path)
     h5_file_name = f'cw_band{blind_type}_A{st}_R{run}.h5'

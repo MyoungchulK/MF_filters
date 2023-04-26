@@ -43,7 +43,7 @@ def cw_flag_sim_collector(Data, Station, Year):
     freq_range = wf_int.pad_zero_freq
 
     # cw class
-    baseline_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/baseline_sim_merge/baseline_A{Station}_R{config}.h5' 
+    baseline_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/baseline_sim_merge/baseline_A{Station}_R{config}.h5' 
     print('baseline path:', baseline_path)
     cw_testbed = py_testbed(Station, ex_run, freq_range, verbose = True, use_st_pair = True, sim_path = baseline_path)
     testbed_params = np.array([cw_testbed.dB_cut, cw_testbed.dB_cut_broad, cw_testbed.num_coinc, cw_testbed.freq_range_broad, cw_testbed.freq_range_near])
@@ -112,7 +112,7 @@ def cw_flag_sim_collector(Data, Station, Year):
     # to numpy array
     bad_range = np.asarray(bad_range, dtype=object)
 
-    output_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/cw_band_sim/'
+    output_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/cw_band_sim/'
     if not os.path.exists(output_path):
         os.makedirs(output_path)
     slash_idx = Data.rfind('/')
