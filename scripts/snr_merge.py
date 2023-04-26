@@ -12,14 +12,14 @@ from tools.ara_utility import size_checker
 Station = int(sys.argv[1])
 
 # sort
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/rms_sim/*'
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/rms_sim/*'
 d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 del d_run_range
 
 if Station == 2: num_configs = 7
 if Station == 3: num_configs = 9
 
-r_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/rms_sim_merge/'
+r_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/rms_sim_merge/'
 rms_mean = np.full((16, num_configs), np.nan, dtype = float)
 for c in range(num_configs):
     file_name = f'{r_path}rms_A{Station}_R{c + 1}.h5'
@@ -29,7 +29,7 @@ for c in range(num_configs):
     print(file_name, size_checker(file_name))
     del file_name, hf
 
-output_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/snr_sim/'
+output_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/snr_sim/'
 if not os.path.exists(output_path):
     os.makedirs(output_path)
 

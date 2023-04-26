@@ -38,13 +38,13 @@ def cobalt_run_loader(Key = None, Station = None, Act_Evt = None):
             print(CMD_line)
             call(CMD_line.split(' '))
 
-            CMD_line = f'python3 -W ignore sim_script_executor.py -k snr -s {Station} -y {Yrs} -d {w} -n 1'
-            print(CMD_line)
-            call(CMD_line.split(' '))
+            #CMD_line = f'python3 -W ignore sim_script_executor.py -k snr -s {Station} -y {Yrs} -d {w} -n 1'
+            #print(CMD_line)
+            #call(CMD_line.split(' '))
 
-            CMD_line = f'python3 -W ignore sim_script_executor.py -k reco -s {Station} -y {Yrs} -d {w} -n 1'
-            print(CMD_line)
-            call(CMD_line.split(' '))
+            #CMD_line = f'python3 -W ignore sim_script_executor.py -k reco -s {Station} -y {Yrs} -d {w} -n 1'
+            #print(CMD_line)
+            #call(CMD_line.split(' '))
 
         count += 1
 
