@@ -13,10 +13,6 @@ Station = int(sys.argv[1])
 Data = str(sys.argv[2])
 
 def main(Station, Data):
-    snr_path1 = Data.replace('rms', 'snr')
-    if os.path.exists(snr_path1):
-        print('already there!!', snr_path1)
-        return
 
     # sort
     d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/rms_sim/*'
@@ -43,9 +39,6 @@ def main(Station, Data):
     for r in tqdm(range(len(d_run_tot))):
        
       #if r < 10:
-      if Data == d_list[r]:
-        print('Found it!!', d_list[r])   
-     
         snr_path = d_list[r].replace('rms', 'snr')
         if os.path.exists(snr_path):
             continue
