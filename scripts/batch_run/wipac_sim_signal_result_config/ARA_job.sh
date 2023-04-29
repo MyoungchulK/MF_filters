@@ -36,6 +36,6 @@ python3 /home/mkim/analysis/MF_filters/scripts/sim_script_executor.py -k ${key} 
 python3 /home/mkim/analysis/MF_filters/scripts/sim_script_executor.py -k ${key1} -s ${st} -y ${year} -d ${data} -n ${not_override}
 python3 /home/mkim/analysis/MF_filters/scripts/sim_script_executor.py -k ${key2} -s ${st} -y ${year} -d ${data} -n ${not_override}
 python3 /home/mkim/analysis/MF_filters/scripts/sim_script_executor.py -k ${key3} -s ${st} -y ${year} -d ${data} -n ${not_override}
-python3 /home/mkim/analysis/MF_filters/scripts/snr_merge.py ${st} ${rms_path}
+python3 /home/mkim/analysis/MF_filters/scripts/snr_maker.py ${st} ${rms_path}
 python3 /home/mkim/analysis/MF_filters/scripts/sim_script_executor.py -k ${key4} -s ${st} -y ${year} -d ${data} -n ${not_override}
 
