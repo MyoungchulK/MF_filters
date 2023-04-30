@@ -59,7 +59,7 @@ def qual_cut_sim_collector(Data, Station, Year):
     ## one weight
     signal_key = 'signal'
     if Data.find(signal_key) != -1:
-        wei_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/One_Weight_Pad_A{Station}.h5'
+        wei_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/One_Weight_Pad_mass_A{Station}.h5'
         print('weight path:', wei_path)
         wei_hf = h5py.File(wei_path, 'r') 
         one_weight_tot = wei_hf['one_weight'][:] 

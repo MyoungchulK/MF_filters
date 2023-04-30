@@ -50,7 +50,7 @@ def qual_cut_3rd_collector(Data, st, run, qual_type = 3, analyze_blind_dat = Fal
 
     ## filter cut
     filt_qual = filt_qual_cut_loader(st, run, evt_num, analyze_blind_dat = analyze_blind_dat, verbose = True, spark_unblind = False, cal_sur_unblind = True) 
-    filt_qual_cut = filt_qual.run_filt_qual_cut(cut_ratio = 10000)
+    filt_qual_cut = filt_qual.run_filt_qual_cut()
     filt_qual_cut_sum = filt_qual.filt_qual_cut_sum
     del filt_qual
 

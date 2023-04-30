@@ -837,42 +837,14 @@ class filt_qual_cut_loader:
         self.cal_sur_unblind = cal_sur_unblind
         self.sim_spark_path = sim_spark_path
         self.sim_cal_sur_path = sim_cal_sur_path
-        self.run_info = run_info_loader(self.st, self.run, analyze_blind_dat = analyze_blind_dat)
-        if self.sim_spark_path is not None and self.sim_cal_sur_path is not None:
+        if self.sim_spark_path is not None and seif.sim_cal_sur_path is not None:
             if self.verbose:
                 print('We are analyzing SIM!!!')
-      
-    def get_spark_cut_ratio(self):
- 
-        config = self.run_info.get_config_number()
-
-        if self.st == 2:
-            cut_val = 4
-        elif self.st == 3:
-            if config < 6:
-                cut_val = 3.9
-            elif config == 6 or config == 9:
-                cut_val = 4.5
-            elif config == 7 or config == 8:
-                cut_val = 3.5
         else:
-            if self.verbose:
-                print(f'Wrong!: A{self.st} R{self.run}')
-                sys.exit(1)
+            self.run_info = run_info_loader(self.st, self.run, analyze_blind_dat = analyze_blind_dat)
+       
+    def get_spark_events(self, cut_ratio = 5): 
 
-        if self.verbose:
-            print(f'Config: {config}, spark cut val: {cut_val}')
-        del config
-
-        return cut_val 
-
-    def get_spark_events(self, cut_ratio = None): 
-
-        if cut_ratio is not None:
-            cut_ratio = float(cut_ratio)
-        else:
-            cut_ratio = self.get_spark_cut_ratio()
-    
         spark_evts = np.full((self.num_evts), 0, dtype = int)
 
         if self.sim_spark_path is not None:
@@ -993,7 +965,7 @@ class filt_qual_cut_loader:
 
             return cal_sur_evts
 
-    def run_filt_qual_cut(self, cut_ratio = None):
+    def run_filt_qual_cut(self, cut_ratio = 5):
 
         tot_filt_qual_cut = np.full((self.num_evts, 3), 0, dtype = int)
         tot_filt_qual_cut[:, :2] = self.get_calpulser_surface_events()

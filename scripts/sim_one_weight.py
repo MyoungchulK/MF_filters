@@ -87,9 +87,10 @@ for f in range(num_flas):
             aeff_2d[:, :, f, c, e] = np.histogram2d(tot_pnu, tot_cos, weights = tot_wei, bins=(energy_bins, cos_bins))[0]
             aeff_2d[:, :, f, c, e] /= tot_evt * np.diff(energy_bins)[:, np.newaxis] * np.diff(cos_bins)[np.newaxis, :] * solid_angle
 
+m_to_cm = 1e4
 flux_model = np.loadtxt('/home/mkim/analysis/MF_filters/data/flux_data/gzkKoteraSFR1.txt')
 energy = flux_model[:,0]
-nu_tot_model = flux_model[:,1:]
+nu_tot_model = flux_model[:,1:] * m_to_cm
 
 evt_rate = np.full((pnu.shape), 0, dtype = float)
 for f in range(num_flas):
