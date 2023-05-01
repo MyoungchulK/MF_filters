@@ -34,28 +34,7 @@ def sub_info_sim_collector(Data, Station, Year):
     view_ang = ara_root.view_ang
     arrival_time = ara_root.arrival_time
     del ara_root
-
-    st_center = np.array([10000, 10000, 6.35944e6], dtype = float)
-    posnu_vec = posnu[:3] - st_center[:, np.newaxis] 
-
-    theta_unit_x = 0
-    theta_unit_y = 0
-    theta_unit_z = 1
-    AB = theta_unit_x * posnu_vec[0] + theta_unit_y * posnu_vec[1] + theta_unit_z * posnu_vec[2] # A.B
-    ABabs = np.sqrt(theta_unit_x**2 + theta_unit_y**2 + theta_unit_z**2) * np.sqrt(posnu_vec[0]**2 + posnu_vec[1]**2 + posnu_vec[2]**2) # |AB|
-    elevation_ang = 90 - np.degrees(np.arccos(AB / ABabs))
-    del theta_unit_x, theta_unit_y, theta_unit_z, AB, ABabs
-
-    phi_unit_x = 1
-    phi_unit_y = 0
-    AD = phi_unit_x * posnu_vec[0] + phi_unit_y * posnu_vec[1]
-    ADabs = np.sqrt(phi_unit_x**2 + phi_unit_y**2) * np.sqrt(posnu_vec[0]**2 + posnu_vec[1]**2)
-    azimuth_ang = np.degrees(np.arccos(AD / ADabs))
-    azimuth_ang[posnu_vec[1] < 0] *= -1
-    del phi_unit_x, phi_unit_y, AD, ADabs
-
-    radius_ang = np.sqrt((posnu_vec[0])**2 + (posnu_vec[1])**2)
- 
+    
     print('Sub info sim collecting is done!')
 
     return {'entry_num':entry_num,
@@ -77,9 +56,4 @@ def sub_info_sim_collector(Data, Station, Year):
             'nnu_tot':nnu_tot,
             'rec_ang':rec_ang,    
             'view_ang':view_ang,
-            'arrival_time':arrival_time,
-            'st_center':st_center,
-            'posnu_vec':posnu_vec,
-            'elevation_ang':elevation_ang,
-            'azimuth_ang':azimuth_ang,
-            'radius_ang':radius_ang}
+            'arrival_time':arrival_time}
