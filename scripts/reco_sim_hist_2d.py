@@ -51,7 +51,7 @@ r_bin_len = len(r_bin_center)
 z_bins = np.linspace(-90, 90, 180 + 1)
 z_bin_center = (z_bins[1:] + z_bins[:-1]) / 2
 z_bin_len = len(z_bin_center)
-a_bins = np.linspace(0, 360, 360 + 1)
+a_bins = np.linspace(-180, 180, 360 + 1)
 a_bin_center = (a_bins[1:] + a_bins[:-1]) / 2
 a_bin_len = len(a_bin_center)
 c_bins = np.linspace(0, 1.2, 120 + 1)
@@ -131,8 +131,8 @@ for r in tqdm(range(len(d_run_tot))):
         except ValueError:
             counts += 1
             continue
-        coord_max[0, :2, e] = coord_re[0, :, coef_max_idx[0], e]
-        coord_max[1, :2, e] = coord_re[1, :, coef_max_idx[1], e]
+        coord_max[0, :2, e] = coord_re[:, 0, coef_max_idx[0], e]
+        coord_max[1, :2, e] = coord_re[:, 1, coef_max_idx[1], e]
         coord_max[0, 2, e] = rad_o[coef_max_idx[0]//2]
         coord_max[1, 2, e] = rad_o[coef_max_idx[1]//2]
         del coef_max_idx

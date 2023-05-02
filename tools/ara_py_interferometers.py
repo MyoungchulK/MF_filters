@@ -121,8 +121,8 @@ class py_interferometers:
         self.coval_max = np.nanmax(sky_map, axis = 1) # array dim (# of pols, # of rs, # of rays)
         coord = np.nanargmax(sky_map, axis = 1)
         self.coord_max = np.full(self.coord_shape, np.nan, dtype = float) # array dim (# of pols, theta and phi, # of rs, # of rays)
-        self.coord_max[0] = self.theta[coord // self.num_phis]
-        self.coord_max[1] = self.phi[coord % self.num_phis]
+        self.coord_max[:, 0] = self.theta[coord // self.num_phis]
+        self.coord_max[:, 1] = self.phi[coord % self.num_phis]
         del corr_v_sum, corr_h_sum, sky_map, coord
 
     def get_padded_wf(self, pad_v):
