@@ -6,6 +6,7 @@ key1=cw_flag
 key2=cw_ratio
 key3=rms
 key4=reco
+key5=qual_cut
 sim_key=signal
 st=$1
 run=$2
@@ -13,7 +14,7 @@ en=$3
 fla=$4
 sim_run=$5
 year=2015
-not_override=1
+not_override=0
 user_path=/misc/disk19/users/mkim/OMF_filter/
 if [ -d "$user_path" ]; then
     echo "There is ${user_path}"
@@ -38,4 +39,5 @@ python3 /home/mkim/analysis/MF_filters/scripts/sim_script_executor.py -k ${key2}
 python3 /home/mkim/analysis/MF_filters/scripts/sim_script_executor.py -k ${key3} -s ${st} -y ${year} -d ${data} -n ${not_override}
 python3 /home/mkim/analysis/MF_filters/scripts/snr_maker.py ${st} ${rms_path}
 python3 /home/mkim/analysis/MF_filters/scripts/sim_script_executor.py -k ${key4} -s ${st} -y ${year} -d ${data} -n ${not_override}
+python3 /home/mkim/analysis/MF_filters/scripts/sim_script_executor.py -k ${key5} -s ${st} -y ${year} -d ${data} -n ${not_override}
 
