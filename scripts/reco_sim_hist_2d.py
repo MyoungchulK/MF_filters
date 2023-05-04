@@ -131,8 +131,8 @@ for r in tqdm(range(len(d_run_tot))):
         except ValueError:
             counts += 1
             continue
-        coord_max[0, :2, e] = coord_re[:, 0, coef_max_idx[0], e]
-        coord_max[1, :2, e] = coord_re[:, 1, coef_max_idx[1], e]
+        coord_max[0, :2, e] = coord_re[0, :, coef_max_idx[0], e]
+        coord_max[1, :2, e] = coord_re[1, :, coef_max_idx[1], e]
         coord_max[0, 2, e] = rad_o[coef_max_idx[0]//2]
         coord_max[1, 2, e] = rad_o[coef_max_idx[1]//2]
         del coef_max_idx
