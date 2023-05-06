@@ -9,9 +9,16 @@ def sub_info_sim_collector(Data, Station, Year):
 
     from tools.ara_sim_load import ara_root_loader
 
+    if Data.find('signal') != -1:
+        print('Data is signal sim!')
+        get_angle_info = True
+    else:
+        print('Data is noise sim!')
+        get_angle_info = False
+
     # data config
     ara_root = ara_root_loader(Data, Station, Year)
-    ara_root.get_sub_info(Data, get_angle_info = True)
+    ara_root.get_sub_info(Data, get_angle_info = get_angle_info)
     num_evts = ara_root.num_evts
     entry_num = ara_root.entry_num
     dt = ara_root.time_step

@@ -2,7 +2,7 @@ log    = /scratch/mkim/wipac_sim_noise_result_config/logs/A$(st).R$(run).SR$(sim
 output = /scratch/mkim/wipac_sim_noise_result_config/logs/A$(st).R$(run).SR$(sim_run).out
 error  = /scratch/mkim/wipac_sim_noise_result_config/logs/A$(st).R$(run).SR$(sim_run).err
 
-request_memory = 1GB
+request_memory = 2GB
 
 Universe = vanilla
 getenv = true
