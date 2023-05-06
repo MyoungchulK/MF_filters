@@ -1,4 +1,4 @@
-import os
+import os, sys
 import numpy as np
 from tqdm import tqdm
 import h5py
@@ -6,6 +6,10 @@ import h5py
 def cw_flag_sim_collector(Data, Station, Year):
 
     print('Collectin cw flag sim starts!')
+
+    if Data.find('signal') != -1:
+        print('WRONG!! USE cw_flag_signal!!')
+        sys.exit(1)
 
     from tools.ara_sim_load import ara_root_loader
     from tools.ara_constant import ara_const

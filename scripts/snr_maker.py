@@ -21,9 +21,9 @@ def main(Station, Data):
 
     # snr check
     snr_path = Data.replace('rms', 'snr')
-    if os.path.exists(snr_path):
-        print('already there!!', snr_path)
-        return
+    #if os.path.exists(snr_path):
+    #    print('already there!!', snr_path)
+    #    return
 
     if Station == 2: num_configs = 7
     if Station == 3: num_configs = 9
@@ -42,6 +42,7 @@ def main(Station, Data):
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
+    print('rms path:', Data)
     hf = h5py.File(Data, 'r')
     config = hf['config'][:]
     configs = int(config[2] - 1)
@@ -57,7 +58,7 @@ def main(Station, Data):
     hf.create_dataset('entry_num', data=entry_num, compression="gzip", compression_opts=9)
     hf.create_dataset('snr', data=snr, compression="gzip", compression_opts=9)
     hf.close()
-    print(snr_path, size_checker(snr_path))
+    print('output is in', snr_path, size_checker(snr_path))
     del snr_path, entry_num, snr, p2p
 
     print('snr making is done!')

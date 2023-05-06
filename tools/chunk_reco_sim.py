@@ -47,10 +47,10 @@ def reco_sim_collector(Data, Station, Year):
     del slash_idx, dot_idx, h5_file_name 
 
     # wf analyzer
-    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, new_wf_time = wf_time, sim_path = band_path)
+    wf_int = wf_analyzer(verbose = True, use_time_pad = True, use_band_pass = True, use_cw = True, new_wf_time = wf_time, sim_path = band_path)
     del band_path
 
-    ara_int = py_interferometers(wf_int.pad_len, wf_int.dt, Station, Year, run = ex_run, get_sub_file = True)
+    ara_int = py_interferometers(wf_int.pad_len, wf_int.dt, Station, Year, run = ex_run, get_sub_file = True, verbose = True)
     num_rads = ara_int.num_rads
     num_ray_sol = ara_int.num_ray_sol
     snr_hf = h5py.File(snr_path, 'r')

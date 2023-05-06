@@ -17,8 +17,9 @@ num_pols = ara_const.POLARIZATION
 
 class py_interferometers:
 
-    def __init__(self, pad_len, dt, st, yrs, run = None, get_sub_file = False, use_debug = False):
+    def __init__(self, pad_len, dt, st, yrs, run = None, get_sub_file = False, use_debug = False, verbose = False):
 
+        self.verbose = verbose
         self.dt = dt
         self.st = st
         self.yrs = yrs
@@ -29,9 +30,11 @@ class py_interferometers:
             self.get_zero_pad(pad_len)
             self.lags = correlation_lags(self.double_pad_len, self.double_pad_len, 'same') * self.dt
             self.lag_len = len(self.lags)
-            self.pairs, self.pair_len, self.v_pairs_len = get_pair_info(self.st, self.run, verbose = True)
-            self.get_arrival_time_tables(verbose = True)
+            self.pairs, self.pair_len, self.v_pairs_len = get_pair_info(self.st, self.run, verbose = self.verbose)
+            self.get_arrival_time_tables()
             self.get_coval_time()
+            if self.verbose:
+                print('sub tools are ready!')
         else:                
             self.lags = correlation_lags(pad_len, pad_len, 'full') * self.dt    
             self.lag_len = len(self.lags)
@@ -42,8 +45,10 @@ class py_interferometers:
         self.pad_one = np.full((self.double_pad_len, num_ants), 1, dtype = float) 
         self.zero_pad = np.full((self.double_pad_len, num_ants), 0, dtype = float)
         self.quater_idx = pad_len // 2
+        if self.verbose:
+            print('pad is on!')
 
-    def get_arrival_time_tables(self, verbose = False):
+    def get_arrival_time_tables(self):
 
         if self.st == 2 or (self.st == 3 and self.yrs <= 1515974400):
             year = 2015
@@ -52,7 +57,7 @@ class py_interferometers:
 
         table_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{self.st}/arr_time_table/'
         table_name = f'arr_time_table_A{self.st}_Y{year}.h5'
-        if verbose:
+        if self.verbose:
             print('arrival time table:', table_path + table_name)        
         del year
 
@@ -82,7 +87,7 @@ class py_interferometers:
         self.coord_shape = (num_pols, 2, self.num_rads, self.num_ray_sol)
         self.table = np.reshape(self.table, (-1, self.num_rads, self.num_ray_sol, self.pair_len))
         self.table_shape = self.table.shape
-        if verbose:
+        if self.verbose:
             print('arr table shape:', self.table_shape)
         del radius_arr, arr_table, num_thetas
 
@@ -98,6 +103,8 @@ class py_interferometers:
         self.p0_idx[self.p0_idx >= self.lag_len - 1] = self.lag_len - 2
 
         self.int_factor = (self.table - self.lags[self.p0_idx])/self.dt
+        if self.verbose:
+            print('coval time is on!')
 
     def get_coval_sample(self):
 
