@@ -73,7 +73,7 @@ def qual_cut_sim_collector(Data, Station, Year):
         evt_rate = evt_rate_tot[idxs]
         del wei_path, wei_hf, flavor_tot, config_tot, sim_run_tot, one_weight_tot, evt_rate_tot, exponent_tot, idxs
     else:
-        one_weight = np.full((num_evts), 1, dtype = float)        
+        one_weight = np.full((len(entry_num)), 1, dtype = float)        
         evt_rate = np.copy(one_weight)
     del exponent, config, flavor, sim_run, signal_key
 
