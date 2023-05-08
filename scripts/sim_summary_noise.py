@@ -34,7 +34,7 @@ coef_max = np.full((d_len, 2, num_evts), np.nan, dtype = float)
 coord_max = np.full((d_len, 2, 3, num_evts), np.nan, dtype = float)
 snr = np.full((d_len, num_ants, num_evts), np.nan, dtype = float)
 snr_max = np.full((d_len, 2, num_evts), np.nan, dtype = float)
-qual = np.full((d_len, 4, num_evts), 0, dtype = int)
+qual = np.full((d_len, num_evts, 4), 0, dtype = int)
 qual_tot = np.full((d_len, num_evts), 0, dtype = int)
 nan_counts = np.full((d_len), 0, dtype = int)
 
@@ -82,7 +82,6 @@ for r in tqdm(range(len(d_run_tot))):
     hf = h5py.File(f'{q_path}qual_cut{hf_name}', 'r')
     qual_tot[r] = (hf['tot_qual_cut_sum'][:] != 0).astype(int)
     qual[r] = (hf['tot_qual_cut'][:] != 0).astype(int)
-    evt_rate[r] = hf['evt_rate'][:]
     del hf
 
     hf = h5py.File(f'{s_path}snr{hf_name}', 'r')
@@ -91,11 +90,11 @@ for r in tqdm(range(len(d_run_tot))):
     ex_run = get_example_run(Station, config[r])
     bad_ant = known_issue.get_bad_antenna(ex_run)
     snr_tot[bad_ant] = np.nan
-    snr[r, 0] = -np.sort(-snr_tot[:8], axis = 0)
-    snr[r, 1] = -np.sort(-snr_tot[8:], axis = 0)
+    snr[r, 0] = -np.sort(-snr_tot[:8], axis = 0)[2]
+    snr[r, 1] = -np.sort(-snr_tot[8:], axis = 0)[2]
     del hf, snr_tot, ex_run, bad_ant, hf_name
 
-path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
+path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)

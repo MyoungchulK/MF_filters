@@ -52,7 +52,7 @@ coef_max = np.full((d_len, 2, num_evts), np.nan, dtype = float)
 coord_max = np.full((d_len, 2, 3, num_evts), np.nan, dtype = float)
 snr = np.full((d_len, num_ants, num_evts), np.nan, dtype = float)
 snr_max = np.full((d_len, 2, num_evts), np.nan, dtype = float)
-qual = np.full((d_len, 4, num_evts), 0, dtype = int)
+qual = np.full((d_len, num_evts, 4), 0, dtype = int)
 qual_tot = np.full((d_len, num_evts), 0, dtype = int)
 rad = np.full((d_len, num_evts), np.nan, dtype = float)
 phi = np.full((d_len, num_evts), np.nan, dtype = float)
@@ -91,9 +91,9 @@ for r in tqdm(range(len(d_run_tot))):
     rec_ang[r] = hf['rec_ang'][:]
     view_ang[r] = hf['view_ang'][:]
     arrival_time[r] = hf['arrival_time'][:]
-    rad[r] = hs_s['radius_ang'][:]
-    phi[r] = hs_s['azimuth_ang'][:]
-    ele[r] = hs_s['elevation_ang'][:]
+    rad[r] = hf['radius_ang'][:]
+    phi[r] = hf['azimuth_ang'][:]
+    ele[r] = hf['elevation_ang'][:]
     exponent[r] = hf['exponent_range'][:]
     del hf
 
@@ -110,8 +110,8 @@ for r in tqdm(range(len(d_run_tot))):
     ex_run = get_example_run(Station, config[r])
     bad_ant = known_issue.get_bad_antenna(ex_run)
     snr_tot[bad_ant] = np.nan
-    snr[r, 0] = -np.sort(-snr_tot[:8], axis = 0)
-    snr[r, 1] = -np.sort(-snr_tot[8:], axis = 0)
+    snr[r, 0] = -np.sort(-snr_tot[:8], axis = 0)[2]
+    snr[r, 1] = -np.sort(-snr_tot[8:], axis = 0)[2]
     del hf, snr_tot, ex_run, bad_ant
 
     hf = h5py.File(f'{r_path}reco{hf_name}', 'r')
@@ -138,7 +138,7 @@ for r in tqdm(range(len(d_run_tot))):
     nan_counts[r] = counts 
     del hf_name, hf, coef_tot, coord_tot, coef_re, coef_max_tot, coord_re, counts
 
-path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
+path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
