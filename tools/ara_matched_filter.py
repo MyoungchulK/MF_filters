@@ -1,9 +1,8 @@
 import os
 import numpy as np
 import h5py
-from scipy.signal import butter, filtfilt, hilbert, fftconvolve, correlation_lags
+from scipy.signal import hilbert, fftconvolve, correlation_lags
 from scipy.ndimage import maximum_filter1d
-from tqdm import tqdm
 
 # custom lib
 from tools.ara_constant import ara_const
@@ -13,6 +12,27 @@ from tools.ara_known_issue import known_issue_loader
 ara_const = ara_const()
 num_ants = ara_const.USEFUL_CHAN_PER_STATION
 num_pols = ara_const.POLARIZATION
+
+def get_psd(st, run, dat_type = 'rayl_nb', verbose = False, analyze_blind_dat = False):
+
+    ## get psd from rayl sigma
+    run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
+    psd_dat = run_info.get_result_path(file_type = dat_type, verbose = verbose)
+    psd_hf = h5py.File(psd_dat, 'r')
+    if dat_type == 'rayl_nb' or dat_type == 'rayl':
+        avg_or_coef = np.nansum(rayl_hf['soft_rayl'][:], axis = 0)
+        sigma_to_mean = np.sqrt(np.pi / 2)
+        psd = (avg_or_coef * sigma_to_mean) ** 2
+        del sigma_to_mean
+    else:
+        avg_or_coef = base_hf['baseline'][:, :, 0]
+        psd = baseline ** 2
+    del run_info, psd_dat, psd_hf
+
+    if verbose:
+       print(f'psd is on! we used {dat_type}!')
+
+    return psd, avg_or_coef
 
 class ara_matched_filter:
 
@@ -26,13 +46,15 @@ class ara_matched_filter:
         self.use_debug = use_debug
         self.use_all_chs = use_all_chs
         self.verbose = verbose
-        self.run_info = run_info_loader(self.st, self.run, analyze_blind_dat = True)
 
         if get_sub_file:
             self.get_zero_pad()
             self.lags = correlation_lags(self.double_pad_len, self.double_pad_len, 'same') * self.dt
             self.lag_len = len(self.lags)
-            self.get_psd()
+            if self.use_debug:
+                self.psd, self.soft_rayl = get_psd(self.st, self.run, verbose = self.verbose, analyze_blind_dat = True)
+            else:
+                self.psd = get_psd(self.st, self.run, verbose = self.verbose, analyze_blind_dat = True)[0]
             self.get_template()
             self.normaization()
             if self.use_debug == False:
@@ -65,24 +87,6 @@ class ara_matched_filter:
         if self.verbose:
             print('pad is on!')
 
-    def get_psd(self):
-
-        ## get psd from rayl sigma
-        rayl_dat = self.run_info.get_result_path(file_type = 'rayl', verbose = self.verbose)
-        rayl_hf = h5py.File(rayl_dat, 'r')
-        soft_rayl = np.nansum(rayl_hf['soft_rayl'][:], axis = 0)
-        if self.use_debug:
-            self.soft_rayl = np.copy(soft_rayl)
-        del rayl_dat, rayl_hf
-
-        ## sigma to mean
-        sigma_to_mean = np.sqrt(np.pi / 2)
-        self.psd = (soft_rayl * sigma_to_mean) ** 2
-        del soft_rayl, sigma_to_mean
-
-        if self.verbose:
-            print('psd is on!')
-
     def get_normalization(self):
 
         norm_fac = np.abs(self.temp_rfft)**2 / self.psd[:, :, np.newaxis]
@@ -98,7 +102,8 @@ class ara_matched_filter:
 
     def get_template(self, use_sc = False):
 
-        config = self.run_info.get_config_number()
+        run_info = run_info_loader(self.st, self.run, analyze_blind_dat = True)
+        config = run_info.get_config_number()
         temp_dat = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{self.st}/temp_sim/temp_AraOut.A{self.st}_R{config}.txt.run0.h5'
         if self.verbose:
             print('template:', temp_dat)
@@ -127,7 +132,7 @@ class ara_matched_filter:
             self.corr_sum_shape = (num_pols, self.lag_len, self.num_temps)
             self.temp_ori = np.copy(temp_ori)
             self.temp_roll = np.copy(self.temp)
-        del config, temp_dat, temp_hf, diff_idx, temp_ori
+        del run_info, config, temp_dat, temp_hf, diff_idx, temp_ori
 
         if self.verbose:
             print('template dim:', self.temp.shape)

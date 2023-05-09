@@ -1,12 +1,11 @@
 import numpy as np
 import h5py
-from scipy.interpolate import Akima1DInterpolator, interp1d
+from scipy.interpolate import Akima1DInterpolator
 from scipy.signal import butter, filtfilt, argrelextrema
 from tqdm import tqdm
 
 # custom lib
 from tools.ara_constant import ara_const
-from tools.ara_matched_filter import get_psd
 
 ara_const = ara_const()
 num_ants = ara_const.USEFUL_CHAN_PER_STATION
@@ -18,7 +17,7 @@ class wf_analyzer:
 
     def __init__(self, dt = 0.5, use_debug = False, use_l2 = False, use_ele_ch = False,  
                     use_time_pad = False, add_double_pad = False, use_band_pass = False,
-                    use_freq_pad = False, use_rfft = False, use_noise_weight = False,
+                    use_freq_pad = False, use_rfft = False,
                     use_cw = False, analyze_blind_dat = False, verbose = False,
                     new_wf_time = None, st = None, run = None, sim_path = None):
 
@@ -38,13 +37,6 @@ class wf_analyzer:
             if self.verbose:
                 print('Freq pad is on!')
             self.get_freq_pad(use_rfft = use_rfft)
-        if use_noise_weight:
-            psd = get_psd(int(st), int(run), verbose = self.verbose, analyze_blind_dat = True)[0]
-            self.psd_f = []
-            for ant in range(num_ants):
-                psd_f_ant = interp1d(self.pad_zero_freq, psd[:, ant], fill_value = 'extrapolate')
-                self.psd_f.append(psd_f_ant)
-            del psd
         if use_band_pass and not self.use_l2:
             if self.verbose:
                 print('Band-pass is on!')
@@ -53,7 +45,7 @@ class wf_analyzer:
             from tools.ara_cw_filters import py_geometric_filter
             if self.verbose:
                 print('Kill the CW!')
-            self.cw_geo = py_geometric_filter(int(st), int(run), analyze_blind_dat = analyze_blind_dat, sim_path = sim_path)
+            self.cw_geo = py_geometric_filter(st, run, analyze_blind_dat = analyze_blind_dat, sim_path = sim_path)
 
     def get_band_pass_filter(self, low_freq_cut = 0.13, high_freq_cut = 0.85, order = 10, pass_type = 'band'):
 
@@ -130,12 +122,7 @@ class wf_analyzer:
 
         return int_t
 
-    def get_int_wf(self, raw_t, raw_v, ant, 
-                    use_zero_pad = False, use_band_pass = False, 
-                    use_cw = False, use_cw_ratio = False,
-                    use_noise_weight = False,
-                    use_p2p = False, use_unpad = False,
-                    use_sim = False, evt = None):
+    def get_int_wf(self, raw_t, raw_v, ant, use_sim = False, use_unpad = False, use_zero_pad = False, use_band_pass = False, use_cw = False, use_p2p = False, use_cw_ratio = False, evt = None):
 
         if self.use_l2:
             int_idx = np.in1d(self.pad_idx, (raw_t / self.dt).astype(int))
@@ -160,13 +147,6 @@ class wf_analyzer:
             if use_cw_ratio:
                 self.cw_ratio = self.cw_geo.pow_ratio
             int_v = self.cw_geo.new_wf
-
-        if use_noise_weight:
-            int_freq = np.fft.rfftfreq(int_num, self.dt)
-            int_fft = np.fft.rfft(int_v)
-            int_fft /= self.psd_f[ant](int_freq) * int_num / self.dt
-            int_v = np.fft.irfft(int_fft, n = int_num)
-            del int_freq, int_fft
 
         if use_band_pass == True and self.use_l2 == False:
             int_v = self.get_band_passed_wf(int_v)
