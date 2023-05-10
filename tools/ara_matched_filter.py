@@ -58,12 +58,12 @@ class ara_matched_filter:
                 if sim_psd_path is not None:
                     self.psd, self.freq_psd, self.soft_baseline = get_psd(dat_type = 'baseline', sim_path = sim_psd_path)
                 else:
-                    self.psd, self.freq_psd, self.soft_rayl = get_psd(self.st, self.run, verbose = self.verbose, analyze_blind_dat = True)
+                    self.psd, self.freq_psd, self.soft_rayl = get_psd(st = self.st, run = self.run, verbose = self.verbose, analyze_blind_dat = True)
             else:
                 if sim_psd_path is not None:
                     self.psd = get_psd(dat_type = 'baseline', sim_path = sim_psd_path)[0]
                 else:
-                    self.psd = get_psd(self.st, self.run, verbose = self.verbose, analyze_blind_dat = True)[0]
+                    self.psd = get_psd(st = self.st, run = self.run, verbose = self.verbose, analyze_blind_dat = True)[0]
             self.get_template()
             self.normaization()
             if self.use_debug == False:

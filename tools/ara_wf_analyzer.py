@@ -42,7 +42,7 @@ class wf_analyzer:
             if sim_psd_path is not None:
                 psd, freq_psd = get_psd(dat_type = 'baseline', sim_path = sim_psd_path)[:2]
             else:
-                psd, freq_psd = get_psd(int(st), int(run), verbose = self.verbose, analyze_blind_dat = True)[:2]
+                psd, freq_psd = get_psd(st = int(st), run = int(run), verbose = self.verbose, analyze_blind_dat = True)[:2]
             self.psd_f = []
             for ant in range(num_ants):
                 psd_f_ant = interp1d(freq_psd, psd[:, ant], fill_value = 'extrapolate')
