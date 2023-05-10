@@ -13,30 +13,34 @@ ara_const = ara_const()
 num_ants = ara_const.USEFUL_CHAN_PER_STATION
 num_pols = ara_const.POLARIZATION
 
-def get_psd(st, run, dat_type = 'rayl_nb', verbose = False, analyze_blind_dat = False):
+def get_psd(dat_type = 'rayl_nb', verbose = False, analyze_blind_dat = False, st = None, run = None, sim_path = None):
 
     ## get psd from rayl sigma
-    run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
-    psd_dat = run_info.get_result_path(file_type = dat_type, verbose = verbose)
+    if sim_path is not None:
+        psd_dat = sim_path
+    else:
+        run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
+        psd_dat = run_info.get_result_path(file_type = dat_type, verbose = verbose)
     psd_hf = h5py.File(psd_dat, 'r')
+    freq = psd_hf['freq_range'][:]
     if dat_type == 'rayl_nb' or dat_type == 'rayl':
         avg_or_coef = np.nansum(rayl_hf['soft_rayl'][:], axis = 0)
         sigma_to_mean = np.sqrt(np.pi / 2)
         psd = (avg_or_coef * sigma_to_mean) ** 2
         del sigma_to_mean
     else:
-        avg_or_coef = base_hf['baseline'][:, :, 0]
+        avg_or_coef = base_hf['baseline'][:, :, 2]
         psd = baseline ** 2
     del run_info, psd_dat, psd_hf
 
     if verbose:
        print(f'psd is on! we used {dat_type}!')
 
-    return psd, avg_or_coef
+    return psd, freq, avg_or_coef
 
 class ara_matched_filter:
 
-    def __init__(self, st, run, dt, pad_len, roll_win = 120, get_sub_file = False, use_all_chs = False, use_debug = False, verbose = False):
+    def __init__(self, st, run, dt, pad_len, roll_win = 120, get_sub_file = False, use_all_chs = False, use_debug = False, verbose = False, sim_psd_path = None):
 
         self.st = st
         self.run = run
@@ -50,19 +54,26 @@ class ara_matched_filter:
         if get_sub_file:
             self.get_zero_pad()
             self.lags = correlation_lags(self.double_pad_len, self.double_pad_len, 'same') * self.dt
-            self.lag_len = len(self.lags)
             if self.use_debug:
-                self.psd, self.soft_rayl = get_psd(self.st, self.run, verbose = self.verbose, analyze_blind_dat = True)
+                if sim_psd_path is not None:
+                    self.psd, self.freq_psd, self.soft_baseline = get_psd(dat_type = 'baseline', sim_path = sim_psd_path)
+                else:
+                    self.psd, self.freq_psd, self.soft_rayl = get_psd(self.st, self.run, verbose = self.verbose, analyze_blind_dat = True)
             else:
-                self.psd = get_psd(self.st, self.run, verbose = self.verbose, analyze_blind_dat = True)[0]
+                if sim_psd_path is not None:
+                    self.psd = get_psd(dat_type = 'baseline', sim_path = sim_psd_path)[0]
+                else:
+                    self.psd = get_psd(self.st, self.run, verbose = self.verbose, analyze_blind_dat = True)[0]
             self.get_template()
             self.normaization()
             if self.use_debug == False:
-                del self.temp_rfft
+                del self.temp_rfft, self.psd
             
             known_issue = known_issue_loader(self.st)
             self.good_chs = known_issue.get_bad_antenna(self.run, good_ant_true = True, print_ant_idx = True)
             self.good_v_len = np.count_nonzero(self.good_chs < 8)
+            if self.verbose:
+                print('useful antenna chs for mf:', self.good_chs)
             if self.use_all_chs == False:
                 self.temp = self.temp[:, self.good_chs]
                 self.zero_pad = self.zero_pad[:, self.good_chs]
@@ -71,12 +82,8 @@ class ara_matched_filter:
             if self.verbose:
                 print('sub tools are ready!')
         else:
-            self.good_chs = np.arange(num_ants, dtype = int)
             self.lags = correlation_lags(self.pad_len, self.pad_len, 'full') * self.dt
-            self.lag_len = len(self.lags)
-
-        if self.verbose:
-            print('useful antenna chs for mf:', self.good_chs)
+        self.lag_len = len(self.lags)
 
     def get_zero_pad(self):
 
@@ -90,7 +97,7 @@ class ara_matched_filter:
     def get_normalization(self):
 
         norm_fac = np.abs(self.temp_rfft)**2 / self.psd[:, :, np.newaxis]
-        norm_fac = np.sqrt(np.nansum(norm_fac, axis = 0))
+        norm_fac = np.sqrt(np.nansum(norm_fac, axis = 0) / (self.dt * self.pad_len))
         if self.use_debug:
             self.norm_fac = np.copy(norm_fac)
 
@@ -161,7 +168,7 @@ class ara_matched_filter:
         if self.use_debug:
             self.corr_roll_max = np.copy(corr_roll_max)
 
-        corr_sum = np.full(self.corr_sum_shape, np.nan, dtype = float)
+        corr_sum = np.full(self.corr_sum_fla_shape, np.nan, dtype = float) # array dim: (# of pols, # of lag lens X # of template)
         corr_sum[0] = np.nansum(corr_roll_max[:, :good_v_len], axis = 1).flatten()
         corr_sum[1] = np.nansum(corr_roll_max[:, good_v_len:], axis = 1).flatten()
         del corr_roll_max

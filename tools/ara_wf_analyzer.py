@@ -20,7 +20,7 @@ class wf_analyzer:
                     use_time_pad = False, add_double_pad = False, use_band_pass = False,
                     use_freq_pad = False, use_rfft = False, use_noise_weight = False,
                     use_cw = False, analyze_blind_dat = False, verbose = False,
-                    new_wf_time = None, st = None, run = None, sim_path = None):
+                    new_wf_time = None, st = None, run = None, sim_path = None, sim_psd_path = None):
 
         self.verbose = verbose
         self.use_l2 = use_l2
@@ -39,12 +39,15 @@ class wf_analyzer:
                 print('Freq pad is on!')
             self.get_freq_pad(use_rfft = use_rfft)
         if use_noise_weight:
-            psd = get_psd(int(st), int(run), verbose = self.verbose, analyze_blind_dat = True)[0]
+            if sim_psd_path is not None:
+                psd, freq_psd = get_psd(dat_type = 'baseline', sim_path = sim_psd_path)[:2]
+            else:
+                psd, freq_psd = get_psd(int(st), int(run), verbose = self.verbose, analyze_blind_dat = True)[:2]
             self.psd_f = []
             for ant in range(num_ants):
-                psd_f_ant = interp1d(self.pad_zero_freq, psd[:, ant], fill_value = 'extrapolate')
+                psd_f_ant = interp1d(freq_psd, psd[:, ant], fill_value = 'extrapolate')
                 self.psd_f.append(psd_f_ant)
-            del psd
+            del psd, freq_psd
         if use_band_pass and not self.use_l2:
             if self.verbose:
                 print('Band-pass is on!')
