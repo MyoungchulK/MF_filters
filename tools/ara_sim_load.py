@@ -150,9 +150,9 @@ class ara_raytrace_loader:
             print('ice model:', self.ice_model)
 
         # header
-        self.ara_sim.gInterpreter.ProcessLine('#include "'+os.environ.get('ARA_UTIL_INSTALL_DIR')+'/../source/AraSim/RayTrace.h"')
-        self.ara_sim.gInterpreter.ProcessLine('#include "'+os.environ.get('ARA_UTIL_INSTALL_DIR')+'/../source/AraSim/RayTrace_IceModels.h"')
-        self.ara_sim.gInterpreter.ProcessLine('#include "'+os.environ.get('ARA_UTIL_INSTALL_DIR')+'/../source/AraSim/Vector.h"')
+        self.ara_sim.gInterpreter.ProcessLine('#include "'+os.environ.get('ARA_UTIL_INSTALL_DIR')+'/../AraSim/RayTrace.h"')
+        self.ara_sim.gInterpreter.ProcessLine('#include "'+os.environ.get('ARA_UTIL_INSTALL_DIR')+'/../AraSim/RayTrace_IceModels.h"')
+        self.ara_sim.gInterpreter.ProcessLine('#include "'+os.environ.get('ARA_UTIL_INSTALL_DIR')+'/../AraSim/Vector.h"')
 
         # attenuation model
         self.ara_sim.gInterpreter.ProcessLine('auto atten_model = boost::shared_ptr<basicAttenuationModel>( new basicAttenuationModel );')
@@ -220,32 +220,51 @@ class ara_raytrace_loader:
         self.ara_sim.paths = self.ara_sim.tf.findPaths(self.ara_sim.rec, self.ara_sim.src, 0.3, self.ara_sim.TMath.Pi()/2, sol_cnt, sol_err, 1, 0.2)
         del sol_cnt, sol_err
 
-        arr_time = np.full((2), np.nan, dtype = float)
+        path_len = np.full((2), np.nan, dtype = float)
+        path_time = np.copy(path_len)
+        launch_ang = np.copy(path_len)
+        receipt_ang = np.copy(path_len)
+        reflection_ang = np.copy(path_len)
+        miss = np.copy(path_len)
+        attenuation = np.copy(path_len)
 
         sol_num = 0
         for sol in self.ara_sim.paths:
-            arr_time[sol_num] = sol.pathTime*1e9
+            path_len[sol_num] = sol.pathLen
+            path_time[sol_num] = sol.pathTime*1e9
+            launch_ang[sol_num] = sol.launchAngle
+            receipt_ang[sol_num] = sol.receiptAngle
+            reflection_ang[sol_num] = sol.reflectionAngle
+            miss[sol_num] = sol.miss
+            attenuation[sol_num] = sol.attenuation
             if debug and self.verbose:
                 print(f'Path time: {sol.pathTime*1e9} ns, Path length: {sol.pathLen} m, Attenuation: {sol.attenuation} m, Miss: {sol.miss} m')
             sol_num += 1
             
-        return arr_time
+        return path_len, path_time, launch_ang, receipt_ang, reflection_ang, miss, attenuation
 
     def get_arrival_time_table(self):
 
         self.num_ray_sol = 2
-        arr_time_table = np.full((len(self.theta_bin), len(self.phi_bin), len(self.radius_bin), num_ants, self.num_ray_sol), np.nan, dtype = float)
+        path_len = np.full((len(self.theta_bin), len(self.phi_bin), len(self.radius_bin), num_ants, self.num_ray_sol), np.nan, dtype = float)
+        path_time = np.copy(path_len)
+        launch_ang = np.copy(path_len)
+        receipt_ang = np.copy(path_len)
+        reflection_ang = np.copy(path_len)
+        miss = np.copy(path_len)
+        attenuation = np.copy(path_len)
+
         if self.verbose:
-            print('arrival time table size:', arr_time_table.shape)
+            print('arrival time table size:', path_time.shape)
 
         for t in tqdm(range(len(self.theta_bin)), ascii = False):
             for p in range(len(self.phi_bin)):
                 for r in range (len(self.radius_bin)):
                     for a in range(num_ants):
 
-                        arr_time_table[t, p, r, a] = self.get_ray_solution(self.trg_r[t, p, r, a], self.src_z[t, p, r, a], self.trg_z[a])
+                        path_len[t, p, r, a], path_time[t, p, r, a], launch_ang[t, p, r, a], receipt_ang[t, p, r, a], reflection_ang[t, p, r, a], miss[t, p, r, a], attenuation[t, p, r, a] = self.get_ray_solution(self.trg_r[t, p, r, a], self.src_z[t, p, r, a], self.trg_z[a])
 
-        return arr_time_table
+        return path_len, path_time, launch_ang, receipt_ang, reflection_ang, miss, attenuation
 
 
 
