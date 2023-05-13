@@ -18,40 +18,34 @@ def temp_sim_collector(Data, Station, Year):
 
     # data config
     ara_root = ara_root_loader(Data, Station, Year)
-    ara_root.get_sub_info(Data, get_angle_info = True)
     num_evts = ara_root.num_evts
     entry_num = ara_root.entry_num
-    dt = ara_root.time_step
-    wf_len = np.array([ara_root.waveform_length], dtype = int)
-    wf_time = ara_root.wf_time
-    pnu = ara_root.pnu
-    weight = ara_root.weight
-    probability = ara_root.probability
-    nuflavorint = ara_root.nuflavorint
-    nu_nubar = ara_root.nu_nubar
-    currentint = ara_root.currentint
-    elast_y = ara_root.elast_y
-    posnu = ara_root.posnu
-    nnu = ara_root.nnu
-    rec_ang = ara_root.rec_ang
-    view_ang = ara_root.view_ang
-    launch_ang = ara_root.launch_ang
-    arrival_time = ara_root.arrival_time
 
-
-    # wf analyzer
+    # sub info file
     slash_idx = Data.rfind('/')
     dot_idx = Data.rfind('.')
     data_name = Data[slash_idx+1:dot_idx]
-    h5_file_name = f'cw_band_{data_name}.h5'
-    band_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/cw_band_sim/{h5_file_name}'
-    print('cw band sim path:', band_path)
-    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, verbose = True, new_wf_time = wf_time, sim_path = band_path)
-    del band_path, slash_idx, dot_idx, data_name, h5_file_name
+    sub_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/sub_info_sim/sub_info_{data_name}.h5'
+    print('sub info path:', sub_path)
+    del slash_idx, dot_idx, data_name
+
+    hf = h5py.File(sub_path, 'r')
+    dt = hf['dt'][:]
+    wf_len = hf['wf_len'][:]
+    wf_time = hf['wf_time'][:]
+    
+
+    del hf
+
+    num_showers = 2
+    num_ress = 4
+    num_cones = 3
 
     # output array
-    rms = np.full((num_ants, num_evts), np.nan, dtype = float)
-    p2p = np.copy(rms)
+    
+
+    temp = np.full((, num_ants, ), 0, dtype = float)
+    temp_rfft = np.full((, num_ants, ), 0, dtype = float)
  
     # loop over the events
     for evt in tqdm(range(num_evts)):

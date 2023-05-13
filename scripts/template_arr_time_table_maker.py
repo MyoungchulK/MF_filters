@@ -8,25 +8,29 @@ sys.path.append(curr_path+'/../')
 from tools.ara_utility import size_checker
 from tools.ara_sim_load import ara_raytrace_loader
 
-def arr_time_table_loader(Station = None, Year = None):
+def temp_arr_time_table_loader(Station = None, Year = None):
 
     print('Collecting arrival time starts!')
 
     # arasim raytracer
-    ara_ray = ara_raytrace_loader(n0 = 1.35, nf = 1.78, l = 0.0132, verbose = True)
+    ara_ray = ara_raytrace_loader(use_bulk_ice = True, verbose = True)
 
     # get posisiton for vertex and antenna
-    ara_ray.get_src_trg_position(Station, Year)
+    theta_bin = np.array([30, 50, 70, 90, 110, 130, 150]) + 0.5
+    phi_bin = np.array([-120, -60, 0, 60, 120, 180]) - 0.5
+    radius_bin = np.array([300])
+    num_ray_sol = np.array([1], dtype = int)
+    ara_ray.get_src_trg_position(Station, Year, theta_bin = theta_bin, phi_bin = phi_bin, radius_bin = radius_bin, num_ray_sol = num_ray_sol, debug = True)
 
     # arrival time table
-    path_len, arr_time_table, launch_ang, receipt_ang, reflection_ang, miss, attenuation = ara_ray.get_arrival_time_table() 
+    path_len, arr_time_table, launch_ang, receipt_ang, reflection_ang, miss, attenuation = ara_ray.get_arrival_time_table(debug = False) 
  
     # create output dir
     Output = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/arr_time_table/'
     print(f'Output path check:{Output}')
     if not os.path.exists(Output):
         os.makedirs(Output)
-    h5_file_name = f'{Output}arr_time_table_A{Station}_Y{Year}.h5'
+    h5_file_name = f'{Output}temp_arr_time_table_A{Station}_Y{Year}.h5'
     hf = h5py.File(h5_file_name, 'w')
     
     #saving result
@@ -65,7 +69,7 @@ if __name__ == "__main__":
     station=int(sys.argv[1])
     year=int(sys.argv[2])
 
-    arr_time_table_loader(Station = station, Year = year)
+    temp_arr_time_table_loader(Station = station, Year = year)
 
 
 

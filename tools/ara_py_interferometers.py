@@ -68,7 +68,7 @@ class py_interferometers:
         self.num_phis = len(self.phi)
         radius_arr = table_hf['radius_bin'][:]
         self.num_rads = len(radius_arr)
-        self.num_ray_sol = table_hf['num_ray_sol'][0]
+        self.num_ray_sol = len(table_hf['num_ray_sol'][:])
         arr_table = table_hf['arr_time_table'][:]
         del table_path, table_name, table_hf
  
