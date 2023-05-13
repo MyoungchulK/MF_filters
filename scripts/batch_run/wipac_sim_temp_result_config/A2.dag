@@ -1,0 +1,20 @@
+JOB job_ARA_S2_R1_Sim0 ARA_job.sub 
+VARS job_ARA_S2_R1_Sim0 st="2" run="1" sim_run="0"
+
+JOB job_ARA_S2_R2_Sim0 ARA_job.sub
+VARS job_ARA_S2_R2_Sim0 st="2" run="2" sim_run="0"
+
+JOB job_ARA_S2_R3_Sim0 ARA_job.sub
+VARS job_ARA_S2_R3_Sim0 st="2" run="3" sim_run="0"
+
+JOB job_ARA_S2_R4_Sim0 ARA_job.sub
+VARS job_ARA_S2_R4_Sim0 st="2" run="4" sim_run="0"
+
+JOB job_ARA_S2_R5_Sim0 ARA_job.sub
+VARS job_ARA_S2_R5_Sim0 st="2" run="5" sim_run="0"
+
+JOB job_ARA_S2_R6_Sim0 ARA_job.sub
+VARS job_ARA_S2_R6_Sim0 st="2" run="6" sim_run="0"
+
+JOB job_ARA_S2_R7_Sim0 ARA_job.sub
+VARS job_ARA_S2_R7_Sim0 st="2" run="7" sim_run="0"
