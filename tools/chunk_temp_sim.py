@@ -1,12 +1,15 @@
+import os
 import numpy as np
 from tqdm import tqdm
+import h5py
 
 def temp_sim_collector(Data, Station, Year):
 
-    print('Collecting template starts!')
+    print('Collecting temp sim starts!')
 
     from tools.ara_sim_load import ara_root_loader
     from tools.ara_constant import ara_const
+    from tools.ara_wf_analyzer import wf_analyzer
 
     # const. info.
     ara_const = ara_const()
@@ -15,71 +18,60 @@ def temp_sim_collector(Data, Station, Year):
 
     # data config
     ara_root = ara_root_loader(Data, Station, Year)
-    ara_root.get_sub_info(Data, get_angle_info = False)
+    ara_root.get_sub_info(Data, get_angle_info = True)
     num_evts = ara_root.num_evts
+    entry_num = ara_root.entry_num
     dt = ara_root.time_step
-    print(dt)
-    wf_len = ara_root.waveform_length
-    wf_time = ara_root.wf_time    
-    #print(wf_len)   
-    #print(wf_time)
- 
-    # template parameter
-    nu_elst = np.array([0.1, 0.9])
-    off_cone = np.arange(0, 4.1, 0.5)
-    off_int = (off_cone * 2).astype(int)
-    #print(off_int)
-    ant_res = np.arange(0, -61, -10, dtype = int)    
-    ant_ch = np.arange(num_ants, dtype = int)
+    wf_len = np.array([ara_root.waveform_length], dtype = int)
+    wf_time = ara_root.wf_time
+    pnu = ara_root.pnu
+    weight = ara_root.weight
+    probability = ara_root.probability
+    nuflavorint = ara_root.nuflavorint
+    nu_nubar = ara_root.nu_nubar
+    currentint = ara_root.currentint
+    elast_y = ara_root.elast_y
+    posnu = ara_root.posnu
+    nnu = ara_root.nnu
+    rec_ang = ara_root.rec_ang
+    view_ang = ara_root.view_ang
+    launch_ang = ara_root.launch_ang
+    arrival_time = ara_root.arrival_time
 
-    # load path
-    param_path = f'../sim/sim_temp/temp_A{Station}_setup_parameter.txt'
-    param = open(param_path, 'r')
-    p_lines = param.readlines()
-    print(p_lines[0])
 
-    # wf arr
-    temp = np.full((wf_len, num_ants, len(ant_res), len(off_cone), len(nu_elst)), 0, dtype = float)
-    temp_ori = np.copy(temp)
-    print(temp.shape)   
+    # wf analyzer
+    slash_idx = Data.rfind('/')
+    dot_idx = Data.rfind('.')
+    data_name = Data[slash_idx+1:dot_idx]
+    h5_file_name = f'cw_band_{data_name}.h5'
+    band_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/cw_band_sim/{h5_file_name}'
+    print('cw band sim path:', band_path)
+    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, verbose = True, new_wf_time = wf_time, sim_path = band_path)
+    del band_path, slash_idx, dot_idx, data_name, h5_file_name
+
+    # output array
+    rms = np.full((num_ants, num_evts), np.nan, dtype = float)
+    p2p = np.copy(rms)
  
     # loop over the events
     for evt in tqdm(range(num_evts)):
       #if evt <100: # debug 
 
-        temp_idx = p_lines[evt+1].split(' ')
-        if str(temp_idx[1]) == 'NuE':
-            elst_idx = 0
-        if str(temp_idx[1]) == 'NuMu':
-            elst_idx = 1
-        res_idx = np.where(ant_res == int(temp_idx[-3]))[0][0]
-        ant_idx = int(temp_idx[-1])
-        off_idx = np.where(off_int == int(float(temp_idx[-2])*2))[0][0]
+        wf_v = ara_root.get_rf_wfs(evt)
+        for ant in range(num_ants):
+            wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_band_pass = True, use_p2p = True, use_cw = True, evt = evt)
+            p2p[ant, evt] = wf_int.int_p2p
 
-        #print(evt, str(temp_idx[1]), elst_idx, int(temp_idx[-3]), res_idx, float(temp_idx[-2]), off_idx, ant_idx)
+        rms[:, evt] = np.nanstd(wf_int.pad_v, axis = 0)
+        del wf_v
+    del ara_root, num_ants, num_evts, wf_int, wf_time
 
-        temp_wf = ara_root.get_rf_wfs(evt)[:, ant_idx]
-        temp_wf_len = np.count_nonzero(temp_wf)
-        if temp_wf_len < 1:
-            print('zero!:',evt)
-        temp_wf_nonzero = temp_wf[temp_wf != 0]
+    rms_mean = np.nanmean(rms, axis = 1)
 
-        temp[:temp_wf_len, ant_idx, res_idx, off_idx, elst_idx] = temp_wf_nonzero
-        temp_ori[:, ant_idx, res_idx, off_idx, elst_idx] = temp_wf
+    print('Temp collecting is done!')
 
-    param.close()
-    del ara_root, num_evts
-
-    print('Template collecting is done!')
-
-    return {'dt':dt,
-            'wf_time':wf_time,
-            'temp':temp,
-            'temp_ori':temp_ori,
-            'nu_elst':nu_elst,
-            'off_cone':off_cone,
-            'ant_res':ant_res,
-            'ant_ch':ant_ch}
-    
-    
+    return {'entry_num':entry_num,
+            'p2p':p2p,
+            'rms':rms,
+            'rms_mean':rms_mean} 
 

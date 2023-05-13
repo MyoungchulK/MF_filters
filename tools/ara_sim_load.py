@@ -16,6 +16,58 @@ ROOT.gSystem.Load(os.environ.get('ARA_UTIL_INSTALL_DIR')+"/lib/libAraEvent.so")
 ara_const = ara_const()
 num_ants = ara_const.USEFUL_CHAN_PER_STATION
 
+def get_sim_rf_ch_map():
+    # im TIRED pulling out info from SIM!!
+
+    ch_map = np.full((num_ants, 3), 0, dtype = int)
+    ch_map[:, 0] = np.arange(num_ants, dtype = int) # rf ch order
+    ch_map[:, 1] = np.array([3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2], dtype = int) # sim st index
+    ch_map[:, 2] = np.array([2, 2, 2, 2, 0, 0, 0, 0, 3, 3, 3, 3, 1, 1, 1, 1], dtype = int) # sim ant index
+
+    return ch_map
+
+def get_sim_final_posant_rf(st):
+    # shitty sim...
+
+    posnu_rf = np.full((6, num_ants), np.nan, dtype = float) # x,y,z,r,t,p
+    if st == 2:
+        posnu_rf[:, 0] = np.array([10010.18372738906, 10001.939659758575, 6359462.114436145, 6359477.858088968, 0.0022251388159165593, 0.7849862097529178], dtype = float)
+        posnu_rf[:, 1] = np.array([10004.448086540997, 9989.198631557718, 6359462.043487443, 6359477.758088969, 0.0022230848931226303, 0.7846354485090016], dtype = float)
+        posnu_rf[:, 2] = np.array([9997.013473727071, 10008.972119082271, 6359460.78208568, 6359476.516088969, 0.002224457034326554, 0.7859959166985997], dtype = float)
+        posnu_rf[:, 3] = np.array([9991.748020720568, 9995.530765170863, 6359457.023492144, 6359472.728088968, 0.0022223779955075707, 0.785587420997027], dtype = float)
+        posnu_rf[:, 4] = np.array([10010.153418912172, 10001.90937624278, 6359442.859483813, 6359458.603088968, 0.0022251388159165593, 0.7849862097529178], dtype = float)
+        posnu_rf[:, 5] = np.array([10004.418113207235, 9989.168703911335, 6359442.9905345235, 6359458.705088968, 0.0022230848931226303, 0.7846354485090016], dtype = float)
+        posnu_rf[:, 6] = np.array([9996.982579469453, 10008.94118786827, 6359441.129134304, 6359456.863088969, 0.002224457034326554, 0.7859959166985997], dtype = float)
+        posnu_rf[:, 7] = np.array([9991.718343082748, 9995.501076297478, 6359438.13453879, 6359453.839088969, 0.0022223779955075707, 0.785587420997027], dtype = float)
+        posnu_rf[:, 8] = np.array([10010.188063917434, 10001.943992715522, 6359464.869429325, 6359480.613088969, 0.0022251388159165593, 0.7849862097529178], dtype = float)
+        posnu_rf[:, 9] = np.array([10004.452678582213, 9989.203216599433, 6359464.962480229, 6359480.677088968, 0.0022230848931226303, 0.7846354485090016], dtype = float)
+        posnu_rf[:, 10] = np.array([9997.018379898038, 10008.977031122107, 6359463.903077958, 6359479.637088968, 0.002224457034326554, 0.7859959166985997], dtype = float)
+        posnu_rf[:, 11] = np.array([9991.752666640154, 9995.53541284933, 6359459.980484842, 6359475.685088969, 0.0022223779955075707, 0.785587420997027], dtype = float)
+        posnu_rf[:, 12] = np.array([10010.158071826101, 10001.914025324719, 6359445.815476495, 6359461.559088969, 0.0022251388159165593, 0.7849862097529178], dtype = float)
+        posnu_rf[:, 13] = np.array([10004.4232810234, 9989.173863850365, 6359446.275526406, 6359461.990088969, 0.0022230848931226303, 0.7846354485090016], dtype = float)
+        posnu_rf[:, 14] = np.array([9996.988427260545, 10008.947042654618, 6359444.8491251, 6359460.583088969, 0.002224457034326554, 0.7859959166985997], dtype = float)
+        posnu_rf[:, 15] = np.array([9991.723504342754, 9995.50623951147, 6359441.419530679, 6359457.124088969, 0.0022223779955075707, 0.785587420997027], dtype = float)
+
+    elif st == 3:
+        posnu_rf[:, 0] = np.array([10004.41617157611, 9990.175300978386, 6359459.781995977, 6359475.498087071, 0.0022231906474390853, 0.7846859273805618], dtype = float)
+        posnu_rf[:, 1] = np.array([10010.229739645067, 10002.995598081141, 6359456.150686229, 6359471.896087071, 0.0022252633842382136, 0.7850366953618478], dtype = float)
+        posnu_rf[:, 2] = np.array([9997.580674733237, 10009.002507324123, 6359458.265138069, 6359474.00008707, 0.002224524325320767, 0.7859690670468141], dtype = float)
+        posnu_rf[:, 3] = np.array([9991.447372859913, 9995.660741698302, 6359460.186766124, 6359475.891087071, 0.0022223579228420297, 0.7856089677195057], dtype = float)
+        posnu_rf[:, 4] = np.array([10004.386198327313, 9990.145370395263, 6359440.729043062, 6359456.445087071, 0.0022231906474390853, 0.7846859273805618], dtype = float)
+        posnu_rf[:, 5] = np.array([10010.200266829603, 10002.96614656494, 6359437.426732587, 6359453.1720870705, 0.0022252633842382136, 0.7850366953618478], dtype = float)
+        posnu_rf[:, 6] = np.array([9997.551495418265, 10008.973294672962, 6359439.704183994, 6359455.4390870705, 0.002224524325320767, 0.7859690670468141], dtype = float)
+        posnu_rf[:, 7] = np.array([9991.417438467512, 9995.63079468264, 6359441.1338131735, 6359456.838087071, 0.0022223579228420297, 0.7856089677195057], dtype = float)
+        posnu_rf[:, 8] = np.array([10004.421081380839, 9990.180203794213, 6359462.902988264, 6359478.619087071, 0.0022231906474390853, 0.7846859273805618], dtype = float)
+        posnu_rf[:, 9] = np.array([10010.23439415881, 10003.000249231185, 6359459.107678907, 6359474.85308707, 0.0022252633842382136, 0.7850366953618478], dtype = float)
+        posnu_rf[:, 10] = np.array([9997.586158136644, 10009.007996992097, 6359461.75312944, 6359477.488087071, 0.002224524325320767, 0.7859690670468141], dtype = float)
+        posnu_rf[:, 11] = np.array([9991.452018637392, 9995.665389434895, 6359463.143758821, 6359478.8480870705, 0.0022223579228420297, 0.7856089677195057], dtype = float)
+        posnu_rf[:, 12] = np.array([10004.391314214841, 9990.15047900054, 6359443.981035026, 6359459.697087071, 0.0022231906474390853, 0.7846859273805618], dtype = float)
+        posnu_rf[:, 13] = np.array([10010.20491976928, 10002.970796142055, 6359440.382725269, 6359456.128087071, 0.0022252633842382136, 0.7850366953618478], dtype = float)
+        posnu_rf[:, 14] = np.array([9997.556144048964, 10008.977948614534, 6359442.661176679, 6359458.396087071, 0.002224524325320767, 0.7859690670468141], dtype = float)
+        posnu_rf[:, 15] = np.array([9991.42234190732, 9995.635700190218, 6359444.254805467, 6359459.959087071, 0.0022223579228420297, 0.7856089677195057], dtype = float)
+ 
+    return posnu_rf
+
 class ara_root_loader:
 
     def __init__(self, data, st, yrs):
@@ -85,28 +137,77 @@ class ara_root_loader:
         self.nnu[4] = np.asarray(event['Nu_Interaction/Nu_Interaction.nnu.phi'], dtype = float)
         self.nnu[5] = np.asarray(event['Nu_Interaction/Nu_Interaction.nnu.r'], dtype = float)
         del file_uproot, ara_tree, settings, ara_tree_2, event
-       
+
+        self.sim_rf_ch_map = get_sim_rf_ch_map()
+        self.posant_rf = get_sim_final_posant_rf(self.st)
+        self.posant_center = np.nanmean(self.posant_rf[:3], axis = 1)
+        self.posnu_antcen_tpr = self.get_posnu_ant_cen_theta_phi_r()
+
         self.rec_ang = np.full((2, num_ants, self.num_evts), np.nan, dtype = float)
         self.view_ang = np.copy(self.rec_ang)
+        self.launch_ang = np.copy(self.rec_ang)
         self.arrival_time = np.copy(self.rec_ang)
         if get_angle_info:
-            sim_st_index = [3,0,1,2,3,0,1,2,3,0,1,2,3,0,1,2]
-            sim_ant_index = [2,2,2,2,0,0,0,0,3,3,3,3,1,1,1,1]
-            
+            sim_st_index = self.sim_rf_ch_map[:, 1]
+            sim_ant_index = self.sim_rf_ch_map[:, 2]
+ 
             ROOT.gInterpreter.ProcessLine('#include "'+os.environ.get('ARA_UTIL_INSTALL_DIR')+'/../AraSim/Report.h"')
             AraTree2 = self.file.AraTree2
             for evt in tqdm(range(self.num_evts)):
                 AraTree2.GetEntry(evt)
                 for ant in range(num_ants):
-                    rec = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st_index[ant]].antennas[sim_ant_index[ant]].rec_ang[:]))
-                    view = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st_index[ant]].antennas[sim_ant_index[ant]].view_ang[:]))
-                    arrival = np.asarray(AraTree2.report.stations[0].strings[sim_st_index[ant]].antennas[sim_ant_index[ant]].arrival_time[:]) * 1e9        
+                    sim_st = int(sim_st_index[ant])
+                    sim_ant = int(sim_ant_index[ant])
+                    rec = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].rec_ang[:]))
+                    view = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].view_ang[:]))
+                    launch = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].launch_ang[:]))
+                    arrival = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].arrival_time[:]) * 1e9        
     
                     self.rec_ang[:len(rec), ant, evt] = rec
                     self.view_ang[:len(view), ant, evt] = view
+                    self.launch_ang[:len(launch), ant, evt] = launch
                     self.arrival_time[:len(arrival), ant, evt] = arrival
-                    del rec, view, arrival
+                    del rec, view, arrival, launch, sim_st, sim_ant
             del AraTree2
+
+    def get_posnu_ant_cen_theta_phi_r(self, use_radian = False):
+
+        # unit vector
+        theta_unit_vec = np.array([0, 0, 1])
+        phi_unit_vec = np.array([1, 0, 0])
+        
+        # posnu vector
+        posnu_vec = self.posnu[:3] - self.posant_center[:, np.newaxis] # (xyz, num_evts)
+
+        # theta phi r
+        tpr = np.full((3, self.num_evts), np.nan, dtype = float)
+
+        # zenith calculation to center of antenna
+        AB = np.nansum(posnu_vec * theta_unit_vec[:, np.newaxis]) # A.B
+        ABabs = np.sqrt(np.nansum(posnu_vec ** 2, axis = 0)) * np.sqrt(np.nansum(theta_unit_vec ** 2)) # |AB|
+        zen_ang = np.arccos(AB / ABabs)
+        tpr[0] = np.degrees(zen_ang)
+        if use_radian:
+            tpr[0] = zen_ang
+        del AB, ABabs, theta_unit_vec, zen_ang
+
+        #phi calculation to center of antenna
+        AD = np.nansum(posnu_vec[:2] * phi_unit_vec[:2][:, np.newaxis]) # A.D
+        ADabs = np.sqrt(np.nansum(posnu_vec[:2] ** 2, axis = 0)) * np.sqrt(np.nansum(phi_unit_vec[:2] ** 2)) # |AD|
+        phi_ang = np.arccos(AD / ADabs)
+        minus_index = self.posnu[1] < self.posant_center[1]
+        phi_ang[minus_index] *= -1
+        phi_ang[minus_index] += np.radians(360)
+        tpr[1] = np.degrees(phi_ang)
+        if use_radian:
+            tpr[1] = phi_ang
+        del AD, ADabs, phi_unit_vec, phi_ang, minus_index
+
+        #R calculation
+        tpr[2] = np.sqrt(np.nansum(posnu_vec ** 2, axis = 0))
+        del posnu_vec
+
+        return tpr
 
     def get_entry(self, evt):
 
