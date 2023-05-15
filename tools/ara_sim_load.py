@@ -162,7 +162,6 @@ class ara_root_loader:
                     view = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].view_ang[:]))
                     launch = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].launch_ang[:]))
                     arrival = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].arrival_time[:]) * 1e9        
-    
                     self.rec_ang[:len(rec), ant, evt] = rec
                     self.view_ang[:len(view), ant, evt] = view
                     self.launch_ang[:len(launch), ant, evt] = launch
@@ -191,7 +190,7 @@ class ara_root_loader:
             tpr[0] = zen_ang
         del AB, ABabs, theta_unit_vec, zen_ang
 
-        #phi calculation to center of antenna
+        # phi calculation to center of antenna
         AD = np.nansum(posnu_vec[:2] * phi_unit_vec[:2][:, np.newaxis]) # A.D
         ADabs = np.sqrt(np.nansum(posnu_vec[:2] ** 2, axis = 0)) * np.sqrt(np.nansum(phi_unit_vec[:2] ** 2)) # |AD|
         phi_ang = np.arccos(AD / ADabs)
@@ -203,7 +202,7 @@ class ara_root_loader:
             tpr[1] = phi_ang
         del AD, ADabs, phi_unit_vec, phi_ang, minus_index
 
-        #R calculation
+        # R calculation
         tpr[2] = np.sqrt(np.nansum(posnu_vec ** 2, axis = 0))
         del posnu_vec
 
