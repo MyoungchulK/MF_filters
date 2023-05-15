@@ -30,6 +30,7 @@ def temp_sim_collector(Data, Station, Year):
     wf_len = wf_int.pad_len
     temp_freq = wf_int.pad_zero_freq
     fft_len = wf_int.pad_fft_len
+    dt = wf_int.dt
 
     # output arrays
     temp_temp = np.full((wf_len, num_ants, num_evts), 0, dtype = float)
@@ -75,7 +76,13 @@ def temp_sim_collector(Data, Station, Year):
     del config, flavor, charge, param_path
 
     # arrival time table
-    
+    table_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{self.st}/arr_time_table/temp_arr_time_table_A{self.st}_Y2015.h5'
+    t_hf = h5py.File(table_path, 'r')
+    t_theta_bin = t_hf['radius_bin'][:]
+    t_phi_bin = t_hf['phi_bin'][:]
+    t_arr_time = t_hf['arrival_time'][:, :, 0, :, 0]
+    diff_idx = -np.round((t_arr_time - np.nanmean(t_arr_time, axis = 2)[np.newaxis, np.newaxis, :]) / dt).astype(int)
+    del table_path, dt, t_hf, t_arr_time
 
     # output arrays
     ant_idx = np.arange(num_ants, dtype = int)
@@ -99,18 +106,23 @@ def temp_sim_collector(Data, Station, Year):
                     temp_param[1, counts] = ele_idx[ele]
                     temp_param[2, counts] = phi_idx[phi]
                     temp_param[3, counts] = off_idx[off]
+                    diff_idxs = diff_idx[np.where(t_theta_bin == ele_idx[ele])[0], np.where(t_phi_bin == phi_idx[phi])[0]]
                     for ant in range(len(ant_idx)):
                         idxs = np.all((temp_temp_param[6] == ant_idx[ant], temp_temp_param[1] == int(sho_idx[sho] + 1), temp_temp_param[4] == ele_idx1[ele], temp_temp_param[5] == off_idx[off]), axis = 0)
                         params = temp_temp_param[:, idxs]
                         evts_idx = params[0]
                         ants_idx = params[-1]
 
+                        if diff_idxs[ant] > 0:
+                        elif diff_idxs[ant] < 0:
+                        else:
 
                         temp[:, ant, counts] = temp_temp[:, ants_idx, evts_idx]
                         temp_rfft[:, ant, counts] = temp_temp_rfft[:, ants_idx, evts_idx]
                         del , params, evts_idx,, ants_idx
+                    del diff_idxs
                     counts += 1     
-    del wf_len, fft_len, counts, temp_temp_param, temp_param_len, param_len, num_temps, sho_idx, off_idx, phi_idx, ele_idx1, ele_idx, ant_idx, temp_temp, temp_temp_rfft
+    del t_theta_bin, t_phi_bin, diff_idx, wf_len, fft_len, counts, temp_temp_param, temp_param_len, param_len, num_temps, sho_idx, off_idx, phi_idx, ele_idx1, ele_idx, ant_idx, temp_temp, temp_temp_rfft
 
     print('Temp collecting is done!')
 
