@@ -579,7 +579,7 @@ class pre_qual_cut_loader:
 
     def get_cw_log_events(self):
 
-        cw_log_dat = os.path.expandvars("$OUTPUT_PATH") + f'/radiosonde_data/weather_balloon/radius_tot/A{self.st}_balloon_distance.h5'
+        cw_log_dat = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{self.st}/weather_balloon/A{self.st}_balloon_distance.h5'
         cw_log_hf = h5py.File(cw_log_dat, 'r')
         cw_unix = cw_log_hf['bad_unix_time'][:]
         cw_log_events = np.in1d(self.unix_time, cw_unix).astype(int)

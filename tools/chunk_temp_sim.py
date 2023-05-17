@@ -22,13 +22,13 @@ def temp_sim_collector(Data, Station, Year):
     ara_root.get_sub_info(Data, get_angle_info = False)
     num_evts = ara_root.num_evts
     wf_time = ara_root.wf_time
-    dt = ara_root.time_step
+    dt = ara_root.time_step[0]
 
     # parameters
     flavor = ['NuE', 'NuMu']
     config = int(get_path_info_v2(Data, '_R', '.txt'))
     param_path = f'/home/mkim/analysis/MF_filters/sim/ARA0{Station}/sim_temp_setup_full/temp_A{Station}_R{config}_setup_parameter.txt'
-    temp_temp_param = np.full((5, num_evts), 0, dtype = int)
+    temp_temp_param = np.full((4, num_evts), 0, dtype = int) # antenna ch, shower, antenna response, off-cone angle
     with open(param_path, 'r') as f:
         counts = 0
         for lines in f:
@@ -37,11 +37,10 @@ def temp_sim_collector(Data, Station, Year):
                 continue
             line_p = lines.split()
             p_idx = int(counts - 1)
-            temp_temp_param[0, p_idx] = int(line_p[0]) # event id
-            temp_temp_param[1, p_idx] = int(line_p[6]) # antenna ch
-            temp_temp_param[2, p_idx] = int(flavor.index(str(line_p[1]))) # shower 0 (EM) ot 1 (HAD)
-            temp_temp_param[3, p_idx] = int(line_p[4]) # antenna response
-            temp_temp_param[4, p_idx] = int(float(line_p[5])) # off-cone angle
+            temp_temp_param[0, p_idx] = int(line_p[6]) # antenna ch
+            temp_temp_param[1, p_idx] = int(flavor.index(str(line_p[1]))) # shower 0 (EM) ot 1 (HAD)
+            temp_temp_param[2, p_idx] = int(line_p[4]) # antenna response
+            temp_temp_param[3, p_idx] = int(float(line_p[5])) # off-cone angle
             del line_p, p_idx
             counts += 1
         del counts
@@ -96,8 +95,8 @@ def temp_sim_collector(Data, Station, Year):
     for evt in tqdm(range(num_evts)):
       #if evt <100: # debug 
 
-        ant_ch = temp_temp_param[1, evt] 
-        idxs = np.all((temp_param[0] == temp_temp_param[2, evt], temp_param1 == temp_temp_param[3, evt], temp_param[3] == temp_temp_param[4, evt]), axis = 0)        
+        ant_ch = temp_temp_param[0, evt] 
+        idxs = np.all((temp_param[0] == temp_temp_param[1, evt], temp_param1 == temp_temp_param[2, evt], temp_param[3] == temp_temp_param[3, evt]), axis = 0)        
         idxs_len = np.count_nonzero(idxs)
         arr_shift = arr_time_diff[:, idxs]
 
@@ -112,20 +111,20 @@ def temp_sim_collector(Data, Station, Year):
         temp_v_shift_evt[quater_idx:-quater_idx] = temp_v
         temp_v_shift = np.full((wf_len, idxs_len), 0, dtype = float)
         for v in range(idxs_len):
-            arr_shift_ant = -np.round(arr_shift[ant_ch, v] / dt).astype(int)[0]
-            if arr_shift_ant > 0:
-                temp_v_shift[arr_shift_ant:, v] = temp_v_shift_evt[:-arr_shift_ant]
-            elif arr_shift_ant < 0:
-                temp_v_shift[:arr_shift_ant, v] = temp_v_shift_evt[-arr_shift_ant:]
-            else:
-                temp_v_shift[:, v] = temp_v_shift_evt
+            arr_shift_ant = -np.round(arr_shift[ant_ch, v] / dt).astype(int)
+            #if arr_shift_ant > 0:
+            #    temp_v_shift[arr_shift_ant:, v] = temp_v_shift_evt[:-arr_shift_ant]
+            #elif arr_shift_ant < 0:
+            #    temp_v_shift[:arr_shift_ant, v] = temp_v_shift_evt[-arr_shift_ant:]
+            #else:
+            temp_v_shift[:, v] = temp_v_shift_evt
             del arr_shift_ant
         temp[:, ant_ch, idxs] = temp_v_shift
 
         wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_abs = True, use_norm = True)
         temp_rfft[:, ant_ch, idxs] = wf_int.pad_fft[:, ant_ch][:, np.newaxis]
         del ant_ch, idxs, idxs_len, arr_shift, pad_v_ant, temp_v, quater_idx, temp_v_shift, temp_v_shift_evt
-    del dt, ara_root, num_evts, wf_int, wf_time, temp_param1, wf_len
+    del ara_root, num_evts, wf_int, wf_time, temp_param1, wf_len, dt, temp_temp_param
 
     print('Temp collecting is done!')
 
