@@ -92,7 +92,7 @@ class ara_root_loader:
         self.entry_num = np.arange(self.num_evts, dtype = int)
         print('total events:', self.num_evts)
 
-    def get_sub_info(self, data, get_angle_info = False, get_temp_info = False):
+    def get_sub_info(self, data, get_angle_info = False):
 
         # tired of dealing with PyROOT.....
         file_uproot = uproot.open(data)
@@ -147,9 +147,10 @@ class ara_root_loader:
         self.view_ang = np.copy(self.rec_ang)
         self.launch_ang = np.copy(self.rec_ang)
         self.arrival_time = np.copy(self.rec_ang)
-        self.signal_bin = np.copy(self.rec_ang)
+        self.signal_bin = np.full((2, num_ants, self.num_evts), np.nan, dtype = int)
+        self.trig_pass = np.full((num_ants, self.num_evts), np.nan, dtype = int)
+        self.time_idx = np.copy(self.signal_bin)
         if get_angle_info:
-            print('angle info in on! prepare for the looong for loop...')
             sim_st_index = self.sim_rf_ch_map[:, 1]
             sim_ant_index = self.sim_rf_ch_map[:, 2]
  
@@ -160,36 +161,24 @@ class ara_root_loader:
                 for ant in range(num_ants):
                     sim_st = int(sim_st_index[ant])
                     sim_ant = int(sim_ant_index[ant])
-                    rec = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].rec_ang[:]))
-                    view = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].view_ang[:]))
-                    launch = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].launch_ang[:]))
+                    #rec = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].rec_ang[:]))
+                    #view = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].view_ang[:]))
+                    #launch = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].launch_ang[:]))
                     arrival = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].arrival_time[:]) * 1e9        
-                    sig_bin = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].SignalBinTime[:])
+                    time_idx_full = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].time[:])
+                    trigpass = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].Trig_Pass)
+                    sig_bin = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].SignalBin[:])
 
-                    self.rec_ang[:len(rec), ant, evt] = rec
-                    self.view_ang[:len(view), ant, evt] = view
-                    self.launch_ang[:len(launch), ant, evt] = launch
+                    #self.rec_ang[:len(rec), ant, evt] = rec
+                    #self.view_ang[:len(view), ant, evt] = view
+                    #self.launch_ang[:len(launch), ant, evt] = launch
                     self.arrival_time[:len(arrival), ant, evt] = arrival
                     self.signal_bin[:len(sig_bin), ant, evt] = sig_bin
-                    del rec, view, arrival, launch, sim_st, sim_ant, sig_bin
-            del AraTree2
-        if get_temp_info:
-            print('template info is on!')
-            sim_st_index = self.sim_rf_ch_map[:, 1]
-            sim_ant_index = self.sim_rf_ch_map[:, 2]
-
-            ROOT.gInterpreter.ProcessLine('#include "'+os.environ.get('ARA_UTIL_INSTALL_DIR')+'/../AraSim/Report.h"')
-            AraTree2 = self.file.AraTree2
-            for evt in tqdm(range(self.num_evts)):
-                AraTree2.GetEntry(evt)
-                for ant in range(num_ants):
-                    sim_st = int(sim_st_index[ant])
-                    sim_ant = int(sim_ant_index[ant])
-                    sig_bin = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].SignalBinTime[:])
-                    rec = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].rec_ang[:]))
-                    self.signal_bin[:len(sig_bin), ant, evt] = sig_bin
-                    self.rec_ang[:len(rec), ant, evt] = rec
-                    del sim_st, sim_ant, sig_bin, rec
+                    self.trig_pass[ant, evt] = trigpass
+                    self.time_idx[0, ant, evt] = time_idx_full[0]
+                    self.time_idx[1, ant, evt] = time_idx_full[-1]
+                    #del rec, view, arrival, launch, sim_st, sim_ant, time_idx_full, trigpass, sig_bin
+                    del arrival, sim_st, sim_ant, time_idx_full, trigpass, sig_bin
             del AraTree2
 
     def get_posnu_ant_cen_theta_phi_r(self, use_radian = False):
@@ -210,7 +199,6 @@ class ara_root_loader:
         zen_ang = np.arccos(AB / ABabs)
         tpr[0] = np.degrees(zen_ang)
         if use_radian:
-            tpr[0] = np.nan # just in case
             tpr[0] = zen_ang
         del AB, ABabs, theta_unit_vec, zen_ang
 
@@ -223,7 +211,6 @@ class ara_root_loader:
         phi_ang[minus_index] += np.radians(360)
         tpr[1] = np.degrees(phi_ang)
         if use_radian:
-            tpr[1] = np.nan # just in case
             tpr[1] = phi_ang
         del AD, ADabs, phi_unit_vec, phi_ang, minus_index
 

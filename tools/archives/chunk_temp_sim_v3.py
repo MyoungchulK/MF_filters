@@ -19,12 +19,10 @@ def temp_sim_collector(Data, Station, Year):
 
     # data config
     ara_root = ara_root_loader(Data, Station, Year)
-    ara_root.get_sub_info(Data, get_temp_info = True)
+    ara_root.get_sub_info(Data, get_angle_info = False)
     num_evts = ara_root.num_evts
     wf_time = ara_root.wf_time
     dt = ara_root.time_step[0]
-    signal_bin = ara_root.signal_bin[0]
-    rec_ang = ara_root.rec_ang[0] 
 
     # parameters
     flavor = ['NuE', 'NuMu']
@@ -91,60 +89,42 @@ def temp_sim_collector(Data, Station, Year):
                     counts += 1
     temp = np.full((wf_len, num_ants, num_temps), 0, dtype = float)
     temp_rfft = np.full((fft_len, num_ants, num_temps), 0, dtype = float)
-    sig_shift = np.full((num_ants, num_temps), np.nan, dtype = float)
-    rec_angle = np.copy(sig_shift)
     del t_arr_diff, counts, param_len, t_theta_bin, t_phi_bin, fft_len, sho_idx, off_idx, ele_idx, ele_idx1, phi_idx, num_temps
 
     # loop over the events
     for evt in tqdm(range(num_evts)):
       #if evt <100: # debug 
 
-        # indexs
         ant_ch = temp_temp_param[0, evt] 
         idxs = np.all((temp_param[0] == temp_temp_param[1, evt], temp_param1 == temp_temp_param[2, evt], temp_param[3] == temp_temp_param[3, evt]), axis = 0)        
         idxs_len = np.count_nonzero(idxs)
         arr_shift = arr_time_diff[:, idxs]
-        sig_bin_evt = signal_bin[ant_ch, evt]
-        sig_bins = int(np.round(sig_bin_evt / dt))
-        sig_shift[ant_ch, idxs] = sig_bin_evt
-        rec_angle[ant_ch, idxs] = rec_ang[ant_ch, evt]
-        del sig_bin_evt
 
-        # sim wf
         wf_v = ara_root.get_rf_wfs(evt)
         for ant in range(num_ants):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_band_pass = True)
         del wf_v
         pad_v_ant = wf_int.pad_v[:, ant_ch]
-
-        # signal shift
-        temp_sig_shift = np.full((wf_len), 0, dtype = float) 
-        if sig_bins > 0:
-            temp_sig_shift[:-sig_bins] = pad_v_ant[sig_bins:]
-        elif sig_bins < 0: 
-            temp_sig_shift[-sig_bins:] = pad_v_ant[:sig_bins] 
-        else:
-            temp_sig_shift[:] = pad_v_ant
-        del sig_bins, pad_v_ant
-
-        # arrival time shift
-        temp_arr_shift = np.full((wf_len, idxs_len), 0, dtype = float)
+        temp_v = pad_v_ant[pad_v_ant != 0]
+        quater_idx = (wf_len - len(temp_v)) // 2
+        temp_v_shift_evt = np.full((wf_len), 0, dtype = float) 
+        temp_v_shift_evt[quater_idx:-quater_idx] = temp_v
+        temp_v_shift = np.full((wf_len, idxs_len), 0, dtype = float)
         for v in range(idxs_len):
             arr_shift_ant = -np.round(arr_shift[ant_ch, v] / dt).astype(int)
-            if arr_shift_ant > 0:
-                temp_arr_shift[arr_shift_ant:, v] = temp_sig_shift[:-arr_shift_ant]
-            elif arr_shift_ant < 0:
-                temp_arr_shift[:arr_shift_ant, v] = temp_sig_shift[-arr_shift_ant:]
-            else:
-                temp_arr_shift[:, v] = temp_sig_shift
+            #if arr_shift_ant > 0:
+            #    temp_v_shift[arr_shift_ant:, v] = temp_v_shift_evt[:-arr_shift_ant]
+            #elif arr_shift_ant < 0:
+            #    temp_v_shift[:arr_shift_ant, v] = temp_v_shift_evt[-arr_shift_ant:]
+            #else:
+            temp_v_shift[:, v] = temp_v_shift_evt
             del arr_shift_ant
-        temp[:, ant_ch, idxs] = temp_arr_shift
-        del arr_shift, temp_sig_shift, temp_arr_shift
+        temp[:, ant_ch, idxs] = temp_v_shift
 
         wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_abs = True, use_norm = True)
         temp_rfft[:, ant_ch, idxs] = wf_int.pad_fft[:, ant_ch][:, np.newaxis]
-        del ant_ch, idxs, idxs_len
-    del ara_root, num_evts, num_ants, wf_int, wf_time, temp_param1, wf_len, dt, temp_temp_param, signal_bin, rec_ang
+        del ant_ch, idxs, idxs_len, arr_shift, pad_v_ant, temp_v, quater_idx, temp_v_shift, temp_v_shift_evt
+    del ara_root, num_evts, wf_int, wf_time, temp_param1, wf_len, dt, temp_temp_param
 
     print('Temp collecting is done!')
 
@@ -152,8 +132,6 @@ def temp_sim_collector(Data, Station, Year):
             'temp_time':temp_time,
             'temp_freq':temp_freq,
             'arr_time_diff':arr_time_diff,
-            'sig_shift':sig_shift,
-            'rec_angle':rec_angle,
             'temp_param':temp_param,
             'temp':temp,
             'temp_rfft':temp_rfft} 

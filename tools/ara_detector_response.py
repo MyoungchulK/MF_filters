@@ -69,8 +69,7 @@ def get_signal_chain_gain(soft_rayl, freq_range, dt, st):
     del freq_mhz, h_tot, f 
 
     Htot = h_tot_int * np.sqrt(dt * 1e-9)
-    Hmeas = p1 * np.sqrt(2) # power symmetry
-    Hmeas *= np.sqrt(2) # surf_turf
+    Hmeas = p1 * np.sqrt(2) # surf_turf
     soft_sc = Hmeas / Htot
     del p1, Htot, Hmeas
 
