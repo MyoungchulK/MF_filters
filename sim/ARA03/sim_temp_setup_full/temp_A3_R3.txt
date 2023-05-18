@@ -52,13 +52,13 @@ CUSTOM_ELECTRONICS=3            // using custom SC model
 
 //---TRIGGER---
 TRIG_WINDOW=1.7E-7                   //110ns
-POWERTHRESHOLD=-0.00000001                 //5Hz RF trigger rate with 110ns trigger window 3/8 Hpol/Vpol trigger
+POWERTHRESHOLD=-6.6                 //5Hz RF trigger rate with 110ns trigger window 3/8 Hpol/Vpol trigger
 TRIG_MODE=1              //use vpol, hpol separated trigger mode
 N_TRIG_V=3
 N_TRIG_H=3
 
 //---READOUT---
-V_SATURATION=5000        //readout voltage saturation 1.5V
+V_SATURATION=50000        //readout voltage saturation 1.5V
 WAVEFORM_LENGTH=840    //number of samples in final waveform (normally ~1280)
 V_MIMIC_MODE=0          //0 : global trig is located center of readout windows
 DATA_SAVE_MODE=0        //save final waveforms + physics data

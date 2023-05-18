@@ -156,7 +156,7 @@ class ara_root_loader:
             ROOT.gInterpreter.ProcessLine('#include "'+os.environ.get('ARA_UTIL_INSTALL_DIR')+'/../AraSim/Report.h"')
             AraTree2 = self.file.AraTree2
             for evt in tqdm(range(self.num_evts)):
-                AraTree2.GetEntry(int(evt))
+                AraTree2.GetEntry(evt)
                 for ant in range(num_ants):
                     sim_st = int(sim_st_index[ant])
                     sim_ant = int(sim_ant_index[ant])
@@ -165,11 +165,6 @@ class ara_root_loader:
                     launch = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].launch_ang[:]))
                     arrival = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].arrival_time[:]) * 1e9        
                     sig_bin = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].SignalBinTime[:])
-                    if len(sig_bin) == 0:
-                        sig_idx = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].SignalBin[:])
-                        time = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].time[0])
-                        sig_bin = (sig_idx - time) * self.time_step[0] + self.wf_time[0]
-                        del sig_idx, time
 
                     self.rec_ang[:len(rec), ant, evt] = rec
                     self.view_ang[:len(view), ant, evt] = view
@@ -191,12 +186,6 @@ class ara_root_loader:
                     sim_st = int(sim_st_index[ant])
                     sim_ant = int(sim_ant_index[ant])
                     sig_bin = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].SignalBinTime[:])
-                    if len(sig_bin) == 0:
-                        sig_idx = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].SignalBin[:])
-                        time = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].time[0])
-                        sig_bin = (sig_idx - time) * self.time_step[0] + self.wf_time[0]
-                        del sig_idx, time
-
                     rec = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].rec_ang[:]))
                     self.signal_bin[:len(sig_bin), ant, evt] = sig_bin
                     self.rec_ang[:len(rec), ant, evt] = rec

@@ -4,7 +4,7 @@ DETECTOR=4                           //actual deployed station
 DETECTOR_STATION=2                   //ARA02
 DETECTOR_STATION_LIVETIME_CONFIG=1  //emulate config 1
 DETECTOR_RUN=1
-DETECTOR_CH_MASK=1
+DETECTOR_CH_MASK=0
 DETECTOR_TRIG_DELAY=0
 number_of_stations=1
 TIMESTEP=5E-10
@@ -58,7 +58,7 @@ N_TRIG_V=3
 N_TRIG_H=3
 
 //---READOUT---
-V_SATURATION=50000        //readout voltage saturation 1.5V
+V_SATURATION=500000        //readout voltage saturation 1.5V
 WAVEFORM_LENGTH=840    //number of samples in final waveform (normally ~1280)
 V_MIMIC_MODE=0          //0 : global trig is located center of readout windows
 DATA_SAVE_MODE=0        //save final waveforms + physics data

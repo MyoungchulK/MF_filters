@@ -14,8 +14,10 @@ new_line = f'{common}12'
 
 old_line = 'DETECTOR_CH_MASK=1'
 new_line = 'DETECTOR_CH_MASK=0'
-old_line = 'DETECTOR_TRIG_DELAY=1'
-new_line = 'DETECTOR_TRIG_DELAY=0'
+#old_line = 'DETECTOR_TRIG_DELAY=1'
+#new_line = 'DETECTOR_TRIG_DELAY=0'
+#old_line = 'V_SATURATION=5000'
+#new_line = 'V_SATURATION=50000'
 #new_line = 'RANDOM_MODE=1\nDETECTOR_CH_MASK=0\nDETECTOR_TRIG_DELAY=0'
 
 for t in tqdm(range(len(d_list))):
