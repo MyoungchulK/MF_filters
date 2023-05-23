@@ -94,8 +94,10 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()
 
-        mf_max[:, evt], mf_best[:, evt] = ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = wei[:, evt]) 
-        #print(mf_max[:, evt], mf_best[:, evt])
+        ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = wei[:, evt]) 
+        mf_max[:, evt] = ara_mf.mf_max
+        mf_temp[:, evt] = ara_mf.mf_temp
+        #print(mf_max[:, evt], mf_temp[:, evt])
     del ara_root, num_evts, num_ants, wf_int, ara_mf, daq_qual_cut_sum, wei
 
     print('MF collecting is done!')
@@ -104,7 +106,7 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
             'trig_type':trig_type,
             'bad_ant':bad_ant,
             'mf_max':mf_max,
-            'mf_best':mf_best}
+            'mf_temp':mf_temp}
 
 
 
