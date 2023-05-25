@@ -73,16 +73,7 @@ class py_interferometers:
         arr_table = table_hf['arr_time_table'][:]
         del table_path, table_name, table_hf
  
-        self.table = np.full((num_thetas, self.num_phis, self.num_rads, self.num_ray_sol, self.pair_len), np.nan, dtype = float)
-        table_p1 = np.copy(self.table)
-        table_p2 = np.copy(self.table)
-        for p in range(self.pair_len):
-            p_1st = self.pairs[p, 0]
-            p_2nd = self.pairs[p, 1]
-            self.table[:, :, :, :, p] = arr_table[:, :, :, p_1st, :] - arr_table[:, :, :, p_2nd, :]
-            table_p1[:, :, :, :, p] = arr_table[:, :, :, p_1st, :]
-            table_p2[:, :, :, :, p] = arr_table[:, :, :, p_2nd, :]
-            del p_1st, p_2nd
+        self.table = arr_table[:, :, :, self.pairs[:, 0], :] - arr_table[:, :, :, self.pairs[:, 1], :]
         self.table_ori_shape = self.table.shape
         self.table_pol_shape = (num_pols, num_thetas, self.num_phis, self.num_rads, self.num_ray_sol)
         self.coord_shape = (num_pols, 2, self.num_rads, self.num_ray_sol)
@@ -90,12 +81,12 @@ class py_interferometers:
         self.table_shape = self.table.shape
         if self.verbose:
             print('arr table shape:', self.table_shape)
-        del radius_arr, arr_table, num_thetas
+        del radius_arr, num_thetas
 
-        table_p1 = np.reshape(table_p1, self.table_shape)
-        table_p2 = np.reshape(table_p2, self.table_shape)
+        table_p1 = np.reshape(arr_table[:, :, :, self.pairs[:, 0], :], self.table_shape)
+        table_p2 = np.reshape(arr_table[:, :, :, self.pairs[:, 1], :], self.table_shape)
         self.bad_arr = np.logical_or(table_p1 < -100, table_p2 < -100)
-        del table_p1, table_p2
+        del table_p1, table_p2, arr_table
 
         self.pol_range = np.arange(num_pols, dtype = int)
         self.rad_range = np.arange(self.num_rads, dtype = int)
@@ -126,7 +117,7 @@ class py_interferometers:
         del coval
 
         coord = np.nanargmax(sky_map, axis = 1)
-        self.coval_max = sky_map[self.pol_range[:, np.newaxis, np.newaxis], coord, self.rad_range[np.newaxis, :, np.newaxis], self.ray_range[np.newaxis, np.newaxis, :]]
+        self.coval_max = sky_map[self.pol_range[:, np.newaxis, np.newaxis], coord, self.rad_range[np.newaxis, :, np.newaxis], self.ray_range[np.newaxis, np.newaxis, :]] # array dim (# of pols, # of rs, # of rays)
         self.coord_max = np.full(self.coord_shape, np.nan, dtype = float) # array dim (# of pols, theta and phi, # of rs, # of rays)
         self.coord_max[:, 0] = self.theta[coord // self.num_phis]
         self.coord_max[:, 1] = self.phi[coord % self.num_phis]
