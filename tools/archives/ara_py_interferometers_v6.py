@@ -31,7 +31,6 @@ class py_interferometers:
             self.lags = correlation_lags(self.double_pad_len, self.double_pad_len, 'same') * self.dt
             self.lag_len = len(self.lags)
             self.pairs, self.pair_len, self.v_pairs_len = get_pair_info(self.st, self.run, verbose = self.verbose)
-            self.pair_range = np.arange(self.pair_len, dtype = int)
             self.get_arrival_time_tables()
             self.get_coval_time()
             if self.verbose:
@@ -97,10 +96,6 @@ class py_interferometers:
         self.bad_arr = np.logical_or(table_p1 < -100, table_p2 < -100)
         del table_p1, table_p2
 
-        self.pol_range = np.arange(num_pols, dtype = int)
-        self.rad_range = np.arange(self.num_rads, dtype = int)
-        self.ray_range = np.arange(self.num_ray_sol, dtype = int)
-
     def get_coval_time(self):
 
         self.p0_idx = np.floor((self.table - self.lags[0]) / self.dt).astype(int)
@@ -113,10 +108,15 @@ class py_interferometers:
 
     def get_coval_sample(self):
 
-        coval = np.diff(self.corr, axis = 0)[self.p0_idx, self.pair_range] * self.int_factor + self.corr[self.p0_idx, self.pair_range]
+        corr_diff = self.corr[1:] - self.corr[:-1]
+        
+        coval = np.full(self.table_shape, 0, dtype=float)
+        for p in range(self.pair_len):
+            coval[:, :, :, p] = corr_diff[:, p][self.p0_idx[:, :, :, p]] * self.int_factor[:, :, :, p] + self.corr[:, p][self.p0_idx[:, :, :, p]]
         coval[self.bad_arr] = 0
         if self.use_debug:
             self.coval = np.reshape(coval, self.table_ori_shape)
+        del corr_diff
 
         corr_v_sum = np.nansum(coval[:, :, :, :self.v_pairs_len], axis = 3)
         corr_h_sum = np.nansum(coval[:, :, :, self.v_pairs_len:], axis = 3)
@@ -125,8 +125,8 @@ class py_interferometers:
             self.sky_map = np.reshape(sky_map, self.table_pol_shape)
         del coval
 
+        self.coval_max = np.nanmax(sky_map, axis = 1) # array dim (# of pols, # of rs, # of rays)
         coord = np.nanargmax(sky_map, axis = 1)
-        self.coval_max = sky_map[self.pol_range[:, np.newaxis, np.newaxis], coord, self.rad_range[np.newaxis, :, np.newaxis], self.ray_range[np.newaxis, np.newaxis, :]]
         self.coord_max = np.full(self.coord_shape, np.nan, dtype = float) # array dim (# of pols, theta and phi, # of rs, # of rays)
         self.coord_max[:, 0] = self.theta[coord // self.num_phis]
         self.coord_max[:, 1] = self.phi[coord % self.num_phis]

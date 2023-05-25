@@ -166,6 +166,8 @@ class ara_root_loader:
                     arrival = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].arrival_time[:]) * 1e9        
                     sig_bin = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].SignalBinTime[:])
                     if len(sig_bin) == 0:
+                        if evt == 0 and ant == 0:
+                            print('No Signal Bin Time!! OLD SIM!!! SHAME ON YOU!!!')
                         sig_idx = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].SignalBin[:])
                         time = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].time[0])
                         sig_bin = (sig_idx - time) * self.time_step[0] + self.wf_time[0]
@@ -192,6 +194,8 @@ class ara_root_loader:
                     sim_ant = int(sim_ant_index[ant])
                     sig_bin = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].SignalBinTime[:])
                     if len(sig_bin) == 0:
+                        if evt == 0 and ant == 0:
+                            print('No Signal Bin Time!! OLD SIM!!! SHAME ON YOU!!!')
                         sig_idx = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].SignalBin[:])
                         time = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].time[0])
                         sig_bin = (sig_idx - time) * self.time_step[0] + self.wf_time[0]

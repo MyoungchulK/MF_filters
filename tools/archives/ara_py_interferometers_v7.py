@@ -97,10 +97,6 @@ class py_interferometers:
         self.bad_arr = np.logical_or(table_p1 < -100, table_p2 < -100)
         del table_p1, table_p2
 
-        self.pol_range = np.arange(num_pols, dtype = int)
-        self.rad_range = np.arange(self.num_rads, dtype = int)
-        self.ray_range = np.arange(self.num_ray_sol, dtype = int)
-
     def get_coval_time(self):
 
         self.p0_idx = np.floor((self.table - self.lags[0]) / self.dt).astype(int)
@@ -125,8 +121,8 @@ class py_interferometers:
             self.sky_map = np.reshape(sky_map, self.table_pol_shape)
         del coval
 
+        self.coval_max = np.nanmax(sky_map, axis = 1) # array dim (# of pols, # of rs, # of rays)
         coord = np.nanargmax(sky_map, axis = 1)
-        self.coval_max = sky_map[self.pol_range[:, np.newaxis, np.newaxis], coord, self.rad_range[np.newaxis, :, np.newaxis], self.ray_range[np.newaxis, np.newaxis, :]]
         self.coord_max = np.full(self.coord_shape, np.nan, dtype = float) # array dim (# of pols, theta and phi, # of rs, # of rays)
         self.coord_max[:, 0] = self.theta[coord // self.num_phis]
         self.coord_max[:, 1] = self.phi[coord % self.num_phis]

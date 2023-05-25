@@ -48,31 +48,14 @@ def temp_sim_collector(Data, Station, Year):
         del counts
     del config, param_path, flavor
 
-    # temp arrays
-    sho_idx = np.array([0, 1], dtype = int)
-    ele_idx = np.array([-60, -40, -20, 0], dtype = int)
-    off_idx = np.array([0, 2, 4], dtype = int)
-    params = [sho_idx, ele_idx, off_idx]
-    param_lens = [len(sho_idx), len(ele_idx), len(off_idx)]
-    num_params = len(params) # EM/HAD, Ant_Res, Off
-    temp_param = np.full((num_params, param_lens[0], param_lens[1], param_lens[2]), 0, dtype = int)
-    temp_param[0] = sho_idx[:, np.newaxis, np.newaxis]
-    temp_param[1] = ele_idx[np.newaxis, :, np.newaxis]
-    temp_param[2] = off_idx[np.newaxis, np.newaxis, :]
-    del num_params
-
     # arrival time table
     table_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/arr_time_table/temp_arr_time_table_A{Station}_Y2015.h5'
     t_hf = h5py.File(table_path, 'r')
+    t_theta_bin = 90 - t_hf['theta_bin'][:].astype(int)
+    t_phi_bin = t_hf['phi_bin'][:].astype(int)
     t_arr_time = t_hf['arr_time_table'][:, :, 0, :, 0]
-    arr_time_diff = t_arr_time - np.nanmean(t_arr_time, axis = 2)[:, :, np.newaxis]
-    arr_time_diff = np.transpose(arr_time_diff, (2, 0, 1))
-    arr_theta = 90 - t_hf['theta_bin'][:].astype(int)
-    arr_phi = t_hf['phi_bin'][:].astype(int)
-    arr_param = np.full((2, arr_time_diff.shape[1], arr_time_diff.shape[2]), 0, dtype = int)
-    arr_param[0] = arr_theta[:, np.newaxis]
-    arr_param[1] = arr_phi[np.newaxis, :]
-    del table_path, t_hf, t_arr_time, arr_theta, arr_phi
+    t_arr_diff = t_arr_time - np.nanmean(t_arr_time, axis = 2)[:, :, np.newaxis]
+    del table_path, t_hf, t_arr_time
 
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_freq_pad = True, use_rfft = True, verbose = True, new_wf_time = wf_time)
@@ -81,12 +64,36 @@ def temp_sim_collector(Data, Station, Year):
     temp_freq = wf_int.pad_zero_freq
     fft_len = wf_int.pad_fft_len
 
-    # temp arrays
-    temp = np.full((wf_len, num_ants, param_lens[0], param_lens[1], param_lens[2]), 0, dtype = float)
-    temp_rfft = np.full((fft_len, num_ants, param_lens[0], param_lens[1], param_lens[2]), 0, dtype = float)
-    sig_shift = np.full((num_ants, param_lens[0], param_lens[1], param_lens[2]), np.nan, dtype = float)
+    # output arrays
+    sho_idx = np.array([0, 1], dtype = int)
+    off_idx = np.array([0, 2, 4], dtype = int)
+    ele_idx = np.array([-60, -40, -20, 0, 20, 40, 60], dtype = int)
+    ele_idx1 = np.copy(ele_idx)
+    ele_idx1[4:] *= -1
+    phi_idx = np.array([-120, -60, 0, 60, 120,180], dtype = int)
+    num_temps = len(ele_idx) * len(phi_idx) * len(off_idx) * len(sho_idx)
+    entry_num = np.arange(num_temps, dtype = int)
+    param_len = 4 # EM/HAD, Ant_Res, Phi, Off
+    temp_param = np.full((param_len, num_temps), 0, dtype = int)
+    temp_param1 = np.full((num_temps), 0, dtype = int)
+    arr_time_diff = np.full((num_ants, num_temps), 0, dtype = float)
+    counts = 0
+    for sho in range(len(sho_idx)):
+        for ele in range(len(ele_idx)):
+            for phi in range(len(phi_idx)):
+                for off in range(len(off_idx)):
+                    temp_param[0, counts] = sho_idx[sho]
+                    temp_param[1, counts] = ele_idx[ele]
+                    temp_param[2, counts] = phi_idx[phi]
+                    temp_param[3, counts] = off_idx[off]
+                    temp_param1[counts] = ele_idx1[ele]
+                    arr_time_diff[:, counts] = t_arr_diff[np.where(t_theta_bin == ele_idx[ele])[0], np.where(t_phi_bin == phi_idx[phi])[0]]
+                    counts += 1
+    temp = np.full((wf_len, num_ants, num_temps), 0, dtype = float)
+    temp_rfft = np.full((fft_len, num_ants, num_temps), 0, dtype = float)
+    sig_shift = np.full((num_ants, num_temps), np.nan, dtype = float)
     rec_angle = np.copy(sig_shift)
-    del fft_len
+    del t_arr_diff, counts, param_len, t_theta_bin, t_phi_bin, fft_len, sho_idx, off_idx, ele_idx, ele_idx1, phi_idx, num_temps
 
     # loop over the events
     for evt in tqdm(range(num_evts)):
@@ -94,13 +101,13 @@ def temp_sim_collector(Data, Station, Year):
 
         # indexs
         ant_ch = temp_temp_param[0, evt] 
-        sho_loc = np.where(sho_idx == temp_temp_param[1, evt])[0][0]
-        ele_loc = np.where(ele_idx == temp_temp_param[2, evt])[0][0]
-        off_loc = np.where(off_idx == temp_temp_param[3, evt])[0][0]
+        idxs = np.all((temp_param[0] == temp_temp_param[1, evt], temp_param1 == temp_temp_param[2, evt], temp_param[3] == temp_temp_param[3, evt]), axis = 0)        
+        idxs_len = np.count_nonzero(idxs)
+        arr_shift = arr_time_diff[:, idxs]
         sig_bin_evt = signal_bin[ant_ch, evt]
         sig_bins = int(np.round(sig_bin_evt / dt))
-        sig_shift[ant_ch, sho_loc, ele_loc, off_loc] = sig_bin_evt
-        rec_angle[ant_ch, sho_loc, ele_loc, off_loc] = rec_ang[ant_ch, evt]
+        sig_shift[ant_ch, idxs] = sig_bin_evt
+        rec_angle[ant_ch, idxs] = rec_ang[ant_ch, evt]
         del sig_bin_evt
 
         # sim wf
@@ -120,20 +127,31 @@ def temp_sim_collector(Data, Station, Year):
             temp_sig_shift[:] = pad_v_ant
         del sig_bins, pad_v_ant
 
-        temp[:, ant_ch, sho_loc, ele_loc, off_loc] = temp_sig_shift
-        del temp_sig_shift
+        # arrival time shift
+        temp_arr_shift = np.full((wf_len, idxs_len), 0, dtype = float)
+        for v in range(idxs_len):
+            arr_shift_ant = -np.round(arr_shift[ant_ch, v] / dt).astype(int)
+            if arr_shift_ant > 0:
+                temp_arr_shift[arr_shift_ant:, v] = temp_sig_shift[:-arr_shift_ant]
+            elif arr_shift_ant < 0:
+                temp_arr_shift[:arr_shift_ant, v] = temp_sig_shift[-arr_shift_ant:]
+            else:
+                temp_arr_shift[:, v] = temp_sig_shift
+            del arr_shift_ant
+        temp[:, ant_ch, idxs] = temp_arr_shift
+        del arr_shift, temp_sig_shift, temp_arr_shift
 
         wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_abs = True, use_norm = True)
-        temp_rfft[:, ant_ch, sho_loc, ele_loc, off_loc] = wf_int.pad_fft[:, ant_ch]
-        del ant_ch, sho_loc, ele_loc, off_loc 
-    del ara_root, num_evts, num_ants, wf_int, wf_time, wf_len, dt, signal_bin, rec_ang, temp_temp_param, sho_idx, ele_idx, off_idx, params, param_lens
+        temp_rfft[:, ant_ch, idxs] = wf_int.pad_fft[:, ant_ch][:, np.newaxis]
+        del ant_ch, idxs, idxs_len
+    del ara_root, num_evts, num_ants, wf_int, wf_time, temp_param1, wf_len, dt, temp_temp_param, signal_bin, rec_ang
 
     print('Temp collecting is done!')
 
-    return {'temp_time':temp_time,
+    return {'entry_num':entry_num,
+            'temp_time':temp_time,
             'temp_freq':temp_freq,
             'arr_time_diff':arr_time_diff,
-            'arr_param':arr_param,
             'sig_shift':sig_shift,
             'rec_angle':rec_angle,
             'temp_param':temp_param,

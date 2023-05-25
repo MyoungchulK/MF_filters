@@ -98,7 +98,7 @@ class ara_matched_filter:
 
     def get_normalization(self):
 
-        norm_fac = np.abs(self.temp_rfft)**2 / self.psd[:, :, np.newaxis, np.newaxis, np.newaxis]
+        norm_fac = np.abs(self.temp_rfft)**2 / self.psd[:, :, np.newaxis]
         norm_fac = np.sqrt(np.nansum(norm_fac, axis = 0) / (self.dt * self.pad_len))
         if self.use_debug:
             self.norm_fac = np.copy(norm_fac)
@@ -117,13 +117,13 @@ class ara_matched_filter:
         if self.verbose:
             print('template:', temp_dat)
         temp_hf = h5py.File(temp_dat, 'r')
-        self.temp_rfft = temp_hf['temp_rfft'][:]
-        self.temp = temp_hf['temp'][:]
-        self.temp = np.pad(self.temp, [(self.lag_len // 4, self.lag_len // 4), (0, 0), (0, 0), (0, 0), (0, 0)], 'constant', constant_values = 0)
+        self.rec_ang = temp_hf['rec_angle'][:]
         self.temp_param = temp_hf['temp_param'][:]
-        self.arr_time_diff = temp_hf['arr_time_dif'][:]
-        self.arr_param = temp_hf['arr_param'][:]
 
+        self.temp = temp_hf['temp'][:]
+        self.temp = np.pad(self.temp, [(self.lag_len // 4, self.lag_len // 4), (0, 0), (0, 0)], 'constant', constant_values = 0)
+        self.num_temps = self.temp.shape[2]
+        self.temp_rfft = temp_hf['temp_rfft'][:]
         self.corr_sum_fla_shape = (num_pols, self.lag_len * self.num_temps)
         if self.use_debug:
             self.corr_sum_shape = (num_pols, self.lag_len, self.num_temps)
@@ -141,7 +141,7 @@ class ara_matched_filter:
     def get_mf_wfs(self):
 
         # fft correlation w/ multiple array at once
-        self.corr = fftconvolve(self.temp, self.zero_pad[:, :, np.newaxis, np.newaxis, np.newaxis], 'same', axes = 0)
+        self.corr = fftconvolve(self.temp, self.zero_pad[:, :, np.newaxis], 'same', axes = 0)
         if self.use_debug:
             self.corr_no_hill = np.copy(self.corr)
 
@@ -150,12 +150,6 @@ class ara_matched_filter:
             self.corr_hill = np.copy(self.corr)
 
     def get_evt_wise_corr(self):
-
-        ## get max
-        corr_max = np.nanmax(self.corr, axis = 0)
-
-        ## max off-cone index
-        off_max_idx = np.nanargmax(corr_max, axis = 3)
 
         ## smoothing corr
         corr_roll_max = maximum_filter1d(self.corr, axis = 0, size = self.roll_win_idx, mode='constant')
@@ -182,7 +176,7 @@ class ara_matched_filter:
         self.get_mf_wfs()
 
         if weights is not None:
-           self.corr *= weights[np.newaxis, :, np.newaxis, np.newaxis, np.newaxis]
+           self.corr *= weights[np.newaxis, :, np.newaxis]
 
         ## event wise snr
         self.get_evt_wise_corr()
