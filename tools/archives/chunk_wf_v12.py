@@ -63,7 +63,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
 
     # quality cut
     run_info1 = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
-    qual_dat = run_info1.get_result_path(file_type = 'qual_cut_3rd', verbose = True, force_blind = True)
+    qual_dat = run_info1.get_result_path(file_type = 'qual_cut', verbose = True, force_blind = True)
     daq_hf = h5py.File(qual_dat, 'r')
     evt_full = daq_hf['evt_num'][:]
     tot_qual_cut = daq_hf['tot_qual_cut'][:]
@@ -108,7 +108,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     sel_evt_len = len(sel_entries)
 
     # wf analyzer
-    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_band_pass = True, use_rfft = True, use_cw = True, verbose = True, st = st, run = run, analyze_blind_dat = analyze_blind_dat)
+    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_band_pass = True, use_rfft = True, use_cw = True, st = st, run = run, analyze_blind_dat = analyze_blind_dat)
     dt = np.asarray([wf_int.dt])
     print(dt[0])
     pad_time = wf_int.pad_zero_t
@@ -131,7 +131,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     testbed_freq_range = cw_testbed.useful_freq_range_debug
 
     # interferometers
-    ara_int = py_interferometers(pad_len, dt[0], st, year, run = run, use_debug = True, get_sub_file = True, verbose = True)
+    ara_int = py_interferometers(pad_len, dt[0], st, year, run = run, use_debug = True, get_sub_file = True)
     pairs = ara_int.pairs
     v_pairs_len = ara_int.v_pairs_len    
     lags = ara_int.lags
@@ -145,7 +145,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     bp_wf_all = np.copy(int_wf_all)
     cw_wf_all = np.copy(int_wf_all)
     cw_bp_wf_all = np.copy(int_wf_all)
-    mf_wf_all = np.copy(int_wf_all)
     ele_wf_all = np.full((samp_pad, 2, num_eles, sel_evt_len), np.nan, dtype=float)
     int_ele_wf_all = np.full((wf_int.pad_len, 2, num_eles, sel_evt_len), np.nan, dtype=float)
     adc_all = np.full((samp_pad, 2, num_ants, sel_evt_len), np.nan, dtype=float)
@@ -157,14 +156,12 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     bp_fft = np.copy(freq)
     cw_fft = np.copy(freq)
     cw_bp_fft = np.copy(freq)
-    mf_fft = np.copy(freq)
     ele_freq = np.full((wf_int.pad_fft_len, num_eles, sel_evt_len), np.nan, dtype=float)
     ele_fft = np.copy(ele_freq)
     phase = np.copy(freq)
     bp_phase = np.copy(freq)
     cw_phase = np.copy(freq)
     cw_bp_phase = np.copy(freq)
-    mf_phase = np.copy(freq)
     ele_phase = np.copy(ele_freq)
     bad_pad = 1000
     fft_dB = np.copy(freq)
@@ -213,8 +210,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     bp_coval = np.copy(coval)
     cw_coval = np.copy(coval)
     cw_bp_coval = np.copy(coval)
-    sky_map = np.full(ara_int.table_pol_shape, np.nan, dtype = float)
-    sky_map = np.repeat(sky_map[:, :, :, :, :, np.newaxis], sel_evt_len, axis = 5)
+    sky_map = np.full((ara_int.table_ori_shape[0], ara_int.table_ori_shape[1], ara_int.table_ori_shape[2], ara_int.table_ori_shape[3], num_pols, sel_evt_len), np.nan, dtype = float) 
     bp_sky_map = np.copy(sky_map)
     cw_sky_map = np.copy(sky_map)
     cw_bp_sky_map = np.copy(sky_map)
@@ -427,7 +423,9 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         corr_nonorm[:,:,evt] = ara_int.corr_nonorm
         corr_01[:,:,evt] = ara_int.nor_fac
         coval[:,:,:,:,:,evt] = ara_int.coval
-        sky_map[:,:,:,:,:,evt] = ara_int.sky_map
+        sky_map_evt = ara_int.sky_map 
+        sky_map[:,:,:,:,0,evt] = sky_map_evt[0]
+        sky_map[:,:,:,:,1,evt] = sky_map_evt[1]
 
         # reco w/band-passed wf
         for ant in range(num_ants):
@@ -439,7 +437,9 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         bp_corr_nonorm[:,:,evt] = ara_int.corr_nonorm
         bp_corr_01[:,:,evt] = ara_int.nor_fac
         bp_coval[:,:,:,:,:,evt] = ara_int.coval
-        bp_sky_map[:,:,:,:,:,evt] = ara_int.sky_map
+        bp_sky_map_evt = ara_int.sky_map
+        bp_sky_map[:,:,:,:,0,evt] = bp_sky_map_evt[0]
+        bp_sky_map[:,:,:,:,1,evt] = bp_sky_map_evt[1] 
        
         print(wei_pairs[:, sel_entries[evt]]) 
         
@@ -453,7 +453,9 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         cw_corr_nonorm[:,:,evt] = ara_int.corr_nonorm
         cw_corr_01[:,:,evt] = ara_int.nor_fac
         cw_coval[:,:,:,:,:,evt] = ara_int.coval
-        cw_sky_map[:,:,:,:,:,evt] = ara_int.sky_map
+        cw_sky_map_evt = ara_int.sky_map
+        cw_sky_map[:,:,:,:,0,evt] = cw_sky_map_evt[0]
+        cw_sky_map[:,:,:,:,1,evt] = cw_sky_map_evt[1]
         
         # reco w/ cw (and band-passed) wf
         for ant in range(num_ants):
@@ -465,78 +467,31 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         cw_bp_corr_nonorm[:,:,evt] = ara_int.corr_nonorm
         cw_bp_corr_01[:,:,evt] = ara_int.nor_fac
         cw_bp_coval[:,:,:,:,:,evt] = ara_int.coval
-        cw_bp_sky_map[:,:,:,:,:,evt] = ara_int.sky_map
+        cw_bp_sky_map_evt = ara_int.sky_map
+        cw_bp_sky_map[:,:,:,:,0,evt] = cw_bp_sky_map_evt[0]
+        cw_bp_sky_map[:,:,:,:,1,evt] = cw_bp_sky_map_evt[1]
 
-    from tools.ara_matched_filter import ara_matched_filter
-    from tools.ara_matched_filter import get_products
-
-    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_band_pass = True, use_rfft = True, use_noise_weight = True, use_cw = True, verbose = True, analyze_blind_dat = analyze_blind_dat, st = st, run = run)
-    ara_mf = ara_matched_filter(st, run, wf_int.dt, wf_int.pad_len, get_sub_file = True, use_debug = True, verbose = True)
-    good_chs = ara_mf.good_chs
-    good_ch_len = ara_mf.good_ch_len
-    good_v_len = ara_mf.good_v_len
-    wei = get_products(weights, good_chs, good_v_len)
-    mf_param_shape = ara_mf.mf_param_shape
-    psd = ara_mf.psd
-    soft_rayl = ara_mf.soft_rayl
-    temp_ori = ara_mf.temp_ori
-    temp_pad = ara_mf.temp_pad
-    temp_rfft = ara_mf.temp_rfft
-    temp_param = ara_mf.temp_param.shape
-    temp = ara_mf.temp
-    arr_time_diff = ara_mf.arr_time_diff
-    arr_param = ara_mf.arr_param.shape
-    norm_fac = ara_mf.norm_fac
-    mf_corr_no_hill = np.full((ara_mf.lag_len, good_ch_len, temp_param[1], temp_param[2], temp_param[3], sel_evt_len), np.nan, dtype = float)
-    mf_corr_hill = np.copy(mf_corr_no_hill)
-    mf_corr = np.copy(mf_corr_no_hill)
-    mf_corr_max_all = np.full((good_ch_len, temp_param[1], temp_param[2], temp_param[3], sel_evt_len), np.nan, dtype = float) 
-    mf_corr_off_idx = np.full((good_ch_len, temp_param[1], temp_param[2], sel_evt_len), np.nan, dtype = float)
-    mf_corr_max_no_off = np.full((ara_mf.lag_len, good_ch_len, temp_param[1], temp_param[2], sel_evt_len), np.nan, dtype = float)
-    mf_corr_roll_no_off = np.full((ara_mf.lag_len, good_ch_len, temp_param[1], temp_param[2], sel_evt_len), np.nan, dtype = float)
-    mf_corr_sum_pol =  np.full((ara_mf.lag_len, num_pols, temp_param[1], arr_param[1], arr_param[2], sel_evt_len), np.nan, dtype = float)
-    mf_corr_max_idx = np.full((num_pols, 4, sel_evt_len), np.nan, dtype = float)
-    mf_wf_fin = np.full((ara_mf.lag_len, num_pols, sel_evt_len), np.nan, dtype = float)
-    mf_max = np.full((num_pols, sel_evt_len), np.nan, dtype = float)
-    mf_temp = np.full((num_pols, mf_param_shape[1], sel_evt_len), np.nan, dtype = float)
-    temp_param = ara_mf.temp_param
-    arr_param = ara_mf.arr_param
-
+    # interpolated all ele chs
+    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_rfft = True, use_ele_ch = True)
+    # loop over the events
     for evt in tqdm(range(sel_evt_len)):
-
         # get entry and wf
         ara_root.get_entry(sel_entries[evt])
-
-        # calibrated wf, interpolated wf and mean of wf
-        ara_root.get_useful_evt(ara_root.cal_type.kLatestCalibWithOutTrimFirstBlock)
-        for ant in range(num_ants):
-            raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_band_pass = True, use_cw = True, use_noise_weight = True, evt = evt)
+        ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
+        for ant in range(num_eles):
+            raw_t, raw_v = ara_root.get_ele_ch_wf(ant)
+            wf_len = len(raw_t)
+            ele_wf_all[:wf_len, 0, ant, evt] = raw_t
+            ele_wf_all[:wf_len, 1, ant, evt] = raw_v
+            wf_int.get_int_wf(raw_t, raw_v, ant)
             ara_root.del_TGraph()
-        mf_wf_all[:, 0, :, evt] = wf_int.pad_t
-        mf_wf_all[:, 1, :, evt] = wf_int.pad_v
+        int_ele_wf_all[:, 0, :, evt] = wf_int.pad_t
+        int_ele_wf_all[:, 1, :, evt] = wf_int.pad_v
         wf_int.get_fft_wf(use_rfft = True, use_abs = True, use_norm = True, use_phase = True)
-        mf_fft[:, :, evt] = wf_int.pad_fft
-        mf_phase[:, :, evt] = wf_int.pad_phase
-
-        # reco w/ cw (and band-passed) wf
-        for ant in range(num_ants):
-            raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True, use_noise_weight = True, evt = evt)
-            ara_root.del_TGraph()
-        ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = wei[:, sel_entries[evt]])
-        mf_max[:, evt] = ara_mf.mf_max
-        mf_temp[:, :, evt] = ara_mf.mf_temp
-        mf_corr_no_hill[:, :, :, :, :, evt] = ara_mf.corr_no_hill    
-        mf_corr_hill[:, :, :, :, :, evt] = ara_mf.corr_hill    
-        mf_corr[:, :, :, :, :, evt] = ara_mf.corr    
-        mf_corr_max_all[:, :, :, :, evt] = ara_mf.corr_max_all
-        mf_corr_off_idx[:, :, :, evt] = ara_mf.corr_off_idx
-        mf_corr_max_no_off[:, :, :, :, evt] = ara_mf.corr_max_no_off
-        mf_corr_roll_no_off[:, :, :, :, evt] = ara_mf.corr_roll_no_off
-        mf_corr_sum_pol[:, :, :, :, :, evt] = ara_mf.corr_sum_pol
-        mf_corr_max_idx[:, :, evt] = ara_mf.corr_max_idx
-        mf_wf_fin[:, :, evt] = ara_mf.mf_wf_fin
+        ele_freq[:, :, evt] = wf_int.pad_freq
+        ele_fft[:, :, evt] = wf_int.pad_fft
+        ele_phase[:, :, evt] = wf_int.pad_phase
+        ara_root.del_usefulEvt()
 
     print('WF collecting is done!')
 
@@ -570,7 +525,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'bp_wf_all':bp_wf_all,
             'cw_wf_all':cw_wf_all,
             'cw_bp_wf_all':cw_bp_wf_all,
-            'mf_wf_all':mf_wf_all,
             'ele_wf_all':ele_wf_all,
             'int_ele_wf_all':int_ele_wf_all,
             'adc_all':adc_all,
@@ -582,14 +536,12 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'bp_fft':bp_fft,
             'cw_fft':cw_fft,
             'cw_bp_fft':cw_bp_fft,
-            'mf_fft':mf_fft,
             'ele_freq':ele_freq,
             'ele_fft':ele_fft,
             'phase':phase,
             'bp_phase':bp_phase,
             'cw_phase':cw_phase,
             'cw_bp_phase':cw_bp_phase,
-            'mf_phase':mf_phase,
             'ele_phase':ele_phase,
             'rs_entry':rs_entry,
             'phase_var_freq_range':phase_var_freq_range,
@@ -645,27 +597,27 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'sky_map':sky_map,
             'bp_sky_map':bp_sky_map,
             'cw_sky_map':cw_sky_map,
-            'cw_bp_sky_map':cw_bp_sky_map,
-            'psd':psd,
-            'soft_rayl':soft_rayl,
-            'temp_ori':temp_ori,
-            'temp_pad':temp_pad,
-            'temp_rfft':temp_rfft,
-            'temp_param':temp_param,
-            'temp':temp,
-            'arr_time_diff':arr_time_diff,
-            'arr_param':arr_param,
-            'norm_fac':norm_fac,
-            'mf_corr_no_hill':mf_corr_no_hill,
-            'mf_corr_hill':mf_corr_hill,
-            'mf_corr':mf_corr,
-            'mf_corr_max_all':mf_corr_max_all,
-            'mf_corr_off_idx':mf_corr_off_idx,
-            'mf_corr_max_no_off':mf_corr_max_no_off,
-            'mf_corr_roll_no_off':mf_corr_roll_no_off,
-            'mf_corr_sum_pol':mf_corr_sum_pol,
-            'mf_corr_max_idx':mf_corr_max_idx,
-            'mf_wf_fin':mf_wf_fin,
-            'mf_max':mf_max,
-            'mf_temp':mf_temp}
+            'cw_bp_sky_map':cw_bp_sky_map}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

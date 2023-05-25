@@ -123,7 +123,12 @@ class ara_matched_filter:
         temp_hf = h5py.File(temp_dat, 'r')
         self.temp_rfft = temp_hf['temp_rfft'][:]
         self.temp = temp_hf['temp'][:]
+        print(self.temp.shape)
+        if self.use_debug:
+            self.temp_ori = np.copy(self.temp)
         self.temp = np.pad(self.temp, [(self.lag_len // 4, self.lag_len // 4), (0, 0), (0, 0), (0, 0), (0, 0)], 'constant', constant_values = 0)
+        if self.use_debug:
+            self.temp_pad = np.copy(self.temp)
         self.temp_param = temp_hf['temp_param'][:]
         self.sho_info = self.temp_param[0, :, 0, 0]
         self.off_info = self.temp_param[2, 0, 0, :]
@@ -168,20 +173,20 @@ class ara_matched_filter:
         ## corr_max
         corr_max = np.nanmax(self.corr, axis = 0)
         if self.use_debug:
-            corr_max_all = np.copy(corr_max)
+            self.corr_max_all = np.copy(corr_max)
 
         ## max off-cone index and choose array by this
         off_max_idx = np.nanargmax(corr_max, axis = 3) #  arr dim: (# of ants, # of shos, # of ress)
         corr_2nd = self.corr[:, self.good_ch_range[:, np.newaxis, np.newaxis], self.sho_range[np.newaxis, :, np.newaxis], self.ele_range[np.newaxis, np.newaxis, :], off_max_idx] # arr dim: (# of wf bins, # of ants, # of shos, # of ress)
         if self.use_debug:
-            corr_off_idx = np.copy(off_max_idx)
-            corr_max_no_off = np.copy(corr_2nd)
+            self.corr_off_idx = np.copy(off_max_idx)
+            self.corr_max_no_off = np.copy(corr_2nd)
         del corr_max
 
         ## rolling max
         corr_roll_max = maximum_filter1d(corr_2nd, axis = 0, size = self.roll_win_idx, mode='constant') # arr dim: (# of wf bins, # of ants, # of shos, # of ress)
         if self.use_debug:
-            corr_roll_no_off = np.copy(corr_roll_max)
+            self.corr_roll_no_off = np.copy(corr_roll_max)
         del corr_2nd
 
         ## sum the corr
@@ -200,14 +205,19 @@ class ara_matched_filter:
                     del arr_idx
                 del corr_ch
         if self.use_debug:  
-            corr_sum_pol = np.copy(corr_sum)
+            self.corr_sum_pol = np.copy(corr_sum)
         del corr_roll_max
 
         ## max finding
         v_max_idx = np.unravel_index(corr_sum[:, 0].argmax(), self.corr_sum_pol_shape) # array dim: (# of lag bins, # of shos, # of thetas, # of phis) 
         h_max_idx = np.unravel_index(corr_sum[:, 1].argmax(), self.corr_sum_pol_shape) 
         if self.use_debug:
-            corr_max_idx = np.array([v_max_idx, h_max_idx], dtype = int)
+            self.corr_max_idx = np.full((num_pols, 4), 0, dtype = int)
+            self.corr_max_idx[0] = v_max_idx 
+            self.corr_max_idx[1] = h_max_idx 
+            self.mf_wf_fin = np.full((self.lag_len, num_pols), np.nan, dtype = float)
+            self.mf_wf_fin[:, 0] = corr_sum[:, 0, v_max_idx[1], v_max_idx[2], v_max_idx[3]]
+            self.mf_wf_fin[:, 1] = corr_sum[:, 1, h_max_idx[1], h_max_idx[2], h_max_idx[3]]
 
         self.mf_max = np.full((num_pols), np.nan, dtype = float)
         self.mf_max[0] = corr_sum[:, 0][v_max_idx]
