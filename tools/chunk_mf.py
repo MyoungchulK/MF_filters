@@ -68,11 +68,12 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
     ara_mf = ara_matched_filter(st, run, wf_int.dt, wf_int.pad_len, get_sub_file = True, verbose = True)  
     good_chs = ara_mf.good_chs
     good_v_len = ara_mf.good_v_len
+    mf_param_shape = ara_mf.mf_param_shape
     wei = get_products(weights, good_chs, good_v_len)
     del st, run, good_chs, good_v_len, weights
-
+     
     mf_max = np.full((num_pols, num_evts), np.nan, dtype = float)
-    mf_temp = np.copy(mf_max)
+    mf_temp = np.full((num_pols, mf_param_shape[1], num_evts), np.nan, dtype = float)
     del num_pols
 
     # loop over the events
@@ -96,12 +97,12 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
 
         ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = wei[:, evt]) 
         mf_max[:, evt] = ara_mf.mf_max
-        mf_temp[:, evt] = ara_mf.mf_temp
+        mf_temp[:, :, evt] = ara_mf.mf_temp
         #print(mf_max[:, evt], mf_temp[:, evt])
     del ara_root, num_evts, num_ants, wf_int, ara_mf, daq_qual_cut_sum, wei
 
     print('MF collecting is done!')
-
+    
     return {'evt_num':evt_num,
             'trig_type':trig_type,
             'bad_ant':bad_ant,
