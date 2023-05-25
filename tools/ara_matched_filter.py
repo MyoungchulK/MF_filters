@@ -123,7 +123,6 @@ class ara_matched_filter:
         temp_hf = h5py.File(temp_dat, 'r')
         self.temp_rfft = temp_hf['temp_rfft'][:]
         self.temp = temp_hf['temp'][:]
-        print(self.temp.shape)
         if self.use_debug:
             self.temp_ori = np.copy(self.temp)
         self.temp = np.pad(self.temp, [(self.lag_len // 4, self.lag_len // 4), (0, 0), (0, 0), (0, 0), (0, 0)], 'constant', constant_values = 0)
