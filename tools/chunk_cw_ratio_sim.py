@@ -12,6 +12,7 @@ def cw_ratio_sim_collector(Data, Station, Year):
     from tools.ara_known_issue import known_issue_loader
     from tools.ara_run_manager import get_example_run
     from tools.ara_run_manager import get_path_info_v2
+    from tools.ara_run_manager import get_file_name
 
     # geom. info.
     ara_const = ara_const()
@@ -33,14 +34,11 @@ def cw_ratio_sim_collector(Data, Station, Year):
     del known_issue, config, ex_run
 
     # wf analyzer
-    slash_idx = Data.rfind('/')
-    dot_idx = Data.rfind('.')
-    data_name = Data[slash_idx+1:dot_idx]
-    h5_file_name = f'cw_band_{data_name}.h5'
-    band_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/cw_band_sim/{h5_file_name}'
+    h5_file_name = get_file_name(Data)
+    band_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/cw_band_sim/cw_band_{h5_file_name}.h5'
     print('cw band sim path:', band_path)
     wf_int = wf_analyzer(use_time_pad = True, use_cw = True, verbose = True, new_wf_time = wf_time, sim_path = band_path)
-    del band_path, slash_idx, dot_idx, data_name, h5_file_name
+    del band_path, h5_file_name
 
     # output array
     cw_ratio = np.full((num_ants, num_evts), np.nan, dtype = float)

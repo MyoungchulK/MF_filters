@@ -16,6 +16,7 @@ def cw_flag_signal_sim_collector(Data, Station, Year):
     from tools.ara_known_issue import known_issue_loader
     from tools.ara_run_manager import get_example_run
     from tools.ara_run_manager import get_path_info_v2
+    from tools.ara_run_manager import get_file_name
     from tools.ara_utility import size_checker
 
     # geom. info.
@@ -149,9 +150,7 @@ def cw_flag_signal_sim_collector(Data, Station, Year):
     output_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/cw_band_sim/'
     if not os.path.exists(output_path):
         os.makedirs(output_path)
-    slash_idx = Data.rfind('/')
-    dot_idx = Data.rfind('.')
-    data_name = Data[slash_idx+1:dot_idx]
+    data_name = get_file_name(Data)
     h5_file_name = f'cw_band_{data_name}.h5'
     hf = h5py.File(f'{output_path}{h5_file_name}', 'w')
     hf.create_dataset('entry_num', data=entry_num, compression="gzip", compression_opts=9)
@@ -162,7 +161,7 @@ def cw_flag_signal_sim_collector(Data, Station, Year):
         hf.create_dataset('bad_range', data=bad_range, dtype = dt, compression="gzip", compression_opts=9)
     hf.close()
     print(f'output is {output_path}{h5_file_name}.', size_checker(f'{output_path}{h5_file_name}'))
-    del slash_idx, dot_idx, data_name, h5_file_name
+    del data_name, h5_file_name
 
     print('CW flag signal sim collecting is done!')
 

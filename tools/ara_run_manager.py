@@ -17,6 +17,15 @@ ara_const = ara_const()
 num_ants = ara_const.USEFUL_CHAN_PER_STATION
 num_ddas = ara_const.DDA_PER_ATRI
 
+def get_file_name(dat_path):
+
+    slash_idx = dat_path.rfind('/')
+    dot_idx = dat_path.rfind('.')
+    file_name = dat_path[slash_idx+1:dot_idx]
+    del slash_idx, dot_idx
+
+    return file_name
+
 def get_path_info_v2(dat_path, mask_key, end_key, verbose = False):
 
     mask_idx = dat_path.find(mask_key)

@@ -15,6 +15,7 @@ def reco_sim_collector(Data, Station, Year):
     from tools.ara_wf_analyzer import wf_analyzer
     from tools.ara_py_interferometers import get_products
     from tools.ara_known_issue import known_issue_loader
+    from tools.ara_run_manager import get_file_name
 
     # const. info.
     ara_const = ara_const()
@@ -37,14 +38,12 @@ def reco_sim_collector(Data, Station, Year):
     del known_issue, config
  
     # sub files
-    slash_idx = Data.rfind('/')
-    dot_idx = Data.rfind('.')
-    h5_file_name = Data[slash_idx+1:dot_idx]
+    h5_file_name = get_file_name(Data)
     band_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/cw_band_sim/cw_band_{h5_file_name}.h5'
     snr_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/snr_sim/snr_{h5_file_name}.h5'
     print('cw band sim path:', band_path)
     print('snr sim path:', snr_path)
-    del slash_idx, dot_idx, h5_file_name 
+    del h5_file_name 
 
     # wf analyzer
     wf_int = wf_analyzer(verbose = True, use_time_pad = True, use_band_pass = True, use_cw = True, new_wf_time = wf_time, sim_path = band_path)

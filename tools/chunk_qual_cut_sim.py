@@ -12,6 +12,7 @@ def qual_cut_sim_collector(Data, Station, Year):
     from tools.ara_quality_cut import pre_qual_cut_loader
     from tools.ara_quality_cut import filt_qual_cut_loader
     from tools.ara_run_manager import get_example_run
+    from tools.ara_run_manager import get_file_name
 
     ## file name
     exponent = int(get_path_info_v2(Data, '_E', '_F'))
@@ -19,16 +20,12 @@ def qual_cut_sim_collector(Data, Station, Year):
     flavor = int(get_path_info_v2(Data, '_F', '_A'))
     sim_run = int(get_path_info_v2(Data, 'txt.run', '.root'))
     ex_run = get_example_run(Station, config)
-    slash_idx = Data.rfind('/')
-    dot_idx = Data.rfind('.')
-    data_name = Data[slash_idx+1:dot_idx]
-    h5_file_name = f'{data_name}.h5'
-    del slash_idx, dot_idx, data_name
+    h5_file_name = get_file_name(Data)
 
     ## result paths
-    cw_r_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/cw_ratio_sim/cw_ratio_{h5_file_name}'
-    rms_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/rms_sim/rms_{h5_file_name}'
-    reco_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco_sim/reco_{h5_file_name}'
+    cw_r_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/cw_ratio_sim/cw_ratio_{h5_file_name}.h5'
+    rms_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/rms_sim/rms_{h5_file_name}.h5'
+    reco_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco_sim/reco_{h5_file_name}.h5'
     print('cw ratio path:', cw_r_path)
     print('rms path:', rms_path)
     print('reco path:', reco_path)

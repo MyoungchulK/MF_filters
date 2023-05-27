@@ -45,6 +45,7 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
         run = ara_uproot.run
         ara_root = ara_root_loader(Data, Ped, st, yr)
         del ara_uproot
+    del yr
 
     # pre quality cut
     if use_l2 == False:
@@ -74,7 +75,7 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
      
     mf_max = np.full((num_pols, num_evts), np.nan, dtype = float)
     mf_temp = np.full((num_pols, mf_param_shape[1], num_evts), np.nan, dtype = float)
-    del num_pols
+    del num_pols, mf_param_shape
 
     # loop over the events
     for evt in tqdm(range(num_evts), disable = no_tqdm):
@@ -98,7 +99,7 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
         ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = wei[:, evt]) 
         mf_max[:, evt] = ara_mf.mf_max
         mf_temp[:, :, evt] = ara_mf.mf_temp
-        #print(mf_max[:, evt], mf_temp[:, evt])
+        #print(mf_max[:, evt], mf_temp[:, :, evt])
     del ara_root, num_evts, num_ants, wf_int, ara_mf, daq_qual_cut_sum, wei
 
     print('MF collecting is done!')

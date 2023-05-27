@@ -467,6 +467,28 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         cw_bp_coval[:,:,:,:,:,evt] = ara_int.coval
         cw_bp_sky_map[:,:,:,:,:,evt] = ara_int.sky_map
 
+    # interpolated all ele chs
+    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_rfft = True, use_ele_ch = True)
+    # loop over the events
+    for evt in tqdm(range(sel_evt_len)):
+        # get entry and wf
+        ara_root.get_entry(sel_entries[evt])
+        ara_root.get_useful_evt(ara_root.cal_type.kLatestCalib)
+        for ant in range(num_eles):
+            raw_t, raw_v = ara_root.get_ele_ch_wf(ant)
+            wf_len = len(raw_t)
+            ele_wf_all[:wf_len, 0, ant, evt] = raw_t
+            ele_wf_all[:wf_len, 1, ant, evt] = raw_v
+            wf_int.get_int_wf(raw_t, raw_v, ant)
+            ara_root.del_TGraph()
+        int_ele_wf_all[:, 0, :, evt] = wf_int.pad_t
+        int_ele_wf_all[:, 1, :, evt] = wf_int.pad_v
+        wf_int.get_fft_wf(use_rfft = True, use_abs = True, use_norm = True, use_phase = True)
+        ele_freq[:, :, evt] = wf_int.pad_freq
+        ele_fft[:, :, evt] = wf_int.pad_fft
+        ele_phase[:, :, evt] = wf_int.pad_phase
+        ara_root.del_usefulEvt()
+
     from tools.ara_matched_filter import ara_matched_filter
     from tools.ara_matched_filter import get_products
 

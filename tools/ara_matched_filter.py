@@ -16,12 +16,12 @@ num_pols = ara_const.POLARIZATION
 def get_psd(dat_type = 'rayl_nb', verbose = False, analyze_blind_dat = False, st = None, run = None, sim_path = None):
 
     ## get psd from rayl sigma
-    if sim_path is not None:
-        psd_dat = sim_path
-    else:
+    if sim_path is None:
         run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
         psd_dat = run_info.get_result_path(file_type = dat_type, verbose = verbose)
         del run_info
+    else:
+        psd_dat = sim_path
     psd_hf = h5py.File(psd_dat, 'r')
     freq = psd_hf['freq_range'][:]
     if dat_type == 'rayl_nb' or dat_type == 'rayl':
@@ -56,29 +56,22 @@ class ara_matched_filter:
             self.get_zero_pad()
             self.lags = correlation_lags(self.double_pad_len, self.double_pad_len, 'same') * self.dt
             self.lag_len = len(self.lags)
-            if self.use_debug:
-                if sim_psd_path is not None:
-                    self.psd, self.freq_psd, self.soft_baseline = get_psd(dat_type = 'baseline', sim_path = sim_psd_path)
-                else:
+            if sim_psd_path is None:
+                if self.use_debug:
                     self.psd, self.freq_psd, self.soft_rayl = get_psd(st = self.st, run = self.run, verbose = self.verbose, analyze_blind_dat = True)
-            else:
-                if sim_psd_path is not None:
-                    self.psd = get_psd(dat_type = 'baseline', sim_path = sim_psd_path)[0]
                 else:
                     self.psd = get_psd(st = self.st, run = self.run, verbose = self.verbose, analyze_blind_dat = True)[0]
+            else:
+                if self.use_debug:
+                    self.psd, self.freq_psd, self.soft_baseline = get_psd(dat_type = 'baseline', sim_path = sim_psd_path)
+                else:
+                    self.psd = get_psd(dat_type = 'baseline', sim_path = sim_psd_path)[0]
             self.get_template()
             self.get_normalization()
             if self.use_debug == False:
                 del self.temp_rfft, self.psd
             
-            known_issue = known_issue_loader(self.st)
-            self.good_chs = known_issue.get_bad_antenna(self.run, good_ant_true = True, print_ant_idx = True)
-            self.good_ch_pol = (self.good_chs // (num_ants // 2)).astype(int)
-            self.good_ch_len = len(self.good_chs)
-            self.good_v_len = np.count_nonzero(self.good_chs < 8)
-            self.good_ch_range = np.arange(self.good_ch_len, dtype = int)
-            if self.verbose:
-                print('useful antenna chs for mf:', self.good_chs)
+            self.get_good_antenna_info()    
             if self.use_all_chs == False:
                 self.temp = self.temp[:, self.good_chs]
                 self.zero_pad = self.zero_pad[:, self.good_chs]
@@ -90,6 +83,17 @@ class ara_matched_filter:
         else:
             self.lags = correlation_lags(self.pad_len, self.pad_len, 'full') * self.dt
             self.lag_len = len(self.lags)
+
+    def get_good_antenna_info(self):
+
+        known_issue = known_issue_loader(self.st)
+        self.good_chs = known_issue.get_bad_antenna(self.run, good_ant_true = True, print_ant_idx = True)
+        self.good_ch_pol = (self.good_chs // (num_ants // 2)).astype(int)
+        self.good_ch_len = len(self.good_chs)
+        self.good_v_len = np.count_nonzero(self.good_chs < 8)
+        self.good_ch_range = np.arange(self.good_ch_len, dtype = int)
+        if self.verbose:
+            print('useful antenna chs for mf:', self.good_chs)
 
     def get_zero_pad(self):
 
@@ -107,7 +111,7 @@ class ara_matched_filter:
         if self.use_debug:
             self.norm_fac = np.copy(norm_fac)
 
-        self.temp = self.temp[::-1] / norm_fac[np.newaxis, :, :]
+        self.temp = self.temp[::-1] / norm_fac[np.newaxis, :, :, :, :]
         del norm_fac
 
         if self.verbose:
@@ -128,23 +132,21 @@ class ara_matched_filter:
         self.temp = np.pad(self.temp, [(self.lag_len // 4, self.lag_len // 4), (0, 0), (0, 0), (0, 0), (0, 0)], 'constant', constant_values = 0)
         if self.use_debug:
             self.temp_pad = np.copy(self.temp)
-        self.temp_param = temp_hf['temp_param'][:]
+        self.temp_param = temp_hf['temp_param'][:] # (# of params, # of shos, # of ress, # of offs)
         self.sho_info = self.temp_param[0, :, 0, 0]
         self.off_info = self.temp_param[2, 0, 0, :]
         self.sho_range = np.arange(self.temp_param.shape[1], dtype = int)
         self.ele_range = np.arange(self.temp_param.shape[2], dtype = int)
-
         self.arr_time_diff = np.round(temp_hf['arr_time_diff'][:] / self.dt).astype(int)
-        self.arr_param = temp_hf['arr_param'][:]
+        self.arr_param = temp_hf['arr_param'][:] # (# of params, # of thetas, # of phis)
         self.num_thetas = self.arr_param.shape[1]
         self.num_phis = self.arr_param.shape[2]
         self.theta_idx = np.array([0, 1, 2, 3, 2, 1, 0], dtype = int)
         self.theta_info = self.arr_param[0, :, 0]
         self.phi_info = self.arr_param[1, 0, :]
-
-        self.corr_sum_shape = (self.lag_len, num_pols, self.temp_param.shape[1], self.num_thetas, self.num_phis) # array dim: (# of lag bins, # of pols, # of sho, # of theta * phi)
-        self.corr_sum_pol_shape = (self.lag_len, self.temp_param.shape[1], self.num_thetas, self.num_phis) # array dim: (# of lag bins, # of sho, # of theta * phi)
-        self.mf_param_shape = (num_pols, self.temp_param.shape[0] + num_ants) # array dim: (# of pols, # of temp params (sho, theta, phi, off))
+        self.corr_sum_shape = (self.lag_len, num_pols, self.temp_param.shape[1], self.num_thetas, self.num_phis) # array dim: (# of lag bins, # of pols, # of sho, # of theta, # of phi)
+        self.corr_sum_each_pol_shape = (self.lag_len, self.temp_param.shape[1], self.num_thetas, self.num_phis) # array dim: (# of lag bins, # of sho, # of theta, # of phi)
+        self.mf_param_shape = (num_pols, self.temp_param.shape[0] - 1 + num_ants) # array dim: (# of pols, # of temp params (sho, theta, phi, off (16)))
         del run_info, config, temp_dat, temp_hf
 
         if self.verbose:
@@ -159,7 +161,7 @@ class ara_matched_filter:
     def get_mf_wfs(self):
 
         # fft correlation w/ multiple array at once
-        self.corr = fftconvolve(self.temp, self.zero_pad[:, :, np.newaxis, np.newaxis, np.newaxis], 'same', axes = 0) # arr dim: (# of wf bins, # of ants, # of shos, # of ress, # of offs)
+        self.corr = fftconvolve(self.temp, self.zero_pad[:, :, np.newaxis, np.newaxis, np.newaxis], 'same', axes = 0) # arr dim: (# of lag bins, # of ants, # of shos, # of ress, # of offs)
         if self.use_debug:
             self.corr_no_hill = np.copy(self.corr)
 
@@ -170,7 +172,7 @@ class ara_matched_filter:
     def get_evt_wise_corr(self):
 
         ## corr_max
-        corr_max = np.nanmax(self.corr, axis = 0)
+        corr_max = np.nanmax(self.corr, axis = 0) #  arr dim: (# of ants, # of shos, # of ress, # of offs)
         if self.use_debug:
             self.corr_max_all = np.copy(corr_max)
 
@@ -208,8 +210,8 @@ class ara_matched_filter:
         del corr_roll_max
 
         ## max finding
-        v_max_idx = np.unravel_index(corr_sum[:, 0].argmax(), self.corr_sum_pol_shape) # array dim: (# of lag bins, # of shos, # of thetas, # of phis) 
-        h_max_idx = np.unravel_index(corr_sum[:, 1].argmax(), self.corr_sum_pol_shape) 
+        v_max_idx = np.unravel_index(corr_sum[:, 0].argmax(), self.corr_sum_each_pol_shape) # array dim: (# of lag bins, # of shos, # of thetas, # of phis) 
+        h_max_idx = np.unravel_index(corr_sum[:, 1].argmax(), self.corr_sum_each_pol_shape) 
         if self.use_debug:
             self.corr_max_idx = np.full((num_pols, 4), 0, dtype = int)
             self.corr_max_idx[0] = v_max_idx 
@@ -221,11 +223,11 @@ class ara_matched_filter:
         self.mf_max = np.full((num_pols), np.nan, dtype = float)
         self.mf_max[0] = corr_sum[:, 0][v_max_idx]
         self.mf_max[1] = corr_sum[:, 1][h_max_idx]
-        self.mf_temp = np.full(self.mf_param_shape, 0, dtype = int) # array dim: (# of pols, # of temp params (sho, theta, phi, off))
+        self.mf_temp = np.full(self.mf_param_shape, 0, dtype = int) # array dim: (# of pols, # of temp params (sho, theta, phi, off (16)))
         self.mf_temp[0, :3] = np.array([self.sho_info[v_max_idx[1]], self.theta_info[v_max_idx[2]], self.phi_info[v_max_idx[3]]], dtype = int)
-        self.mf_temp[0, 4:] = self.off_info[off_max_idx[:, v_max_idx[1], self.theta_idx[v_max_idx[2]]]]
+        self.mf_temp[0, 3:] = self.off_info[off_max_idx[:, v_max_idx[1], self.theta_idx[v_max_idx[2]]]]
         self.mf_temp[1, :3] = np.array([self.sho_info[h_max_idx[1]], self.theta_info[h_max_idx[2]], self.phi_info[h_max_idx[3]]], dtype = int)
-        self.mf_temp[1, 4:] = self.off_info[off_max_idx[:, h_max_idx[1], self.theta_idx[h_max_idx[2]]]]
+        self.mf_temp[1, 3:] = self.off_info[off_max_idx[:, h_max_idx[1], self.theta_idx[h_max_idx[2]]]]
         del corr_sum, off_max_idx
         if self.use_debug == False:
             del v_max_idx, h_max_idx
