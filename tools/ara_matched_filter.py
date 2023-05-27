@@ -76,7 +76,6 @@ class ara_matched_filter:
                 self.temp = self.temp[:, self.good_chs]
                 self.zero_pad = self.zero_pad[:, self.good_chs]
                 self.arr_time_diff = self.arr_time_diff[self.good_chs]
-            del known_issue
             
             if self.verbose:
                 print('sub tools are ready!')
