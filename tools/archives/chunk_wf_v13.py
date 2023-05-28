@@ -502,9 +502,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     psd = ara_mf.psd
     soft_rayl = ara_mf.soft_rayl
     temp_time = ara_mf.temp_time 
-    temp_wf_len = ara_mf.temp_wf_len
-    temp_fft_len = ara_mf.temp_fft_len
-    temp_freq = ara_mf.temp_freq
     temp_ori = ara_mf.temp_ori
     temp_pad = ara_mf.temp_pad
     temp_rfft = ara_mf.temp_rfft
@@ -528,13 +525,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     mf_temp = np.full((num_pols, mf_param_shape[1], sel_evt_len), np.nan, dtype = float)
     temp_param = ara_mf.temp_param
     arr_param = ara_mf.arr_param
-    mf_temp_ori_best = np.full((temp_wf_len, num_ants, sel_evt_len), np.nan, dtype = float)
-    mf_temp_ori_shift_best = np.copy(mf_temp_ori_best)
-    mf_temp_rfft_best = np.full((temp_fft_len, num_ants, sel_evt_len), np.nan, dtype = float) 
-    mf_corr_best = np.full((ara_mf.lag_len, num_ants, sel_evt_len), np.nan, dtype = float)
-    mf_corr_arr_best = np.copy(mf_corr_best)
-    mf_corr_roll_best = np.copy(mf_corr_best)
-    mf_corr_arr_roll_best = np.copy(mf_corr_best)
 
     for evt in tqdm(range(sel_evt_len)):
 
@@ -573,13 +563,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         mf_corr_sum_pol[:, :, :, :, :, evt] = ara_mf.corr_sum_pol
         mf_corr_max_idx[:, :, evt] = ara_mf.corr_max_idx
         mf_wf_fin[:, :, evt] = ara_mf.mf_wf_fin
-        mf_temp_ori_best[:, :, evt] =  ara_mf.temp_ori_best
-        mf_temp_ori_shift_best[:, :, evt] = ara_mf.temp_ori_shift_best
-        mf_temp_rfft_best[:, :, evt] = ara_mf.temp_rfft_best
-        mf_corr_best[:, :, evt] = ara_mf.corr_best
-        mf_corr_arr_best[:, :, evt] = ara_mf.corr_arr_best
-        mf_corr_roll_best[:, :, evt] = ara_mf.corr_roll_best
-        mf_corr_arr_roll_best[:, :, evt] = ara_mf.corr_arr_roll_best
 
     print('WF collecting is done!')
 
@@ -692,7 +675,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'psd':psd,
             'soft_rayl':soft_rayl,
             'temp_time':temp_time,
-            'temp_freq':temp_freq,
             'temp_ori':temp_ori,
             'temp_pad':temp_pad,
             'temp_rfft':temp_rfft,
@@ -713,13 +695,5 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'mf_corr_max_idx':mf_corr_max_idx,
             'mf_wf_fin':mf_wf_fin,
             'mf_max':mf_max,
-            'mf_temp':mf_temp,
-            'mf_temp_ori_best':mf_temp_ori_best,
-            'mf_temp_ori_shift_best':mf_temp_ori_shift_best,
-            'mf_temp_rfft_best':mf_temp_rfft_best,
-            'mf_corr_best':mf_corr_best,
-            'mf_corr_arr_best':mf_corr_arr_best,
-            'mf_corr_roll_best':mf_corr_roll_best,
-            'mf_corr_arr_roll_best':mf_corr_arr_roll_best}
-
+            'mf_temp':mf_temp}
 

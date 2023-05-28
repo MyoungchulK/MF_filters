@@ -74,6 +74,7 @@ class py_interferometers:
         del table_path, table_name, table_hf
  
         self.table = arr_table[:, :, :, self.pairs[:, 0], :] - arr_table[:, :, :, self.pairs[:, 1], :]
+        self.table = np.transpose(self.table, (0, 1, 2, 4, 3))
         self.table_ori_shape = self.table.shape
         self.table_pol_shape = (num_pols, num_thetas, self.num_phis, self.num_rads, self.num_ray_sol)
         self.coord_shape = (num_pols, 2, self.num_rads, self.num_ray_sol)
@@ -83,8 +84,8 @@ class py_interferometers:
             print('arr table shape:', self.table_shape)
         del radius_arr, num_thetas
 
-        table_p1 = np.reshape(arr_table[:, :, :, self.pairs[:, 0], :], self.table_shape)
-        table_p2 = np.reshape(arr_table[:, :, :, self.pairs[:, 1], :], self.table_shape)
+        table_p1 = np.reshape(np.transpose(arr_table[:, :, :, self.pairs[:, 0], :], (0, 1, 2, 4, 3)), self.table_shape)
+        table_p2 = np.reshape(np.transpose(arr_table[:, :, :, self.pairs[:, 1], :], (0, 1, 2, 4, 3)), self.table_shape)
         self.bad_arr = np.logical_or(table_p1 < -100, table_p2 < -100)
         del table_p1, table_p2, arr_table
 
