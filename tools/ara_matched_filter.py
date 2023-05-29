@@ -226,6 +226,7 @@ class ara_matched_filter:
         ## max finding
         v_max_idx = np.unravel_index(corr_sum[:, 0].argmax(), self.corr_sum_each_pol_shape) # array dim: (# of lag bins, # of shos, # of thetas, # of phis) 
         h_max_idx = np.unravel_index(corr_sum[:, 1].argmax(), self.corr_sum_each_pol_shape) 
+        print(corr_sum[:, 0].argmax(),'!!!!!!!!')
         if self.use_debug:
             self.corr_roll_sum_peak_idx = np.full((num_pols, len(self.corr_sum_each_pol_shape)), 0, dtype = int)
             self.corr_roll_sum_peak_idx[0] = v_max_idx 
