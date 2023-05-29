@@ -49,22 +49,30 @@ def temp_sim_collector(Data, Station, Year):
     del config, param_path, flavor
 
     # temp arrays
-    sho_bin = np.array([0, 1], dtype = int)
-    res_bin = np.array([-60, -40, -20, 0], dtype = int)
-    off_bin = np.array([0, 2, 4], dtype = int)
-    sho_bin_len = len(sho_bin)
-    res_bin_len = len(res_bin)
-    off_bin_len = len(off_bin)
+    sho_idx = np.array([0, 1], dtype = int)
+    ele_idx = np.array([-60, -40, -20, 0], dtype = int)
+    off_idx = np.array([0, 2, 4], dtype = int)
+    params = [sho_idx, ele_idx, off_idx]
+    param_lens = [len(sho_idx), len(ele_idx), len(off_idx)]
+    num_params = len(params) # EM/HAD, Ant_Res, Off
+    temp_param = np.full((num_params, param_lens[0], param_lens[1], param_lens[2]), 0, dtype = int)
+    temp_param[0] = sho_idx[:, np.newaxis, np.newaxis]
+    temp_param[1] = ele_idx[np.newaxis, :, np.newaxis]
+    temp_param[2] = off_idx[np.newaxis, np.newaxis, :]
+    del num_params
 
     # arrival time table
-    arr_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/arr_time_table/temp_arr_time_table_A{Station}_Y2015.h5'
-    arr_hf = h5py.File(arr_path, 'r')
-    arr_time = arr_hf['arr_time_table'][:, :, 0, :, 0] # 300 m, 1st sol arr dim (theta, phi, antenna)
-    arr_time_diff = arr_time - np.nanmean(arr_time, axis = 2)[:, :, np.newaxis]
-    arr_time_diff = np.transpose(arr_time_diff, (2, 0, 1)) # arr dim (antenna, theta, phi)
-    theta_bin = 90 - arr_hf['theta_bin'][:].astype(int)
-    phi_bin = arr_hf['phi_bin'][:].astype(int)
-    del arr_path, arr_hf, arr_time
+    table_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/arr_time_table/temp_arr_time_table_A{Station}_Y2015.h5'
+    t_hf = h5py.File(table_path, 'r')
+    t_arr_time = t_hf['arr_time_table'][:, :, 0, :, 0]
+    arr_time_diff = t_arr_time - np.nanmean(t_arr_time, axis = 2)[:, :, np.newaxis]
+    arr_time_diff = np.transpose(arr_time_diff, (2, 0, 1))
+    arr_theta = 90 - t_hf['theta_bin'][:].astype(int)
+    arr_phi = t_hf['phi_bin'][:].astype(int)
+    arr_param = np.full((2, arr_time_diff.shape[1], arr_time_diff.shape[2]), 0, dtype = int)
+    arr_param[0] = arr_theta[:, np.newaxis]
+    arr_param[1] = arr_phi[np.newaxis, :]
+    del table_path, t_hf, t_arr_time, arr_theta, arr_phi
 
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_freq_pad = True, use_rfft = True, verbose = True, new_wf_time = wf_time)
@@ -74,11 +82,11 @@ def temp_sim_collector(Data, Station, Year):
     fft_len = wf_int.pad_fft_len
 
     # temp arrays
-    temp = np.full((wf_len, num_ants, sho_bin_len, res_bin_len, off_bin_len), 0, dtype = float)
-    temp_rfft = np.full((fft_len, num_ants, sho_bin_len, res_bin_len, off_bin_len), np.nan, dtype = float)
-    sig_shift = np.full((num_ants, sho_bin_len, res_bin_len, off_bin_len), np.nan, dtype = float)
+    temp = np.full((wf_len, num_ants, param_lens[0], param_lens[1], param_lens[2]), 0, dtype = float)
+    temp_rfft = np.full((fft_len, num_ants, param_lens[0], param_lens[1], param_lens[2]), 0, dtype = float)
+    sig_shift = np.full((num_ants, param_lens[0], param_lens[1], param_lens[2]), np.nan, dtype = float)
     rec_angle = np.copy(sig_shift)
-    del sho_bin_len, res_bin_len, off_bin_len, fft_len
+    del fft_len
 
     # loop over the events
     for evt in tqdm(range(num_evts)):
@@ -86,9 +94,9 @@ def temp_sim_collector(Data, Station, Year):
 
         # indexs
         ant_ch = temp_temp_param[0, evt] 
-        sho_loc = np.where(sho_bin == temp_temp_param[1, evt])[0][0]
-        ele_loc = np.where(res_bin == temp_temp_param[2, evt])[0][0]
-        off_loc = np.where(off_bin == temp_temp_param[3, evt])[0][0]
+        sho_loc = np.where(sho_idx == temp_temp_param[1, evt])[0][0]
+        ele_loc = np.where(ele_idx == temp_temp_param[2, evt])[0][0]
+        off_loc = np.where(off_idx == temp_temp_param[3, evt])[0][0]
         sig_bin_evt = signal_bin[ant_ch, evt]
         sig_bins = int(np.round(sig_bin_evt / dt))
         sig_shift[ant_ch, sho_loc, ele_loc, off_loc] = sig_bin_evt
@@ -99,8 +107,8 @@ def temp_sim_collector(Data, Station, Year):
         wf_v = ara_root.get_rf_wfs(evt)
         for ant in range(num_ants):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_band_pass = True)
-        pad_v_ant = wf_int.pad_v[:, ant_ch]
         del wf_v
+        pad_v_ant = wf_int.pad_v[:, ant_ch]
 
         # signal shift
         temp_sig_shift = np.full((wf_len), 0, dtype = float) 
@@ -118,20 +126,17 @@ def temp_sim_collector(Data, Station, Year):
         wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_abs = True, use_norm = True)
         temp_rfft[:, ant_ch, sho_loc, ele_loc, off_loc] = wf_int.pad_fft[:, ant_ch]
         del ant_ch, sho_loc, ele_loc, off_loc 
-    del ara_root, num_evts, num_ants, wf_int, wf_time, wf_len, dt, signal_bin, rec_ang, temp_temp_param
+    del ara_root, num_evts, num_ants, wf_int, wf_time, wf_len, dt, signal_bin, rec_ang, temp_temp_param, sho_idx, ele_idx, off_idx, params, param_lens
 
     print('Temp collecting is done!')
 
     return {'temp_time':temp_time,
             'temp_freq':temp_freq,
-            'temp':temp,
-            'temp_rfft':temp_rfft,
             'arr_time_diff':arr_time_diff,
+            'arr_param':arr_param,
             'sig_shift':sig_shift,
             'rec_angle':rec_angle,
-            'sho_bin':sho_bin,
-            'res_bin':res_bin,
-            'off_bin':off_bin,
-            'theta_bin':theta_bin,
-            'phi_bin':phi_bin}
+            'temp_param':temp_param,
+            'temp':temp,
+            'temp_rfft':temp_rfft} 
 
