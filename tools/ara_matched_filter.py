@@ -137,6 +137,7 @@ class ara_matched_filter:
             self.temp_wf_len = len(self.temp_time)
             self.temp_freq = temp_hf['temp_freq'][:]
             self.temp_fft_len = len(self.temp_freq)
+            self.temp_phase = temp_hf['temp_phase'][:]
         self.temp = np.pad(self.temp, [(self.quater_idx, self.quater_idx), (0, 0), (0, 0), (0, 0), (0, 0)], 'constant', constant_values = 0)
         if self.use_debug:
             self.temp_pad = np.copy(self.temp)
@@ -211,10 +212,10 @@ class ara_matched_filter:
                 corr_ch = corr_roll_max[:, ant, :, self.res_theta_idx[theta]] # arr dim: (# of lag bins, # of shos)
                 for phi in range(self.num_arr_params[1]):
                     arr_idx = self.arr_time_diff[ant, theta, phi]
-                    if arr_idx > 0:
-                        corr_sum[arr_idx:, self.good_ch_pol[ant], :, theta, phi] += corr_ch[:-arr_idx]        
-                    elif arr_idx < 0:
-                        corr_sum[:arr_idx, self.good_ch_pol[ant], :, theta, phi] += corr_ch[-arr_idx:]
+                    if arr_idx < 0:
+                        corr_sum[-arr_idx:, self.good_ch_pol[ant], :, theta, phi] += corr_ch[:arr_idx]
+                    elif arr_idx > 0:
+                        corr_sum[:-arr_idx, self.good_ch_pol[ant], :, theta, phi] += corr_ch[arr_idx:]
                     else:
                         corr_sum[:, self.good_ch_pol[ant], :, theta, phi] += corr_ch
                     del arr_idx
@@ -226,7 +227,6 @@ class ara_matched_filter:
         ## max finding
         v_max_idx = np.unravel_index(corr_sum[:, 0].argmax(), self.corr_sum_each_pol_shape) # array dim: (# of lag bins, # of shos, # of thetas, # of phis) 
         h_max_idx = np.unravel_index(corr_sum[:, 1].argmax(), self.corr_sum_each_pol_shape) 
-        print(corr_sum[:, 0].argmax(),'!!!!!!!!')
         if self.use_debug:
             self.corr_roll_sum_peak_idx = np.full((num_pols, len(self.corr_sum_each_pol_shape)), 0, dtype = int)
             self.corr_roll_sum_peak_idx[0] = v_max_idx 
@@ -248,6 +248,7 @@ class ara_matched_filter:
             self.temp_ori_shift_best = np.copy(self.temp_ori_best)
             #self.temp_ori_arr_shift_best = np.copy(self.temp_ori_best)
             self.temp_rfft_best = np.full((self.temp_fft_len, num_ants), np.nan, dtype = float)
+            self.temp_phase_best = np.full((self.temp_fft_len, num_ants), np.nan, dtype = float)
             self.corr_best = np.full((self.lag_len, num_ants), np.nan, dtype = float)
             self.corr_arr_best = np.copy(self.corr_best)
             ant_1 = 0
@@ -260,6 +261,7 @@ class ara_matched_filter:
                     arr_idx = self.arr_time_diff[ant_1, res_best_idx, phi_best_idx]
                     self.temp_ori_best[:, ant] = self.temp_ori[:, ant, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx]
                     self.temp_rfft_best[:, ant] = self.temp_rfft[:, ant, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx]
+                    self.temp_phase_best[:, ant] = self.temp_phase[:, ant, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx]
                     self.corr_best[:, ant] = self.corr[:, ant_1, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx]
                     shift_idx = int(self.lags[np.nanargmax(self.corr_best[:, ant])] / self.dt)
                     if shift_idx > 0:
@@ -269,9 +271,9 @@ class ara_matched_filter:
                     else:
                         self.temp_ori_shift_best[:, ant] = self.temp_ori_best[:, ant]
                     if arr_idx > 0:
-                        self.corr_arr_best[arr_idx:, ant] = corr_2nd[:-arr_idx, ant_1, sho_best_idx, self.res_theta_idx[res_best_idx]]
+                        self.corr_arr_best[:-arr_idx, ant] = corr_2nd[arr_idx:, ant_1, sho_best_idx, self.res_theta_idx[res_best_idx]]
                     elif arr_idx < 0:
-                        self.corr_arr_best[:arr_idx, ant] = corr_2nd[-arr_idx:, ant_1, sho_best_idx, self.res_theta_idx[res_best_idx]]
+                        self.corr_arr_best[-arr_idx:, ant] = corr_2nd[:arr_idx, ant_1, sho_best_idx, self.res_theta_idx[res_best_idx]]
                     else:
                         self.corr_arr_best[:, ant] = corr_2nd[:, ant_1, sho_best_idx, self.res_theta_idx[res_best_idx]]
                     del sho_best_idx, res_best_idx, off_best_idx, arr_idx, shift_idx

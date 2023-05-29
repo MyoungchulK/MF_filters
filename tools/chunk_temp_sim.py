@@ -76,6 +76,7 @@ def temp_sim_collector(Data, Station, Year):
     # temp arrays
     temp = np.full((wf_len, num_ants, sho_bin_len, res_bin_len, off_bin_len), 0, dtype = float)
     temp_rfft = np.full((fft_len, num_ants, sho_bin_len, res_bin_len, off_bin_len), np.nan, dtype = float)
+    temp_phase = np.copy(temp_rfft)
     sig_shift = np.full((num_ants, sho_bin_len, res_bin_len, off_bin_len), np.nan, dtype = float)
     rec_angle = np.copy(sig_shift)
     del sho_bin_len, res_bin_len, off_bin_len, fft_len
@@ -115,8 +116,9 @@ def temp_sim_collector(Data, Station, Year):
         temp[:, ant_ch, sho_loc, ele_loc, off_loc] = temp_sig_shift
         del temp_sig_shift
 
-        wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_abs = True, use_norm = True)
+        wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_abs = True, use_norm = True, use_phase = True)
         temp_rfft[:, ant_ch, sho_loc, ele_loc, off_loc] = wf_int.pad_fft[:, ant_ch]
+        temp_phase[:, ant_ch, sho_loc, ele_loc, off_loc] = wf_int.pad_phase[:, ant_ch]
         del ant_ch, sho_loc, ele_loc, off_loc 
     del ara_root, num_evts, num_ants, wf_int, wf_time, wf_len, dt, signal_bin, rec_ang, temp_temp_param
 
@@ -126,6 +128,7 @@ def temp_sim_collector(Data, Station, Year):
             'temp_freq':temp_freq,
             'temp':temp,
             'temp_rfft':temp_rfft,
+            'temp_phase':temp_phase,
             'arr_time_diff':arr_time_diff,
             'sig_shift':sig_shift,
             'rec_angle':rec_angle,

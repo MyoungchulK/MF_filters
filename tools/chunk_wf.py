@@ -531,6 +531,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     mf_temp_ori_best = np.full((temp_wf_len, num_ants, sel_evt_len), np.nan, dtype = float)
     mf_temp_ori_shift_best = np.copy(mf_temp_ori_best)
     mf_temp_rfft_best = np.full((temp_fft_len, num_ants, sel_evt_len), np.nan, dtype = float) 
+    mf_temp_phase_best = np.full((temp_fft_len, num_ants, sel_evt_len), np.nan, dtype = float) 
     mf_corr_best = np.full((ara_mf.lag_len, num_ants, sel_evt_len), np.nan, dtype = float)
     mf_corr_arr_best = np.copy(mf_corr_best)
     mf_corr_roll_best = np.copy(mf_corr_best)
@@ -578,6 +579,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         mf_temp_ori_best[:, :, evt] =  ara_mf.temp_ori_best
         mf_temp_ori_shift_best[:, :, evt] = ara_mf.temp_ori_shift_best
         mf_temp_rfft_best[:, :, evt] = ara_mf.temp_rfft_best
+        mf_temp_phase_best[:, :, evt] = ara_mf.temp_phase_best
         mf_corr_best[:, :, evt] = ara_mf.corr_best
         mf_corr_arr_best[:, :, evt] = ara_mf.corr_arr_best
         mf_corr_roll_best[:, :, evt] = ara_mf.corr_roll_best
@@ -722,6 +724,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'mf_temp_ori_best':mf_temp_ori_best,
             'mf_temp_ori_shift_best':mf_temp_ori_shift_best,
             'mf_temp_rfft_best':mf_temp_rfft_best,
+            'mf_temp_phase_best':mf_temp_phase_best,
             'mf_corr_best':mf_corr_best,
             'mf_corr_arr_best':mf_corr_arr_best,
             'mf_corr_roll_best':mf_corr_roll_best,
