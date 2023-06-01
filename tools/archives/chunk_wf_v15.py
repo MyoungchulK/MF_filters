@@ -492,7 +492,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     from tools.ara_matched_filter import ara_matched_filter
     from tools.ara_matched_filter import get_products
 
-    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_band_pass = True, use_rfft = True, use_cw = True, verbose = True, analyze_blind_dat = analyze_blind_dat, st = st, run = run)
+    wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_band_pass = True, use_rfft = True, use_noise_weight = True, use_cw = True, verbose = True, analyze_blind_dat = analyze_blind_dat, st = st, run = run)
     ara_mf = ara_matched_filter(st, run, wf_int.dt, wf_int.pad_len, get_sub_file = True, use_debug = True, verbose = True)
     good_chs = ara_mf.good_chs
     good_ch_len = ara_mf.good_ch_len
@@ -500,14 +500,14 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     wei = get_products(weights, good_chs, good_v_len)
     mf_param_shape = ara_mf.mf_param_shape
     psd = ara_mf.psd
-    soft_rayl = ara_mf.baseline
+    soft_rayl = ara_mf.soft_rayl
     temp_time = ara_mf.temp_time 
     temp_wf_len = ara_mf.temp_wf_len
     temp_fft_len = ara_mf.temp_fft_len
     temp_freq = ara_mf.temp_freq
     temp_ori = ara_mf.temp_ori
     temp_pad = ara_mf.temp_pad
-    temp_rfft = ara_mf.temp_rfft_ori
+    temp_rfft = ara_mf.temp_rfft
     temp_param = ara_mf.num_temp_params
     temp = ara_mf.temp
     arr_time_diff = ara_mf.arr_time_diff
@@ -546,7 +546,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         ara_root.get_useful_evt(ara_root.cal_type.kLatestCalibWithOutTrimFirstBlock)
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_band_pass = True, use_cw = True, evt = evt)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_band_pass = True, use_cw = True, use_noise_weight = True, evt = evt)
             ara_root.del_TGraph()
         mf_wf_all[:, 0, :, evt] = wf_int.pad_t
         mf_wf_all[:, 1, :, evt] = wf_int.pad_v
@@ -557,7 +557,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         # reco w/ cw (and band-passed) wf
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True, evt = evt)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True, use_noise_weight = True, evt = evt)
             ara_root.del_TGraph()
         ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = wei[:, sel_entries[evt]])
         mf_max[:, evt] = ara_mf.mf_max

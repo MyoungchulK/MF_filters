@@ -42,7 +42,7 @@ def wf_sim_collector(Data, Station, Year, act_evt):
         get_angle_info = True
     else: 
         get_angle_info = False
-    get_angle_info = False
+    #get_angle_info = False
 
     # data config
     ara_root = ara_root_loader(Data, Station, Year)
@@ -246,7 +246,7 @@ def wf_sim_collector(Data, Station, Year, act_evt):
     from tools.ara_matched_filter import ara_matched_filter
     from tools.ara_matched_filter import get_products
 
-    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_noise_weight = True, use_cw = True, use_freq_pad = True, use_rfft = True, verbose = True, st = Station, run = ex_run, new_wf_time = wf_time, sim_path = band_path, sim_psd_path = base_path)
+    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, use_freq_pad = True, use_rfft = True, verbose = True, st = Station, run = ex_run, new_wf_time = wf_time, sim_path = band_path)
     ara_mf = ara_matched_filter(Station, ex_run, wf_int.dt, wf_int.pad_len, get_sub_file = True, verbose = True, use_debug = True, sim_psd_path = base_path)
     good_chs = ara_mf.good_chs
     good_ch_len = ara_mf.good_ch_len
@@ -254,14 +254,14 @@ def wf_sim_collector(Data, Station, Year, act_evt):
     wei = get_products(snr, good_chs, good_v_len)
     mf_param_shape = ara_mf.mf_param_shape
     psd = ara_mf.psd
-    soft_rayl = ara_mf.soft_baseline
+    soft_rayl = ara_mf.baseline
     temp_time = ara_mf.temp_time
     temp_wf_len = ara_mf.temp_wf_len
     temp_fft_len = ara_mf.temp_fft_len
     temp_freq = ara_mf.temp_freq
     temp_ori = ara_mf.temp_ori
     temp_pad = ara_mf.temp_pad
-    temp_rfft = ara_mf.temp_rfft
+    temp_rfft = ara_mf.temp_rfft_ori
     temp_param = ara_mf.num_temp_params
     temp = ara_mf.temp
     arr_time_diff = ara_mf.arr_time_diff
@@ -298,7 +298,7 @@ def wf_sim_collector(Data, Station, Year, act_evt):
 
         wf_v = ara_root.get_rf_wfs(sel_evts[evt])
         for ant in range(num_ants):
-            wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_band_pass = True, use_cw = True, use_noise_weight = True, evt = sel_evts[evt])
+            wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_band_pass = True, use_cw = True, evt = sel_evts[evt])
         mf_wf_all[:, 0, :, evt] = wf_int.pad_t
         mf_wf_all[:, 1, :, evt] = wf_int.pad_v
         wf_int.get_fft_wf(use_rfft = True, use_abs = True, use_norm = True, use_phase = True)
@@ -306,7 +306,7 @@ def wf_sim_collector(Data, Station, Year, act_evt):
         mf_phase[:, :, evt] = wf_int.pad_phase
 
         for ant in range(num_ants):
-            wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_band_pass = True, use_cw = True, use_noise_weight = True, evt = sel_evts[evt])
+            wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_band_pass = True, use_cw = True, evt = sel_evts[evt])
         ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = wei[:, sel_evts[evt]])
         mf_max[:, evt] = ara_mf.mf_max
         mf_temp[:, :, evt] = ara_mf.mf_temp

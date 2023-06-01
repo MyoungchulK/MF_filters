@@ -3,7 +3,6 @@ import numpy as np
 import h5py
 from scipy.signal import hilbert, fftconvolve, correlation_lags
 from scipy.ndimage import maximum_filter1d
-from scipy.interpolate import interp1d
 
 # custom lib
 from tools.ara_constant import ara_const
@@ -26,9 +25,9 @@ def get_psd(dat_type = 'rayl_nb', verbose = False, analyze_blind_dat = False, st
     psd_hf = h5py.File(psd_dat, 'r')
     freq = psd_hf['freq_range'][:]
     if dat_type == 'rayl_nb' or dat_type == 'rayl':
+        avg_or_coef = np.nansum(psd_hf['soft_rayl'][:], axis = 0)
         sigma_to_mean = np.sqrt(np.pi / 2)
-        avg_or_coef = np.nansum(psd_hf['soft_rayl'][:], axis = 0) * sigma_to_mean
-        psd = avg_or_coef ** 2
+        psd = (avg_or_coef * sigma_to_mean) ** 2
         del sigma_to_mean
     else:
         avg_or_coef = psd_hf['baseline'][:]
@@ -52,24 +51,32 @@ class ara_matched_filter:
         self.use_debug = use_debug
         self.use_all_chs = use_all_chs
         self.verbose = verbose
-        self.sim_psd_path = sim_psd_path
 
         if get_sub_file:
             self.get_zero_pad()
             self.lags = correlation_lags(self.double_pad_len, self.double_pad_len, 'same') * self.dt
             self.lag_len = len(self.lags)
-            self.lag_half_len = self.lag_len // 2
-            self.get_psd()
+            if sim_psd_path is None:
+                if self.use_debug:
+                    self.psd, self.freq_psd, self.soft_rayl = get_psd(st = self.st, run = self.run, verbose = self.verbose, analyze_blind_dat = True)
+                else:
+                    self.psd = get_psd(st = self.st, run = self.run, verbose = self.verbose, analyze_blind_dat = True)[0]
+            else:
+                if self.use_debug:
+                    self.psd, self.freq_psd, self.soft_baseline = get_psd(dat_type = 'baseline', sim_path = sim_psd_path)
+                else:
+                    self.psd = get_psd(dat_type = 'baseline', sim_path = sim_psd_path)[0]
             self.get_template()
             self.get_normalization()
+            if self.use_debug == False:
+                del self.temp_rfft, self.psd
+            
             self.get_good_antenna_info()    
             if self.use_all_chs == False:
                 self.temp = self.temp[:, self.good_chs]
                 self.zero_pad = self.zero_pad[:, self.good_chs]
-                self.psd_int = self.psd_int[:, self.good_chs]
                 self.arr_time_diff = self.arr_time_diff[self.good_chs]
-                self.norm_fac = self.norm_fac[self.good_chs]
-     
+            
             if self.verbose:
                 print('sub tools are ready!')
         else:
@@ -92,26 +99,6 @@ class ara_matched_filter:
         if self.verbose:
             print('useful antenna chs for mf:', self.good_chs)
 
-    def get_psd(self):
-        
-        if self.sim_psd_path is None:
-            psd, freq_psd, baseline = get_psd(st = self.st, run = self.run, verbose = self.verbose, analyze_blind_dat = True)
-        else:
-            psd, freq_psd, baseline = get_psd(dat_type = 'baseline', sim_path = self.sim_psd_path)
-               
-        freq_psd_double = np.fft.rfftfreq(self.lag_len, self.dt)
-        psd_f = interp1d(freq_psd, psd, axis = 0, fill_value = 'extrapolate')
-        self.psd_int = psd_f(freq_psd_double) * self.lag_len / self.dt # reverse normalization
-        if self.use_debug:
-            self.psd = np.copy(psd)
-            self.freq_psd = np.copy(freq_psd)
-            self.baseline = np.copy(baseline)
-            self.freq_psd_double = np.copy(freq_psd_double)
-        del psd, freq_psd, baseline, freq_psd_double, psd_f
-
-        if self.verbose:
-            print('psd is on!')
-
     def get_zero_pad(self):
 
         self.double_pad_len = self.pad_len * 2
@@ -123,9 +110,8 @@ class ara_matched_filter:
 
     def get_normalization(self):
 
-        self.norm_fac = 2 * np.nansum(np.abs(self.temp) ** 2 / self.psd_int[:, :, np.newaxis, np.newaxis, np.newaxis], axis = 0)
-        self.norm_fac /= self.lag_len * self.dt
-        self.norm_fac = np.sqrt(self.norm_fac)
+        self.norm_fac = np.abs(self.temp_rfft)**2 / self.psd[:, :, np.newaxis, np.newaxis, np.newaxis]
+        self.norm_fac = np.sqrt(np.nansum(self.norm_fac, axis = 0) / (self.dt * self.pad_len))
 
         if self.verbose:
             print('norm is on!')
@@ -138,10 +124,10 @@ class ara_matched_filter:
         if self.verbose:
             print('template:', temp_dat)
         temp_hf = h5py.File(temp_dat, 'r')
+        self.temp_rfft = temp_hf['temp_rfft'][:]
         self.temp = temp_hf['temp'][:]
         if self.use_debug:
             self.temp_ori = np.copy(self.temp)
-            self.temp_rfft_ori = temp_hf['temp_rfft'][:]
             self.temp_time = temp_hf['temp_time'][:]
             self.temp_wf_len = len(self.temp_time)
             self.temp_freq = temp_hf['temp_freq'][:]
@@ -150,12 +136,6 @@ class ara_matched_filter:
         self.temp = np.pad(self.temp, [(self.quater_idx, self.quater_idx), (0, 0), (0, 0), (0, 0), (0, 0)], 'constant', constant_values = 0)
         if self.use_debug:
             self.temp_pad = np.copy(self.temp)
-        self.temp = np.fft.rfft(self.temp, axis = 0)
-        if self.use_debug:
-            self.temp_rfft_pad = np.copy(self.temp)
-        self.temp = self.temp.conjugate()
-        if self.use_debug:
-            self.temp_rfft_pad_conj = np.copy(self.temp)
         self.sho_bin = temp_hf['sho_bin'][:] # 0, 1
         self.res_bin = temp_hf['res_bin'][:] # -60, -40, -20, 0
         self.off_bin = temp_hf['off_bin'][:] # 0, 2, 4
@@ -185,18 +165,23 @@ class ara_matched_filter:
 
     def get_mf_wfs(self):
 
+        from scipy.interpolate import interp1d
+
+        psd_freq = np.fft.rfftfreq(self.pad_len, self.dt)
+        psd_freq_d = np.fft.rfftfreq(self.lag_len, self.dt)
+        psd_f = interp1d(psd_freq, self.psd, axis = 0, fill_value = 'extrapolate')
+        psd_int = psd_f(psd_freq_d)
+        psd_int = psd_int * self.lag_len / self.dt
+
+        norm_fac = np.abs(np.fft.rfft(self.temp, axis = 0))**2 / psd_int[:, self.good_chs, np.newaxis, np.newaxis, np.newaxis]
+        norm_fac = np.sqrt(np.nansum(self.norm_fac, axis = 0) / (self.dt * self.lag_len))
+
         # fft correlation w/ multiple array at once
-        self.corr = self.temp * np.fft.rfft(self.zero_pad, axis = 0)[:, :, np.newaxis, np.newaxis, np.newaxis]
-        if self.use_debug:
-            self.corr_temp_dat = np.copy(self.corr)
-        self.corr /= self.psd_int[:, :, np.newaxis, np.newaxis, np.newaxis] 
-        if self.use_debug:
-            self.corr_temp_dat_psd = np.copy(self.corr)
-        self.corr = 2 * np.fft.irfft(self.corr, n = self.lag_len, axis = 0) / self.dt
-        self.corr /= self.norm_fac[np.newaxis, :, :, :, :]
-        if self.use_debug:
-            self.corr_no_roll = np.copy(self.corr)
-        self.corr = np.roll(self.corr, self.lag_half_len, axis = 0)
+        self.corr = np.fft.rfft(self.temp, axis = 0).conjugate() * np.fft.rfft(self.zero_pad, axis = 0)[:, :, np.newaxis, np.newaxis, np.newaxis]
+        self.corr /= psd_int[:, self.good_chs, np.newaxis, np.newaxis, np.newaxis] 
+        self.corr /= norm_fac
+        self.corr = np.fft.irfft(self.corr, n = self.lag_len, axis = 0)
+        self.corr = np.roll(self.corr, self.lag_len // 2, axis = 0)
         if self.use_debug:
             self.corr_no_hill = np.copy(self.corr)
 
@@ -285,7 +270,7 @@ class ara_matched_filter:
                     off_best_idx = int(self.mf_temp[ant // 8, 3 + ant % 8]//2)
                     arr_idx = self.arr_time_diff[ant_1, res_best_idx, phi_best_idx]
                     self.temp_ori_best[:, ant] = self.temp_ori[:, ant, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx]
-                    self.temp_rfft_best[:, ant] = self.temp_rfft_ori[:, ant, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx]
+                    self.temp_rfft_best[:, ant] = self.temp_rfft[:, ant, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx]
                     self.temp_phase_best[:, ant] = self.temp_phase[:, ant, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx]
                     self.corr_best[:, ant] = self.corr[:, ant_1, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx]
                     shift_idx = int(self.lags[np.nanargmax(self.corr_best[:, ant])] / self.dt)

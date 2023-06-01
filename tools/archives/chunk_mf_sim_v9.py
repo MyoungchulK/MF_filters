@@ -53,7 +53,7 @@ def mf_sim_collector(Data, Station, Year):
     del wei_hf, snr_path
 
     # wf analyzer
-    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, verbose = True, st = Station, run = ex_run, new_wf_time = wf_time, sim_path = band_path)
+    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_noise_weight = True, use_cw = True, verbose = True, st = Station, run = ex_run, new_wf_time = wf_time, sim_path = band_path, sim_psd_path = base_path)
     del band_path
 
     # matched filter
@@ -74,7 +74,7 @@ def mf_sim_collector(Data, Station, Year):
 
         wf_v = ara_root.get_rf_wfs(evt)
         for ant in range(num_ants):
-            wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_band_pass = True, use_cw = True, evt = evt)
+            wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_band_pass = True, use_cw = True, use_noise_weight = True, evt = evt)
         del wf_v
 
         ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = wei[:, evt]) 

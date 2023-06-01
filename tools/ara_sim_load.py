@@ -220,7 +220,7 @@ class ara_root_loader:
         tpr = np.full((3, self.num_evts), np.nan, dtype = float)
 
         # zenith calculation to center of antenna
-        AB = np.nansum(posnu_vec * theta_unit_vec[:, np.newaxis]) # A.B
+        AB = np.nansum(posnu_vec * theta_unit_vec[:, np.newaxis], axis = 0) # A.B
         ABabs = np.sqrt(np.nansum(posnu_vec ** 2, axis = 0)) * np.sqrt(np.nansum(theta_unit_vec ** 2)) # |AB|
         zen_ang = np.arccos(AB / ABabs)
         tpr[0] = np.degrees(zen_ang)
@@ -230,7 +230,7 @@ class ara_root_loader:
         del AB, ABabs, theta_unit_vec, zen_ang
 
         # phi calculation to center of antenna
-        AD = np.nansum(posnu_vec[:2] * phi_unit_vec[:2][:, np.newaxis]) # A.D
+        AD = np.nansum(posnu_vec[:2] * phi_unit_vec[:2][:, np.newaxis], axis = 0) # A.D
         ADabs = np.sqrt(np.nansum(posnu_vec[:2] ** 2, axis = 0)) * np.sqrt(np.nansum(phi_unit_vec[:2] ** 2)) # |AD|
         phi_ang = np.arccos(AD / ADabs)
         minus_index = self.posnu[1] < self.posant_center[1]
