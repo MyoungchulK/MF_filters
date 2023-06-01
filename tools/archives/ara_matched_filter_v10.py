@@ -272,13 +272,11 @@ class ara_matched_filter:
         self.mf_max = np.full((num_pols), np.nan, dtype = float)
         self.mf_max[0] = corr_sum[:, 0][v_max_idx]
         self.mf_max[1] = corr_sum[:, 1][h_max_idx]
-        self.mf_max_each = np.nanmax(corr_sum, axis = 0) # array dim: (# of pols, # of shos, # of thetas, # of phis)
-        self.mf_temp_off = self.off_bin[off_max_idx]
         self.mf_temp = np.full(self.mf_param_shape, np.nan, dtype = float) # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)))
         self.mf_temp[0, :3] = np.array([self.sho_bin[v_max_idx[1]], self.theta_bin[v_max_idx[2]], self.phi_bin[v_max_idx[3]]], dtype = int)
-        self.mf_temp[0, self.good_v_idx + 3] = self.off_bin[off_max_idx[:self.good_v_len, v_max_idx[1], self.res_theta_idx[v_max_idx[2]]]]
+        self.mf_temp[0, self.good_v_idx + 3] = self.off_bin[off_max_idx[self.good_v_idx, v_max_idx[1], self.res_theta_idx[v_max_idx[2]]]]
         self.mf_temp[1, :3] = np.array([self.sho_bin[h_max_idx[1]], self.theta_bin[h_max_idx[2]], self.phi_bin[h_max_idx[3]]], dtype = int)
-        self.mf_temp[1, self.good_h_idx + 3] = self.off_bin[off_max_idx[self.good_v_len:, h_max_idx[1], self.res_theta_idx[h_max_idx[2]]]]
+        self.mf_temp[1, self.good_h_idx + 3] = self.off_bin[off_max_idx[self.good_h_idx, h_max_idx[1], self.res_theta_idx[h_max_idx[2]]]]
         if self.use_debug:
             self.temp_ori_best = np.full((self.temp_wf_len, num_ants), np.nan, dtype = float)
             self.temp_ori_shift_best = np.copy(self.temp_ori_best)

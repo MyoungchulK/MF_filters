@@ -66,7 +66,6 @@ class ara_matched_filter:
             if self.use_all_chs == False:
                 self.temp = self.temp[:, self.good_chs]
                 self.zero_pad = self.zero_pad[:, self.good_chs]
-                self.bool_pad = self.bool_pad[:, self.good_chs]
                 self.psd_int = self.psd_int[:, self.good_chs]
                 self.arr_time_diff = self.arr_time_diff[self.good_chs]
                 self.norm_fac = self.norm_fac[self.good_chs]
@@ -117,7 +116,6 @@ class ara_matched_filter:
 
         self.double_pad_len = self.pad_len * 2
         self.zero_pad = np.full((self.double_pad_len, num_ants), 0, dtype = float)
-        self.bool_pad = np.full((self.double_pad_len, num_ants), True, dtype = bool)
         self.quater_idx = self.pad_len // 2
 
         if self.verbose:
@@ -182,10 +180,8 @@ class ara_matched_filter:
 
     def get_padded_wf(self, pad_v):
 
-        self.bool_pad[:] = True
-        self.bool_pad[self.quater_idx:-self.quater_idx][~np.isnan(pad_v)] = False
+        self.zero_pad[:] = 0
         self.zero_pad[self.quater_idx:-self.quater_idx] = pad_v
-        self.zero_pad[self.bool_pad] = 0
 
     def get_mf_wfs(self):
 
@@ -207,12 +203,7 @@ class ara_matched_filter:
         self.corr = np.abs(hilbert(self.corr, axis = 0))
         if self.use_debug:
             self.corr_hill = np.copy(self.corr)
-        
-        # trim edges
-        self.corr[self.bool_pad] = 0   
-        if self.use_debug:
-            self.corr_zero_trim = np.copy(self.corr)
- 
+    
     def get_evt_wise_corr(self):
 
         ## corr_max
@@ -272,13 +263,11 @@ class ara_matched_filter:
         self.mf_max = np.full((num_pols), np.nan, dtype = float)
         self.mf_max[0] = corr_sum[:, 0][v_max_idx]
         self.mf_max[1] = corr_sum[:, 1][h_max_idx]
-        self.mf_max_each = np.nanmax(corr_sum, axis = 0) # array dim: (# of pols, # of shos, # of thetas, # of phis)
-        self.mf_temp_off = self.off_bin[off_max_idx]
         self.mf_temp = np.full(self.mf_param_shape, np.nan, dtype = float) # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)))
         self.mf_temp[0, :3] = np.array([self.sho_bin[v_max_idx[1]], self.theta_bin[v_max_idx[2]], self.phi_bin[v_max_idx[3]]], dtype = int)
-        self.mf_temp[0, self.good_v_idx + 3] = self.off_bin[off_max_idx[:self.good_v_len, v_max_idx[1], self.res_theta_idx[v_max_idx[2]]]]
+        self.mf_temp[0, self.good_v_idx + 3] = self.off_bin[off_max_idx[self.good_v_idx, v_max_idx[1], self.res_theta_idx[v_max_idx[2]]]]
         self.mf_temp[1, :3] = np.array([self.sho_bin[h_max_idx[1]], self.theta_bin[h_max_idx[2]], self.phi_bin[h_max_idx[3]]], dtype = int)
-        self.mf_temp[1, self.good_h_idx + 3] = self.off_bin[off_max_idx[self.good_v_len:, h_max_idx[1], self.res_theta_idx[h_max_idx[2]]]]
+        self.mf_temp[1, self.good_h_idx + 3] = self.off_bin[off_max_idx[self.good_h_idx, h_max_idx[1], self.res_theta_idx[h_max_idx[2]]]]
         if self.use_debug:
             self.temp_ori_best = np.full((self.temp_wf_len, num_ants), np.nan, dtype = float)
             self.temp_ori_shift_best = np.copy(self.temp_ori_best)

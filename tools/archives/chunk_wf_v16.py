@@ -557,7 +557,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         # reco w/ cw (and band-passed) wf
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_nan_pad = True, use_band_pass = True, use_cw = True, evt = evt)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True, evt = evt)
             ara_root.del_TGraph()
         ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = wei[:, sel_entries[evt]])
         mf_max[:, evt] = ara_mf.mf_max

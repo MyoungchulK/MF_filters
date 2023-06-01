@@ -134,7 +134,7 @@ class wf_analyzer:
         return int_t
 
     def get_int_wf(self, raw_t, raw_v, ant, 
-                    use_zero_pad = False, use_nan_pad = False, use_band_pass = False, 
+                    use_zero_pad = False, use_band_pass = False, 
                     use_cw = False, use_cw_ratio = False,
                     use_noise_weight = False,
                     use_p2p = False, use_unpad = False,
@@ -181,13 +181,10 @@ class wf_analyzer:
             int_t = self.pad_zero_t[int_idx]
             del akima, int_idx
             return int_t, int_v, int_num
-    
+
         if use_zero_pad:
-            if use_nan_pad: fill_val = np.nan
-            else: fill_val = 0
-            self.pad_v[:, ant] = fill_val
+            self.pad_v[:, ant] = 0
             self.pad_v[int_idx, ant] = int_v
-            del fill_val
         else:
             self.pad_t[:, ant] = np.nan
             self.pad_v[:, ant] = np.nan
@@ -198,11 +195,9 @@ class wf_analyzer:
         self.pad_num[ant] = int_num
         del int_idx, int_v, int_num      
 
-    def get_fft_wf(self, use_zero_pad = False, use_nan_check = False, use_rfft = False, use_abs = False, use_norm = False, use_dBmHz = False, use_dB = False, use_phase = False):
+    def get_fft_wf(self, use_zero_pad = False, use_rfft = False, use_abs = False, use_norm = False, use_dBmHz = False, use_dB = False, use_phase = False):
 
         if use_zero_pad:
-            if use_nan_check:
-                self.pad_v[np.isnan(self.pad_v)] = 0 
             if use_rfft:
                 self.pad_fft = np.fft.rfft(self.pad_v, axis = 0)# * 2
             else:

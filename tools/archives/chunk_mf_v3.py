@@ -68,19 +68,14 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
     # matched filter
     ara_mf = ara_matched_filter(st, run, wf_int.dt, wf_int.pad_len, get_sub_file = True, verbose = True)  
     good_chs = ara_mf.good_chs
-    good_ch_len = ara_mf.good_ch_len
     good_v_len = ara_mf.good_v_len
-    num_temp_params = ara_mf.num_temp_params
-    num_arr_params = ara_mf.num_arr_params
     mf_param_shape = ara_mf.mf_param_shape
     wei = get_products(weights, good_chs, good_v_len)
     del st, run, good_chs, good_v_len, weights
      
-    mf_max = np.full((num_pols, num_evts), np.nan, dtype = float) # array dim: (# of pols, # of evts)
-    mf_max_each = np.full((num_pols, num_temp_params[0], num_arr_params[0], num_arr_params[1], num_evts), np.nan, dtype = float) # array dim: (# of pols, # of shos, # of thetas, # of phis, # of evts)
-    mf_temp = np.full((num_pols, mf_param_shape[1], num_evts), np.nan, dtype = float) # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)), # of evts) 
-    mf_temp_off = np.full((good_ch_len, num_temp_params[0], num_temp_params[1], num_evts), np.nan, dtype = float) #  arr dim: (# of good ants, # of shos, # of ress)
-    del num_pols, mf_param_shape, good_ch_len, num_temp_params, num_arr_params
+    mf_max = np.full((num_pols, num_evts), np.nan, dtype = float)
+    mf_temp = np.full((num_pols, mf_param_shape[1], num_evts), np.nan, dtype = float)
+    del num_pols, mf_param_shape
 
     # loop over the events
     for evt in tqdm(range(num_evts), disable = no_tqdm):
@@ -96,16 +91,14 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
         # loop over the antennas
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_nan_pad = True, use_band_pass = True, use_cw = True, evt = evt)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_band_pass = True, use_cw = True, evt = evt)
             del raw_t, raw_v
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()
 
         ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = wei[:, evt]) 
         mf_max[:, evt] = ara_mf.mf_max
-        mf_max_each[:, :, :, :, evt] = ara_mf.mf_max_each
         mf_temp[:, :, evt] = ara_mf.mf_temp
-        mf_temp_off[:, :, :, evt] = ara_mf.mf_temp_off
         #print(mf_max[:, evt], mf_temp[:, :, evt])
     del ara_root, num_evts, num_ants, wf_int, ara_mf, daq_qual_cut_sum, wei
 
@@ -115,9 +108,7 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
             'trig_type':trig_type,
             'bad_ant':bad_ant,
             'mf_max':mf_max,
-            'mf_max_each':mf_max_each,
-            'mf_temp':mf_temp,
-            'mf_temp_off':mf_temp_off}
+            'mf_temp':mf_temp}
 
 
 

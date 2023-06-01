@@ -59,19 +59,14 @@ def mf_sim_collector(Data, Station, Year):
     # matched filter
     ara_mf = ara_matched_filter(Station, ex_run, wf_int.dt, wf_int.pad_len, get_sub_file = True, verbose = True, sim_psd_path = base_path)  
     good_chs = ara_mf.good_chs
-    good_ch_len = ara_mf.good_ch_len
     good_v_len = ara_mf.good_v_len
-    num_temp_params = ara_mf.num_temp_params
-    num_arr_params = ara_mf.num_arr_params
     mf_param_shape = ara_mf.mf_param_shape
     wei = get_products(weights, good_chs, good_v_len)
     del ex_run, good_chs, good_v_len, weights, base_path
 
-    mf_max = np.full((num_pols, num_evts), np.nan, dtype = float) # array dim: (# of pols, # of evts)
-    mf_max_each = np.full((num_pols, num_temp_params[0], num_arr_params[0], num_arr_params[1], num_evts), np.nan, dtype = float) # array dim: (# of pols, # of shos, # of thetas, # of phis, # of evts)
-    mf_temp = np.full((num_pols, mf_param_shape[1], num_evts), np.nan, dtype = float) # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)), # of evts)
-    mf_temp_off = np.full((good_ch_len, num_temp_params[0], num_temp_params[1], num_evts), np.nan, dtype = float) #  arr dim: (# of good ants, # of shos, # of ress)
-    del num_pols, mf_param_shape, good_ch_len, num_temp_params, num_arr_params
+    mf_max = np.full((num_pols, num_evts), np.nan, dtype = float)
+    mf_temp = np.full((num_pols, mf_param_shape[1], num_evts), np.nan, dtype = float)
+    del num_pols, mf_param_shape
 
     # loop over the events
     for evt in tqdm(range(num_evts)):
@@ -79,14 +74,12 @@ def mf_sim_collector(Data, Station, Year):
 
         wf_v = ara_root.get_rf_wfs(evt)
         for ant in range(num_ants):
-            wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_nan_pad = True, use_band_pass = True, use_cw = True, evt = evt)
+            wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_band_pass = True, use_cw = True, evt = evt)
         del wf_v
 
         ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = wei[:, evt]) 
         mf_max[:, evt] = ara_mf.mf_max
-        mf_max_each[:, :, :, :, evt] = ara_mf.mf_max_each
         mf_temp[:, :, evt] = ara_mf.mf_temp
-        mf_temp_off[:, :, :, evt] = ara_mf.mf_temp_off
         #print(mf_max[:, evt], mf_best[:, :, evt])
     del ara_root, num_evts, num_ants, wf_int, ara_mf, wei, wf_time
 
@@ -95,9 +88,8 @@ def mf_sim_collector(Data, Station, Year):
     return {'entry_num':entry_num,
             'bad_ant':bad_ant,
             'mf_max':mf_max,
-            'mf_max_each':mf_max_each,
-            'mf_temp':mf_temp,
-            'mf_temp_off':mf_temp_off}
+            'mf_temp':mf_temp}
+
 
 
 
