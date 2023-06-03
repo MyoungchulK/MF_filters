@@ -92,7 +92,7 @@ class ara_root_loader:
         self.entry_num = np.arange(self.num_evts, dtype = int)
         print('total events:', self.num_evts)
 
-    def get_sub_info(self, data, get_angle_info = False, get_temp_info = False, use_ori_angle = False):
+    def get_sub_info(self, data, get_angle_info = False, get_temp_info = False):
 
         # tired of dealing with PyROOT.....
         file_uproot = uproot.open(data)
@@ -138,17 +138,17 @@ class ara_root_loader:
         self.nnu[5] = np.asarray(event['Nu_Interaction/Nu_Interaction.nnu.r'], dtype = float)
         del file_uproot, ara_tree, settings, ara_tree_2, event
 
-        self.sim_rf_ch_map = get_sim_rf_ch_map()                                    # sim channel order corresponded to rf channel order
-        self.posant_rf = get_sim_final_posant_rf(self.st)                           # antenna position (xyz) in rf channle order
-        self.posant_center = np.nanmean(self.posant_rf[:3], axis = 1)               # center of the antenna
-        self.posnu_antcen = self.get_posnu_ant_cen()                                # posnu from antenna center
+        self.sim_rf_ch_map = get_sim_rf_ch_map()
+        self.posant_rf = get_sim_final_posant_rf(self.st)
+        self.posant_center = np.nanmean(self.posant_rf[:3], axis = 1)
+        self.posnu_antcen_tpr = self.get_posnu_ant_cen_theta_phi_r()
 
-        self.rec_ang = np.full((2, num_ants, self.num_evts), np.nan, dtype = float) # 0 deg: toward earth center. 180 deg: to sky
-        self.view_ang = np.copy(self.rec_ang)                                       # 56.03 deg: cone center 
-        self.launch_ang = np.copy(self.rec_ang)                                     # 180 deg: toward earth center. 0 deg: to sky
-        self.arrival_time = np.copy(self.rec_ang)                                   # unit is second [s]
-        self.signal_bin = np.copy(self.rec_ang)                                     # time of center of signal in the WF
-        if get_angle_info or get_temp_info:
+        self.rec_ang = np.full((2, num_ants, self.num_evts), np.nan, dtype = float)
+        self.view_ang = np.copy(self.rec_ang)
+        self.launch_ang = np.copy(self.rec_ang)
+        self.arrival_time = np.copy(self.rec_ang)
+        self.signal_bin = np.copy(self.rec_ang)
+        if get_angle_info:
             print('angle info in on! prepare for the looong for loop...')
             sim_st_index = self.sim_rf_ch_map[:, 1]
             sim_ant_index = self.sim_rf_ch_map[:, 2]
@@ -161,6 +161,9 @@ class ara_root_loader:
                     sim_st = int(sim_st_index[ant])
                     sim_ant = int(sim_ant_index[ant])
                     rec = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].rec_ang[:]))
+                    view = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].view_ang[:]))
+                    launch = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].launch_ang[:]))
+                    arrival = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].arrival_time[:]) * 1e9        
                     sig_bin = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].SignalBinTime[:])
                     if len(sig_bin) == 0:
                         if evt == 0 and ant == 0:
@@ -169,64 +172,81 @@ class ara_root_loader:
                         time = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].time[0])
                         sig_bin = (sig_idx - time) * self.time_step[0] + self.wf_time[0]
                         del sig_idx, time
+
                     self.rec_ang[:len(rec), ant, evt] = rec
+                    self.view_ang[:len(view), ant, evt] = view
+                    self.launch_ang[:len(launch), ant, evt] = launch
+                    self.arrival_time[:len(arrival), ant, evt] = arrival
                     self.signal_bin[:len(sig_bin), ant, evt] = sig_bin
-                    if get_angle_info:
-                        view = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].view_ang[:]))
-                        launch = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].launch_ang[:]))
-                        arrival = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].arrival_time[:])      
-                        self.view_ang[:len(view), ant, evt] = view
-                        self.launch_ang[:len(launch), ant, evt] = launch
-                        self.arrival_time[:len(arrival), ant, evt] = arrival
-                        del view, arrival, launch
-                    del rec,  sim_st, sim_ant, sig_bin
+                    del rec, view, arrival, launch, sim_st, sim_ant, sig_bin
             del AraTree2
-        if use_ori_angle == False:
-            zenith_to_elevation = 90
-            cone_center = 56.03
-            sec_to_nano_sec = 1e9
+        if get_temp_info:
+            print('template info is on!')
+            sim_st_index = self.sim_rf_ch_map[:, 1]
+            sim_ant_index = self.sim_rf_ch_map[:, 2]
 
-            self.rec_ang -= zenith_to_elevation                                 # to elevation angle. -90 deg: toward earth center. 90 deg: to sky
-            self.view_ang -= cone_center                                        # 56.03 deg: cone center
-            self.launch_ang = zenith_to_elevation - self.launch_ang             # to elevation angle. -90 deg: toward earth center. 90 deg: to sky 
-            self.arrival_time *= sec_to_nano_sec                                # unit is nano-second [ns]
-            self.posnu_antcen[3] = zenith_to_elevation - self.posnu_antcen[3]   # to elevation angle. -90 deg: toward earth center. 90 deg: to sky    
-            del zenith_to_elevation, cone_center, sec_to_nano_sec
+            ROOT.gInterpreter.ProcessLine('#include "'+os.environ.get('ARA_UTIL_INSTALL_DIR')+'/../AraSim/Report.h"')
+            AraTree2 = self.file.AraTree2
+            for evt in tqdm(range(self.num_evts)):
+                AraTree2.GetEntry(evt)
+                for ant in range(num_ants):
+                    sim_st = int(sim_st_index[ant])
+                    sim_ant = int(sim_ant_index[ant])
+                    sig_bin = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].SignalBinTime[:])
+                    if len(sig_bin) == 0:
+                        if evt == 0 and ant == 0:
+                            print('No Signal Bin Time!! OLD SIM!!! SHAME ON YOU!!!')
+                        sig_idx = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].SignalBin[:])
+                        time = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].time[0])
+                        sig_bin = (sig_idx - time) * self.time_step[0] + self.wf_time[0]
+                        del sig_idx, time
 
-    def get_posnu_ant_cen(self, use_radian = False):
+                    rec = np.degrees(np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].rec_ang[:]))
+                    self.signal_bin[:len(sig_bin), ant, evt] = sig_bin
+                    self.rec_ang[:len(rec), ant, evt] = rec
+                    del sim_st, sim_ant, sig_bin, rec
+            del AraTree2
 
-        # array
-        posnu_antcen = np.full(self.posnu.shape, np.nan, dtype = float) # (6, num_evts)
-        posnu_antcen[:3] = self.posnu[:3] - self.posant_center[:, np.newaxis] # posnu vector. xyz coords (xyz, num_evts)
-        posnu_antcen[5] = np.sqrt(np.nansum(posnu_antcen[:3] ** 2, axis = 0)) # R calculation
+    def get_posnu_ant_cen_theta_phi_r(self, use_radian = False):
 
         # unit vector
         theta_unit_vec = np.array([0, 0, 1])
         phi_unit_vec = np.array([1, 0, 0])
         
-        # zenith calculation to center of antenna. to elevation angle. 180 deg: toward earth center. 0 deg: to sky
-        AB = np.nansum(posnu_antcen[:3] * theta_unit_vec[:, np.newaxis], axis = 0) # A.B
-        ABabs = posnu_antcen[5] * np.sqrt(np.nansum(theta_unit_vec ** 2)) # |AB|
+        # posnu vector
+        posnu_vec = self.posnu[:3] - self.posant_center[:, np.newaxis] # (xyz, num_evts)
+
+        # theta phi r
+        tpr = np.full((3, self.num_evts), np.nan, dtype = float)
+
+        # zenith calculation to center of antenna
+        AB = np.nansum(posnu_vec * theta_unit_vec[:, np.newaxis], axis = 0) # A.B
+        ABabs = np.sqrt(np.nansum(posnu_vec ** 2, axis = 0)) * np.sqrt(np.nansum(theta_unit_vec ** 2)) # |AB|
         zen_ang = np.arccos(AB / ABabs)
-        posnu_antcen[3] = np.degrees(zen_ang)
+        tpr[0] = np.degrees(zen_ang)
         if use_radian:
-            posnu_antcen[3] = np.nan # just in case
-            posnu_antcen[3] = zen_ang
+            tpr[0] = np.nan # just in case
+            tpr[0] = zen_ang
         del AB, ABabs, theta_unit_vec, zen_ang
 
-        # phi calculation to center of antenna. 0 deg: right x-axis, 180 deg: left x-axis, + deg: positive y-axis, -deg: negative y-axis
-        AD = np.nansum(posnu_antcen[:2] * phi_unit_vec[:2][:, np.newaxis], axis = 0) # A.D
-        ADabs = np.sqrt(np.nansum(posnu_antcen[:2] ** 2, axis = 0)) * np.sqrt(np.nansum(phi_unit_vec[:2] ** 2)) # |AD|
+        # phi calculation to center of antenna
+        AD = np.nansum(posnu_vec[:2] * phi_unit_vec[:2][:, np.newaxis], axis = 0) # A.D
+        ADabs = np.sqrt(np.nansum(posnu_vec[:2] ** 2, axis = 0)) * np.sqrt(np.nansum(phi_unit_vec[:2] ** 2)) # |AD|
         phi_ang = np.arccos(AD / ADabs)
-        minus_index = posnu_antcen[1] < 0
+        minus_index = self.posnu[1] < self.posant_center[1]
         phi_ang[minus_index] *= -1
-        posnu_antcen[4] = np.degrees(phi_ang)
+        phi_ang[minus_index] += np.radians(360)
+        tpr[1] = np.degrees(phi_ang)
         if use_radian:
-            posnu_antcen[4] = np.nan # just in case
-            posnu_antcen[4] = phi_ang
+            tpr[1] = np.nan # just in case
+            tpr[1] = phi_ang
         del AD, ADabs, phi_unit_vec, phi_ang, minus_index
 
-        return posnu_antcen
+        # R calculation
+        tpr[2] = np.sqrt(np.nansum(posnu_vec ** 2, axis = 0))
+        del posnu_vec
+
+        return tpr
 
     def get_entry(self, evt):
 

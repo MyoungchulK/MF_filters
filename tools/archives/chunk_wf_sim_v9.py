@@ -75,7 +75,7 @@ def wf_sim_collector(Data, Station, Year, act_evt):
     sim_rf_ch_map = ara_root.sim_rf_ch_map
     posant_rf = ara_root.posant_rf
     posant_center = ara_root.posant_center
-    posnu_antcen = ara_root.posnu_antcen
+    posnu_antcen_tpr = ara_root.posnu_antcen_tpr
     signal_bin = ara_root.signal_bin
 
     # channel mapping
@@ -164,15 +164,7 @@ def wf_sim_collector(Data, Station, Year, act_evt):
     bp_sky_map = np.copy(sky_map)
     cw_sky_map = np.copy(sky_map)
     cw_bp_sky_map = np.copy(sky_map)
-    coef = np.full((num_pols, num_rads, num_ray_sol, sel_evt_len), np.nan, dtype = float) # pol, rad, sol
-    bp_coef = np.copy(coef) 
-    cw_coef = np.copy(coef) 
-    cw_bp_coef = np.copy(coef) 
-    coord = np.full((num_pols, 2, num_rads, num_ray_sol, sel_evt_len), np.nan, dtype = float) # pol, thephi, rad, sol
-    bp_coord = np.copy(coord)
-    cw_coord = np.copy(coord)
-    cw_bp_coord = np.copy(coord)
-
+ 
     print(sel_evt_len) 
     # loop over the events
     for evt in tqdm(range(sel_evt_len)):
@@ -223,8 +215,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
         corr_01[:,:,evt] = ara_int.nor_fac
         coval[:,:,:,:,:,evt] = ara_int.coval
         sky_map[:,:,:,:,:,evt] = ara_int.sky_map
-        coef[:, :, :, evt] = ara_int.coval_max
-        coord[:, :, :, :, evt] = ara_int.coord_max
 
         for ant in range(num_ants):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_band_pass = True, use_cw = False, evt = sel_evts[evt])
@@ -234,8 +224,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
         bp_corr_01[:,:,evt] = ara_int.nor_fac
         bp_coval[:,:,:,:,:,evt] = ara_int.coval
         bp_sky_map[:,:,:,:,:,evt] = ara_int.sky_map
-        bp_coef[:, :, :, evt] = ara_int.coval_max
-        bp_coord[:, :, :, :, evt] = ara_int.coord_max
 
         for ant in range(num_ants):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_band_pass = False, use_cw = True, evt = sel_evts[evt])
@@ -245,8 +233,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
         cw_corr_01[:,:,evt] = ara_int.nor_fac
         cw_coval[:,:,:,:,:,evt] = ara_int.coval
         cw_sky_map[:,:,:,:,:,evt] = ara_int.sky_map
-        cw_coef[:, :, :, evt] = ara_int.coval_max
-        cw_coord[:, :, :, :, evt] = ara_int.coord_max
 
         for ant in range(num_ants):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_band_pass = True, use_cw = True, evt = sel_evts[evt])
@@ -256,8 +242,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
         cw_bp_corr_01[:,:,evt] = ara_int.nor_fac
         cw_bp_coval[:,:,:,:,:,evt] = ara_int.coval
         cw_bp_sky_map[:,:,:,:,:,evt] = ara_int.sky_map
-        cw_bp_coef[:, :, :, evt] = ara_int.coval_max
-        cw_bp_coord[:, :, :, :, evt] = ara_int.coord_max
 
     from tools.ara_matched_filter import ara_matched_filter
     from tools.ara_matched_filter import get_products
@@ -375,7 +359,7 @@ def wf_sim_collector(Data, Station, Year, act_evt):
             'sim_rf_ch_map':sim_rf_ch_map,
             'posant_rf':posant_rf,
             'posant_center':posant_center,
-            'posnu_antcen':posnu_antcen,
+            'posnu_antcen_tpr':posnu_antcen_tpr,
             'signal_bin':signal_bin,
             'rf_ch':rf_ch,
             'ele_ch':ele_ch,
@@ -424,14 +408,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
             'bp_sky_map':bp_sky_map,
             'cw_sky_map':cw_sky_map,
             'cw_bp_sky_map':cw_bp_sky_map,
-            'coef':coef,
-            'bp_coef':bp_coef,
-            'cw_coef':cw_coef,
-            'cw_bp_coef':cw_bp_coef,
-            'coord':coord,
-            'bp_coord':bp_coord,
-            'cw_coord':cw_coord,
-            'cw_bp_coord':cw_bp_coord,
             'good_chs':good_chs,
             'wei':wei,
             'psd':psd,

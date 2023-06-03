@@ -32,13 +32,13 @@ configs = np.full((d_len), 0, dtype = int)
 b_runs = np.in1d(runs, bad_runs).astype(int)
 del bad_runs
 
-s_bins = np.linspace(0, 120, 240 + 1)
-s_bin_center = (s_bins[1:] + s_bins[:-1]) / 2
-s_bin_len = len(s_bin_center)
+p_bins = np.linspace(0, 4000, 400 + 1)
+p_bin_center = (p_bins[1:] + p_bins[:-1]) / 2
+p_bin_len = len(p_bin_center)
 
-snr_all = np.full((d_len, s_bin_len, 16, 3, 2), 0, dtype = int)
-print(snr_all.shape)
-del s_bin_len, d_len
+p2p_all = np.full((d_len, p_bin_len, 16, 3, 2), 0, dtype = int)
+print(p2p_all.shape)
+del p_bin_len, d_len
 
 for r in tqdm(range(len(d_run_tot))):
     
@@ -52,7 +52,7 @@ for r in tqdm(range(len(d_run_tot))):
         continue
     configs[r] = hf['config'][2]
     evt_num = hf['evt_num'][:]
-    snr = hf['snr'][:] # (num_ants, num_evts)
+    snr = hf['p2p'][:] # (num_ants, num_evts)
     trig = hf['trig_type'][:]
     rf_t = trig == 0
     cal_t = trig == 1
@@ -77,9 +77,9 @@ for r in tqdm(range(len(d_run_tot))):
         snr_t = snr[:, t_list[t]]
         snr_cut_t = snr_cut[:, t_list[t]]
         for a in range(16):
-            snr_all[r, :, a, t, 0] = np.histogram(snr_t[a], bins = s_bins)[0].astype(int)
+            p2p_all[r, :, a, t, 0] = np.histogram(snr_t[a], bins = p_bins)[0].astype(int)
             if b_runs[r]: continue
-            snr_all[r, :, a, t, 1] = np.histogram(snr_cut_t[a], bins = s_bins)[0].astype(int)
+            p2p_all[r, :, a, t, 1] = np.histogram(snr_cut_t[a], bins = p_bins)[0].astype(int)
         del snr_t, snr_cut_t
     del snr, rf_t, cal_t, soft_t, snr_cut
 
@@ -88,14 +88,14 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'SNR_A{Station}_R{count_i}.h5'
+file_name = f'P2P_A{Station}_R{count_i}.h5'
 hf = h5py.File(file_name, 'w')
-hf.create_dataset('s_bins', data=s_bins, compression="gzip", compression_opts=9)
-hf.create_dataset('s_bin_center', data=s_bin_center, compression="gzip", compression_opts=9)
+hf.create_dataset('p_bins', data=p_bins, compression="gzip", compression_opts=9)
+hf.create_dataset('p_bin_center', data=p_bin_center, compression="gzip", compression_opts=9)
 hf.create_dataset('runs', data=runs, compression="gzip", compression_opts=9)
 hf.create_dataset('b_runs', data=b_runs, compression="gzip", compression_opts=9)
 hf.create_dataset('configs', data=configs, compression="gzip", compression_opts=9)
-hf.create_dataset('snr_all', data=snr_all, compression="gzip", compression_opts=9)
+hf.create_dataset('p2p_all', data=p2p_all, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name, size_checker(path+file_name))
 

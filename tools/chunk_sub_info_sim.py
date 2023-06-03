@@ -47,7 +47,7 @@ def sub_info_sim_collector(Data, Station, Year):
     sim_rf_ch_map = ara_root.sim_rf_ch_map
     posant_rf = ara_root.posant_rf
     posant_center = ara_root.posant_center
-    posnu_antcen_tpr = ara_root.posnu_antcen_tpr
+    posnu_antcen = ara_root.posnu_antcen
     signal_bin = ara_root.signal_bin
     del ara_root
  
@@ -77,5 +77,5 @@ def sub_info_sim_collector(Data, Station, Year):
             'sim_rf_ch_map':sim_rf_ch_map,
             'posant_rf':posant_rf,
             'posant_center':posant_center,
-            'posnu_antcen_tpr':posnu_antcen_tpr,
+            'posnu_antcen':posnu_antcen,
             'signal_bin':signal_bin}

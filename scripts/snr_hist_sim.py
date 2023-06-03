@@ -8,6 +8,7 @@ curr_path = os.getcwd()
 sys.path.append(curr_path+'/../')
 from tools.ara_run_manager import file_sorter
 from tools.ara_utility import size_checker
+from tools.ara_run_manager import get_example_run
 from tools.ara_known_issue import known_issue_loader
 
 Station = int(sys.argv[1])
@@ -18,25 +19,21 @@ count_ff = count_i + count_f
 if Station == 2: num_configs = 7
 if Station == 3: num_configs = 9
 
-known_issue = known_issue_loader(Station, verbose = True)
-bad_runs = known_issue.get_knwon_bad_run(use_qual = True)
+known_issue = known_issue_loader(Station)
 
 # sort
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/snr/*'
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/snr_sim/*'
 d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
-q_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/qual_cut_3rd_full/'
 del d_run_range
 
-runs = np.copy(d_run_tot)
+sig_noi = np.full((d_len), 0, dtype = int)
 configs = np.full((d_len), 0, dtype = int)
-b_runs = np.in1d(runs, bad_runs).astype(int)
-del bad_runs
 
 s_bins = np.linspace(0, 120, 240 + 1)
 s_bin_center = (s_bins[1:] + s_bins[:-1]) / 2
 s_bin_len = len(s_bin_center)
 
-snr_all = np.full((d_len, s_bin_len, 16, 3, 2), 0, dtype = int)
+snr_all = np.full((d_len, s_bin_len, 16, 2), 0, dtype = int)
 print(snr_all.shape)
 del s_bin_len, d_len
 
@@ -50,50 +47,39 @@ for r in tqdm(range(len(d_run_tot))):
     except OSError: 
         print(d_list[r])
         continue
-    configs[r] = hf['config'][2]
-    evt_num = hf['evt_num'][:]
+    cons = hf['config'][:]
+    configs[r] = cons[2]
+    sig_noi[r] = int(cons[4] == -1)
     snr = hf['snr'][:] # (num_ants, num_evts)
-    trig = hf['trig_type'][:]
-    rf_t = trig == 0
-    cal_t = trig == 1
-    soft_t = trig == 2
-    t_list = [rf_t, cal_t, soft_t]
-    del hf, trig
+    del hf, cons
 
-    q_name = f'{q_path}qual_cut_3rd_full_A{Station}_R{d_run_tot[r]}.h5'
+    q_name = d_list[r].replace('snr', 'qual_cut')
     hf_q = h5py.File(q_name, 'r')
-    evt_full = hf_q['evt_num'][:]
-    qual = hf_q['tot_qual_cut_sum'][:] != 0
-    cut = np.in1d(evt_num, evt_full[qual])
-    del q_name, hf_q, qual, evt_full, evt_num
+    cut = hf_q['tot_qual_cut_sum'][:] != 0
+    del q_name, hf_q
 
-    bad_ant = known_issue.get_bad_antenna(d_run_tot[r])
+    ex_run = get_example_run(Station, configs[r])
+    bad_ant = known_issue.get_bad_antenna(ex_run)
     snr_cut = np.copy(snr)
     snr_cut[:, cut] = np.nan
     snr_cut[bad_ant] = np.nan
-    del cut, bad_ant
+    del cut, ex_run, bad_ant
 
-    for t in range(3):
-        snr_t = snr[:, t_list[t]]
-        snr_cut_t = snr_cut[:, t_list[t]]
-        for a in range(16):
-            snr_all[r, :, a, t, 0] = np.histogram(snr_t[a], bins = s_bins)[0].astype(int)
-            if b_runs[r]: continue
-            snr_all[r, :, a, t, 1] = np.histogram(snr_cut_t[a], bins = s_bins)[0].astype(int)
-        del snr_t, snr_cut_t
-    del snr, rf_t, cal_t, soft_t, snr_cut
+    for a in range(16):
+        snr_all[r, :, a, 0] = np.histogram(snr[a], bins = s_bins)[0].astype(int)
+        snr_all[r, :, a, 1] = np.histogram(snr_cut[a], bins = s_bins)[0].astype(int)
+    del snr, snr_cut
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'SNR_A{Station}_R{count_i}.h5'
+file_name = f'SNR_Sim_A{Station}_R{count_i}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('s_bins', data=s_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('s_bin_center', data=s_bin_center, compression="gzip", compression_opts=9)
-hf.create_dataset('runs', data=runs, compression="gzip", compression_opts=9)
-hf.create_dataset('b_runs', data=b_runs, compression="gzip", compression_opts=9)
+hf.create_dataset('sig_noi', data=sig_noi, compression="gzip", compression_opts=9)
 hf.create_dataset('configs', data=configs, compression="gzip", compression_opts=9)
 hf.create_dataset('snr_all', data=snr_all, compression="gzip", compression_opts=9)
 hf.close()
