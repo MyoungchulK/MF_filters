@@ -25,7 +25,6 @@ del known_issue
 # sort
 d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco/*'
 d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
-m_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf/'
 q_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/qual_cut_3rd_full/'
 del d_run_range
 
@@ -41,12 +40,9 @@ a_bins = np.linspace(-180, 180, 360 + 1)
 a_bin_center = (a_bins[1:] + a_bins[:-1]) / 2
 c_bins = np.linspace(0, 1.2, 1200 + 1)
 c_bin_center = (c_bins[1:] + c_bins[:-1]) / 2
-m_bins = np.linspace(0, 100, 200 + 1)
-m_bin_center = (m_bins[1:] + m_bins[:-1]) / 2
 z_bin_len = len(z_bin_center)
 a_bin_len = len(a_bin_center)
 c_bin_len = len(c_bin_center)
-m_bin_len = len(m_bin_center)
 
 map_r_z = np.full((d_len, z_bin_len, 3, 2, 2, 2), 0, dtype = int) # run, z or a, trig, pol, rad, sol
 map_r_z_cut = np.copy(map_r_z)
@@ -57,9 +53,6 @@ map_r_a_rf = np.full((d_len, a_bin_len, 3, 2), 0, dtype = int)
 map_r_c = np.full((d_len, c_bin_len, 3, 2, 2, 2), 0, dtype = int) # run, z or a or c, trig, pol, rad, sol
 map_r_c_cut = np.copy(map_r_c)
 map_r_c_rf = np.full((d_len, c_bin_len, 3, 2), 0, dtype = int)
-mf_r_c = np.full((d_len, m_bin_len, 3, 2), 0, dtype = int) # run, z or a or c, trig, pol, rad, sol
-mf_r_c_cut = np.copy(mf_r_c)
-#mf_r_c_rf = np.full((d_len, m_bin_len, 3, 2), 0, dtype = int)
 map_az = np.full((num_configs, a_bin_len, z_bin_len, 3, 2, 2, 2), 0, dtype = int) # a, z, trig, pol, rad, sol, config
 map_az_cut = np.copy(map_az)
 map_az_rf = np.full((num_configs, a_bin_len, z_bin_len, 3, 2), 0, dtype = int)
@@ -100,26 +93,6 @@ for r in tqdm(range(len(d_run_tot))):
     livetime[r, 1] = good_live
     livetime[r, 2] = bad_live
     del q_name, hf_q, qual, evt_full, tot_live, bad_live, good_live, evt
-
-    m_name = f'{m_path}mf_A{Station}_R{d_run_tot[r]}.h5'
-    try:
-        hf = h5py.File(m_name, 'r')
-    except OSError:
-        print(d_list[r])
-        continue
-    mf_m = hf['mf_max'][:]
-    mf_t = hf['mf_temp'][:, 1:3]
-
-    mf_m_cut = np.copy(mf_m)
-    mf_m_cut[:, cut] = np.nan
-    for t in range(3):
-        for pol in range(2):
-            mf_r_c[r, :, t, pol] = np.histogram(mf_m[pol][t_list[t]], bins = m_bins)[0].astype(int)
-            if b_runs[r]: continue
-            mf_r_c_cut[r, :, t, pol] = np.histogram(mf_m_cut[pol][t_list[t]], bins = m_bins)[0].astype(int)
-            #if t == 0:
-
-    del hf, mf_m, mf_t, mf_m_cut
 
     coord_cut = np.copy(coord)
     coord_cut[:, :, :, :, cut] = np.nan
@@ -179,8 +152,6 @@ hf.create_dataset('z_bins', data=z_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('z_bin_center', data=z_bin_center, compression="gzip", compression_opts=9)
 hf.create_dataset('c_bins', data=c_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('c_bin_center', data=c_bin_center, compression="gzip", compression_opts=9)
-hf.create_dataset('m_bins', data=m_bins, compression="gzip", compression_opts=9)
-hf.create_dataset('m_bin_center', data=m_bin_center, compression="gzip", compression_opts=9)
 hf.create_dataset('runs', data=runs, compression="gzip", compression_opts=9)
 hf.create_dataset('b_runs', data=b_runs, compression="gzip", compression_opts=9)
 hf.create_dataset('configs', data=configs, compression="gzip", compression_opts=9)
@@ -195,9 +166,6 @@ hf.create_dataset('map_r_a_rf', data=map_r_a_rf, compression="gzip", compression
 hf.create_dataset('map_r_c', data=map_r_c, compression="gzip", compression_opts=9)
 hf.create_dataset('map_r_c_cut', data=map_r_c_cut, compression="gzip", compression_opts=9)
 hf.create_dataset('map_r_c_rf', data=map_r_c_rf, compression="gzip", compression_opts=9)
-hf.create_dataset('mf_r_c', data=mf_r_c, compression="gzip", compression_opts=9)
-hf.create_dataset('mf_r_c_cut', data=mf_r_c_cut, compression="gzip", compression_opts=9)
-#hf.create_dataset('mf_r_c_rf', data=mf_r_c_rf, compression="gzip", compression_opts=9)
 hf.create_dataset('map_az', data=map_az, compression="gzip", compression_opts=9)
 hf.create_dataset('map_az_cut', data=map_az_cut, compression="gzip", compression_opts=9)
 hf.create_dataset('map_az_rf', data=map_az_rf, compression="gzip", compression_opts=9)

@@ -21,7 +21,6 @@ d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 del d_run_range
 
 s_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/snr_sim/'
-m_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf_sim/'
 q_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/qual_cut_sim/'
 
 num_evts = 1000
@@ -38,8 +37,6 @@ snr_max = np.full((d_len, 2, num_evts), np.nan, dtype = float)
 qual = np.full((d_len, num_evts, 4), 0, dtype = int)
 qual_tot = np.full((d_len, num_evts), 0, dtype = int)
 nan_counts = np.full((d_len), 0, dtype = int)
-mf_max = np.full((d_len, 2, num_evts), np.nan, dtype = float)
-mf_ser_max = np.full((d_len, 2, 2, num_evts), np.nan, dtype = float)
 
 z_bins = np.linspace(-90, 90, 180 + 1)
 z_bin_center = (z_bins[1:] + z_bins[:-1]) / 2
@@ -47,8 +44,6 @@ a_bins = np.linspace(-180, 180, 360 + 1)
 a_bin_center = (a_bins[1:] + a_bins[:-1]) / 2
 c_bins = np.linspace(0, 1.2, 120 + 1)
 c_bin_center = (c_bins[1:] + c_bins[:-1]) / 2
-m_bins = np.linspace(0, 100, 200 + 1)
-m_bin_center = (m_bins[1:] + m_bins[:-1]) / 2
 
 rad_o = np.array([41, 300], dtype = float)
 
@@ -89,11 +84,6 @@ for r in tqdm(range(len(d_run_tot))):
     qual[r] = (hf['tot_qual_cut'][:] != 0).astype(int)
     del hf
 
-    hf = h5py.File(f'{m_path}mf{hf_name}', 'r')
-    mf_max[r] = hf['mf_max'][:] # pol, thephi, rad, sol, evt
-    mf_ser_max[r] = hf['mf_temp'][:, 1:3] # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)), # of evts)
-    del hf
-
     hf = h5py.File(f'{s_path}snr{hf_name}', 'r')
     snr_tot = hf['snr'][:]
     snr[r] = snr_tot
@@ -117,8 +107,6 @@ hf.create_dataset('coef', data=coef, compression="gzip", compression_opts=9)
 hf.create_dataset('coord', data=coord, compression="gzip", compression_opts=9)
 hf.create_dataset('coef_max', data=coef_max, compression="gzip", compression_opts=9)
 hf.create_dataset('coord_max', data=coord_max, compression="gzip", compression_opts=9)
-hf.create_dataset('mf_max', data=mf_max, compression="gzip", compression_opts=9)
-hf.create_dataset('mf_ser_max', data=mf_ser_max, compression="gzip", compression_opts=9)
 hf.create_dataset('snr', data=snr, compression="gzip", compression_opts=9)
 hf.create_dataset('snr_max', data=snr_max, compression="gzip", compression_opts=9)
 hf.create_dataset('qual', data=qual, compression="gzip", compression_opts=9)
@@ -130,8 +118,6 @@ hf.create_dataset('a_bins', data=a_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('a_bin_center', data=a_bin_center, compression="gzip", compression_opts=9)
 hf.create_dataset('c_bins', data=c_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('c_bin_center', data=c_bin_center, compression="gzip", compression_opts=9)
-hf.create_dataset('m_bins', data=m_bins, compression="gzip", compression_opts=9)
-hf.create_dataset('m_bin_center', data=m_bin_center, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name, size_checker(path+file_name))
 

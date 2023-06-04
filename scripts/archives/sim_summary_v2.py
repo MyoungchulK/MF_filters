@@ -22,7 +22,6 @@ del d_run_range
 
 s_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/snr_sim/'
 r_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco_sim/'
-m_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf_sim/'
 q_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/qual_cut_sim/'
 
 num_evts = 100
@@ -51,8 +50,6 @@ coef = np.full((d_len, 2, 2, 2, num_evts), np.nan, dtype = float)
 coord = np.full((d_len, 2, 2, 2, 2, num_evts), np.nan, dtype = float) 
 coef_max = np.full((d_len, 2, num_evts), np.nan, dtype = float) 
 coord_max = np.full((d_len, 2, 3, num_evts), np.nan, dtype = float)
-mf_max = np.full((d_len, 2, num_evts), np.nan, dtype = float)
-mf_ser_max = np.full((d_len, 2, 2, num_evts), np.nan, dtype = float)
 snr = np.full((d_len, num_ants, num_evts), np.nan, dtype = float)
 snr_max = np.full((d_len, 2, num_evts), np.nan, dtype = float)
 qual = np.full((d_len, num_evts, 4), 0, dtype = int)
@@ -68,8 +65,7 @@ a_bins = np.linspace(-180, 180, 360 + 1)
 a_bin_center = (a_bins[1:] + a_bins[:-1]) / 2
 c_bins = np.linspace(0, 1.2, 120 + 1)
 c_bin_center = (c_bins[1:] + c_bins[:-1]) / 2
-m_bins = np.linspace(0, 100, 200 + 1)
-m_bin_center = (m_bins[1:] + m_bins[:-1]) / 2
+
 
 rad_o = np.array([41, 300], dtype = float)
 
@@ -96,12 +92,11 @@ for r in tqdm(range(len(d_run_tot))):
     rec_ang[r] = hf['rec_ang'][:]
     view_ang[r] = hf['view_ang'][:]
     arrival_time[r] = hf['arrival_time'][:]
-    posnu_antcen = hf['posnu_antcen'][:]
-    rad[r] = posnu_antcen[5]
-    phi[r] = posnu_antcen[4]
-    ele[r] = posnu_antcen[3]
+    rad[r] = hf['radius_ang'][:]
+    phi[r] = hf['azimuth_ang'][:]
+    ele[r] = hf['elevation_ang'][:]
     exponent[r] = hf['exponent_range'][:]
-    del hf, posnu_antcen
+    del hf
 
     hf_name = f'_AraOut.signal_E{int(exponent[r, 0])}_F{flavor[r]}_A{Station}_R{config[r]}.txt.run{sim_run[r]}.h5'
     hf = h5py.File(f'{q_path}qual_cut{hf_name}', 'r')
@@ -142,12 +137,7 @@ for r in tqdm(range(len(d_run_tot))):
         coord_max[r, 1, 2, e] = rad_o[coef_max_idx[1]//2]
         del coef_max_idx
     nan_counts[r] = counts 
-    del hf, coef_tot, coord_tot, coef_re, coef_max_tot, coord_re, counts
-
-    hf = h5py.File(f'{m_path}mf{hf_name}', 'r')
-    mf_max[r] = hf['mf_max'][:] # pol, thephi, rad, sol, evt
-    mf_ser_max[r] = hf['mf_temp'][:, 1:3] # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)), # of evts)
-    del hf, hf_name
+    del hf_name, hf, coef_tot, coord_tot, coef_re, coef_max_tot, coord_re, counts
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 if not os.path.exists(path):
@@ -179,8 +169,6 @@ hf.create_dataset('exponent', data=exponent, compression="gzip", compression_opt
 hf.create_dataset('evt_rate', data=evt_rate, compression="gzip", compression_opts=9)
 hf.create_dataset('coef_max', data=coef_max, compression="gzip", compression_opts=9)
 hf.create_dataset('coord_max', data=coord_max, compression="gzip", compression_opts=9)
-hf.create_dataset('mf_max', data=mf_max, compression="gzip", compression_opts=9)
-hf.create_dataset('mf_ser_max', data=mf_ser_max, compression="gzip", compression_opts=9)
 hf.create_dataset('snr', data=snr, compression="gzip", compression_opts=9)
 hf.create_dataset('snr_max', data=snr_max, compression="gzip", compression_opts=9)
 hf.create_dataset('qual', data=qual, compression="gzip", compression_opts=9)
@@ -195,8 +183,6 @@ hf.create_dataset('a_bins', data=a_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('a_bin_center', data=a_bin_center, compression="gzip", compression_opts=9)
 hf.create_dataset('c_bins', data=c_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('c_bin_center', data=c_bin_center, compression="gzip", compression_opts=9)
-hf.create_dataset('m_bins', data=m_bins, compression="gzip", compression_opts=9)
-hf.create_dataset('m_bin_center', data=m_bin_center, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name, size_checker(path+file_name))
 
