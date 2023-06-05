@@ -21,7 +21,7 @@ if Blind:
     dat_type = '_full'
 
 # sort
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/{Type}{dat_type}/'
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/{Type}{dat_type}/'
 print('Tar path:', d_path)
 d_list, d_run_tot, d_run_range, d_len = file_sorter(f'{d_path}*')
 
