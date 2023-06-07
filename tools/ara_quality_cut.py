@@ -948,7 +948,7 @@ class filt_qual_cut_loader:
             else:
                 evt_num_reco = reco_hf['entry_num'][:]
             num_evts_reco = len(evt_num_reco)
-            coord_max = reco_hf['coord'][:]
+            coord_max = reco_hf['coord'][:] # pol, thephi, rad, sol, evt
             del reco_dat, reco_hf
 
             cp_cut, num_cuts, pol_idx = get_calpulser_cut(self.st, self.run)
@@ -963,7 +963,7 @@ class filt_qual_cut_loader:
                 del trig_type_reco
             del cp_cut, num_cuts, pol_idx
 
-            coord_max_flat = np.reshape(coord_max[:, 0, 1, :, :], (4, -1))
+            coord_max_flat = np.reshape(coord_max[:, 0, :, :, :], (8, -1))
             sur_cuts = np.any(coord_max_flat > cut_surface, axis = 0).astype(int)
             del coord_max, coord_max_flat
 
