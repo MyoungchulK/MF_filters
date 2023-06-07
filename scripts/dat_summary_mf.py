@@ -23,9 +23,8 @@ bad_runs = known_issue.get_knwon_bad_run(use_qual = True)
 del known_issue
 
 # sort
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco/*'
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf/*'
 d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
-m_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf/'
 q_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/qual_cut_3rd_full/'
 del d_run_range
 
@@ -35,7 +34,7 @@ b_runs = np.in1d(runs, bad_runs).astype(int)
 livetime = np.full((d_len, 3), 0, dtype = float)
 nan_counts = np.full((d_len), 0, dtype = int)
 
-m_bins = np.linspace(0, 100, 200 + 1)
+m_bins = np.linspace(0, 1, 200 + 1)
 m_bin_center = (m_bins[1:] + m_bins[:-1]) / 2
 m_bin_len = len(m_bin_center)
 
@@ -48,16 +47,15 @@ for r in tqdm(range(len(d_run_tot))):
   #if r <10:
   if r >= count_i and r < count_ff:
     
-    m_name = f'{m_path}mf_A{Station}_R{d_run_tot[r]}.h5'
     try:
-        hf = h5py.File(m_name, 'r')
+        hf = h5py.File(d_list[r], 'r')
     except OSError:
         print(d_list[r])
         continue
     configs[r] = hf['config'][2]
     con_idx = int(configs[r] - 1)
     mf_m = hf['mf_max'][:]
-    mf_t = hf['mf_temp'][:, 1:3]
+    #mf_t = hf['mf_temp'][:, 1:3]
     evt = hf['evt_num'][:]
     num_evts = len(evt)
     trig = hf['trig_type'][:]
@@ -89,7 +87,8 @@ for r in tqdm(range(len(d_run_tot))):
             mf_r_c_cut[r, :, t, pol] = np.histogram(mf_m_cut[pol][t_list[t]], bins = m_bins)[0].astype(int)
             #if t == 0:
 
-    del mf_m, mf_t, mf_m_cut
+    del mf_m, mf_m_cut
+    #del mf_m, mf_t, mf_m_cut
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 if not os.path.exists(path):

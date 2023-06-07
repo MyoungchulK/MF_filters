@@ -1,7 +1,7 @@
 import numpy as np
 from tqdm import tqdm
 import h5py
-import os, sys
+import sys
 from scipy.signal import medfilt
 
 def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
@@ -136,8 +136,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     v_pairs_len = ara_int.v_pairs_len    
     lags = ara_int.lags
     wei_pairs = get_products(weights, pairs, v_pairs_len) 
-    num_rads = ara_int.num_rads
-    num_ray_sol = ara_int.num_ray_sol
 
     # output array
     blk_max = 48
@@ -220,15 +218,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     bp_sky_map = np.copy(sky_map)
     cw_sky_map = np.copy(sky_map)
     cw_bp_sky_map = np.copy(sky_map)
-    coef = np.full((num_pols, num_rads, num_ray_sol, sel_evt_len), np.nan, dtype = float) # pol, rad, sol
-    bp_coef = np.copy(coef)
-    cw_coef = np.copy(coef)
-    cw_bp_coef = np.copy(coef)
-    coord = np.full((num_pols, 2, num_rads, num_ray_sol, sel_evt_len), np.nan, dtype = float) # pol, thephi, rad, sol
-    bp_coord = np.copy(coord)
-    cw_coord = np.copy(coord)
-    cw_bp_coord = np.copy(coord)    
-
+    
     # cw detection
     evt_counts = 0
     for r in range(2):
@@ -438,8 +428,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         corr_01[:,:,evt] = ara_int.nor_fac
         coval[:,:,:,:,:,evt] = ara_int.coval
         sky_map[:,:,:,:,:,evt] = ara_int.sky_map
-        coef[:, :, :, evt] = ara_int.coval_max
-        coord[:, :, :, :, evt] = ara_int.coord_max
 
         # reco w/band-passed wf
         for ant in range(num_ants):
@@ -452,9 +440,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         bp_corr_01[:,:,evt] = ara_int.nor_fac
         bp_coval[:,:,:,:,:,evt] = ara_int.coval
         bp_sky_map[:,:,:,:,:,evt] = ara_int.sky_map
-        bp_coef[:, :, :, evt] = ara_int.coval_max
-        bp_coord[:, :, :, :, evt] = ara_int.coord_max       
-
+       
         print(wei_pairs[:, sel_entries[evt]]) 
         
         # reco w/ cw wf
@@ -468,9 +454,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         cw_corr_01[:,:,evt] = ara_int.nor_fac
         cw_coval[:,:,:,:,:,evt] = ara_int.coval
         cw_sky_map[:,:,:,:,:,evt] = ara_int.sky_map
-        cw_coef[:, :, :, evt] = ara_int.coval_max
-        cw_coord[:, :, :, :, evt] = ara_int.coord_max        
-
+        
         # reco w/ cw (and band-passed) wf
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
@@ -482,8 +466,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         cw_bp_corr_01[:,:,evt] = ara_int.nor_fac
         cw_bp_coval[:,:,:,:,:,evt] = ara_int.coval
         cw_bp_sky_map[:,:,:,:,:,evt] = ara_int.sky_map
-        cw_bp_coef[:, :, :, evt] = ara_int.coval_max
-        cw_bp_coord[:, :, :, :, evt] = ara_int.coord_max
 
     # interpolated all ele chs
     wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_rfft = True, use_ele_ch = True)
@@ -546,7 +528,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     mf_wf_fin = np.full((ara_mf.lag_len, num_pols, sel_evt_len), np.nan, dtype = float)
     mf_max = np.full((num_pols, sel_evt_len), np.nan, dtype = float)
     mf_temp = np.full((num_pols, mf_param_shape[1], sel_evt_len), np.nan, dtype = float)
-    mf_max_each = np.full((num_pols, temp_param[0], arr_param[0], arr_param[1], sel_evt_len), np.nan, dtype = float)
     mf_temp_ori_best = np.full((temp_wf_len, num_ants, sel_evt_len), np.nan, dtype = float)
     mf_temp_ori_shift_best = np.copy(mf_temp_ori_best)
     mf_temp_rfft_best = np.full((temp_fft_len, num_ants, sel_evt_len), np.nan, dtype = float) 
@@ -580,7 +561,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             ara_root.del_TGraph()
         ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = wei[:, sel_entries[evt]])
         mf_max[:, evt] = ara_mf.mf_max
-        mf_max_each[:, :, :, :, evt] = ara_mf.mf_max_each
         mf_temp[:, :, evt] = ara_mf.mf_temp
         print(mf_temp[:, :, evt])
         mf_corr_no_hill[:, :, :, :, :, evt] = ara_mf.corr_no_hill    
@@ -604,35 +584,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         mf_corr_arr_best[:, :, evt] = ara_mf.corr_arr_best
         mf_corr_roll_best[:, :, evt] = ara_mf.corr_roll_best
         mf_corr_arr_roll_best[:, :, evt] = ara_mf.corr_arr_roll_best
-
-    table_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{st}/arr_time_table/arr_time_table_A{st}_Y2015.h5'
-    print('arrival time table:', table_path)
-    table_hf = h5py.File(table_path, 'r')
-    phi_param = table_hf['phi_bin'][:]
-    thata_param = 90 - table_hf['theta_bin'][:]
-    rec_ang_table = 90 - np.degrees(table_hf['receipt_ang'][:])
-    rec_ang_table_avg = np.nanmean(rec_ang_table, axis = 3)
-    phi_ang_table_avg = np.full(rec_ang_table_avg.shape, np.nan, dtype = float)
-    phi_ang_table_avg[:] = phi_param[np.newaxis, :, np.newaxis, np.newaxis]
-    print(np.nanmax(rec_ang_table_avg), np.nanmin(rec_ang_table_avg))
-
-    print(mf_temp[:, 1, 0], mf_temp[:, 2, 0])
-    theta_ser_ran = np.full((2, 2), np.nan, dtype = float) # (num of pols, num of ranges)
-    theta_ser_ran[:, 0] = mf_temp[:, 1, 0] - 10
-    theta_ser_ran[:, 1] = mf_temp[:, 1, 0] + 10
-    phi_ser_ran = np.full(theta_ser_ran.shape, np.nan, dtype = float)
-    phi_ser_ran[:, 0] = mf_temp[:, 2, 0] - 30
-    phi_ser_ran[:, 1] = mf_temp[:, 2, 0] + 30
-
-    print(theta_ser_ran[0, 0], theta_ser_ran[0, 1], phi_ser_ran[0, 0], phi_ser_ran[0, 1])
-    print(theta_ser_ran[1, 0], theta_ser_ran[1, 1], phi_ser_ran[1, 0], phi_ser_ran[1, 1])
-    v_search = np.all((rec_ang_table_avg > theta_ser_ran[0, 0], rec_ang_table_avg < theta_ser_ran[0, 1], phi_ang_table_avg > phi_ser_ran[0, 0], phi_ang_table_avg < phi_ser_ran[0, 1]), axis = 0).astype(int)
-    h_search = np.all((rec_ang_table_avg > theta_ser_ran[1, 0], rec_ang_table_avg < theta_ser_ran[1, 1], phi_ang_table_avg > phi_ser_ran[1, 0], phi_ang_table_avg < phi_ser_ran[1, 1]), axis = 0).astype(int)
-    print(np.count_nonzero(v_search), np.count_nonzero(h_search))
-    mf_search = np.full(rec_ang_table_avg.shape, 0, dtype = int)
-    mf_search = np.repeat(mf_search[np.newaxis, :, :, :, :], num_pols, axis = 0)
-    mf_search[0] = v_search
-    mf_search[1] = h_search
 
     print('WF collecting is done!')
 
@@ -742,14 +693,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'bp_sky_map':bp_sky_map,
             'cw_sky_map':cw_sky_map,
             'cw_bp_sky_map':cw_bp_sky_map,
-            'coef':coef,
-            'bp_coef':bp_coef,
-            'cw_coef':cw_coef,
-            'cw_bp_coef':cw_bp_coef,
-            'coord':coord,
-            'bp_coord':bp_coord,
-            'cw_coord':cw_coord,
-            'cw_bp_coord':cw_bp_coord,
             'good_chs':good_chs,
             'psd':psd,
             'soft_rayl':soft_rayl,
@@ -777,7 +720,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'mf_corr_roll_sum_peak_idx':mf_corr_roll_sum_peak_idx,
             'mf_wf_fin':mf_wf_fin,
             'mf_max':mf_max,
-            'mf_max_each':mf_max_each,
             'mf_temp':mf_temp,
             'mf_temp_ori_best':mf_temp_ori_best,
             'mf_temp_ori_shift_best':mf_temp_ori_shift_best,
@@ -786,13 +728,5 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'mf_corr_best':mf_corr_best,
             'mf_corr_arr_best':mf_corr_arr_best,
             'mf_corr_roll_best':mf_corr_roll_best,
-            'mf_corr_arr_roll_best':mf_corr_arr_roll_best,
-            'phi_param':phi_param,
-            'thata_param':thata_param,
-            'rec_ang_table':rec_ang_table,
-            'rec_ang_table_avg':rec_ang_table_avg,
-            'phi_ang_table_avg':phi_ang_table_avg,
-            'theta_ser_ran':theta_ser_ran,
-            'phi_ser_ran':phi_ser_ran,
-            'mf_search':mf_search}
+            'mf_corr_arr_roll_best':mf_corr_arr_roll_best}
 
