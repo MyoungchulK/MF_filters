@@ -17,7 +17,7 @@ num_pols = ara_const.POLARIZATION
 
 class py_interferometers:
 
-    def __init__(self, pad_len, dt, st, yrs, run = None, get_sub_file = False, use_ele_max = False, use_debug = False, verbose = False):
+    def __init__(self, pad_len, dt, st, yrs, run = None, get_sub_file = False, use_debug = False, verbose = False):
 
         self.verbose = verbose
         self.dt = dt
@@ -25,7 +25,6 @@ class py_interferometers:
         self.yrs = yrs
         self.run = run
         self.use_debug = use_debug
-        self.use_ele_max = use_ele_max
 
         if get_sub_file:
             self.get_zero_pad(pad_len)
@@ -65,7 +64,7 @@ class py_interferometers:
 
         table_hf = h5py.File(table_path + table_name, 'r')
         self.theta = 90 - table_hf['theta_bin'][:] # nadir to elevation angle
-        self.num_thetas = len(self.theta)
+        num_thetas = len(self.theta)
         self.phi = table_hf['phi_bin'][:]
         self.num_phis = len(self.phi)
         radius_arr = table_hf['radius_bin'][:]
@@ -77,13 +76,13 @@ class py_interferometers:
         self.table = arr_table[:, :, :, self.pairs[:, 0], :] - arr_table[:, :, :, self.pairs[:, 1], :]
         self.table = np.transpose(self.table, (0, 1, 2, 4, 3))
         self.table_ori_shape = self.table.shape
-        self.table_pol_shape = (num_pols, self.num_thetas, self.num_phis, self.num_rads, self.num_ray_sol)
+        self.table_pol_shape = (num_pols, num_thetas, self.num_phis, self.num_rads, self.num_ray_sol)
         self.coord_shape = (num_pols, 2, self.num_rads, self.num_ray_sol)
         self.table = np.reshape(self.table, (-1, self.num_rads, self.num_ray_sol, self.pair_len))
         self.table_shape = self.table.shape
         if self.verbose:
             print('arr table shape:', self.table_shape)
-        del radius_arr
+        del radius_arr, num_thetas
 
         table_p1 = np.reshape(np.transpose(arr_table[:, :, :, self.pairs[:, 0], :], (0, 1, 2, 4, 3)), self.table_shape)
         table_p2 = np.reshape(np.transpose(arr_table[:, :, :, self.pairs[:, 1], :], (0, 1, 2, 4, 3)), self.table_shape)
@@ -114,10 +113,6 @@ class py_interferometers:
         corr_v_sum = np.nansum(coval[:, :, :, :self.v_pairs_len], axis = 3)
         corr_h_sum = np.nansum(coval[:, :, :, self.v_pairs_len:], axis = 3)
         sky_map = np.asarray([corr_v_sum, corr_h_sum]) # array dim (# of pols, # of thetas X # of phis, # of rs, # of rays) 
-        if self.use_ele_max:
-            sky_map_ele = np.reshape(sky_map, self.table_pol_shape) # array dim (# of pols, # of thetas, # of phis, # of rs, # of rays)
-            self.coval_ele_max = np.nanmax(sky_map_ele, axis = 2) # array dim (# of pols, # of thetas, # of rs, # of rays)
-            del sky_map_ele
         if self.use_debug:
             self.sky_map = np.reshape(sky_map, self.table_pol_shape)
         del coval
