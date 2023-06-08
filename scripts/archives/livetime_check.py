@@ -10,7 +10,6 @@ from tools.ara_run_manager import file_sorter
 from tools.ara_utility import size_checker
 #from tools.ara_run_manager import run_info_loader
 from tools.ara_known_issue import known_issue_loader
-from tools.ara_quality_cut import get_bad_live_time
 
 Station = int(sys.argv[1])
 count_i = int(sys.argv[2])
@@ -58,32 +57,18 @@ for r in tqdm(range(len(d_run_tot))):
     con = hf['config'][:]
     configs[r] = con[2]
     years[r] = con[3]
-    #tot_live = np.nansum(hf['tot_qual_live_time'][:])
-    #bad_live = np.nansum(hf['tot_qual_sum_bad_live_time'][:])
-    #bad_indi_live = np.nansum(hf['tot_qual_bad_live_time'][:], axis = 0)   
- 
-    trig_type = hf['trig_type'][:]
-    unix_time = hf['unix_time'][:]
-    time_bins_sec = hf['time_bins_sec'][:]
-    sec_per_sec = hf['sec_per_sec'][:]
-    tot_qual_cut = hf['tot_qual_cut'][:]
-    tot_qual_cut[:, 15] = 0
+    tot_live = np.nansum(hf['tot_qual_live_time'][:])
+    
 
-    tot_qual_live_time, tot_qual_bad_live_time = get_bad_live_time(trig_type, unix_time, time_bins_sec, sec_per_sec, tot_qual_cut, verbose = False)
-    tot_qual_sum_bad_live_time = get_bad_live_time(trig_type, unix_time, time_bins_sec, sec_per_sec, np.nansum(tot_qual_cut, axis = 1), verbose = False)[1]
-    tot_live = np.nansum(tot_qual_live_time)
-    bad_live = np.nansum(tot_qual_sum_bad_live_time)
-    bad_indi_live = np.nansum(tot_qual_bad_live_time, axis = 0)
-    del tot_qual_live_time, tot_qual_bad_live_time, tot_qual_sum_bad_live_time
-    del trig_type, unix_time, time_bins_sec, sec_per_sec, tot_qual_cut
-
+    bad_live = np.nansum(hf['tot_qual_sum_bad_live_time'][:])
+    bad_indi_live = np.nansum(hf['tot_qual_bad_live_time'][:], axis = 0)
     live_tot[r, 0] = tot_live
     live_tot[r, 1] = tot_live - bad_live
     live_tot[r, 2] = bad_live
     live_indi[r, :, 0] = tot_live
     live_indi[r, :, 1] = tot_live - bad_indi_live
     live_indi[r, :, 2] = bad_indi_live
-    del hf, tot_live, bad_live, bad_indi_live
+    del hf, con, tot_live, bad_live, bad_indi_live
 
 summ = np.nansum(live_tot, axis = 0)
 print(summ)
