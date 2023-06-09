@@ -564,8 +564,7 @@ class pre_qual_cut_loader:
         L0_to_L1_Processing = self.ara_known_issue.get_L0_to_L1_Processing_run()
         ARARunLogDataBase = self.ara_known_issue.get_ARARunLogDataBase()
         software_dominant_run = self.ara_known_issue.get_software_dominant_run()
-        ob_bad_run = self.ara_known_issue.get_obviously_bad_run()
-        bad_runs = np.concatenate((bad_surface_run, bad_run, L0_to_L1_Processing, ARARunLogDataBase, software_dominant_run, ob_bad_run), axis = None, dtype = int)
+        bad_runs = np.concatenate((bad_surface_run, bad_run, L0_to_L1_Processing, ARARunLogDataBase, software_dominant_run), axis = None, dtype = int)
         bad_runs = np.unique(bad_runs).astype(int)
         del bad_surface_run, bad_run, L0_to_L1_Processing, ARARunLogDataBase, software_dominant_run
 
@@ -682,13 +681,13 @@ class pre_qual_cut_loader:
         tot_pre_qual_cut[:, 5:9] = self.get_readout_window_errors()
         tot_pre_qual_cut[:, 9] = self.get_first_minute_events()
         tot_pre_qual_cut[:, 10] = self.get_bias_voltage_events(use_smear = True)
-        tot_pre_qual_cut[:, 11] = self.get_bad_evt_rate_events() # calpulser minute cut
-        tot_pre_qual_cut[:, 12:15] = self.get_bad_evt_rate_events(use_sec = True) 
+        tot_pre_qual_cut[:, 11] = self.get_bad_evt_rate_events()
+        tot_pre_qual_cut[:, 12:15] = self.get_bad_evt_rate_events(use_sec = True)
         tot_pre_qual_cut[:, 15] = self.get_bad_l1_rate_events()
         tot_pre_qual_cut[:, 16] = self.get_short_run_events()
         tot_pre_qual_cut[:, 17] = self.get_known_bad_unix_time_events(add_unchecked_unix_time = True)
         tot_pre_qual_cut[:, 18] = self.get_known_bad_run_events()
-        if use_cw != 1:
+        if use_cw == 2:
             print('Kill the CW!!!')
             tot_pre_qual_cut[:, 19] = self.get_cw_log_events()
             tot_pre_qual_cut[:, 20] = self.get_cw_ratio_events()
@@ -1009,7 +1008,7 @@ class filt_qual_cut_loader:
 
 class ped_qual_cut_loader:
 
-    def __init__(self, ara_uproot, total_qual_cut, daq_cut_sum, analyze_blind_dat = False, use_all_cuts = False, verbose = False):
+    def __init__(self, ara_uproot, total_qual_cut, daq_cut_sum, analyze_blind_dat = False, verbose = False):
     
         self.analyze_blind_dat = analyze_blind_dat
         self.verbose = verbose
@@ -1020,10 +1019,7 @@ class ped_qual_cut_loader:
         self.st = self.ara_uproot.station_id
         self.run = self.ara_uproot.run
         self.total_qual_cut = np.copy(total_qual_cut)
-        if use_all_cuts == False:
-            print('No L1 & Soft only cut in the ped qual!!')
-            self.total_qual_cut[:, 14] = 0 # no rf cal cut
-            self.total_qual_cut[:, 15] = 0 # l1 cut
+        self.total_qual_cut[:, 14] = 0
         self.daq_cut_sum = daq_cut_sum
         self.num_qual_type = 4
         self.minimum_usage = 20 # from pedestalSamples#I1=
@@ -1039,23 +1035,23 @@ class ped_qual_cut_loader:
         # 9 first minute
         # 10 dda voltage
         # 11 bad cal min rate -> dda voltage
-        # 12 bad cal sec rate -> rf calpulser
+        # 12 bad cal sec rate -> early error
         # 13 bad soft sec rate -> early error
         # 14 no cal rf sec rate -> already excluded at the __init__()
-        # 15 bad l1 rate -> already excluded at the __init__() 
+        # 15 bad l1 rate 
         # 16 short run
         # 17 bad unix time
         # 18 bad run
         # 19 cw log cut
         # 20 cw ratio cut
-        # 21 empty
+        # 21 cw empty
         # 22 unlock calpulser
 
         # turn on all cuts
         clean_evts_qual_type[:, 0] = 1
         clean_evts[:, 0] = np.logical_and(np.nansum(self.total_qual_cut, axis = 1) == 0, self.trig_type != 1).astype(int)
 
-        # not use 1) 15 bad l1 rate, 2) short run
+        # not use 1) 16 short run, 2) 15 bad l1 rate
         qual_type = np.array([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,17,18,19,20,21,22], dtype = int)
         clean_evts_qual_type[qual_type, 1] = 1
         clean_evts[:, 1] = np.logical_and(np.nansum(self.total_qual_cut[:, qual_type], axis = 1) == 0, self.trig_type != 1).astype(int)
@@ -1200,7 +1196,7 @@ class ped_qual_cut_loader:
 
 class run_qual_cut_loader:
 
-    def __init__(self, st, run, tot_cut, qual_type = 1, analyze_blind_dat = False, use_all_cuts = False, verbose = False):
+    def __init__(self, st, run, tot_cut, qual_type = 1, analyze_blind_dat = False, verbose = False):
 
         self.analyze_blind_dat = analyze_blind_dat
         self.verbose = verbose
@@ -1211,12 +1207,9 @@ class run_qual_cut_loader:
         self.known_flag = np.all(tot_cut[:, 18] != 0)
         self.ped_flag = np.all(tot_cut[:, 26] != 0)       
         cut_copy = np.copy(tot_cut)
-        if use_all_cuts == False:
-            print('No L1 & Soft only & Bad run & Bad ped cut in the ped qual!!')
-            cut_copy[:, 14] = 0 # no cal rf
-            cut_copy[:, 15] = 0 # no l1 cut
-            cut_copy[:, 18] = 0 # bad run
-            cut_copy[:, 26] = 0 # bad ped
+        cut_copy[:, 14] = 0 # no cal rf
+        cut_copy[:, 18] = 0 # bad run
+        cut_copy[:, 26] = 0 # bad ped
         cut_copy = np.nansum(cut_copy, axis = 1)
         self.qual_flag = np.all(cut_copy != 0)
         del cut_copy

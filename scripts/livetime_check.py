@@ -29,6 +29,7 @@ print(len(q_name))
 
 known_issue = known_issue_loader(Station, verbose = True)
 bad_runs = known_issue.get_knwon_bad_run(use_qual = True)
+ob_bad_run = known_issue.get_obviously_bad_run()
 del known_issue
 
 # sort
@@ -68,6 +69,8 @@ for r in tqdm(range(len(d_run_tot))):
     sec_per_sec = hf['sec_per_sec'][:]
     tot_qual_cut = hf['tot_qual_cut'][:]
     tot_qual_cut[:, 15] = 0
+    if d_run_tot[r] in ob_bad_run:
+        tot_qual_cut[:, 21] = 1
 
     tot_qual_live_time, tot_qual_bad_live_time = get_bad_live_time(trig_type, unix_time, time_bins_sec, sec_per_sec, tot_qual_cut, verbose = False)
     tot_qual_sum_bad_live_time = get_bad_live_time(trig_type, unix_time, time_bins_sec, sec_per_sec, np.nansum(tot_qual_cut, axis = 1), verbose = False)[1]
@@ -93,7 +96,7 @@ for t in range(len(q_name)):
     print(f'{int(t + 1)}) {q_name[t]}:', np.round((summ_indi[t]/summ_indi[t, 0])*100, 2))
 print(np.nansum(np.round((summ_indi/summ_indi[:, 0][:, np.newaxis])*100, 2), axis = 0))
 
-path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/Hist/'
+path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
