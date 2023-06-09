@@ -3,7 +3,7 @@ import numpy as np
 from tqdm import tqdm
 import h5py
 
-def qual_cut_3rd_collector(Data, st, run, qual_type = 3, analyze_blind_dat = False, no_tqdm = False):
+def qual_cut_3rd_collector(Data,Ped, qual_type = 3, analyze_blind_dat = False, no_tqdm = False):
 
     print('Quality cut 3rd starts!')
 
@@ -25,10 +25,12 @@ def qual_cut_3rd_collector(Data, st, run, qual_type = 3, analyze_blind_dat = Fal
     trig_type = ara_uproot.get_trig_type()
     pps_number = ara_uproot.pps_number
     unix_time = ara_uproot.unix_time
+    st = ara_uproot.station_id
+    run = ara_uproot.run
     time_bins, sec_per_min = ara_uproot.get_event_rate(use_time_bins = True)
     time_bins_sec, sec_per_sec = ara_uproot.get_event_rate(use_sec = True, use_time_bins = True)
-    if ara_uproot.station_id == 3 and (ara_uproot.run > 1124 and ara_uproot.run < 1429):
-        ara_root = ara_root_loader(Data, Ped, ara_uproot.station_id, ara_uproot.year)
+    if st == 3 and (run > 1124 and run < 1429):
+        ara_root = ara_root_loader(Data, Ped, st, ara_uproot.year)
     else:
         ara_root = None
 
@@ -42,7 +44,7 @@ def qual_cut_3rd_collector(Data, st, run, qual_type = 3, analyze_blind_dat = Fal
     post_qual = post_qual_cut_loader(ara_root, ara_uproot, daq_qual_cut_sum, use_unlock_cal = True, verbose = True)
 
     # loop over the events
-    if ara_uproot.station_id == 3 and (ara_uproot.run > 1124 and ara_uproot.run < 1429):
+    if st == 3 and (run > 1124 and run < 1429):
         for evt in tqdm(range(num_evts), disable = no_tqdm):
           #if evt<100:
             # post quality cut
@@ -85,7 +87,7 @@ def qual_cut_3rd_collector(Data, st, run, qual_type = 3, analyze_blind_dat = Fal
     run_qual = run_qual_cut_loader(st, run, tot_qual_cut, analyze_blind_dat = analyze_blind_dat, qual_type = qual_type, verbose = True)
     bad_run = run_qual.get_bad_run_type()
     run_qual.get_bad_run_list()
-    del run_qual
+    del run_qual, st, run
 
     # live time
     tot_qual_live_time, tot_qual_bad_live_time = get_bad_live_time(trig_type, unix_time, time_bins_sec, sec_per_sec, tot_qual_cut, verbose = True)

@@ -62,7 +62,7 @@ def script_loader(key, station, run, qual_type, act_evt, blind_dat, condor_run, 
         file_type = 'eventHk'
         return_none = True
         return_dat_only = True
-    elif key == 'blk_len' or key == 'rf_len' or key == 'dead' or key == 'dupl' or  key == 'run_time' or key == 'ped' or key == 'cw_band' or key == 'cw_flag_merge' or key == 'cw_ratio_merge' or key == 'qual_cut_1st' or key == 'qual_cut_2nd' or key == 'qual_cut_3rd' or key == 'evt_num' or key == 'medi' or key == 'sub_info' or key == 'cw_time':
+    elif key == 'blk_len' or key == 'rf_len' or key == 'dead' or key == 'dupl' or  key == 'run_time' or key == 'ped' or key == 'cw_band' or key == 'cw_flag_merge' or key == 'cw_ratio_merge' or key == 'evt_num' or key == 'medi' or key == 'sub_info' or key == 'cw_time':
         return_dat_only = True
     Data, Ped = run_info.get_data_ped_path(file_type = file_type, return_none = return_none, verbose = verbose, return_dat_only = return_dat_only, l2_data = l2_data)
     station, run, Config, Year, Month, Date = run_info.get_data_info()
@@ -78,10 +78,8 @@ def script_loader(key, station, run, qual_type, act_evt, blind_dat, condor_run, 
     method = getattr(module, f'{key}_collector')
     if key == 'wf' or key == 'wf_ver2':
         results = method(Data, Ped, analyze_blind_dat = blind_dat, sel_evts = act_evt)
-    elif key == 'qual_cut_1st' or key == 'qual_cut_2nd':
+    elif key == 'qual_cut_1st' or key == 'qual_cut_2nd' or key == 'qual_cut_3rd':
         results = method(Data, Ped, qual_type = qual_type, analyze_blind_dat = blind_dat, no_tqdm = no_tqdm)
-    elif key == 'qual_cut_3rd':
-        results = method(Data, station, run, qual_type = qual_type, analyze_blind_dat = blind_dat, no_tqdm = no_tqdm)
     elif key == 'l1':
         results = method(Data, Ped, station, run, Year, analyze_blind_dat = blind_dat)
     elif key == 'ped':
