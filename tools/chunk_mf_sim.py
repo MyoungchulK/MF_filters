@@ -69,7 +69,7 @@ def mf_sim_collector(Data, Station, Year):
 
     mf_max = np.full((num_pols, num_evts), np.nan, dtype = float) # array dim: (# of pols, # of evts)
     mf_max_each = np.full((num_pols, num_temp_params[0], num_arr_params[0], num_arr_params[1], num_evts), np.nan, dtype = float) # array dim: (# of pols, # of shos, # of thetas, # of phis, # of evts)
-    mf_temp = np.full((num_pols, mf_param_shape[1], num_evts), np.nan, dtype = float) # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)), # of evts)
+    mf_temp = np.full((num_pols, mf_param_shape[1], num_evts), -1, dtype = int) # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)), # of evts)
     mf_temp_off = np.full((good_ch_len, num_temp_params[0], num_temp_params[1], num_evts), np.nan, dtype = float) #  arr dim: (# of good ants, # of shos, # of ress)
     del num_pols, mf_param_shape, good_ch_len, num_temp_params, num_arr_params
 
