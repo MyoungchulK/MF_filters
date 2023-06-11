@@ -271,10 +271,10 @@ def wf_sim_collector(Data, Station, Year, act_evt):
     mf_param_shape = ara_mf.mf_param_shape
     psd = ara_mf.psd
     soft_rayl = ara_mf.baseline
-    temp_time = ara_mf.temp_time
-    temp_wf_len = ara_mf.temp_wf_len
-    temp_fft_len = ara_mf.temp_fft_len
-    temp_freq = ara_mf.temp_freq
+    temp_time = ara_mf.temp_time_ori
+    temp_wf_len = ara_mf.temp_wf_len_ori
+    temp_fft_len = ara_mf.temp_fft_len_ori
+    temp_freq = ara_mf.temp_freq_ori
     temp_ori = ara_mf.temp_ori
     temp_pad = ara_mf.temp_pad
     temp_rfft = ara_mf.temp_rfft_ori

@@ -39,7 +39,8 @@ energy = (en_range * 10 + en_scale).astype(int)
 # angles
 cheren_ang = 56.03
 view_ang = np.arange(0, 4.1, 2)
-rec_ang = np.arange(0, -61, -20)
+#rec_ang = np.arange(0, -61, -20)
+rec_ang = np.array([0, -10, -20, -40, -60])
 radius = np.array([300])
 
 #antenna center x,y,z

@@ -610,9 +610,11 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     table_hf = h5py.File(table_path, 'r')
     phi_param = table_hf['phi_bin'][:]
     thata_param = 90 - table_hf['theta_bin'][:]
-    angle_table = np.full((2, len(thata_param), len(phi_param)), 0, dtype = int)
-    angle_table[0] = thata_param[:, np.newaxis]
-    angle_table[1] = phi_param[np.newaxis, :]
+    rec_ang_table = 90 - np.degrees(table_hf['receipt_ang'][:])
+    rec_ang_table_avg = np.nanmean(rec_ang_table, axis = 3)
+    phi_ang_table_avg = np.full(rec_ang_table_avg.shape, np.nan, dtype = float)
+    phi_ang_table_avg[:] = phi_param[np.newaxis, :, np.newaxis, np.newaxis]
+    print(np.nanmax(rec_ang_table_avg), np.nanmin(rec_ang_table_avg))
 
     print(mf_temp[:, 1, 0], mf_temp[:, 2, 0])
     theta_ser_ran = np.full((2, 2), np.nan, dtype = float) # (num of pols, num of ranges)
@@ -624,7 +626,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
 
     print(theta_ser_ran[0, 0], theta_ser_ran[0, 1], phi_ser_ran[0, 0], phi_ser_ran[0, 1])
     print(theta_ser_ran[1, 0], theta_ser_ran[1, 1], phi_ser_ran[1, 0], phi_ser_ran[1, 1])
-    v_search = np.all(( > theta_ser_ran[0, 0], rec_ang_table_avg < theta_ser_ran[0, 1], phi_ang_table_avg > phi_ser_ran[0, 0], phi_ang_table_avg < phi_ser_ran[0, 1]), axis = 0).astype(int)
+    v_search = np.all((rec_ang_table_avg > theta_ser_ran[0, 0], rec_ang_table_avg < theta_ser_ran[0, 1], phi_ang_table_avg > phi_ser_ran[0, 0], phi_ang_table_avg < phi_ser_ran[0, 1]), axis = 0).astype(int)
     h_search = np.all((rec_ang_table_avg > theta_ser_ran[1, 0], rec_ang_table_avg < theta_ser_ran[1, 1], phi_ang_table_avg > phi_ser_ran[1, 0], phi_ang_table_avg < phi_ser_ran[1, 1]), axis = 0).astype(int)
     print(np.count_nonzero(v_search), np.count_nonzero(h_search))
     mf_search = np.full(rec_ang_table_avg.shape, 0, dtype = int)
@@ -787,6 +789,9 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'mf_corr_arr_roll_best':mf_corr_arr_roll_best,
             'phi_param':phi_param,
             'thata_param':thata_param,
+            'rec_ang_table':rec_ang_table,
+            'rec_ang_table_avg':rec_ang_table_avg,
+            'phi_ang_table_avg':phi_ang_table_avg,
             'theta_ser_ran':theta_ser_ran,
             'phi_ser_ran':phi_ser_ran,
             'mf_search':mf_search}

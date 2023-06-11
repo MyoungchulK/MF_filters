@@ -6,7 +6,6 @@ from tqdm import tqdm
 
 # custom lib
 from tools.ara_constant import ara_const
-from tools.ara_matched_filter import get_psd
 
 ara_const = ara_const()
 num_ants = ara_const.USEFUL_CHAN_PER_STATION
@@ -39,6 +38,7 @@ class wf_analyzer:
                 print('Freq pad is on!')
             self.get_freq_pad(use_rfft = use_rfft)
         if use_noise_weight:
+            from tools.ara_matched_filter import get_psd
             if sim_psd_path is not None:
                 psd, freq_psd = get_psd(dat_type = 'baseline', sim_path = sim_psd_path)[:2]
             else:

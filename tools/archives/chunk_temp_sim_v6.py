@@ -1,4 +1,4 @@
-import os, sys
+import os
 import numpy as np
 from tqdm import tqdm
 import h5py
@@ -50,22 +50,36 @@ def temp_sim_collector(Data, Station, Year):
 
     # temp arrays
     sho_bin = np.array([0, 1], dtype = int)
-    res_bin = np.array([-60, -40, -20, -10, 0], dtype = int)
+    res_bin = np.array([-60, -40, -20, 0], dtype = int)
     off_bin = np.array([0, 2, 4], dtype = int)
     sho_bin_len = len(sho_bin)
     res_bin_len = len(res_bin)
     off_bin_len = len(off_bin)
 
+    # arrival time table
+    arr_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/arr_time_table/temp_arr_time_table_A{Station}_Y2015.h5'
+    arr_hf = h5py.File(arr_path, 'r')
+    arr_time = arr_hf['arr_time_table'][:, :, 0, :, 0] # 300 m, 1st sol arr dim (theta, phi, antenna)
+    arr_time_diff = arr_time - np.nanmean(arr_time, axis = 2)[:, :, np.newaxis]
+    arr_time_diff = np.transpose(arr_time_diff, (2, 0, 1)) # arr dim (antenna, theta, phi)
+    theta_bin = 90 - arr_hf['theta_bin'][:].astype(int)
+    phi_bin = arr_hf['phi_bin'][:].astype(int)
+    del arr_path, arr_hf, arr_time
+
     # wf analyzer
-    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, verbose = True, new_wf_time = wf_time)
+    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_freq_pad = True, use_rfft = True, verbose = True, new_wf_time = wf_time)
     temp_time = wf_int.pad_zero_t
     wf_len = wf_int.pad_len
+    temp_freq = wf_int.pad_zero_freq
+    fft_len = wf_int.pad_fft_len
 
     # temp arrays
     temp = np.full((wf_len, num_ants, sho_bin_len, res_bin_len, off_bin_len), 0, dtype = float)
+    temp_rfft = np.full((fft_len, num_ants, sho_bin_len, res_bin_len, off_bin_len), np.nan, dtype = float)
+    temp_phase = np.copy(temp_rfft)
     sig_shift = np.full((num_ants, sho_bin_len, res_bin_len, off_bin_len), np.nan, dtype = float)
     rec_angle = np.copy(sig_shift)
-    del sho_bin_len, res_bin_len, off_bin_len
+    del sho_bin_len, res_bin_len, off_bin_len, fft_len
 
     # loop over the events
     for evt in tqdm(range(num_evts)):
@@ -73,23 +87,15 @@ def temp_sim_collector(Data, Station, Year):
 
         # indexs
         ant_ch = temp_temp_param[0, evt] 
-        sho_loc = np.where(sho_bin == temp_temp_param[1, evt])[0]
-        ele_loc = np.where(res_bin == temp_temp_param[2, evt])[0]
-        off_loc = np.where(off_bin == temp_temp_param[3, evt])[0]
-        if len(sho_loc) == 0 or len(ele_loc) == 0 or len(off_loc) == 0: 
-            print('WRONG!! Error!!')
-            print(evt)
-            print(temp_temp_param[1, evt], temp_temp_param[2, evt], temp_temp_param[3, evt])
-            sys.exit(1)
-        sho_loc = sho_loc[0]
-        ele_loc = ele_loc[0]
-        off_loc = off_loc[0]    
+        sho_loc = np.where(sho_bin == temp_temp_param[1, evt])[0][0]
+        ele_loc = np.where(res_bin == temp_temp_param[2, evt])[0][0]
+        off_loc = np.where(off_bin == temp_temp_param[3, evt])[0][0]
         sig_bin_evt = signal_bin[ant_ch, evt]
         sig_bins = int(np.round(sig_bin_evt / dt))
         sig_shift[ant_ch, sho_loc, ele_loc, off_loc] = sig_bin_evt
         rec_angle[ant_ch, sho_loc, ele_loc, off_loc] = rec_ang[ant_ch, evt]
         del sig_bin_evt
-        
+
         # sim wf
         wf_v = ara_root.get_rf_wfs(evt)
         for ant in range(num_ants):
@@ -108,16 +114,27 @@ def temp_sim_collector(Data, Station, Year):
         del sig_bins, pad_v_ant
 
         temp[:, ant_ch, sho_loc, ele_loc, off_loc] = temp_sig_shift
-        del ant_ch, sho_loc, ele_loc, off_loc, temp_sig_shift
+        del temp_sig_shift
+
+        wf_int.get_fft_wf(use_zero_pad = True, use_rfft = True, use_abs = True, use_norm = True, use_phase = True)
+        temp_rfft[:, ant_ch, sho_loc, ele_loc, off_loc] = wf_int.pad_fft[:, ant_ch]
+        temp_phase[:, ant_ch, sho_loc, ele_loc, off_loc] = wf_int.pad_phase[:, ant_ch]
+        del ant_ch, sho_loc, ele_loc, off_loc 
     del ara_root, num_evts, num_ants, wf_int, wf_time, wf_len, dt, signal_bin, rec_ang, temp_temp_param
 
     print('Temp collecting is done!')
 
     return {'temp_time':temp_time,
+            'temp_freq':temp_freq,
             'temp':temp,
+            'temp_rfft':temp_rfft,
+            'temp_phase':temp_phase,
+            'arr_time_diff':arr_time_diff,
             'sig_shift':sig_shift,
             'rec_angle':rec_angle,
             'sho_bin':sho_bin,
             'res_bin':res_bin,
-            'off_bin':off_bin}
+            'off_bin':off_bin,
+            'theta_bin':theta_bin,
+            'phi_bin':phi_bin}
 

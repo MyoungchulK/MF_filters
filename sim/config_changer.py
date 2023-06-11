@@ -8,12 +8,12 @@ d_path = f'/home/mkim/analysis/MF_filters/sim/ARA0*/sim_temp_setup_full/*.txt'
 #d_path = f'/home/mkim/analysis/MF_filters/sim/ARA0*/sim_noise_setup_full/*.txt'
 d_list = glob(d_path)
 
-common = 'NNU_PASSED='
-old_line = f'{common}15'
-new_line = f'{common}12'
+common = 'NNU='
+old_line = f'{common}400'
+new_line = f'{common}1000'
 
-old_line = 'DETECTOR_CH_MASK=1'
-new_line = 'DETECTOR_CH_MASK=0'
+#old_line = 'DETECTOR_CH_MASK=1'
+#new_line = 'DETECTOR_CH_MASK=0'
 #old_line = 'DETECTOR_TRIG_DELAY=1'
 #new_line = 'DETECTOR_TRIG_DELAY=0'
 #old_line = 'V_SATURATION=5000'
