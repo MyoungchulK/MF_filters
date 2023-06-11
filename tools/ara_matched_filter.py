@@ -52,6 +52,7 @@ class ara_matched_filter:
         self.use_all_chs = use_all_chs
         self.verbose = verbose
         self.sim_psd_path = sim_psd_path
+        self.roll_win = roll_win
 
         if get_sub_file:
             self.get_zero_pad()
@@ -77,8 +78,11 @@ class ara_matched_filter:
             self.lags = correlation_lags(self.pad_len, self.pad_len, 'full') * self.dt
             self.lag_len = len(self.lags)
 
-        if roll_win is not None:
-            self.roll_win_idx = int(roll_win / self.dt) + 1
+        if self.roll_win is not None:
+            self.roll_win_idx = int(self.roll_win / self.dt) + 1
+            if self.verbose:
+                print(f'manual rolling max window: {self.roll_win} ns')
+                print(f'manual rolling max bin length: {self.roll_win_idx}')
 
     def get_good_antenna_info(self):
 
@@ -171,13 +175,12 @@ class ara_matched_filter:
             self.temp_rfft_pad_conj = np.copy(self.temp)
             self.temp_phase_pad_conj = np.angle(self.temp)
         self.sho_bin = temp_hf['sho_bin'][:] # 0, 1
-        self.res_bin = temp_hf['res_bin'][:] # -60, -40, -20, 0
+        self.res_bin = temp_hf['res_bin'][:] # -60, -40, -20, -10, 0
         self.off_bin = temp_hf['off_bin'][:] # 0, 2, 4
         self.num_temp_params = np.array([len(self.sho_bin), len(self.res_bin), len(self.off_bin)], dtype = int)
         self.sho_range = np.arange(self.num_temp_params[0], dtype = int)
         self.res_range = np.arange(self.num_temp_params[1], dtype = int)
 
-        self.res_theta_idx = (self.theta_bin[0] - np.abs(self.theta_bin)) // np.abs(self.theta_bin[1] - self.theta_bin[0]) # ele info 0, 1, 2, 3, 2, 1, 0 
         self.corr_sum_shape = (self.lag_len, num_pols, self.num_temp_params[0], self.num_arr_params[0], self.num_arr_params[1]) # array dim: (# of lag bins, # of pols, # of sho, # of theta, # of phi)
         self.corr_sum_each_pol_shape = (self.lag_len, self.num_temp_params[0], self.num_arr_params[0], self.num_arr_params[1]) # array dim: (# of lag bins, # of sho, # of theta, # of phi)
         self.mf_param_shape = (num_pols, 3 + num_ants // num_pols) # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)))
@@ -189,60 +192,98 @@ class ara_matched_filter:
 
     def get_arr_time_diff(self):
 
-        self.theta_bin = np.array([60, 40, 20, 0, -20, -40, -60], dtype = int)
+        ## arrival time table
+        rad_con = 1
+        ray_con = 0
+        ice_air_tran = 53 # 37 deg. elevaton angle
+
+        ## set indexs
+        self.theta_bin = np.array([60, 40, 20, 0, 20, 10, 0, -10, -20, -40, -60], dtype = int)
         self.phi_bin = np.array([-150, -90, -30, 30, 90, 150], dtype = int)
         self.num_arr_params = np.array([len(self.theta_bin), len(self.phi_bin)], dtype = int)
+        self.res_theta_idx = np.array([0, 1, 2, 4, 2, 3, 4, 3, 2, 1, 0], dtype = int)        
+        theta_len = len(self.theta_bin)
+        phi_len = len(self.phi_bin)
 
-        table_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{st}/arr_time_table/arr_time_table_A{st}_Y2015.h5'
+        ver_theta_idx = np.array([22, 35, 45, 52, 55, 74, 86, 98, 109, 129, 149], dtype = int) 
+        ver_phi_idx = np.array([30, 90, 150, 210, 270, 330], dtype = int)
+        upper_width = np.array([10, 10, 10, 10, 10, 5, 5, 5, 5, 10, 10], dtype = int)
+        bottom_width = np.array([10, 10, 10, 10, 5, 5, 5, 5, 10, 10, 10], dtype = int)
+        ice_air_idx = np.array([1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0], dtype = int)
+        phi_width = int(np.abs(ver_phi_idx[1] - ver_phi_idx[0])) // 2
+
+        ## load table
+        table_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{self.st}/arr_time_table/arr_time_table_A{self.st}_Y2015.h5'
         if self.verbose:
             print('arrival time table:', table_path)       
         table_hf = h5py.File(table_path, 'r')
         arr_time_table = table_hf['arr_time_table'][:] 
+        receipt_ang = 90 - np.degrees(table_hf['receipt_ang'][:])
         del table_path, table_hf
 
-        t_idx = 90 - self.theta_bin # 30, 50, 70, 90, 110, 130, 150
-        p_idx = self.phi_bin + 180 # 30, 90, 150, 210, 270, 330
-        t_half_width = int(np.abs(t_idx[1] - t_idx[0])) // 2
-        p_half_width = int(np.abs(p_idx[1] - p_idx[0])) // 2
-        diff_max = np.full((len(t_idx), len(p_idx)), np.nan, dtype = float)
-        self.arr_time_diff_idx = np.full((num_ants, len(t_idx), len(p_idx)), 0, dtype = int)
+        ## prepare time table and rec angle
+        arr_ice = np.full((arr_time_table.shape[0], arr_time_table.shape[1], num_ants), np.nan, dtype = float)
+        arr_ice[ice_air_tran:] = arr_time_table[ice_air_tran:, :, rad_con, :, ray_con]
+        arr_air = np.full((arr_time_table.shape[0], arr_time_table.shape[1], num_ants), np.nan, dtype = float)
+        arr_air[:ice_air_tran] = arr_time_table[:ice_air_tran, :, rad_con, :, ray_con]
+        rec_avg = np.nanmean(receipt_ang[:, :, rad_con, :, ray_con], axis = 2)
+        
+        diff_max = np.full((theta_len, phi_len), np.nan, dtype = float)
+        self.arr_time_diff_idx = np.full((num_ants, theta_len, phi_len), 0, dtype = int)
+        if self.verbose:
+            print('arrival time dim:', self.arr_time_diff_idx.shape)
         if self.use_debug:
             self.arr_time_diff = np.full(self.arr_time_diff_idx.shape, np.nan, dtype = float)
-            self.diff_max_all = np.full((num_ants, arr_time_table.shape[0], arr_time_table.shape[1]), np.nan, dtype = float)
-        for t in range(len(t_idx)):
-            for p in range(len(p_idx)):
-                arr_cen = arr_time_table[t_idx[t], p_idx[p], 1, :, 0] # theta, phi, radius, ant, ray
-                arr_cen_avg = np.nanmean(arr_cen)
-                arr_cen_diff = arr_cen - arr_cen_avg
+            self.diff_max_all = np.full((arr_time_table.shape[0], arr_time_table.shape[1], num_ants), np.nan, dtype = float)
+        for t in range(theta_len):
+            for p in range(phi_len):
+                arr_ant = arr_time_table[ver_theta_idx[t], ver_phi_idx[p], rad_con, :, ray_con] # theta, phi, radius, ant, ray
+                arr_cen_diff = arr_ant - np.nanmean(arr_ant)
                 self.arr_time_diff_idx[:, t, p] = np.round(arr_cen_diff / self.dt).astype(int)
                 if self.use_debug:
                     self.arr_time_diff[:, t, p] = arr_cen_diff
 
-                arr = arr_time_table[t_idx[t] - t_half_width:t_idx[t] + t_half_width, p_idx[p] - p_half_width:p_idx[p] + p_half_width, 1, :, 0]
+                rec_re = rec_avg[:, ver_phi_idx[p] - phi_width:ver_phi_idx[p] + phi_width]
+                rec_bool = np.all((rec_re > self.theta_bin[t] - bottom_width[t], rec_re < self.theta_bin[t] + upper_width[t]), axis = 0)
+
+                if ice_air_idx[t] == 0: arr = np.copy(arr_ice[:, ver_phi_idx[p] - phi_width:ver_phi_idx[p] + phi_width])
+                else: arr = np.copy(arr_air[:, ver_phi_idx[p] - phi_width:ver_phi_idx[p] + phi_width])
+                arr[~rec_bool] = np.nan
                 arr_avg = np.nanmean(arr, axis = 2)
                 arr_diff = arr - arr_avg[:, :, np.newaxis]
         
                 diffs = arr_diff - arr_cen_diff[np.newaxis, np.newaxis, :]
                 if self.use_debug:
-                    self.diff_max_all[t_idx[t] - t_half_width:t_idx[t] + t_half_width, p_idx[p] - p_half_width:p_idx[p] + p_half_width] = diffs
+                    self.diff_max_all[rec_bool, ver_phi_idx[p] - phi_width:ver_phi_idx[p] + phi_width] = diffs[rec_bool]
                 diff_max[t, p] = np.nanmax(np.abs(diffs))
-                del arr_cen, arr_cen_avg, arr_cen_diff, arr, arr_avg, arr_diff, diffs
-        diff_max_ceil = np.ceil(np.nanmax(diff_max) / 10) * 10
+                del arr_ant, arr_cen_diff, rec_re, rec_bool, arr, arr_avg, arr_diff, diffs
+        diff_max_ceil = np.ceil(np.nanmax(diff_max))
         self.roll_win_idx = int(diff_max_ceil / self.dt) + 1
-        if self.verbose:
+        if self.verbose and self.roll_win is None:
             print(f'rolling max window: {np.nanmax(diff_max)} ns')
             print(f'rolling max ceil window: {diff_max_ceil} ns')
             print(f'rolling max ceil bin length: {self.roll_win_idx}')
+        del theta_len, phi_len, rad_con, ray_con, ice_air_tran
 
         if self.use_debug:
+            self.diff_max_all = np.transpose(self.diff_max_all, (2, 0, 1))
             self.roll_win_time = np.copy(diff_max_ceil)
             self.arr_time_table = np.copy(arr_time_table)
+            self.receipt_ang = np.copy(receipt_ang)
             self.arr_time_diff_all = arr_time_table[:, :, 1, :, 0] - np.nanmean(arr_time_table, axis = 2)[:, :, np.newaxis]
             self.arr_time_diff_all = np.transpose(arr_time_diff_all, (2, 0, 1))
             self.theta_idx = np.copy(t_idx)
             self.phi_idx = np.copy(p_idx)
             self.diff_max = np.copy(diff_max)
-        del t_idx, p_idx, t_half_width, p_half_width, diff_max, arr_time_table, diff_max_ceil
+            self.ver_theta_idx = np.copy(ver_theta_idx)
+            self.ver_phi_idx = np.copy(ver_phi_idx)
+            self.upper_width = np.copy(upper_width)
+            self.bottom_width = np.copy(bottom_width)
+            self.ice_air_idx = np.copy(ice_air_idx)
+            self.arr_ice = np.copy(arr_ice)
+            self.arr_air = np.copy(arr_air)
+            self.rec_avg = np.copy(rec_avg)
+        del diff_max, arr_time_table, receipt_ang, diff_max_ceil, ver_theta_idx, ver_phi_idx, upper_width, bottom_width, ice_air_idx, phi_width, arr_ice, arr_air, rec_avg
 
         if self.verbose:        
             print('arrival time table is on!')
