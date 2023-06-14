@@ -278,11 +278,9 @@ def wf_sim_collector(Data, Station, Year, act_evt):
     temp_wf_len = ara_mf.temp_wf_len_ori
     temp_fft_len = ara_mf.temp_fft_len_ori
     temp_freq = ara_mf.temp_freq_ori
-    temp_freq_pad = ara_mf.temp_freq_pad
     temp_ori = ara_mf.temp_ori
     temp_pad = ara_mf.temp_pad
     temp_rfft = ara_mf.temp_rfft_ori
-    temp_fft_len_pad = ara_mf.temp_fft_len_pad
     temp_param = ara_mf.num_temp_params
     temp = ara_mf.temp
     arr_time_diff = ara_mf.arr_time_diff
@@ -291,9 +289,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
     mf_corr_no_hill = np.full((ara_mf.lag_len, good_ch_len, temp_param[0], temp_param[1], temp_param[2], sel_evt_len), np.nan, dtype = float)
     mf_corr_hill = np.copy(mf_corr_no_hill)
     mf_corr = np.copy(mf_corr_no_hill)
-    mf_corr_no_roll = np.copy(mf_corr_no_hill)
-    mf_corr_temp_dat_psd = np.full((temp_fft_len_pad, good_ch_len, temp_param[0], temp_param[1], temp_param[2], sel_evt_len), np.nan, dtype = float)
-    mf_corr_temp_dat = np.copy(mf_corr_temp_dat_psd)
     mf_corr_max_peak = np.full((good_ch_len, temp_param[0], temp_param[1], temp_param[2], sel_evt_len), np.nan, dtype = float)
     mf_corr_max_peak_idx = np.full((good_ch_len, temp_param[0], temp_param[1], temp_param[2], sel_evt_len), 0, dtype = int)
     mf_corr_max_peak_time = np.copy(mf_corr_max_peak)
@@ -303,9 +298,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
     mf_corr_roll_no_off = np.full((ara_mf.lag_len, good_ch_len, temp_param[0], temp_param[1], sel_evt_len), np.nan, dtype = float)
     mf_corr_roll_sum =  np.full((ara_mf.lag_len, num_pols, temp_param[0], arr_param[0], arr_param[1], sel_evt_len), np.nan, dtype = float)
     mf_corr_roll_sum_peak_idx = np.full((num_pols, 4, sel_evt_len), np.nan, dtype = float)
-    mf_corr_sum_indi = np.full((ara_mf.lag_len, num_ants, temp_param[0], arr_param[0], arr_param[1], sel_evt_len), np.nan, dtype = float)
-    mf_corr_sum_indi_roll = np.copy(mf_corr_sum_indi)
-    mf_corr_sum_indi_off = np.full((num_ants, temp_param[0], arr_param[0], arr_param[1], sel_evt_len), np.nan, dtype = float)
     mf_wf_fin = np.full((ara_mf.lag_len, num_pols, sel_evt_len), np.nan, dtype = float)
     mf_max = np.full((num_pols, sel_evt_len), np.nan, dtype = float)
     mf_temp_idx = np.full((num_pols, mf_param_shape[1], sel_evt_len), -1, dtype = int)
@@ -320,8 +312,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
     mf_corr_arr_best = np.copy(mf_corr_best)
     mf_corr_roll_best = np.copy(mf_corr_best)
     mf_corr_arr_roll_best = np.copy(mf_corr_best)
-    mf_corr_temp_dat_best = np.full((temp_fft_len_pad, num_ants, sel_evt_len), np.nan, dtype = float)
-    mf_corr_temp_dat_psd_best = np.copy(mf_corr_temp_dat_best)
 
     print(sel_evt_len)
     # loop over the events
@@ -348,9 +338,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
         mf_corr_no_hill[:, :, :, :, :, evt] = ara_mf.corr_no_hill
         mf_corr_hill[:, :, :, :, :, evt] = ara_mf.corr_hill
         mf_corr[:, :, :, :, :, evt] = ara_mf.corr
-        mf_corr_no_roll[:, :, :, :, :, evt] = ara_mf.corr_no_roll
-        mf_corr_temp_dat_psd[:, :, :, :, :, evt] = np.abs(ara_mf.corr_temp_dat_psd)
-        mf_corr_temp_dat[:, :, :, :, :, evt] = np.abs(ara_mf.corr_temp_dat)
         mf_corr_max_peak[:, :, :, :, evt] = ara_mf.corr_max_peak
         mf_corr_max_peak_idx[:, :, :, :, evt] = ara_mf.corr_max_peak_idx
         mf_corr_max_peak_time[:, :, :, :, evt] = ara_mf.corr_max_peak_time
@@ -360,9 +347,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
         mf_corr_roll_no_off[:, :, :, :, evt] = ara_mf.corr_roll_no_off
         mf_corr_roll_sum[:, :, :, :, :, evt] = ara_mf.corr_roll_sum
         mf_corr_roll_sum_peak_idx[:, :, evt] = ara_mf.corr_roll_sum_peak_idx
-        mf_corr_sum_indi[:, :, :, :, :, evt] = ara_mf.corr_sum_indi
-        mf_corr_sum_indi_roll[:, :, :, :, :, evt] = ara_mf.corr_sum_indi_roll
-        mf_corr_sum_indi_off[:, :, :, :, evt] = ara_mf.corr_sum_indi_off
         mf_wf_fin[:, :, evt] = ara_mf.mf_wf_fin
         mf_temp_ori_best[:, :, evt] =  ara_mf.temp_ori_best
         mf_temp_ori_shift_best[:, :, evt] = ara_mf.temp_ori_shift_best
@@ -372,8 +356,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
         mf_corr_arr_best[:, :, evt] = ara_mf.corr_arr_best
         mf_corr_roll_best[:, :, evt] = ara_mf.corr_roll_best
         mf_corr_arr_roll_best[:, :, evt] = ara_mf.corr_arr_roll_best
-        mf_corr_temp_dat_best[:, :, evt] = ara_mf.corr_temp_dat_best
-        mf_corr_temp_dat_psd_best[:, :, evt] = ara_mf.corr_temp_dat_psd_best
         mf_search[:, :, :, :, evt] = ara_mf.mf_search
 
     print('Sim wf collecting is done!')
@@ -468,7 +450,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
             'soft_rayl':soft_rayl,
             'temp_time':temp_time,
             'temp_freq':temp_freq,
-            'temp_freq_pad':temp_freq_pad,
             'temp_ori':temp_ori,
             'temp_pad':temp_pad,
             'temp_rfft':temp_rfft,
@@ -477,13 +458,10 @@ def wf_sim_collector(Data, Station, Year, act_evt):
             'arr_time_diff':arr_time_diff,
             'arr_param':arr_param,
             'norm_fac':norm_fac,
-            'mf_corr_no_hill':mf_corr_no_hill,
+            'mf_corr_no_hill ':mf_corr_no_hill ,
             'mf_corr_hill':mf_corr_hill,
             'mf_corr':mf_corr,
-            'mf_corr_no_roll':mf_corr_no_roll,
-            'mf_corr_temp_dat_psd':mf_corr_temp_dat_psd,
-            'mf_corr_temp_dat':mf_corr_temp_dat,
-            'mf_corr_max_peak':mf_corr_max_peak,
+            'mf_corr_max_peak':mf_corr_max_peak ,
             'mf_corr_max_peak_idx':mf_corr_max_peak_idx,
             'mf_corr_max_peak_time':mf_corr_max_peak_time,
             'mf_corr_best_off_idx':mf_corr_best_off_idx,
@@ -492,9 +470,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
             'mf_corr_roll_no_off':mf_corr_roll_no_off,
             'mf_corr_roll_sum':mf_corr_roll_sum,
             'mf_corr_roll_sum_peak_idx':mf_corr_roll_sum_peak_idx,
-            'mf_corr_sum_indi':mf_corr_sum_indi,
-            'mf_corr_sum_indi_roll':mf_corr_sum_indi_roll,
-            'mf_corr_sum_indi_off':mf_corr_sum_indi_off,
             'mf_wf_fin':mf_wf_fin,
             'mf_max':mf_max,
             'mf_max_each':mf_max_each,
@@ -508,7 +483,5 @@ def wf_sim_collector(Data, Station, Year, act_evt):
             'mf_corr_arr_best':mf_corr_arr_best,
             'mf_corr_roll_best':mf_corr_roll_best,
             'mf_corr_arr_roll_best':mf_corr_arr_roll_best,
-            'mf_corr_temp_dat_best':mf_corr_temp_dat_best,
-            'mf_corr_temp_dat_psd_best':mf_corr_temp_dat_psd_best,
             'mf_search':mf_search}
 
