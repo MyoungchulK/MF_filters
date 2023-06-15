@@ -46,7 +46,7 @@ def temp_sim_collector(Data, Station, Year):
             del line_p, p_idx
             counts += 1
         del counts
-    del param_path, flavor
+    del config, param_path, flavor
 
     # temp arrays
     sho_bin = np.array([0, 1], dtype = int)
@@ -65,7 +65,6 @@ def temp_sim_collector(Data, Station, Year):
     temp = np.full((wf_len, num_ants, sho_bin_len, res_bin_len, off_bin_len), 0, dtype = float)
     sig_shift = np.full((num_ants, sho_bin_len, res_bin_len, off_bin_len), np.nan, dtype = float)
     rec_angle = np.copy(sig_shift)
-    snr = np.copy(sig_shift)
     del sho_bin_len, res_bin_len, off_bin_len
 
     # loop over the events
@@ -93,10 +92,8 @@ def temp_sim_collector(Data, Station, Year):
         
         # sim wf
         wf_v = ara_root.get_rf_wfs(evt)
-        p2p_evt = np.full((num_ants), np.nan, dtype = float)
         for ant in range(num_ants):
-            wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_p2p = True, use_band_pass = True)
-            p2p_evt[ant] = wf_int.int_p2p
+            wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_band_pass = True)
         pad_v_ant = wf_int.pad_v[:, ant_ch]
         del wf_v
 
@@ -111,17 +108,8 @@ def temp_sim_collector(Data, Station, Year):
         del sig_bins, pad_v_ant
 
         temp[:, ant_ch, sho_loc, ele_loc, off_loc] = temp_sig_shift
-        snr[ant_ch, sho_loc, ele_loc, off_loc] = p2p_evt[ant_ch]
-        del ant_ch, sho_loc, ele_loc, off_loc, temp_sig_shift, p2p_evt
+        del ant_ch, sho_loc, ele_loc, off_loc, temp_sig_shift
     del ara_root, num_evts, num_ants, wf_int, wf_time, wf_len, dt, signal_bin, rec_ang, temp_temp_param
-
-    snr /= 2
-    r_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/rms_sim_merge/rms_A{Station}_R{config}.h5'
-    print('rms path:', r_path)
-    hf = h5py.File(r_path, 'r')
-    rms_mean = hf['rms_mean'][:]
-    snr /= rms_mean[:, np.newaxis, np.newaxis, np.newaxis]
-    del config, r_path, hf, rms_mean
 
     print('Temp collecting is done!')
 
@@ -129,7 +117,6 @@ def temp_sim_collector(Data, Station, Year):
             'temp':temp,
             'sig_shift':sig_shift,
             'rec_angle':rec_angle,
-            'snr':snr,
             'sho_bin':sho_bin,
             'res_bin':res_bin,
             'off_bin':off_bin}

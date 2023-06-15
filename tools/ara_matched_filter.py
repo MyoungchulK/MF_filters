@@ -134,7 +134,7 @@ class ara_matched_filter:
 
         self.norm_fac = 2 * np.nansum(np.abs(self.temp) ** 2 / self.psd_int[:, :, np.newaxis, np.newaxis, np.newaxis], axis = 0)
         self.norm_fac /= self.lag_len * self.dt
-        self.norm_fac = np.sqrt(self.norm_fac)
+        #self.norm_fac = np.sqrt(self.norm_fac)
 
         if self.verbose:
             print('norm is on!')
@@ -306,7 +306,7 @@ class ara_matched_filter:
         if self.use_debug:
             self.corr_temp_dat_psd = np.copy(self.corr)
         self.corr = 2 * np.fft.irfft(self.corr, n = self.lag_len, axis = 0) / self.dt
-        self.corr /= self.norm_fac[np.newaxis, :, :, :, :]
+        #self.corr /= self.norm_fac[np.newaxis, :, :, :, :]
         if self.use_debug:
             self.corr_no_roll = np.copy(self.corr)
         self.corr = np.roll(self.corr, self.lag_half_len, axis = 0)
@@ -334,6 +334,8 @@ class ara_matched_filter:
         ## max off-cone index and choose array by this
         off_max_idx = np.nanargmax(corr_max, axis = 3) #  arr dim: (# of good ants, # of shos, # of ress)
         corr_2nd = self.corr[:, self.good_ch_range[:, np.newaxis, np.newaxis], self.sho_range[np.newaxis, :, np.newaxis], self.res_range[np.newaxis, np.newaxis, :], off_max_idx] 
+        norm_fac_2nd = self.norm_fac[self.good_ch_range[:, np.newaxis, np.newaxis], self.sho_range[np.newaxis, :, np.newaxis], self.res_range[np.newaxis, np.newaxis, :], off_max_idx]
+        print(self.norm_fac)
         # arr dim: (# of lag bins, # of good ants, # of shos, # of ress)
         if self.use_debug:
             self.corr_best_off_idx = np.copy(off_max_idx) # best off-cone match index
@@ -350,6 +352,7 @@ class ara_matched_filter:
 
         ## sum the corr
         corr_sum = np.full(self.corr_sum_shape, 0, dtype = float) # array dim: (# of lag bins, # of pols, # of shos, # of thetas, # of phis)
+        norm_sqrt = np.full((num_pols, self.num_temp_params[0], self.num_arr_params[0], self.num_arr_params[1]), 0, dtype = float)
         if self.use_debug:
             self.corr_sum_indi = np.full((self.lag_len, num_ants, self.num_temp_params[0], self.num_arr_params[0], self.num_arr_params[1]), 0, dtype = float)
             self.corr_sum_indi_roll = np.copy(self.corr_sum_indi)
@@ -357,9 +360,12 @@ class ara_matched_filter:
         for ant in range(self.good_ch_len):
             for theta in range(self.num_arr_params[0]):
                 corr_ch = corr_roll_max[:, ant, :, self.res_theta_idx[theta]] # arr dim: (# of lag bins, # of shos)
+                norm_ch = norm_fac_2nd[ant, :, self.res_theta_idx[theta]]
+                print(norm_ch)
                 if self.use_debug:
                     corr_ch_2nd = corr_2nd[:, ant, :, self.res_theta_idx[theta]] # arr dim: (# of lag bins, # of shos)
                 for phi in range(self.num_arr_params[1]):
+                    norm_sqrt[self.good_ch_pol[ant], :, theta, phi] += norm_ch
                     arr_idx = self.arr_time_diff_idx[ant, theta, phi]
                     if arr_idx < 0:
                         corr_sum[-arr_idx:, self.good_ch_pol[ant], :, theta, phi] += corr_ch[:arr_idx]
@@ -380,6 +386,8 @@ class ara_matched_filter:
                             self.corr_sum_indi_roll[:, self.good_chs[ant], :, theta, phi] = corr_ch
                     del arr_idx
                 del corr_ch
+        print(norm_sqrt)
+        corr_sum /= np.sqrt(norm_sqrt)[np.newaxis, :, :, :, :]
         if self.use_debug:  
             self.corr_roll_sum = np.copy(corr_sum) # sum of each pol
         del corr_roll_max
@@ -399,6 +407,7 @@ class ara_matched_filter:
         self.mf_max[0] = corr_sum[:, 0][v_max_idx]
         self.mf_max[1] = corr_sum[:, 1][h_max_idx]
         self.mf_max_each = np.nanmax(corr_sum, axis = 0) # array dim: (# of pols, # of shos, # of thetas, # of phis)
+        print(self.mf_max_each)
         self.mf_temp_off = self.off_bin[off_max_idx]
         self.mf_temp = np.full(self.mf_param_shape, -1, dtype = int) # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)))
         self.mf_temp[0, :3] = v_max_idx[1:]
