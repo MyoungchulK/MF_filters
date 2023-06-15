@@ -64,8 +64,8 @@ def mf_sim_collector(Data, Station, Year):
     num_temp_params = ara_mf.num_temp_params
     num_arr_params = ara_mf.num_arr_params
     mf_param_shape = ara_mf.mf_param_shape
-    #wei = get_products(weights, good_chs, good_v_len)
-    del ex_run, good_chs, good_v_len, base_path
+    wei = get_products(weights, good_chs, good_v_len)
+    del ex_run, good_chs, good_v_len, weights, base_path
 
     mf_max = np.full((num_pols, num_evts), np.nan, dtype = float) # array dim: (# of pols, # of evts)
     mf_max_each = np.full((num_pols, num_temp_params[0], num_arr_params[0], num_arr_params[1], num_evts), np.nan, dtype = float) # array dim: (# of pols, # of shos, # of thetas, # of phis, # of evts)
@@ -82,14 +82,13 @@ def mf_sim_collector(Data, Station, Year):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_nan_pad = True, use_band_pass = True, use_cw = True, evt = evt)
         del wf_v
 
-        #ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = wei[:, evt]) 
-        ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = weights[:, evt]) 
+        ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = wei[:, evt]) 
         mf_max[:, evt] = ara_mf.mf_max
         mf_max_each[:, :, :, :, evt] = ara_mf.mf_max_each
         mf_temp[:, :, evt] = ara_mf.mf_temp
         mf_temp_off[:, :, :, evt] = ara_mf.mf_temp_off
         #print(mf_max[:, evt], mf_best[:, :, evt])
-    del ara_root, num_evts, num_ants, wf_int, ara_mf, wf_time
+    del ara_root, num_evts, num_ants, wf_int, ara_mf, wei, wf_time
 
     print('MF sim collecting is done!')
 

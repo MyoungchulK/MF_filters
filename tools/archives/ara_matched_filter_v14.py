@@ -109,8 +109,7 @@ class ara_matched_filter:
                
         freq_psd_double = np.fft.rfftfreq(self.lag_len, self.dt)
         psd_f = interp1d(freq_psd, psd, axis = 0, fill_value = 'extrapolate')
-        self.psd_int = psd_f(freq_psd_double)
-        self.psd_int *= 2
+        self.psd_int = psd_f(freq_psd_double) * self.lag_len / self.dt # reverse normalization
         if self.use_debug:
             self.psd = np.copy(psd)
             self.freq_psd = np.copy(freq_psd)
@@ -135,6 +134,7 @@ class ara_matched_filter:
 
         self.norm_fac = 2 * np.nansum(np.abs(self.temp) ** 2 / self.psd_int[:, :, np.newaxis, np.newaxis, np.newaxis], axis = 0)
         self.norm_fac /= self.lag_len * self.dt
+        #self.norm_fac = np.sqrt(self.norm_fac)
 
         if self.verbose:
             print('norm is on!')
@@ -148,7 +148,6 @@ class ara_matched_filter:
             print('template:', temp_dat)
         temp_hf = h5py.File(temp_dat, 'r')
         self.temp = temp_hf['temp'][:]
-        self.snr = temp_hf['snr'][:]
         if self.use_debug:
             self.temp_ori = np.copy(self.temp)
             temp_rffts = np.fft.rfft(self.temp_ori, axis = 0)
@@ -183,7 +182,6 @@ class ara_matched_filter:
         self.res_range = np.arange(self.num_temp_params[1], dtype = int)
 
         self.corr_sum_shape = (self.lag_len, num_pols, self.num_temp_params[0], self.num_arr_params[0], self.num_arr_params[1]) # array dim: (# of lag bins, # of pols, # of sho, # of theta, # of phi)
-        self.norm_sum_shape = (num_pols, self.num_temp_params[0], self.num_temp_params[1]) # array dim: (# of pols, # of sho, # of res)
         self.corr_sum_each_pol_shape = (self.lag_len, self.num_temp_params[0], self.num_arr_params[0], self.num_arr_params[1]) # array dim: (# of lag bins, # of sho, # of theta, # of phi)
         self.mf_param_shape = (num_pols, 3 + num_ants // num_pols) # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)))
         del run_info, config, temp_dat, temp_hf
@@ -307,7 +305,8 @@ class ara_matched_filter:
         self.corr /= self.psd_int[:, :, np.newaxis, np.newaxis, np.newaxis] 
         if self.use_debug:
             self.corr_temp_dat_psd = np.copy(self.corr)
-        self.corr = np.fft.irfft(self.corr, n = self.lag_len, axis = 0)
+        self.corr = 2 * np.fft.irfft(self.corr, n = self.lag_len, axis = 0) / self.dt
+        #self.corr /= self.norm_fac[np.newaxis, :, :, :, :]
         if self.use_debug:
             self.corr_no_roll = np.copy(self.corr)
         self.corr = np.roll(self.corr, self.lag_half_len, axis = 0)
@@ -334,25 +333,15 @@ class ara_matched_filter:
 
         ## max off-cone index and choose array by this
         off_max_idx = np.nanargmax(corr_max, axis = 3) #  arr dim: (# of good ants, # of shos, # of ress)
-        corr_2nd = self.corr[:, self.good_ch_range[:, np.newaxis, np.newaxis], self.sho_range[np.newaxis, :, np.newaxis], self.res_range[np.newaxis, np.newaxis, :], off_max_idx] # arr dim: (#of lagbins, #of goodants, #of shos, #of ress) 
-        norm_fac_2nd = self.norm_fac[self.good_ch_range[:, np.newaxis, np.newaxis], self.sho_range[np.newaxis, :, np.newaxis], self.res_range[np.newaxis, np.newaxis, :], off_max_idx] # arr dim: (# of good ants, # of shos, # of ress)
-        norm_sum = np.full(self.norm_sum_shape, np.nan, dtype = float) # array dim: (# of pols, # of sho, # of res)
-        norm_sum[0] = np.nansum(norm_fac_2nd[:self.good_v_len], axis = 0)
-        norm_sum[1] = np.nansum(norm_fac_2nd[self.good_v_len:], axis = 0)
-        norm_sqrt = np.sqrt(norm_sum)
+        corr_2nd = self.corr[:, self.good_ch_range[:, np.newaxis, np.newaxis], self.sho_range[np.newaxis, :, np.newaxis], self.res_range[np.newaxis, np.newaxis, :], off_max_idx] 
+        norm_fac_2nd = self.norm_fac[self.good_ch_range[:, np.newaxis, np.newaxis], self.sho_range[np.newaxis, :, np.newaxis], self.res_range[np.newaxis, np.newaxis, :], off_max_idx]
+        print(self.norm_fac)
+        # arr dim: (# of lag bins, # of good ants, # of shos, # of ress)
         if self.use_debug:
             self.corr_best_off_idx = np.copy(off_max_idx) # best off-cone match index
             self.corr_best_off_ang = self.off_bin[self.corr_best_off_idx] # best off-cone match angle
             self.corr_no_off = np.copy(corr_2nd) # corr wf after off-cone selection
-            self.norm_no_off = np.copy(norm_fac_2nd)
-            self.norm_sum = np.copy(norm_sum)
-            self.norm_sqrt = np.copy(norm_sqrt)
-        del corr_max, norm_fac_2nd, norm_sum
-        corr_2nd[:, :self.good_v_len] /= norm_sqrt[0, :, :][np.newaxis, np.newaxis, :, :]
-        corr_2nd[:, self.good_v_len:] /= norm_sqrt[1, :, :][np.newaxis, np.newaxis, :, :]
-        if self.use_debug:
-            self.corr_norm_no_off = np.copy(corr_2nd)
-        del norm_sqrt
+        del corr_max
 
         ## rolling max
         corr_roll_max = maximum_filter1d(corr_2nd, axis = 0, size = self.roll_win_idx, mode='constant') # arr dim: (# of lag bins, # of good ants, # of shos, # of ress)
@@ -363,6 +352,7 @@ class ara_matched_filter:
 
         ## sum the corr
         corr_sum = np.full(self.corr_sum_shape, 0, dtype = float) # array dim: (# of lag bins, # of pols, # of shos, # of thetas, # of phis)
+        norm_sqrt = np.full((num_pols, self.num_temp_params[0], self.num_arr_params[0], self.num_arr_params[1]), 0, dtype = float)
         if self.use_debug:
             self.corr_sum_indi = np.full((self.lag_len, num_ants, self.num_temp_params[0], self.num_arr_params[0], self.num_arr_params[1]), 0, dtype = float)
             self.corr_sum_indi_roll = np.copy(self.corr_sum_indi)
@@ -370,9 +360,12 @@ class ara_matched_filter:
         for ant in range(self.good_ch_len):
             for theta in range(self.num_arr_params[0]):
                 corr_ch = corr_roll_max[:, ant, :, self.res_theta_idx[theta]] # arr dim: (# of lag bins, # of shos)
+                norm_ch = norm_fac_2nd[ant, :, self.res_theta_idx[theta]]
+                print(norm_ch)
                 if self.use_debug:
                     corr_ch_2nd = corr_2nd[:, ant, :, self.res_theta_idx[theta]] # arr dim: (# of lag bins, # of shos)
                 for phi in range(self.num_arr_params[1]):
+                    norm_sqrt[self.good_ch_pol[ant], :, theta, phi] += norm_ch
                     arr_idx = self.arr_time_diff_idx[ant, theta, phi]
                     if arr_idx < 0:
                         corr_sum[-arr_idx:, self.good_ch_pol[ant], :, theta, phi] += corr_ch[:arr_idx]
@@ -393,7 +386,9 @@ class ara_matched_filter:
                             self.corr_sum_indi_roll[:, self.good_chs[ant], :, theta, phi] = corr_ch
                     del arr_idx
                 del corr_ch
-        if self.use_debug: 
+        print(norm_sqrt)
+        corr_sum /= np.sqrt(norm_sqrt)[np.newaxis, :, :, :, :]
+        if self.use_debug:  
             self.corr_roll_sum = np.copy(corr_sum) # sum of each pol
         del corr_roll_max
 
@@ -412,6 +407,7 @@ class ara_matched_filter:
         self.mf_max[0] = corr_sum[:, 0][v_max_idx]
         self.mf_max[1] = corr_sum[:, 1][h_max_idx]
         self.mf_max_each = np.nanmax(corr_sum, axis = 0) # array dim: (# of pols, # of shos, # of thetas, # of phis)
+        print(self.mf_max_each)
         self.mf_temp_off = self.off_bin[off_max_idx]
         self.mf_temp = np.full(self.mf_param_shape, -1, dtype = int) # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)))
         self.mf_temp[0, :3] = v_max_idx[1:]
@@ -452,7 +448,7 @@ class ara_matched_filter:
                     self.temp_ori_best[:, ant] = self.temp_ori[:, ant, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx]
                     self.temp_rfft_best[:, ant] = self.temp_rfft_ori[:, ant, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx]
                     self.temp_phase_best[:, ant] = self.temp_phase_ori[:, ant, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx]
-                    self.corr_best[:, ant] = self.corr[:, ant_1, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx] / self.norm_sqrt[ant // 8, sho_best_idx, self.res_theta_idx[res_best_idx]]
+                    self.corr_best[:, ant] = self.corr[:, ant_1, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx]
                     self.corr_temp_dat_best[:, ant] = np.abs(self.corr_temp_dat[:, ant_1, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx])
                     self.corr_temp_dat_psd_best[:, ant] = np.abs(self.corr_temp_dat_psd[:, ant_1, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx])
                     shift_idx = int(self.lags[np.nanargmax(self.corr_best[:, ant])] / self.dt)
@@ -487,14 +483,7 @@ class ara_matched_filter:
         self.get_mf_wfs()
 
         if weights is not None:
-            mf_wei =  self.snr[self.good_chs] * weights[self.good_chs][:, np.newaxis, np.newaxis, np.newaxis]
-            mf_v = np.nansum(mf_wei[:self.good_v_len], axis = 0)
-            mf_h = np.nansum(mf_wei[self.good_v_len:], axis = 0)
-            mf_wei[:self.good_v_len] /= mf_v[np.newaxis, :]
-            mf_wei[self.good_v_len:] /= mf_h[np.newaxis, :]
-            self.corr *= mf_wei[np.newaxis, :, :, :, :]
-            del mf_wei, mf_v, mf_h
-            #self.corr *= weights[np.newaxis, :, np.newaxis, np.newaxis, np.newaxis]
+           self.corr *= weights[np.newaxis, :, np.newaxis, np.newaxis, np.newaxis]
 
         ## event wise snr
         self.get_evt_wise_corr()

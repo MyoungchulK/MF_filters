@@ -339,7 +339,8 @@ def wf_sim_collector(Data, Station, Year, act_evt):
 
         for ant in range(num_ants):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_nan_pad = True, use_band_pass = True, use_cw = True, evt = sel_evts[evt])
-        ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = wei[:, sel_evts[evt]])
+        #ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = wei[:, sel_evts[evt]])
+        ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = snr[:, sel_evts[evt]])
         mf_max[:, evt] = ara_mf.mf_max
         mf_max_each[:, :, :, :, evt] = ara_mf.mf_max_each
         mf_temp_idx[:, :, evt] = ara_mf.mf_temp

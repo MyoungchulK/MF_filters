@@ -73,8 +73,8 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
     num_temp_params = ara_mf.num_temp_params
     num_arr_params = ara_mf.num_arr_params
     mf_param_shape = ara_mf.mf_param_shape
-    wei = get_products(weights, good_chs, good_v_len)
-    del st, run, good_chs, good_v_len, weights
+    #wei = get_products(weights, good_chs, good_v_len)
+    del st, run, good_chs, good_v_len#, weights
      
     mf_max = np.full((num_pols, num_evts), np.nan, dtype = float) # array dim: (# of pols, # of evts)
     mf_max_each = np.full((num_pols, num_temp_params[0], num_arr_params[0], num_arr_params[1], num_evts), np.nan, dtype = float) # array dim: (# of pols, # of shos, # of thetas, # of phis, # of evts)
@@ -101,13 +101,14 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()
 
-        ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = wei[:, evt]) 
+        #ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = wei[:, evt]) 
+        ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = weights[:, evt]) 
         mf_max[:, evt] = ara_mf.mf_max
         mf_max_each[:, :, :, :, evt] = ara_mf.mf_max_each
         mf_temp[:, :, evt] = ara_mf.mf_temp
         mf_temp_off[:, :, :, evt] = ara_mf.mf_temp_off
         #print(mf_max[:, evt], mf_temp[:, :, evt])
-    del ara_root, num_evts, num_ants, wf_int, ara_mf, daq_qual_cut_sum, wei
+    del ara_root, num_evts, num_ants, wf_int, ara_mf, daq_qual_cut_sum#, wei
 
     print('MF collecting is done!')
     
