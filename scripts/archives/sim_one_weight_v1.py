@@ -23,8 +23,6 @@ num_evts = 100
 if Station == 2: num_configs = 7
 if Station == 3: num_configs = 9
 
-nfour = float(2048 / 2 / 2 * 0.5)
-
 pnu = np.full((d_len, num_evts), np.nan, dtype = float)
 cos_angle = np.copy(pnu)
 probability = np.copy(pnu)
@@ -34,8 +32,6 @@ sim_run = np.full((d_len), 0, dtype = int)
 config = np.copy(sim_run)
 flavor = np.copy(sim_run)
 exponent = np.full((d_len, 2), 0, dtype = int)
-sig_in = np.full((d_len, num_evts), 0, dtype = int)
-sig_in_wide = np.full((d_len, num_evts), 0, dtype = int)
 
 for r in tqdm(range(len(d_run_tot))):
     
@@ -56,12 +52,6 @@ for r in tqdm(range(len(d_run_tot))):
     probability[r] = prob
     cos_angle[r] = hf['nnu'][3]
     exponent[r] = hf['exponent_range'][:]
-    wf_time = hf['wf_time'][:]
-    wf_dege = np.array([wf_time[0] - 0.5, wf_time[-1] + 0.5])
-    wf_dege_wide = np.array([wf_time[0] - nfour - 0.5, wf_time[-1] + nfour + 0.5])
-    sig_bin = hf['signal_bin'][:]
-    sig_in[r] = np.nansum(np.digitize(sig_bin, wf_dege) == 1, axis = (0, 1))
-    sig_in_wide[r] = np.nansum(np.digitize(sig_bin, wf_dege_wide) == 1, axis = (0, 1))
     del hf, cons, prob
 
 pnu /= 1e9
@@ -71,10 +61,6 @@ exponent_lin = 10 ** (exponent)
 solid_angle = 4 * np.pi
 area = np.pi * (radius**2)
 one_weight = probability * pnu * area[:, np.newaxis] * solid_angle * (np.log(exponent_lin[:, 1][:, np.newaxis]) - np.log(exponent_lin[:, 0][:, np.newaxis]))
-one_weight_sig = np.copy(one_weight)
-one_weight_sig[sig_in == 0] = 0
-one_weight_sig_wide = np.copy(one_weight)
-one_weight_sig_wide[sig_in_wide == 0] = 0
 
 ex_range = np.arange(7, 13, 1, dtype = int)
 num_ens = len(ex_range)
@@ -83,10 +69,6 @@ cos_bins = np.linspace(-1, 1, 100 + 1)
 
 aeff_1d = np.full((len(energy_bins) - 1, num_flas, num_configs, num_ens), 0, dtype = float)
 aeff_2d = np.full((len(energy_bins) - 1, len(cos_bins) - 1, num_flas, num_configs, num_ens), 0, dtype = float)
-aeff_1d_sig = np.copy(aeff_1d)
-aeff_2d_sig = np.copy(aeff_2d)
-aeff_1d_sig_wide = np.copy(aeff_1d)
-aeff_2d_sig_wide = np.copy(aeff_2d)
 inu_thrown_tot = np.full((num_flas, num_configs, num_ens), 0, dtype = float)
 
 for f in range(num_flas):
@@ -97,23 +79,13 @@ for f in range(num_flas):
             tot_pnu = pnu[idxs].flatten()
             tot_cos = cos_angle[idxs].flatten()
             tot_wei = one_weight[idxs].flatten()
-            tot_wei_sig = one_weight_sig[idxs].flatten()
-            tot_wei_sig_wide = one_weight_sig_wide[idxs].flatten()
             inu_thrown_tot[f, c, e] = tot_evt
 
             aeff_1d[:, f, c, e] = np.histogram(tot_pnu, weights = tot_wei, bins = energy_bins)[0]
             aeff_1d[:, f, c, e] /= tot_evt * np.diff(energy_bins) * solid_angle
-            aeff_1d_sig[:, f, c, e] = np.histogram(tot_pnu, weights = tot_wei_sig, bins = energy_bins)[0]
-            aeff_1d_sig[:, f, c, e] /= tot_evt * np.diff(energy_bins) * solid_angle
-            aeff_1d_sig_wide[:, f, c, e] = np.histogram(tot_pnu, weights = tot_wei_sig_wide, bins = energy_bins)[0]
-            aeff_1d_sig_wide[:, f, c, e] /= tot_evt * np.diff(energy_bins) * solid_angle
 
             aeff_2d[:, :, f, c, e] = np.histogram2d(tot_pnu, tot_cos, weights = tot_wei, bins=(energy_bins, cos_bins))[0]
             aeff_2d[:, :, f, c, e] /= tot_evt * np.diff(energy_bins)[:, np.newaxis] * np.diff(cos_bins)[np.newaxis, :] * solid_angle
-            aeff_2d_sig[:, :, f, c, e] = np.histogram2d(tot_pnu, tot_cos, weights = tot_wei_sig, bins=(energy_bins, cos_bins))[0]
-            aeff_2d_sig[:, :, f, c, e] /= tot_evt * np.diff(energy_bins)[:, np.newaxis] * np.diff(cos_bins)[np.newaxis, :] * solid_angle
-            aeff_2d_sig_wide[:, :, f, c, e] = np.histogram2d(tot_pnu, tot_cos, weights = tot_wei_sig_wide, bins=(energy_bins, cos_bins))[0]
-            aeff_2d_sig_wide[:, :, f, c, e] /= tot_evt * np.diff(energy_bins)[:, np.newaxis] * np.diff(cos_bins)[np.newaxis, :] * solid_angle
 
 m_to_cm = 1e4
 flux_model = np.loadtxt('/home/mkim/analysis/MF_filters/data/flux_data/gzkKoteraSFR1.txt')
@@ -149,18 +121,10 @@ hf.create_dataset('sim_run', data=sim_run, compression="gzip", compression_opts=
 hf.create_dataset('config', data=config, compression="gzip", compression_opts=9)
 hf.create_dataset('flavor', data=flavor, compression="gzip", compression_opts=9)
 hf.create_dataset('one_weight', data=one_weight, compression="gzip", compression_opts=9)
-hf.create_dataset('one_weight_sig', data=one_weight_sig, compression="gzip", compression_opts=9)
-hf.create_dataset('one_weight_sig_wide', data=one_weight_sig_wide, compression="gzip", compression_opts=9)
 hf.create_dataset('energy_bins', data=energy_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('cos_bins', data=cos_bins, compression="gzip", compression_opts=9)
-hf.create_dataset('sig_in', data=sig_in, compression="gzip", compression_opts=9)
-hf.create_dataset('sig_in_wide', data=sig_in_wide, compression="gzip", compression_opts=9)
 hf.create_dataset('aeff_1d', data=aeff_1d, compression="gzip", compression_opts=9)
-hf.create_dataset('aeff_1d_sig', data=aeff_1d_sig, compression="gzip", compression_opts=9)
-hf.create_dataset('aeff_1d_sig_wide', data=aeff_1d_sig_wide, compression="gzip", compression_opts=9)
 hf.create_dataset('aeff_2d', data=aeff_2d, compression="gzip", compression_opts=9)
-hf.create_dataset('aeff_2d_sig', data=aeff_2d_sig, compression="gzip", compression_opts=9)
-hf.create_dataset('aeff_2d_sig_wide', data=aeff_2d_sig_wide, compression="gzip", compression_opts=9)
 hf.create_dataset('evt_rate', data=evt_rate, compression="gzip", compression_opts=9)
 hf.create_dataset('gzkKoteraSFR_energy', data=energy, compression="gzip", compression_opts=9)
 hf.create_dataset('gzkKoteraSFR_e2', data=nu_tot_model, compression="gzip", compression_opts=9)

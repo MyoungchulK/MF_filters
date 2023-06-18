@@ -110,7 +110,7 @@ class ara_matched_filter:
         freq_psd_double = np.fft.rfftfreq(self.lag_len, self.dt)
         psd_f = interp1d(freq_psd, psd, axis = 0, fill_value = 'extrapolate')
         self.psd_int = psd_f(freq_psd_double)
-        self.psd_int *= 2
+        self.psd_int *= 2 # power symmetry
         if self.use_debug:
             self.psd = np.copy(psd)
             self.freq_psd = np.copy(freq_psd)
