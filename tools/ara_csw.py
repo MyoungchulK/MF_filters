@@ -73,11 +73,12 @@ class ara_csw:
 
         self.coef_r_max_idx = np.argmax(coef, axis = 1) # pol, sol, evt
         self.coord_r_max_idx = coord[self.pol_range[:, np.newaxis, np.newaxis, np.newaxis], tp_range[np.newaxis, :, np.newaxis, np.newaxis], self.coef_r_max_idx, self.sol_range[np.newaxis, np.newaxis, :, np.newaxis], evt_range[np.newaxis, np.newaxis, np.newaxis, :]]
-        self.coord_r_max_idx -= 0.5 
+        self.coord_r_max_idx[:, 0] += 0.5 
+        self.coord_r_max_idx[:, 1] -= 0.5 
         self.coord_r_max_idx[:, 0] -= 90
         self.coord_r_max_idx[:, 0] *= -1
         self.coord_r_max_idx[:, 1] += 180
-        self.coord_r_max_idx = self.coord_r_max_idx.astype(int)
+        self.coord_r_max_idx = np.round(self.coord_r_max_idx).astype(int)
 
         if self.use_debug:
             self.corf_r_max = coef[self.pol_range[:, np.newaxis, np.newaxis], self.coef_r_max_idx, self.sol_range[np.newaxis, :, np.newaxis], evt_range[np.newaxis, np.newaxis, :]]
