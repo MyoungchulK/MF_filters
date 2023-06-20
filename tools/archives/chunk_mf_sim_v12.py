@@ -1,6 +1,7 @@
 import os
 import numpy as np
 from tqdm import tqdm
+import h5py
 
 def mf_sim_collector(Data, Station, Year):
 
@@ -10,6 +11,7 @@ def mf_sim_collector(Data, Station, Year):
     from tools.ara_constant import ara_const
     from tools.ara_wf_analyzer import wf_analyzer
     from tools.ara_matched_filter import ara_matched_filter  
+    from tools.ara_matched_filter import get_products 
     from tools.ara_known_issue import known_issue_loader
     from tools.ara_run_manager import get_path_info_v2
     from tools.ara_run_manager import get_example_run
@@ -38,10 +40,17 @@ def mf_sim_collector(Data, Station, Year):
     # sub files
     h5_file_name = get_file_name(Data)
     band_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/cw_band_sim/cw_band_{h5_file_name}.h5'
+    snr_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/snr_sim/snr_{h5_file_name}.h5'
     base_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/baseline_sim_merge/baseline_A{Station}_R{config}.h5'
     print('cw band sim path:', band_path)
+    print('snr sim path:', snr_path)
     print('baseline sim path:', base_path)
     del h5_file_name, config
+
+    # snr info
+    wei_hf = h5py.File(snr_path, 'r')
+    weights = wei_hf['snr'][:]
+    del wei_hf, snr_path
 
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, verbose = True, st = Station, run = ex_run, new_wf_time = wf_time, sim_path = band_path)
@@ -49,11 +58,14 @@ def mf_sim_collector(Data, Station, Year):
 
     # matched filter
     ara_mf = ara_matched_filter(Station, ex_run, wf_int.dt, wf_int.pad_len, get_sub_file = True, verbose = True, sim_psd_path = base_path)  
+    good_chs = ara_mf.good_chs
     good_ch_len = ara_mf.good_ch_len
+    good_v_len = ara_mf.good_v_len
     num_temp_params = ara_mf.num_temp_params
     num_arr_params = ara_mf.num_arr_params
     mf_param_shape = ara_mf.mf_param_shape
-    del ex_run, base_path
+    #wei = get_products(weights, good_chs, good_v_len)
+    del ex_run, good_chs, good_v_len, base_path
 
     mf_max = np.full((num_pols, num_evts), np.nan, dtype = float) # array dim: (# of pols, # of evts)
     mf_max_each = np.full((num_pols, num_temp_params[0], num_arr_params[0], num_arr_params[1], num_evts), np.nan, dtype = float) # array dim: (# of pols, # of shos, # of thetas, # of phis, # of evts)
@@ -70,7 +82,8 @@ def mf_sim_collector(Data, Station, Year):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_nan_pad = True, use_band_pass = True, use_cw = True, evt = evt)
         del wf_v
 
-        ara_mf.get_evt_wise_snr(wf_int.pad_v) 
+        #ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = wei[:, evt]) 
+        ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = weights[:, evt]) 
         mf_max[:, evt] = ara_mf.mf_max
         mf_max_each[:, :, :, :, evt] = ara_mf.mf_max_each
         mf_temp[:, :, evt] = ara_mf.mf_temp

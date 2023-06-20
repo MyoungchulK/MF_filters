@@ -64,6 +64,12 @@ for r in tqdm(range(len(d_run_tot))):
     sig_in_wide[r] = np.nansum(np.digitize(sig_bin, wf_dege_wide) == 1, axis = (0, 1))
     del hf, cons, prob
 
+print(np.count_nonzero(sig_in == 0))
+print(np.count_nonzero(sig_in_wide == 0))
+print(np.nansum(inu_thrown))
+print(np.count_nonzero(sig_in == 0) / np.nansum(inu_thrown))
+print(np.count_nonzero(sig_in_wide == 0) / np.nansum(inu_thrown))
+
 pnu /= 1e9
 exponent -= 9
 cos_angle = np.cos(cos_angle)

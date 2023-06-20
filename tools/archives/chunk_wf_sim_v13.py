@@ -47,7 +47,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
     # data config
     ara_root = ara_root_loader(Data, Station, Year)
     ara_root.get_sub_info(Data, get_angle_info = get_angle_info)
-    #ara_root.get_sub_info(Data, get_angle_info = False)
     num_evts = ara_root.num_evts
     act_evt = act_evt.split(',')
     sel_evts = np.asarray(act_evt).astype(int)
@@ -341,7 +340,7 @@ def wf_sim_collector(Data, Station, Year, act_evt):
         for ant in range(num_ants):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_nan_pad = True, use_band_pass = True, use_cw = True, evt = sel_evts[evt])
         #ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = wei[:, sel_evts[evt]])
-        ara_mf.get_evt_wise_snr(wf_int.pad_v)#, weights = snr[:, sel_evts[evt]])
+        ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = snr[:, sel_evts[evt]])
         mf_max[:, evt] = ara_mf.mf_max
         mf_max_each[:, :, :, :, evt] = ara_mf.mf_max_each
         mf_temp_idx[:, :, evt] = ara_mf.mf_temp
@@ -377,58 +376,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
         mf_corr_temp_dat_best[:, :, evt] = ara_mf.corr_temp_dat_best
         mf_corr_temp_dat_psd_best[:, :, evt] = ara_mf.corr_temp_dat_psd_best
         mf_search[:, :, :, :, evt] = ara_mf.mf_search
-
-    from tools.ara_csw import ara_csw
-
-    reco_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco_sim/reco_{h5_file_name}.h5'
-    print('reco sim path:', reco_path)
-
-    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, verbose = True, st = Station, run = ex_run, new_wf_time = wf_time, sim_path = band_path)
-    ara_csw = ara_csw(Station, ex_run, wf_int.dt, wf_int.pad_zero_t, get_sub_file = True, use_debug = True, verbose = True, sim_reco_path = reco_path, sim_psd_path = base_path)
-    pad_len = ara_csw.pad_len
-    double_pad_len = ara_csw.double_pad_len
-    num_sols = ara_csw.num_sols
-    time_pad = ara_csw.time_pad
-    arr_table = ara_csw.arr_table
-    arr_delay = ara_csw.arr_delay
-    corf_r_max = ara_csw.corf_r_max
-    coef_r_max_idx = ara_csw.coef_r_max_idx
-    coord_r_max_idx = ara_csw.coord_r_max_idx
-    sc_rms = ara_csw.sc_rms
-    sc_freq_amp = ara_csw.sc_freq_amp
-    sc_amp = ara_csw.sc_amp
-    sc_freq_phase = ara_csw.sc_freq_phase
-    sc_phase = ara_csw.sc_phase
-    csw_int_sc_freqs = np.full((pad_len, num_ants, sel_evt_len), np.nan, dtype = float)
-    csw_int_sc_phases = np.full((pad_len, num_ants, sel_evt_len), np.nan, dtype = float)
-    csw_dd_fft_vs = np.copy(csw_int_sc_phases)
-    csw_dd_wf_ts = np.copy(csw_int_sc_phases)
-    csw_dd_wf_vs = np.copy(csw_int_sc_phases)
-    csw_shift_time = np.full((double_pad_len, num_ants, num_sols, sel_evt_len), np.nan, dtype = float)
-    csw_shift_dd_wf = np.copy(csw_shift_time)
-    csw_count_pad = np.full((double_pad_len, num_pols, num_sols, sel_evt_len), np.nan, dtype = float)
-    csw_zero_pad = np.copy(csw_count_pad)
-    csw_wf = np.copy(csw_count_pad)
-
-    print(sel_evt_len)
-    # loop over the events
-    for evt in tqdm(range(sel_evt_len)):
-      #if evt <100: # debug
-
-        wf_v = ara_root.get_rf_wfs(sel_evts[evt])
-        for ant in range(num_ants):
-            wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = False, use_band_pass = True, use_cw = True, evt = sel_evts[evt])
-        ara_csw.get_csw_wf(wf_int.pad_t, wf_int.pad_v, wf_int.pad_num, sel_evts[evt])
-        csw_int_sc_freqs[:, :, evt] = ara_csw.int_sc_freqs
-        csw_int_sc_phases[:, :, evt] = ara_csw.int_sc_phases
-        csw_dd_fft_vs[:, :, evt] = ara_csw.dd_fft_vs
-        csw_dd_wf_ts[:, :, evt] = ara_csw.dd_wf_ts
-        csw_dd_wf_vs[:, :, evt] = ara_csw.dd_wf_vs
-        csw_shift_time[:, :, :, evt] = ara_csw.shift_time
-        csw_shift_dd_wf[:, :, :, evt] = ara_csw.shift_dd_wf
-        csw_count_pad[:, :, :, evt] = ara_csw.count_pad
-        csw_zero_pad[:, :, :, evt] = ara_csw.zero_pad
-        csw_wf[:, :, :, evt] = ara_csw.csw_wf
 
     print('Sim wf collecting is done!')
 
@@ -564,25 +511,5 @@ def wf_sim_collector(Data, Station, Year, act_evt):
             'mf_corr_arr_roll_best':mf_corr_arr_roll_best,
             'mf_corr_temp_dat_best':mf_corr_temp_dat_best,
             'mf_corr_temp_dat_psd_best':mf_corr_temp_dat_psd_best,
-            'mf_search':mf_search,
-            'time_pad':time_pad,
-            'arr_table':arr_table,
-            'arr_delay':arr_delay,
-            'corf_r_max':corf_r_max,
-            'coef_r_max_idx':coef_r_max_idx,
-            'coord_r_max_idx':coord_r_max_idx,
-            'sc_rms':sc_rms,
-            'sc_freq_amp':sc_freq_amp,
-            'sc_amp':sc_amp,
-            'sc_freq_phase':sc_freq_phase,
-            'sc_phase':sc_phase,
-            'csw_int_sc_freqs':csw_int_sc_freqs,
-            'csw_int_sc_phases':csw_int_sc_phases,
-            'csw_dd_fft_vs':csw_dd_fft_vs,
-            'csw_dd_wf_ts':csw_dd_wf_ts,
-            'csw_dd_wf_vs':csw_dd_wf_vs,
-            'csw_shift_time':csw_shift_time,
-            'csw_shift_dd_wf':csw_shift_dd_wf,
-            'csw_count_pad':csw_count_pad,
-            'csw_zero_pad':csw_zero_pad,
-            'csw_wf':csw_wf}
+            'mf_search':mf_search}
+

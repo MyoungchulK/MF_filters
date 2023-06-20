@@ -1,9 +1,9 @@
 import numpy as np
 from tqdm import tqdm
 
-def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm = False):
+def csw_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm = False):
 
-    print('Collecting mf starts!')
+    print('Collecting csw starts!')
 
     if use_l2:
         from tools.ara_data_load import ara_l2_loader
@@ -12,7 +12,7 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
         from tools.ara_data_load import ara_root_loader
     from tools.ara_constant import ara_const
     from tools.ara_wf_analyzer import wf_analyzer
-    from tools.ara_matched_filter import ara_matched_filter  
+    from tools.ara_csw import ara_csw
     from tools.ara_known_issue import known_issue_loader
     from tools.ara_quality_cut import get_bad_events
 
@@ -55,19 +55,24 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, verbose = True, use_l2 = use_l2, analyze_blind_dat = analyze_blind_dat, st = st, run = run)
 
-    # matched filter
-    ara_mf = ara_matched_filter(st, run, wf_int.dt, wf_int.pad_len, get_sub_file = True, verbose = True)  
-    good_ch_len = ara_mf.good_ch_len
-    num_temp_params = ara_mf.num_temp_params
-    num_arr_params = ara_mf.num_arr_params
-    mf_param_shape = ara_mf.mf_param_shape
+    # csw
+    ara_csw = ara_csw(st, run, wf_int.dt, wf_int.pad_zero_t, get_sub_file = True, verbose = True)
+    num_sols = ara_csw.num_sols
     del st, run
-     
-    mf_max = np.full((num_pols, num_evts), np.nan, dtype = float) # array dim: (# of pols, # of evts)
-    mf_max_each = np.full((num_pols, num_temp_params[0], num_arr_params[0], num_arr_params[1], num_evts), np.nan, dtype = float) # array dim: (# of pols, # of shos, # of thetas, # of phis, # of evts)
-    mf_temp = np.full((num_pols, mf_param_shape[1], num_evts), -1, dtype = int) # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)), # of evts) 
-    mf_temp_off = np.full((good_ch_len, num_temp_params[0], num_temp_params[1], num_evts), np.nan, dtype = float) #  arr dim: (# of good ants, # of shos, # of ress)
-    del num_pols, mf_param_shape, good_ch_len, num_temp_params, num_arr_params
+    
+    # output array
+    hill_max_idx = np.full((num_pols, num_sols, num_evts), np.nan, dtype = float)
+    hill_max = np.copy(hill_max_idx)
+    snr_csw = np.copy(hill_max_idx)
+    cdf_avg = np.copy(hill_max_idx) 
+    slope = np.copy(hill_max_idx)
+    intercept = np.copy(hill_max_idx)
+    r_value = np.copy(hill_max_idx)
+    p_value = np.copy(hill_max_idx)
+    std_err = np.copy(hill_max_idx)
+    ks = np.copy(hill_max_idx)
+    nan_flag = np.full((num_pols, num_sols, num_evts), 0, dtype = int)
+    del num_sols, num_pols
 
     # loop over the events
     for evt in tqdm(range(num_evts), disable = no_tqdm):
@@ -83,29 +88,43 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
         # loop over the antennas
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_nan_pad = True, use_band_pass = True, use_cw = True, evt = evt)
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = False, use_band_pass = True, use_cw = True, evt = evt)
             del raw_t, raw_v
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()
 
-        ara_mf.get_evt_wise_snr(wf_int.pad_v) 
-        mf_max[:, evt] = ara_mf.mf_max
-        mf_max_each[:, :, :, :, evt] = ara_mf.mf_max_each
-        mf_temp[:, :, evt] = ara_mf.mf_temp
-        mf_temp_off[:, :, :, evt] = ara_mf.mf_temp_off
-        #print(mf_max[:, evt], mf_temp[:, :, evt])
-    del ara_root, num_evts, num_ants, wf_int, ara_mf, daq_qual_cut_sum
+        ara_csw.get_csw_params(wf_int.pad_t, wf_int.pad_v, wf_int.pad_num, evt)
+        hill_max_idx[:, :, evt] = ara_csw.hill_max_idx
+        hill_max[:, :, evt] = ara_csw.hill_max
+        snr_csw[:, :, evt] = ara_csw.snr_csw
+        cdf_avg[:, :, evt] = ara_csw.cdf_avg
+        slope[:, :, evt] = ara_csw.slope
+        intercept[:, :, evt] = ara_csw.intercept
+        r_value[:, :, evt] = ara_csw.r_value
+        p_value[:, :, evt] = ara_csw.p_value
+        std_err[:, :, evt] = ara_csw.std_err
+        ks[:, :, evt] = ara_csw.ks
+        nan_flag[:, :, evt] = ara_csw.nan_flag
+        if np.any(nan_flag[:, :, evt]):
+            print(hill_max_idx[:, :, evt], hill_max[:, :, evt], snr_csw[:, :, evt], cdf_avg[:, :, evt], slope[:, :, evt], intercept[:, :, evt], r_value[:, :, evt], p_value[:, :, evt], std_err[:, :, evt], ks[:, :, evt]) # debug
+    del ara_root, num_evts, num_ants, wf_int, ara_csw, daq_qual_cut_sum
 
-    print('MF collecting is done!')
+    print('CSW collecting is done!')
     
     return {'evt_num':evt_num,
             'trig_type':trig_type,
             'bad_ant':bad_ant,
-            'mf_max':mf_max,
-            'mf_max_each':mf_max_each,
-            'mf_temp':mf_temp,
-            'mf_temp_off':mf_temp_off}
-
+            'hill_max_idx':hill_max_idx,
+            'hill_max':hill_max,
+            'snr_csw':snr_csw,
+            'cdf_avg':cdf_avg,
+            'slope':slope,
+            'intercept':intercept,
+            'r_value':r_value,
+            'p_value':p_value,
+            'std_err':std_err,
+            'ks':ks,
+            'nan_flag':nan_flag}
 
 
 

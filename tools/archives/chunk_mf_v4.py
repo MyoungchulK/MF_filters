@@ -1,5 +1,6 @@
 import numpy as np
 from tqdm import tqdm
+import h5py
 
 def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm = False):
 
@@ -13,6 +14,8 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
     from tools.ara_constant import ara_const
     from tools.ara_wf_analyzer import wf_analyzer
     from tools.ara_matched_filter import ara_matched_filter  
+    from tools.ara_matched_filter import get_products 
+    from tools.ara_run_manager import run_info_loader
     from tools.ara_known_issue import known_issue_loader
     from tools.ara_quality_cut import get_bad_events
 
@@ -52,16 +55,26 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
     bad_ant = known_issue.get_bad_antenna(run, print_integer = True)
     del known_issue
 
+    # snr info
+    run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
+    wei_dat = run_info.get_result_path(file_type = 'snr', verbose = True)
+    wei_hf = h5py.File(wei_dat, 'r')
+    weights = wei_hf['snr'][:]
+    del run_info, wei_dat, wei_hf
+
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, verbose = True, use_l2 = use_l2, analyze_blind_dat = analyze_blind_dat, st = st, run = run)
 
     # matched filter
     ara_mf = ara_matched_filter(st, run, wf_int.dt, wf_int.pad_len, get_sub_file = True, verbose = True)  
+    good_chs = ara_mf.good_chs
     good_ch_len = ara_mf.good_ch_len
+    good_v_len = ara_mf.good_v_len
     num_temp_params = ara_mf.num_temp_params
     num_arr_params = ara_mf.num_arr_params
     mf_param_shape = ara_mf.mf_param_shape
-    del st, run
+    #wei = get_products(weights, good_chs, good_v_len)
+    del st, run, good_chs, good_v_len#, weights
      
     mf_max = np.full((num_pols, num_evts), np.nan, dtype = float) # array dim: (# of pols, # of evts)
     mf_max_each = np.full((num_pols, num_temp_params[0], num_arr_params[0], num_arr_params[1], num_evts), np.nan, dtype = float) # array dim: (# of pols, # of shos, # of thetas, # of phis, # of evts)
@@ -88,13 +101,14 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()
 
-        ara_mf.get_evt_wise_snr(wf_int.pad_v) 
+        #ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = wei[:, evt]) 
+        ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = weights[:, evt]) 
         mf_max[:, evt] = ara_mf.mf_max
         mf_max_each[:, :, :, :, evt] = ara_mf.mf_max_each
         mf_temp[:, :, evt] = ara_mf.mf_temp
         mf_temp_off[:, :, :, evt] = ara_mf.mf_temp_off
         #print(mf_max[:, evt], mf_temp[:, :, evt])
-    del ara_root, num_evts, num_ants, wf_int, ara_mf, daq_qual_cut_sum
+    del ara_root, num_evts, num_ants, wf_int, ara_mf, daq_qual_cut_sum#, wei
 
     print('MF collecting is done!')
     
