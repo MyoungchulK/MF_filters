@@ -165,7 +165,6 @@ class ara_csw:
             self.dd_wf_vs = np.copy(self.int_sc_phases)
             self.shift_time = np.full((self.double_pad_len, num_ants, self.num_sols), np.nan, dtype = float)
             self.shift_dd_wf = np.copy(self.shift_time)
-            self.csw_wf_wo_dd = np.full((self.double_pad_len, num_pols, self.num_sols), 0, dtype = float)
         for ant in range(self.good_ch_len):
             pols = self.good_pols[ant]
             dd_wf_v = self.get_de_dispersed_wf(ant)
@@ -192,10 +191,6 @@ class ara_csw:
                 self.norm_pad[int_idx, pols, sol] += self.sc_rms[self.good_chs[ant]]
                 self.zero_pad[int_idx, pols, sol] += int_v[int_idx]
                 if self.use_debug:
-                    wo_dd_f = Akima1DInterpolator(shift_t, self.pad_v[:self.pad_num[ant], ant])
-                    int_v_wo_dd = wo_dd_f(self.time_pad)
-                    int_idx_wo_dd = ~np.isnan(int_v_wo_dd)
-                    self.csw_wf_wo_dd[int_idx_wo_dd, pols, sol] += int_v_wo_dd[int_idx_wo_dd]
                     int_num = np.nansum(int_idx)
                     self.shift_time[:int_num, self.good_chs[ant], sol] = self.time_pad[int_idx]
                     self.shift_dd_wf[:int_num, self.good_chs[ant], sol] = int_v[int_idx]
@@ -204,15 +199,10 @@ class ara_csw:
 
         self.csw_wf = self.zero_pad / np.sqrt(self.norm_pad)
         self.csw_wf[np.isnan(self.csw_wf) | np.isinf(self.csw_wf)] = 0
-        if self.use_debug:
-            self.csw_wf_norm_wo_dd = self.csw_wf_wo_dd / np.sqrt(self.norm_pad)
-            self.csw_wf[np.isnan(self.csw_wf_norm_wo_dd) | np.isinf(self.csw_wf_norm_wo_dd)] = 0
 
     def get_impulsivity(self):
 
         csw_hill = np.abs(hilbert(self.csw_wf, axis = 0)) # (# of bins, # of pols, # of rays)
-        if self.use_debug:
-            self.csw_hill = np.copy(csw_hill)
 
         ## hillbert max
         self.hill_max_idx = np.nanargmax(csw_hill, axis = 0) # known as max spot 
@@ -230,18 +220,13 @@ class ara_csw:
         self.p_value = np.copy(self.cdf_avg)
         self.std_err = np.copy(self.cdf_avg)
         self.ks = np.copy(self.cdf_avg)
-        if self.use_debug:
-            self.csw_sort = np.full((self.double_pad_len, num_pols, self.num_sols), np.nan, dtype = float)
-            self.cdf = np.copy(self.csw_sort)
-            self.cdf_time = np.copy(self.csw_sort)
-            self.cdf_ks = np.copy(self.csw_sort)
         for p in range(num_pols):
             for s in range(self.num_sols):
                 if self.nan_flag[p, s]:
                     continue
-                csw_trim = csw_hill[self.bool_pad[:, p, s], p, s]        
+                csw_trim = self.csw_wf[self.bool_pad[:, p, s], p, s]        
                 range_trim = self.range_pad[self.bool_pad[:, p, s]]
-                closeness = np.abs(range_trim - self.hill_max_idx[p, s])
+                closeness = range_trim - self.hill_max_idx[p, s]
                 clo_sort_idx = np.argsort(closeness)
                 csw_sort = csw_trim[clo_sort_idx]
                 del csw_trim, closeness, clo_sort_idx
@@ -250,10 +235,6 @@ class ara_csw:
                 cdf = np.nancumsum(csw_sort)
                 cdf /= cdf[-1]       
                 self.cdf_avg[p, s] = np.nanmean(cdf) * 2 - 1  # why?????
-                if self.use_debug:
-                    trim_len = np.count_nonzero(self.bool_pad[:, p, s])
-                    self.csw_sort[:trim_len, p, s] = csw_sort
-                    self.cdf[:trim_len, p, s] = cdf
                 del csw_sort
 
                 range_norm = range_trim.astype(float)
@@ -262,12 +243,8 @@ class ara_csw:
                 self.slope[p, s], self.intercept[p, s], self.r_value[p, s], self.p_value[p, s], self.std_err[p, s] = linregress(range_norm, cdf)
                 del range_trim
 
-                cdf_fit = range_norm * self.slope[p, s] + self.intercept[p, s]
-                self.ks[p, s] = np.nanmax(np.abs(cdf_fit - cdf)) # max diff between fit and data
-                if self.use_debug:
-                    self.cdf_time[:trim_len, p, s] = range_norm 
-                    self.cdf_ks[:trim_len, p, s] = cdf_fit
-                del range_norm, cdf, cdf_fit
+                self.ks[p, s] = np.nanmax(np.abs(range_norm * self.slope[p, s] + self.intercept[p, s] - cdf)) # max diff between fit and data
+                del range_norm, cdf
 
         cdf_avg_n = self.cdf_avg < 0
         self.cdf_avg[cdf_avg_n] = 0
@@ -276,9 +253,6 @@ class ara_csw:
     def get_p2p_multiple_array(self):
 
         p2p = np.full(self.param_shape, np.nan, dtype = float)    
-        if self.use_debug:
-            self.csw_wf_p2p = np.full((self.double_pad_len, num_pols, self.num_sols), np.nan, dtype = float)
-            self.csw_wf_p2p_time = np.copy(self.csw_wf_p2p)
 
         for p in range(num_pols):
             for s in range(self.num_sols):
@@ -287,10 +261,6 @@ class ara_csw:
                 lower_peak_idx = argrelextrema(csw_each, np.less_equal, order=1)[0]
                 peak_idx = np.unique(np.concatenate((upper_peak_idx, lower_peak_idx)))
                 peak = csw_each[peak_idx]
-
-                if self.use_debug:
-                    self.csw_wf_p2p[:len(peak), p, s] = peak
-                    self.csw_wf_p2p_time[:len(peak), p, s] = self.time_pad[peak_idx] 
 
                 p2p[p, s] = np.nanmax(np.abs(np.diff(peak)))
                 del upper_peak_idx, lower_peak_idx, peak_idx, peak, csw_each
@@ -315,8 +285,7 @@ class ara_csw:
 
         ## impulsivity value
         self.get_impulsivity()
-        if self.use_debug == False:
-            del self.csw_wf, self.pad_t, self.pad_v, self.pad_num, self.evt
+        del self.csw_wf, self.pad_t, self.pad_v, self.pad_num, self.evt
 
 
 

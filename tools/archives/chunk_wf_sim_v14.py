@@ -340,7 +340,8 @@ def wf_sim_collector(Data, Station, Year, act_evt):
 
         for ant in range(num_ants):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_nan_pad = True, use_band_pass = True, use_cw = True, evt = sel_evts[evt])
-        ara_mf.get_evt_wise_snr(wf_int.pad_v)
+        #ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = wei[:, sel_evts[evt]])
+        ara_mf.get_evt_wise_snr(wf_int.pad_v)#, weights = snr[:, sel_evts[evt]])
         mf_max[:, evt] = ara_mf.mf_max
         mf_max_each[:, :, :, :, evt] = ara_mf.mf_max_each
         mf_temp_idx[:, :, evt] = ara_mf.mf_temp
@@ -405,30 +406,9 @@ def wf_sim_collector(Data, Station, Year, act_evt):
     csw_dd_wf_vs = np.copy(csw_int_sc_phases)
     csw_shift_time = np.full((double_pad_len, num_ants, num_sols, sel_evt_len), np.nan, dtype = float)
     csw_shift_dd_wf = np.copy(csw_shift_time)
-    csw_bool_pad = np.full((double_pad_len, num_pols, num_sols, sel_evt_len), 0, dtype = int)
-    csw_norm_pad = np.full((double_pad_len, num_pols, num_sols, sel_evt_len), np.nan, dtype = float)
-    csw_zero_pad = np.copy(csw_norm_pad)
-    csw_wf = np.copy(csw_norm_pad)
-    csw_wf_wo_dd = np.copy(csw_norm_pad)
-    csw_wf_norm_wo_dd = np.copy(csw_norm_pad)
-    csw_hill = np.copy(csw_norm_pad)
-    csw_wf_p2p = np.copy(csw_norm_pad)
-    csw_wf_p2p_time = np.copy(csw_norm_pad)
-    csw_sort = np.copy(csw_norm_pad)
-    csw_cdf = np.copy(csw_norm_pad)
-    csw_cdf_time = np.copy(csw_norm_pad)
-    csw_cdf_ks = np.copy(csw_norm_pad)
-    hill_max_idx = np.full((num_pols, num_sols, sel_evt_len), np.nan, dtype = float)
-    hill_max = np.copy(hill_max_idx)
-    snr_csw = np.copy(hill_max_idx)
-    cdf_avg = np.copy(hill_max_idx)
-    slope = np.copy(hill_max_idx)
-    intercept = np.copy(hill_max_idx)
-    r_value = np.copy(hill_max_idx)
-    p_value = np.copy(hill_max_idx)
-    std_err = np.copy(hill_max_idx)
-    ks = np.copy(hill_max_idx)
-    nan_flag = np.full((num_pols, num_sols, sel_evt_len), 0, dtype = int)
+    csw_count_pad = np.full((double_pad_len, num_pols, num_sols, sel_evt_len), np.nan, dtype = float)
+    csw_zero_pad = np.copy(csw_count_pad)
+    csw_wf = np.copy(csw_count_pad)
 
     print(sel_evt_len)
     # loop over the events
@@ -438,18 +418,7 @@ def wf_sim_collector(Data, Station, Year, act_evt):
         wf_v = ara_root.get_rf_wfs(sel_evts[evt])
         for ant in range(num_ants):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = False, use_band_pass = True, use_cw = True, evt = sel_evts[evt])
-        ara_csw.get_csw_params(wf_int.pad_t, wf_int.pad_v, wf_int.pad_num, sel_evts[evt])
-        hill_max_idx[:, :, evt] = ara_csw.hill_max_idx
-        hill_max[:, :, evt] = ara_csw.hill_max
-        snr_csw[:, :, evt] = ara_csw.snr_csw
-        cdf_avg[:, :, evt] = ara_csw.cdf_avg
-        slope[:, :, evt] = ara_csw.slope
-        intercept[:, :, evt] = ara_csw.intercept
-        r_value[:, :, evt] = ara_csw.r_value
-        p_value[:, :, evt] = ara_csw.p_value
-        std_err[:, :, evt] = ara_csw.std_err
-        ks[:, :, evt] = ara_csw.ks
-        nan_flag[:, :, evt] = ara_csw.nan_flag
+        ara_csw.get_csw_wf(wf_int.pad_t, wf_int.pad_v, wf_int.pad_num, sel_evts[evt])
         csw_int_sc_freqs[:, :, evt] = ara_csw.int_sc_freqs
         csw_int_sc_phases[:, :, evt] = ara_csw.int_sc_phases
         csw_dd_fft_vs[:, :, evt] = ara_csw.dd_fft_vs
@@ -457,19 +426,9 @@ def wf_sim_collector(Data, Station, Year, act_evt):
         csw_dd_wf_vs[:, :, evt] = ara_csw.dd_wf_vs
         csw_shift_time[:, :, :, evt] = ara_csw.shift_time
         csw_shift_dd_wf[:, :, :, evt] = ara_csw.shift_dd_wf
-        csw_norm_pad[:, :, :, evt] = ara_csw.norm_pad
-        csw_bool_pad[:, :, :, evt] = ara_csw.bool_pad
+        csw_count_pad[:, :, :, evt] = ara_csw.count_pad
         csw_zero_pad[:, :, :, evt] = ara_csw.zero_pad
         csw_wf[:, :, :, evt] = ara_csw.csw_wf
-        csw_wf_wo_dd[:, :, :, evt] = ara_csw.csw_wf_wo_dd
-        csw_wf_norm_wo_dd[:, :, :, evt] = ara_csw.csw_wf_norm_wo_dd
-        csw_hill[:, :, :, evt] = ara_csw.csw_hill
-        csw_wf_p2p[:, :, :, evt] = ara_csw.csw_wf_p2p
-        csw_wf_p2p_time[:, :, :, evt] = ara_csw.csw_wf_p2p_time
-        csw_sort[:, :, :, evt] = ara_csw.csw_sort
-        csw_cdf[:, :, :, evt] = ara_csw.cdf
-        csw_cdf_time[:, :, :, evt] = ara_csw.cdf_time
-        csw_cdf_ks[:, :, :, evt] = ara_csw.cdf_ks
 
     print('Sim wf collecting is done!')
 
@@ -624,27 +583,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
             'csw_dd_wf_vs':csw_dd_wf_vs,
             'csw_shift_time':csw_shift_time,
             'csw_shift_dd_wf':csw_shift_dd_wf,
-            'csw_bool_pad':csw_bool_pad,
-            'csw_norm_pad':csw_norm_pad,
+            'csw_count_pad':csw_count_pad,
             'csw_zero_pad':csw_zero_pad,
-            'csw_wf':csw_wf,
-            'csw_wf_wo_dd':csw_wf_wo_dd,
-            'csw_wf_norm_wo_dd':csw_wf_norm_wo_dd,
-            'csw_hill':csw_hill,
-            'csw_wf_p2p':csw_wf_p2p,
-            'csw_wf_p2p_time':csw_wf_p2p_time,
-            'csw_sort':csw_sort,
-            'csw_cdf':csw_cdf,
-            'csw_cdf_time':csw_cdf_time,
-            'csw_cdf_ks':csw_cdf_ks,
-            'hill_max_idx':hill_max_idx,
-            'hill_max':hill_max,
-            'snr_csw':snr_csw,
-            'cdf_avg':cdf_avg,
-            'slope':slope,
-            'intercept':intercept,
-            'r_value':r_value,
-            'p_value':p_value,
-            'std_err':std_err,
-            'ks':ks,
-            'nan_flag':nan_flag}
+            'csw_wf':csw_wf}

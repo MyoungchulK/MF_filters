@@ -580,7 +580,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         ara_root.get_useful_evt(ara_root.cal_type.kLatestCalibWithOutTrimFirstBlock)
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_band_pass = True, use_cw = True, evt = sel_entries[evt])
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_band_pass = True, use_cw = True, evt = evt)
             ara_root.del_TGraph()
         mf_wf_all[:, 0, :, evt] = wf_int.pad_t
         mf_wf_all[:, 1, :, evt] = wf_int.pad_v
@@ -591,9 +591,10 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         # reco w/ cw (and band-passed) wf
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_nan_pad = True, use_band_pass = True, use_cw = True, evt = sel_entries[evt])
+            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = True, use_nan_pad = True, use_band_pass = True, use_cw = True, evt = evt)
             ara_root.del_TGraph()
-        ara_mf.get_evt_wise_snr(wf_int.pad_v)
+        #ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = wei[:, sel_entries[evt]])
+        ara_mf.get_evt_wise_snr(wf_int.pad_v, weights = weights[:, sel_entries[evt]])
         mf_max[:, evt] = ara_mf.mf_max
         mf_max_each[:, :, :, :, evt] = ara_mf.mf_max_each
         mf_temp_idx[:, :, evt] = ara_mf.mf_temp
@@ -629,104 +630,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         mf_corr_temp_dat_best[:, :, evt] = ara_mf.corr_temp_dat_best
         mf_corr_temp_dat_psd_best[:, :, evt] = ara_mf.corr_temp_dat_psd_best
         mf_search[:, :, :, :, evt] = ara_mf.mf_search
-
-    from tools.ara_csw import ara_csw
-
-    wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, verbose = True, analyze_blind_dat = analyze_blind_dat, st = st, run = run)
-    ara_csw = ara_csw(st, run, wf_int.dt, wf_int.pad_zero_t, get_sub_file = True, use_debug = True, verbose = True)
-    pad_len = ara_csw.pad_len
-    double_pad_len = ara_csw.double_pad_len
-    num_sols = ara_csw.num_sols
-    time_pad = ara_csw.time_pad
-    arr_table = ara_csw.arr_table
-    arr_delay = ara_csw.arr_delay
-    corf_r_max = ara_csw.corf_r_max
-    coef_r_max_idx = ara_csw.coef_r_max_idx
-    coord_r_max_idx = ara_csw.coord_r_max_idx
-    sc_rms = ara_csw.sc_rms
-    sc_freq_amp = ara_csw.sc_freq_amp
-    sc_amp = ara_csw.sc_amp
-    sc_freq_phase = ara_csw.sc_freq_phase
-    sc_phase = ara_csw.sc_phase
-    csw_int_sc_freqs = np.full((pad_len, num_ants, sel_evt_len), np.nan, dtype = float)
-    csw_int_sc_phases = np.full((pad_len, num_ants, sel_evt_len), np.nan, dtype = float)
-    csw_dd_fft_vs = np.copy(csw_int_sc_phases)
-    csw_dd_wf_ts = np.copy(csw_int_sc_phases)
-    csw_dd_wf_vs = np.copy(csw_int_sc_phases)
-    csw_shift_time = np.full((double_pad_len, num_ants, num_sols, sel_evt_len), np.nan, dtype = float)
-    csw_shift_dd_wf = np.copy(csw_shift_time)
-    csw_bool_pad = np.full((double_pad_len, num_pols, num_sols, sel_evt_len), 0, dtype = int)
-    csw_norm_pad = np.full((double_pad_len, num_pols, num_sols, sel_evt_len), np.nan, dtype = float)
-    csw_zero_pad = np.copy(csw_norm_pad)
-    csw_wf = np.copy(csw_norm_pad)
-    csw_wf_wo_dd = np.copy(csw_norm_pad)
-    csw_wf_norm_wo_dd = np.copy(csw_norm_pad)
-    csw_hill = np.copy(csw_norm_pad)
-    csw_wf_p2p = np.copy(csw_norm_pad)
-    csw_wf_p2p_time = np.copy(csw_norm_pad)
-    csw_sort = np.copy(csw_norm_pad)
-    csw_cdf = np.copy(csw_norm_pad)
-    csw_cdf_time = np.copy(csw_norm_pad)
-    csw_cdf_ks = np.copy(csw_norm_pad)
-    hill_max_idx = np.full((num_pols, num_sols, sel_evt_len), np.nan, dtype = float)
-    hill_max = np.copy(hill_max_idx)
-    snr_csw = np.copy(hill_max_idx)
-    cdf_avg = np.copy(hill_max_idx)
-    slope = np.copy(hill_max_idx)
-    intercept = np.copy(hill_max_idx)
-    r_value = np.copy(hill_max_idx)
-    p_value = np.copy(hill_max_idx)
-    std_err = np.copy(hill_max_idx)
-    ks = np.copy(hill_max_idx)
-    nan_flag = np.full((num_pols, num_sols, sel_evt_len), 0, dtype = int)
-
-    print(sel_evt_len)
-    # loop over the events
-    for evt in tqdm(range(sel_evt_len)):
-      #if evt <100: # debug
-
-        # get entry and wf
-        ara_root.get_entry(sel_entries[evt])
-
-        # calibrated wf, interpolated wf and mean of wf
-        ara_root.get_useful_evt(ara_root.cal_type.kLatestCalibWithOutTrimFirstBlock)
-        for ant in range(num_ants):
-            raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
-            wf_int.get_int_wf(raw_t, raw_v, ant, use_zero_pad = False, use_band_pass = True, use_cw = True, evt = sel_entries[evt])
-            ara_root.del_TGraph()
-
-        ara_csw.get_csw_params(wf_int.pad_t, wf_int.pad_v, wf_int.pad_num, sel_entries[evt])
-        hill_max_idx[:, :, evt] = ara_csw.hill_max_idx
-        hill_max[:, :, evt] = ara_csw.hill_max
-        snr_csw[:, :, evt] = ara_csw.snr_csw
-        cdf_avg[:, :, evt] = ara_csw.cdf_avg
-        slope[:, :, evt] = ara_csw.slope
-        intercept[:, :, evt] = ara_csw.intercept
-        r_value[:, :, evt] = ara_csw.r_value
-        p_value[:, :, evt] = ara_csw.p_value
-        std_err[:, :, evt] = ara_csw.std_err
-        ks[:, :, evt] = ara_csw.ks
-        nan_flag[:, :, evt] = ara_csw.nan_flag
-        csw_int_sc_freqs[:, :, evt] = ara_csw.int_sc_freqs
-        csw_int_sc_phases[:, :, evt] = ara_csw.int_sc_phases
-        csw_dd_fft_vs[:, :, evt] = ara_csw.dd_fft_vs
-        csw_dd_wf_ts[:, :, evt] = ara_csw.dd_wf_ts
-        csw_dd_wf_vs[:, :, evt] = ara_csw.dd_wf_vs
-        csw_shift_time[:, :, :, evt] = ara_csw.shift_time
-        csw_shift_dd_wf[:, :, :, evt] = ara_csw.shift_dd_wf
-        csw_norm_pad[:, :, :, evt] = ara_csw.norm_pad
-        csw_bool_pad[:, :, :, evt] = ara_csw.bool_pad
-        csw_zero_pad[:, :, :, evt] = ara_csw.zero_pad
-        csw_wf[:, :, :, evt] = ara_csw.csw_wf
-        csw_wf_wo_dd[:, :, :, evt] = ara_csw.csw_wf_wo_dd
-        csw_wf_norm_wo_dd[:, :, :, evt] = ara_csw.csw_wf_norm_wo_dd
-        csw_hill[:, :, :, evt] = ara_csw.csw_hill
-        csw_wf_p2p[:, :, :, evt] = ara_csw.csw_wf_p2p
-        csw_wf_p2p_time[:, :, :, evt] = ara_csw.csw_wf_p2p_time
-        csw_sort[:, :, :, evt] = ara_csw.csw_sort
-        csw_cdf[:, :, :, evt] = ara_csw.cdf
-        csw_cdf_time[:, :, :, evt] = ara_csw.cdf_time
-        csw_cdf_ks[:, :, :, evt] = ara_csw.cdf_ks
 
 
     print('WF collecting is done!')
@@ -895,47 +798,5 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'mf_corr_arr_roll_best':mf_corr_arr_roll_best,
             'mf_corr_temp_dat_best':mf_corr_temp_dat_best,
             'mf_corr_temp_dat_psd_best':mf_corr_temp_dat_psd_best,
-            'mf_search':mf_search,
-            'time_pad':time_pad,
-            'arr_table':arr_table,
-            'arr_delay':arr_delay,
-            'corf_r_max':corf_r_max,
-            'coef_r_max_idx':coef_r_max_idx,
-            'coord_r_max_idx':coord_r_max_idx,
-            'sc_rms':sc_rms,
-            'sc_freq_amp':sc_freq_amp,
-            'sc_amp':sc_amp,
-            'sc_freq_phase':sc_freq_phase,
-            'sc_phase':sc_phase,
-            'csw_int_sc_freqs':csw_int_sc_freqs,
-            'csw_int_sc_phases':csw_int_sc_phases,
-            'csw_dd_fft_vs':csw_dd_fft_vs,
-            'csw_dd_wf_ts':csw_dd_wf_ts,
-            'csw_dd_wf_vs':csw_dd_wf_vs,
-            'csw_shift_time':csw_shift_time,
-            'csw_shift_dd_wf':csw_shift_dd_wf,
-            'csw_bool_pad':csw_bool_pad,
-            'csw_norm_pad':csw_norm_pad,
-            'csw_zero_pad':csw_zero_pad,
-            'csw_wf':csw_wf,
-            'csw_wf_wo_dd':csw_wf_wo_dd,
-            'csw_wf_norm_wo_dd':csw_wf_norm_wo_dd,
-            'csw_hill':csw_hill,
-            'csw_wf_p2p':csw_wf_p2p,
-            'csw_wf_p2p_time':csw_wf_p2p_time,
-            'csw_sort':csw_sort,
-            'csw_cdf':csw_cdf,
-            'csw_cdf_time':csw_cdf_time,
-            'csw_cdf_ks':csw_cdf_ks,
-            'hill_max_idx':hill_max_idx,
-            'hill_max':hill_max,
-            'snr_csw':snr_csw,
-            'cdf_avg':cdf_avg,
-            'slope':slope,
-            'intercept':intercept,
-            'r_value':r_value,
-            'p_value':p_value,
-            'std_err':std_err,
-            'ks':ks,
-            'nan_flag':nan_flag}
+            'mf_search':mf_search}
 
