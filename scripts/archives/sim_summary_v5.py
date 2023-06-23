@@ -24,7 +24,6 @@ del d_run_range
 s_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/snr_sim/'
 r_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco_ele_sim/'
 m_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf_sim/'
-c_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/csw_sim/'
 q_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/qual_cut_sim/'
 
 if Type == 'signal':
@@ -76,17 +75,6 @@ qual_tot = np.full((d_len, num_evts), 0, dtype = int)
 sig_in = np.full((d_len, num_evts), 0, dtype = int)
 sig_in_wide = np.full((d_len, num_evts), 0, dtype = int)
 signal_bin = np.copy(rec_ang)
-hill_max_idx = np.full((d_len, 2, 2, num_evts), np.nan, dtype = float)
-hill_max = np.copy(hill_max_idx)
-snr_csw = np.copy(hill_max_idx)
-cdf_avg = np.copy(hill_max_idx)
-slope = np.copy(hill_max_idx)
-intercept = np.copy(hill_max_idx)
-r_value = np.copy(hill_max_idx)
-p_value = np.copy(hill_max_idx)
-std_err = np.copy(hill_max_idx)
-ks = np.copy(hill_max_idx)
-nan_flag = np.full((d_len, 2, 2, num_evts), 0, dtype = int)
 
 z_bins = np.linspace(-90, 90, 180 + 1)
 z_bin_center = (z_bins[1:] + z_bins[:-1]) / 2
@@ -184,26 +172,13 @@ for r in tqdm(range(len(d_run_tot))):
     coord_max[r, :, 2] = rad_o[coef_max_idx // 2] 
     coef_ele = hf['coef_ele'][:] # pol, theta, rad, sol, evt
     coef_ele_max = np.nanmax(coef_ele[:, sur_idx], axis = (1, 2, 3)) # pol, evt
+    #coef_ele = hf['coef_ele'][:, :, 1, 0] # pol, theta, rad, sol, evt
+    #coef_ele_max = np.nanmax(coef_ele[:, sur_idx], axis = 1) # pol, evt
+    #coef_ele_max1 = np.nanmax(coef_ele, axis = 1) # pol, evt
+    #coef_ratio[r] = coef_ele_max / coef_ele_max1
     coef_ratio[r] = coef_ele_max / coef_max[r]
     del hf, coef_tot, coord_tot, coef_re, coord_re, coef_max_idx, coef_ele, coef_ele_max
 
-    try:
-        hf = h5py.File(f'{c_path}csw{hf_name}', 'r')
-    except FileNotFoundError:
-        print(f'{c_path}csw{hf_name}')
-        continue    
-    hill_max_idx[r] = hf['hill_max_idx'][:]
-    hill_max[r] = hf['hill_max'][:]
-    snr_csw[r] = hf['snr_csw'][:]
-    cdf_avg[r] = hf['cdf_avg'][:]
-    slope[r] = hf['slope'][:]
-    intercept[r] = hf['intercept'][:]
-    r_value[r] = hf['r_value'][:]
-    p_value[r] = hf['p_value'][:]
-    std_err[r] = hf['std_err'][:]
-    ks[r] = hf['ks'][:]
-    nan_flag[r] = hf['nan_flag'][:]
-    
     try:
         hf = h5py.File(f'{m_path}mf{hf_name}', 'r')
     except FileNotFoundError:
@@ -218,8 +193,7 @@ for r in tqdm(range(len(d_run_tot))):
     mf_max_each = hf['mf_max_each'][:]
     mf_the_max = np.nanmax(mf_max_each[:, :, :4], axis = (1, 2, 3))
     mf_ratio[r] = mf_the_max / mf_max[r]
-    del mf_temp, mf_max_each, mf_the_max
-    del hf, hf_name
+    del hf, hf_name, mf_temp, mf_max_each, mf_the_max
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 if not os.path.exists(path):
@@ -263,17 +237,6 @@ hf.create_dataset('qual_tot', data=qual_tot, compression="gzip", compression_opt
 hf.create_dataset('sig_in', data=sig_in, compression="gzip", compression_opts=9)
 hf.create_dataset('sig_in_wide', data=sig_in_wide, compression="gzip", compression_opts=9)
 hf.create_dataset('signal_bin', data=signal_bin, compression="gzip", compression_opts=9)
-hf.create_dataset('hill_max_idx', data=hill_max_idx, compression="gzip", compression_opts=9)
-hf.create_dataset('hill_max', data=hill_max, compression="gzip", compression_opts=9)
-hf.create_dataset('snr_csw', data=snr_csw, compression="gzip", compression_opts=9)
-hf.create_dataset('cdf_avg', data=cdf_avg, compression="gzip", compression_opts=9)
-hf.create_dataset('slope', data=slope, compression="gzip", compression_opts=9)
-hf.create_dataset('intercept', data=intercept, compression="gzip", compression_opts=9)
-hf.create_dataset('r_value', data=r_value, compression="gzip", compression_opts=9)
-hf.create_dataset('p_value', data=p_value, compression="gzip", compression_opts=9)
-hf.create_dataset('std_err', data=std_err, compression="gzip", compression_opts=9)
-hf.create_dataset('ks', data=ks, compression="gzip", compression_opts=9)
-hf.create_dataset('nan_flag', data=nan_flag, compression="gzip", compression_opts=9)
 hf.create_dataset('z_bins', data=z_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('z_bin_center', data=z_bin_center, compression="gzip", compression_opts=9)
 hf.create_dataset('a_bins', data=a_bins, compression="gzip", compression_opts=9)
