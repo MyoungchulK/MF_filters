@@ -53,7 +53,7 @@ class py_interferometers:
     def get_arrival_time_tables(self):
 
         if self.st == 2 or (self.st == 3 and self.yrs <= 1515974400):
-            year = 2015
+            year = 2017
         else:
             year = 2018
 
@@ -68,11 +68,13 @@ class py_interferometers:
         self.num_thetas = len(self.theta)
         self.phi = table_hf['phi_bin'][:]
         self.num_phis = len(self.phi)
-        self.radius = table_hf['radius_bin'][:]
-        self.num_rads = len(self.radius)
+        radius_arr = table_hf['radius_bin'][:]
+        self.num_rads = len(radius_arr)
         self.num_ray_sol = len(table_hf['num_ray_sol'][:])
         arr_table = table_hf['arr_time_table'][:]
         del table_path, table_name, table_hf
+
+        print(f'!!!!!!!!!!!!!!!!! {radius_arr} !!!!!!!!!!!')
  
         self.table = arr_table[:, :, :, self.pairs[:, 0], :] - arr_table[:, :, :, self.pairs[:, 1], :]
         self.table = np.transpose(self.table, (0, 1, 2, 4, 3))
@@ -83,6 +85,7 @@ class py_interferometers:
         self.table_shape = self.table.shape
         if self.verbose:
             print('arr table shape:', self.table_shape)
+        del radius_arr
 
         table_p1 = np.reshape(np.transpose(arr_table[:, :, :, self.pairs[:, 0], :], (0, 1, 2, 4, 3)), self.table_shape)
         table_p2 = np.reshape(np.transpose(arr_table[:, :, :, self.pairs[:, 1], :], (0, 1, 2, 4, 3)), self.table_shape)

@@ -22,8 +22,7 @@ from tools.ara_utility import size_checker
 @click.option('-n', '--not_override', default = False, type = bool)
 @click.option('-l', '--l2_data', default = False, type = bool)
 @click.option('-t', '--no_tqdm', default = False, type = bool)
-@click.option('-p', '--pulser', default = '', type = str)
-def script_loader(key, station, run, qual_type, act_evt, blind_dat, condor_run, not_override, l2_data, no_tqdm, pulser):
+def script_loader(key, station, run, qual_type, act_evt, blind_dat, condor_run, not_override, l2_data, no_tqdm):
 
     if not_override:
         blind_type = ''
@@ -97,8 +96,6 @@ def script_loader(key, station, run, qual_type, act_evt, blind_dat, condor_run, 
     elif key == 'l2' or key == 'l2_temp':
         results = method(Data, Ped, analyze_blind_dat = blind_dat, use_condor = condor_run)
         return 
-    elif key == 'reco_pulser':
-        results = method(Data, Ped, arr_type = pulser, analyze_blind_dat = blind_dat, use_l2 = l2_data, no_tqdm = no_tqdm)
     else:
         results = method(Data, Ped, analyze_blind_dat = blind_dat, use_l2 = l2_data, no_tqdm = no_tqdm)
     del module, method
@@ -123,8 +120,6 @@ def script_loader(key, station, run, qual_type, act_evt, blind_dat, condor_run, 
             h5_file_name += f'_E{act_evt[0]}'
         else:
             h5_file_name += f'_E{act_evt[0]}_to_E{act_evt[-1]}'
-    if key == 'reco_pulser':
-        h5_file_name += f'_{pulser}'
     h5_file_name += f'.h5'
     hf = h5py.File(f'{output_path}{h5_file_name}', 'w')
     

@@ -17,7 +17,7 @@ num_pols = ara_const.POLARIZATION
 
 class py_interferometers:
 
-    def __init__(self, pad_len, dt, st, yrs, run = None, get_sub_file = False, use_ele_max = False, use_debug = False, verbose = False):
+    def __init__(self, pad_len, dt, st, yrs, arr_type = '', run = None, get_sub_file = False, use_ele_max = False, use_debug = False, verbose = False):
 
         self.verbose = verbose
         self.dt = dt
@@ -26,6 +26,7 @@ class py_interferometers:
         self.run = run
         self.use_debug = use_debug
         self.use_ele_max = use_ele_max
+        self.arr_type = arr_type
 
         if get_sub_file:
             self.get_zero_pad(pad_len)
@@ -53,12 +54,12 @@ class py_interferometers:
     def get_arrival_time_tables(self):
 
         if self.st == 2 or (self.st == 3 and self.yrs <= 1515974400):
-            year = 2015
+            year = 2017
         else:
             year = 2018
 
         table_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{self.st}/arr_time_table/'
-        table_name = f'arr_time_table_A{self.st}_Y{year}.h5'
+        table_name = f'arr_time_table_A{self.st}_Y2017_{self.arr_type}.h5'
         if self.verbose:
             print('arrival time table:', table_path + table_name)        
         del year
@@ -73,6 +74,8 @@ class py_interferometers:
         self.num_ray_sol = len(table_hf['num_ray_sol'][:])
         arr_table = table_hf['arr_time_table'][:]
         del table_path, table_name, table_hf
+
+        print(f'!!!!!!!!!!!!!!!!! {self.radius} !!!!!!!!!!!')
  
         self.table = arr_table[:, :, :, self.pairs[:, 0], :] - arr_table[:, :, :, self.pairs[:, 1], :]
         self.table = np.transpose(self.table, (0, 1, 2, 4, 3))

@@ -103,7 +103,7 @@ nfour = float(2048 / 2 / 2 * 0.5)
 
 for r in tqdm(range(len(d_run_tot))):
     
-  #if r < 10:
+  #if r > 3310:
 
     try:
         hf = h5py.File(d_list[r], 'r')
@@ -145,81 +145,77 @@ for r in tqdm(range(len(d_run_tot))):
         hf_name = f'_AraOut.{Type}_A{Station}_R{config[r]}.txt.run{sim_run[r]}.h5'
     try:
         hf = h5py.File(f'{q_path}qual_cut{hf_name}', 'r')
+        qual_tot[r] = (hf['tot_qual_cut_sum'][:] != 0).astype(int)
+        qual[r] = (hf['tot_qual_cut'][:] != 0).astype(int)
+        evt_rate[r] = hf['evt_rate'][:]
+        del hf
     except FileNotFoundError:
         print(f'{q_path}qual_cut{hf_name}')
-        continue
-    qual_tot[r] = (hf['tot_qual_cut_sum'][:] != 0).astype(int)
-    qual[r] = (hf['tot_qual_cut'][:] != 0).astype(int)
-    evt_rate[r] = hf['evt_rate'][:]
-    del hf
 
     try:
         hf = h5py.File(f'{s_path}snr{hf_name}', 'r')
+        snr_tot = hf['snr'][:]
+        snr[r] = snr_tot
+        ex_run = get_example_run(Station, config[r])
+        bad_ant = known_issue.get_bad_antenna(ex_run)
+        snr_tot[bad_ant] = np.nan
+        snr_max[r, 0] = -np.sort(-snr_tot[:8], axis = 0)[2]
+        snr_max[r, 1] = -np.sort(-snr_tot[8:], axis = 0)[2]
+        del hf, snr_tot, ex_run, bad_ant
     except FileNotFoundError:
         print(f'{s_path}snr{hf_name}')
-        continue
-    snr_tot = hf['snr'][:]
-    snr[r] = snr_tot
-    ex_run = get_example_run(Station, config[r])
-    bad_ant = known_issue.get_bad_antenna(ex_run)
-    snr_tot[bad_ant] = np.nan
-    snr_max[r, 0] = -np.sort(-snr_tot[:8], axis = 0)[2]
-    snr_max[r, 1] = -np.sort(-snr_tot[8:], axis = 0)[2]
-    del hf, snr_tot, ex_run, bad_ant
 
     try:
         hf = h5py.File(f'{r_path}reco_ele{hf_name}', 'r')
+        coef_tot = hf['coef'][:] # pol, rad, sol, evt
+        coord_tot = hf['coord'][:] # pol, tp, rad, sol, evt
+        coef[r] = coef_tot
+        coord[r] = coord_tot
+        coef_re = np.reshape(coef_tot, (2, 4, -1))
+        coord_re = np.reshape(coord_tot, (2, 2, 4, -1))
+        coef_max_idx = np.nanargmax(coef_re, axis = 1)
+        coef_max[r] = coef_re[pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]]
+        coord_max[r, :, :2] = coord_re[pol_num[:, np.newaxis, np.newaxis], pol_num[np.newaxis, :, np.newaxis], coef_max_idx, evt_num[np.newaxis, np.newaxis, :]]
+        coord_max[r, :, 2] = rad_o[coef_max_idx // 2]
+        coef_ele = hf['coef_ele'][:] # pol, theta, rad, sol, evt
+        coef_ele_max = np.nanmax(coef_ele[:, sur_idx], axis = (1, 2, 3)) # pol, evt
+        coef_ratio[r] = coef_ele_max / coef_max[r]
+        del hf, coef_tot, coord_tot, coef_re, coord_re, coef_max_idx, coef_ele, coef_ele_max
     except FileNotFoundError:
         print(f'{r_path}reco_ele{hf_name}')
-        continue
-    coef_tot = hf['coef'][:] # pol, rad, sol, evt
-    coord_tot = hf['coord'][:] # pol, tp, rad, sol, evt
-    coef[r] = coef_tot
-    coord[r] = coord_tot
-    coef_re = np.reshape(coef_tot, (2, 4, -1))
-    coord_re = np.reshape(coord_tot, (2, 2, 4, -1))
-    coef_max_idx = np.nanargmax(coef_re, axis = 1)
-    coef_max[r] = coef_re[pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]]
-    coord_max[r, :, :2] = coord_re[pol_num[:, np.newaxis, np.newaxis], pol_num[np.newaxis, :, np.newaxis], coef_max_idx, evt_num[np.newaxis, np.newaxis, :]] 
-    coord_max[r, :, 2] = rad_o[coef_max_idx // 2] 
-    coef_ele = hf['coef_ele'][:] # pol, theta, rad, sol, evt
-    coef_ele_max = np.nanmax(coef_ele[:, sur_idx], axis = (1, 2, 3)) # pol, evt
-    coef_ratio[r] = coef_ele_max / coef_max[r]
-    del hf, coef_tot, coord_tot, coef_re, coord_re, coef_max_idx, coef_ele, coef_ele_max
 
     try:
         hf = h5py.File(f'{c_path}csw{hf_name}', 'r')
+        hill_max_idx[r] = hf['hill_max_idx'][:]
+        hill_max[r] = hf['hill_max'][:]
+        snr_csw[r] = hf['snr_csw'][:]
+        cdf_avg[r] = hf['cdf_avg'][:]
+        slope[r] = hf['slope'][:]
+        intercept[r] = hf['intercept'][:]
+        r_value[r] = hf['r_value'][:]
+        p_value[r] = hf['p_value'][:]
+        std_err[r] = hf['std_err'][:]
+        ks[r] = hf['ks'][:]
+        nan_flag[r] = hf['nan_flag'][:]
+        del hf
     except FileNotFoundError:
         print(f'{c_path}csw{hf_name}')
-        continue    
-    hill_max_idx[r] = hf['hill_max_idx'][:]
-    hill_max[r] = hf['hill_max'][:]
-    snr_csw[r] = hf['snr_csw'][:]
-    cdf_avg[r] = hf['cdf_avg'][:]
-    slope[r] = hf['slope'][:]
-    intercept[r] = hf['intercept'][:]
-    r_value[r] = hf['r_value'][:]
-    p_value[r] = hf['p_value'][:]
-    std_err[r] = hf['std_err'][:]
-    ks[r] = hf['ks'][:]
-    nan_flag[r] = hf['nan_flag'][:]
     
     try:
         hf = h5py.File(f'{m_path}mf{hf_name}', 'r')
+        mf_max[r] = hf['mf_max'][:] # pol, evt
+        mf_temp = hf['mf_temp'][:, 1:3] # of pols, theta n phi, # of evts
+        #mf_ser_max[r, :, 0] = theta_bin[mf_temp[:, 0]] # vh t
+        mf_ser_max[r, :, 0] = mf_temp[:, 0] # vh t
+        #mf_ser_max[r, :, 1] = phi_bin[mf_temp[:, 1]] # vh p
+        mf_ser_max[r, :, 1] = mf_temp[:, 1] # vh p
+        mf_max_each = hf['mf_max_each'][:]
+        mf_the_max = np.nanmax(mf_max_each[:, :, :4], axis = (1, 2, 3))
+        mf_ratio[r] = mf_the_max / mf_max[r]
+        del hf, mf_temp, mf_max_each, mf_the_max
     except FileNotFoundError:
         print(f'{m_path}mf{hf_name}')
-        continue
-    mf_max[r] = hf['mf_max'][:] # pol, evt
-    mf_temp = hf['mf_temp'][:, 1:3] # of pols, theta n phi, # of evts
-    #mf_ser_max[r, :, 0] = theta_bin[mf_temp[:, 0]] # vh t
-    mf_ser_max[r, :, 0] = mf_temp[:, 0] # vh t
-    #mf_ser_max[r, :, 1] = phi_bin[mf_temp[:, 1]] # vh p 
-    mf_ser_max[r, :, 1] = mf_temp[:, 1] # vh p 
-    mf_max_each = hf['mf_max_each'][:]
-    mf_the_max = np.nanmax(mf_max_each[:, :, :4], axis = (1, 2, 3))
-    mf_ratio[r] = mf_the_max / mf_max[r]
-    del mf_temp, mf_max_each, mf_the_max
-    del hf, hf_name
+    del hf_name
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 if not os.path.exists(path):
