@@ -22,7 +22,7 @@ known_issue = known_issue_loader(Station, verbose = True)
 bad_runs = known_issue.get_knwon_bad_run(use_qual = True)
 
 # sort
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco_ele/*'
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco/*'
 d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 m_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf/'
 s_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/snr/'
@@ -43,10 +43,8 @@ con_ep = np.copy(run_ep)
 qual_ep = np.copy(run_ep)
 
 coef_max = np.full((2, 0), 0, dtype = float)
-coef_ratio = np.copy(coef_max)
 coord_max = np.full((2, 2, 0), 0, dtype = float)
 mf_max = np.copy(coef_max)
-mf_ratio = np.copy(coef_max)
 mf_temp = np.copy(coord_max)
 snr_3rd = np.copy(coef_max)
 
@@ -80,11 +78,7 @@ for r in tqdm(range(len(d_run_tot))):
     coord_max_r = coord_re[pol_range[:, np.newaxis, np.newaxis], pol_range[np.newaxis, :, np.newaxis], coef_max_idx, evt_range[np.newaxis, np.newaxis, :]]
     coef_max = np.concatenate((coef_max, coef_max_r), axis = 1)
     coord_max = np.concatenate((coord_max, coord_max_r), axis = 2)
-    coef_ele = hf['coef_ele'][:] # pol, theta, rad, sol, evt
-    coef_ele_max = np.nanmax(coef_ele[:, :53], axis = (1, 2, 3)) # pol, evt
-    coef_ratio1 = coef_ele_max / coef_max_r
-    coef_ratio = np.concatenate((coef_ratio, coef_ratio1), axis = 1)
-    del hf,evt_range, coef_re, coord_re, coef_max_idx, coef_max_r, coord_max_r, coef_ele, coef_ele_max, coef_ratio1
+    del hf,evt_range, coef_re, coord_re, coef_max_idx, coef_max_r, coord_max_r
 
     q_name = f'{q_path}qual_cut_3rd_full_A{Station}_R{d_run_tot[r]}.h5'
     hf_q = h5py.File(q_name, 'r')
@@ -117,11 +111,7 @@ for r in tqdm(range(len(d_run_tot))):
     mf_t = hf['mf_temp'][:, 1:3]
     mf_max = np.concatenate((mf_max, mf_m), axis = 1)
     mf_temp = np.concatenate((mf_temp, mf_t), axis = 2) 
-    mf_max_each = hf['mf_max_each'][:]
-    mf_the_max = np.nanmax(mf_max_each[:, :, :4], axis = (1, 2, 3))
-    mf_ratio1 = mf_the_max / mf_m
-    mf_ratio = np.concatenate((mf_ratio, mf_ratio1), axis = 1)
-    del m_name, hf, mf_m, mf_t, mf_max_each, mf_the_max, mf_ratio1
+    del m_name, hf, mf_m, mf_t
     
 print(coef_max.shape)
 print(coord_max.shape)
@@ -145,11 +135,9 @@ hf.create_dataset('trig_ep', data=trig_ep, compression="gzip", compression_opts=
 hf.create_dataset('con_ep', data=con_ep, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_ep', data=qual_ep, compression="gzip", compression_opts=9)
 hf.create_dataset('coef_max', data=coef_max, compression="gzip", compression_opts=9)
-hf.create_dataset('coef_ratio', data=coef_ratio, compression="gzip", compression_opts=9)
 hf.create_dataset('coord_max', data=coord_max, compression="gzip", compression_opts=9)
 hf.create_dataset('mf_max', data=mf_max, compression="gzip", compression_opts=9)
 hf.create_dataset('mf_temp', data=mf_temp, compression="gzip", compression_opts=9)
-hf.create_dataset('mf_ratio', data=mf_ratio, compression="gzip", compression_opts=9)
 hf.create_dataset('snr_3rd', data=snr_3rd, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name, size_checker(path+file_name))

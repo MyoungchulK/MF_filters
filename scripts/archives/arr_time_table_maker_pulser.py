@@ -8,7 +8,7 @@ sys.path.append(curr_path+'/../')
 from tools.ara_utility import size_checker
 from tools.ara_sim_load import ara_raytrace_loader
 
-def arr_time_table_loader(Station, Year):
+def arr_time_table_loader(Station, Year, Pulser):
 
     print('Collecting arrival time starts!')
 
@@ -17,17 +17,19 @@ def arr_time_table_loader(Station, Year):
 
     # get posisiton for vertex and antenna
     if Station == 2:
-        radius_bin = np.array([3666, 3609]) # IC1S, IC22S
-        theta_bin = 90 - np.linspace(-9.5, -34.5, 250 + 1)
-        phi_bin = np.linspace(-114.5, -84.5, 300 + 1)       
- 
+        if Pulser == 'IC1S':
+            radius_bin = np.array([41, 3666])
+        if Pulser == 'IC22S':
+            radius_bin = np.array([41, 3609])
+        
     if Station == 3:
-        radius_bin = np.array([4269, 4040]) # IC1S, IC22S
-        theta_bin = 90 - np.linspace(-4.5, -29.5, 250 + 1)
-        phi_bin = np.linspace(-139.5, -109.5, 300 + 1)
-    print(f'!!!!!! {radius_bin} !!!!!!!!')
+        if Pulser == 'IC1S':
+            radius_bin = np.array([41, 4269])
+        if Pulser == 'IC22S':
+            radius_bin = np.array([41, 4040])
+    print(f'!!!!!! {Pulser} !!!!! {radius_bin} !!!!!!!!')
 
-    ara_ray.get_src_trg_position(Station, Year, theta_bin = theta_bin, phi_bin = phi_bin, radius_bin = radius_bin)
+    ara_ray.get_src_trg_position(Station, Year, radius_bin = radius_bin)
 
     # arrival time table
     path_len, arr_time_table, launch_ang, receipt_ang, reflection_ang, miss, attenuation = ara_ray.get_arrival_time_table() 
@@ -37,7 +39,7 @@ def arr_time_table_loader(Station, Year):
     print(f'Output path check:{Output}')
     if not os.path.exists(Output):
         os.makedirs(Output)
-    h5_file_name = f'{Output}arr_time_table_A{Station}_Y{Year}_deep.h5'
+    h5_file_name = f'{Output}arr_time_table_A{Station}_Y{Year}_{Pulser}.h5'
     hf = h5py.File(h5_file_name, 'w')
     
     #saving result
@@ -75,8 +77,9 @@ if __name__ == "__main__":
     # argv
     station=int(sys.argv[1])
     year=int(sys.argv[2])
+    pulser = str(sys.argv[3])
 
-    arr_time_table_loader(Station = station, Year = year)
+    arr_time_table_loader(Station = station, Year = year, Pulser = pulser)
 
 
 

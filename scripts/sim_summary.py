@@ -39,7 +39,7 @@ phi_bin = np.array([-150, -90, -30, 30, 90, 150], dtype = int)
 ele_bin = 90 - np.linspace(0.5, 179.5, 179 + 1)
 #sur_idx = ele_bin > 35
 sur_idx = np.full((180), False, dtype = bool)
-sur_idx[50:53] = True
+sur_idx[:53] = True
 
 pnu = np.full((d_len, num_evts), np.nan, dtype = float)
 sim_run = np.full((d_len), 0, dtype = int)
@@ -205,9 +205,7 @@ for r in tqdm(range(len(d_run_tot))):
         hf = h5py.File(f'{m_path}mf{hf_name}', 'r')
         mf_max[r] = hf['mf_max'][:] # pol, evt
         mf_temp = hf['mf_temp'][:, 1:3] # of pols, theta n phi, # of evts
-        #mf_ser_max[r, :, 0] = theta_bin[mf_temp[:, 0]] # vh t
         mf_ser_max[r, :, 0] = mf_temp[:, 0] # vh t
-        #mf_ser_max[r, :, 1] = phi_bin[mf_temp[:, 1]] # vh p
         mf_ser_max[r, :, 1] = mf_temp[:, 1] # vh p
         mf_max_each = hf['mf_max_each'][:]
         mf_the_max = np.nanmax(mf_max_each[:, :, :4], axis = (1, 2, 3))
