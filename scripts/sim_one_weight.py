@@ -136,6 +136,10 @@ for f in range(num_flas):
         for e in range(num_ens):
             idxs = np.all((fla_idx, config == int(c + 1), exponent[:, 0] == ex_range[e]), axis = 0)
             evt_rate[idxs] /= inu_thrown_tot[f, c, e]
+evt_rate_sig = np.copy(evt_rate)
+evt_rate_sig[sig_in == 0] = 0
+evt_rate_sig_wide = np.copy(evt_rate)
+evt_rate_sig_wide[sig_in_wide == 0] = 0
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 if not os.path.exists(path):
@@ -168,6 +172,8 @@ hf.create_dataset('aeff_2d', data=aeff_2d, compression="gzip", compression_opts=
 hf.create_dataset('aeff_2d_sig', data=aeff_2d_sig, compression="gzip", compression_opts=9)
 hf.create_dataset('aeff_2d_sig_wide', data=aeff_2d_sig_wide, compression="gzip", compression_opts=9)
 hf.create_dataset('evt_rate', data=evt_rate, compression="gzip", compression_opts=9)
+hf.create_dataset('evt_rate_sig', data=evt_rate_sig, compression="gzip", compression_opts=9)
+hf.create_dataset('evt_rate_sig_wide', data=evt_rate_sig_wide, compression="gzip", compression_opts=9)
 hf.create_dataset('gzkKoteraSFR_energy', data=energy, compression="gzip", compression_opts=9)
 hf.create_dataset('gzkKoteraSFR_e2', data=nu_tot_model, compression="gzip", compression_opts=9)
 hf.close()

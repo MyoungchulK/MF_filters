@@ -51,15 +51,18 @@ def qual_cut_sim_collector(Data, Station, Year):
     filt_qual_cut_sum = filt_qual.filt_qual_cut_sum
     del filt_qual, ex_run, rms_path, reco_path, mf_path
 
+    ## total quality cut
+    tot_qual_cut = np.append(pre_qual_cut, filt_qual_cut, axis = 1)
+    tot_qual_cut_sum = np.nansum(tot_qual_cut, axis = 1)
+
     ## one weight
     signal_key = 'signal'
     if Data.find(signal_key) != -1:
         wei_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/One_Weight_Pad_mass_A{Station}.h5'
         print('weight path:', wei_path)
         wei_hf = h5py.File(wei_path, 'r') 
-        one_weight_tot = wei_hf['one_weight_sig_wide'][:] 
-        evt_rate_tot = wei_hf['evt_rate_sig_wide'][:]
-        sig_in_wide = (wei_hf['sig_in_wide'][:] == 0).astype(int)
+        one_weight_tot = wei_hf['one_weight'][:] 
+        evt_rate_tot = wei_hf['evt_rate'][:]
         flavor_tot = wei_hf['flavor'][:]
         config_tot = wei_hf['config'][:]
         sim_run_tot = wei_hf['sim_run'][:]
@@ -67,25 +70,15 @@ def qual_cut_sim_collector(Data, Station, Year):
         idxs = np.all((sim_run_tot == sim_run, flavor_tot == flavor, config_tot == config, exponent_tot == int(exponent - 9)), axis = 0)       
         one_weight = one_weight_tot[idxs]
         evt_rate = evt_rate_tot[idxs]
-        daq_qual_cut = np.full((len(entry_num), 1), 0, dtype = int)
-        daq_qual_cut[:, 0] = sig_in_wide[idxs]
-        del wei_path, wei_hf, flavor_tot, config_tot, sim_run_tot, one_weight_tot, evt_rate_tot, exponent_tot, idxs, sig_in_wide
+        del wei_path, wei_hf, flavor_tot, config_tot, sim_run_tot, one_weight_tot, evt_rate_tot, exponent_tot, idxs
     else:
         one_weight = np.full((len(entry_num)), 1, dtype = float)        
         evt_rate = np.copy(one_weight)
-        daq_qual_cut = np.full((len(entry_num), 1), 0, dtype = int)
-    daq_qual_cut_sum = np.copy(daq_qual_cut[:, 0])
     del exponent, config, flavor, sim_run, signal_key
-
-    ## total quality cut
-    tot_qual_cut = np.concatenate((daq_qual_cut, pre_qual_cut, filt_qual_cut), axis = 1)
-    tot_qual_cut_sum = np.nansum(tot_qual_cut, axis = 1)
 
     print('Quality cut sim is done!')
 
     return {'entry_num':entry_num,
-            'daq_qual_cut':daq_qual_cut,
-            'daq_qual_cut_sum':daq_qual_cut_sum,
             'pre_qual_cut':pre_qual_cut,
             'pre_qual_cut_sum':pre_qual_cut_sum,
             'filt_qual_cut':filt_qual_cut,

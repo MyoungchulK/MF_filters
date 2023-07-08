@@ -39,6 +39,7 @@ years = np.copy(configs)
 del bad_runs
 
 live_tot = np.full((d_len, 3), 0, dtype = float)
+live_sec = np.full((d_len, 4, 3), 0, dtype = float)
 live_indi = np.full((d_len, len(q_name), 3), 0, dtype = float)
 
 for r in tqdm(range(len(d_run_tot))):
@@ -55,15 +56,22 @@ for r in tqdm(range(len(d_run_tot))):
     years[r] = con[3]
     tot_live = np.nansum(hf['tot_qual_live_time'][:])
     bad_live = np.nansum(hf['tot_qual_sum_bad_live_time'][:])
+    pre_bad_live = np.nansum(hf['pre_qual_sum_bad_live_time'][:])
+    ped_bad_live = np.nansum(hf['ped_qual_sum_bad_live_time'][:])
+    filt_bad_live = np.nansum(hf['filt_qual_sum_bad_live_time'][:])
     bad_indi_live = np.nansum(hf['tot_qual_bad_live_time'][:], axis = 0)   
- 
+    bad_sec = np.array([bad_live, pre_bad_live, ped_bad_live, filt_bad_live], dtye = float) 
+
     live_tot[r, 0] = tot_live
     live_tot[r, 1] = tot_live - bad_live
     live_tot[r, 2] = bad_live
+    live_sec[r, :, 0] = tot_live
+    live_sec[r, :, 1] = tot_live - bad_sec
+    live_sec[r, :, 2] = bad_sec
     live_indi[r, :, 0] = tot_live
     live_indi[r, :, 1] = tot_live - bad_indi_live
     live_indi[r, :, 2] = bad_indi_live
-    del hf, tot_live, bad_live, bad_indi_live
+    del hf, tot_live, bad_live, bad_indi_live, pre_bad_live, ped_bad_live, filt_bad_live, bad_sec
 
 live_tot_sum = np.nansum(live_tot, axis = 0)
 live_indi_sum = np.nansum(live_indi, axis = 0)
@@ -76,12 +84,22 @@ for c in range(num_configs):
 sec_to_day = 60 * 60 * 24
 print(np.round(live_tot_sum / sec_to_day, 2))
 print(np.round(live_config_tot_sum / sec_to_day, 2))
+print()
 
 summ = np.nansum(live_tot, axis = 0)
-print(np.round((summ/summ[0])*100, 2))
+print('total cut:', np.round((summ/summ[0])*100, 2))
+print()
+
+q_sec_name = ['pre cut', 'ped cut', 'filt cut']
+summ_sec = np.nansum(live_sec, axis = 0)[1:]
+for t in range(4):
+    print(f'{int(t + 1)}) {q_sec_name[t]}:', (summ_sec[t]/summ_sec[t, 0])*100)
+print()
+
 summ_indi = np.nansum(live_indi, axis = 0)
 for t in range(len(q_name)):
     print(f'{int(t + 1)}) {q_name[t]}:', (summ_indi[t]/summ_indi[t, 0])*100)
+print()
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 if not os.path.exists(path):
@@ -95,6 +113,7 @@ hf.create_dataset('runs', data=runs, compression="gzip", compression_opts=9)
 hf.create_dataset('b_runs', data=b_runs, compression="gzip", compression_opts=9)
 hf.create_dataset('configs', data=configs, compression="gzip", compression_opts=9)
 hf.create_dataset('live_tot', data=live_tot, compression="gzip", compression_opts=9)
+hf.create_dataset('live_sec', data=live_sec, compression="gzip", compression_opts=9)
 hf.create_dataset('live_indi', data=live_indi, compression="gzip", compression_opts=9)
 hf.create_dataset('live_tot_sum', data=live_tot_sum, compression="gzip", compression_opts=9)
 hf.create_dataset('live_indi_sum', data=live_indi_sum, compression="gzip", compression_opts=9)

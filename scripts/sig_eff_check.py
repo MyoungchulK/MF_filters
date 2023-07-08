@@ -8,38 +8,38 @@ curr_path = os.getcwd()
 sys.path.append(curr_path+'/../')
 from tools.ara_run_manager import file_sorter
 from tools.ara_utility import size_checker
-#from tools.ara_run_manager import run_info_loader
-from tools.ara_known_issue import known_issue_loader
 
 Station = int(sys.argv[1])
+Type = str(sys.argv[2])
 
 if Station == 2: num_configs = 7
 if Station == 3: num_configs = 9
 
-q_name = ['bad block length', 'bad block index', 'block gap', 'bad dda index', 'bad channel mask',
-                        'single block', 'rf win', 'cal win', 'soft win', 'first minute',
-                        'dda voltage', 'bad cal min rate', 'bad cal sec rate', 'bad soft sec rate', 'no rf cal sec rate', 'bad l1 rate',
-                        'short runs', 'bad unix time', 'bad run', 'cw log', 'cw ratio', 'empty slot!', 'unlock calpulser',
-                        'zero ped', 'single ped', 'low ped', 'known bad ped', 'calpuler cut', 'surface corr cut', 'surface mf cut', 'op antenna cut']
-print(len(q_name))
-
-known_issue = known_issue_loader(Station, verbose = True)
-bad_runs = known_issue.get_knwon_bad_run(use_qual = True)
-del known_issue
+q_name = ['noise trigger', 'cw ratio', 'calpuler cut', 'surface corr cut', 'surface mf cut', 'op antenna cut']
+q_len = len(q_name)
+print(q_len)
 
 # sort
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/qual_cut_3rd_full/*'
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/qual_cut_sim/*'
 d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 del d_run_range
 
-runs = np.copy(d_run_tot)
-configs = np.full((d_len), 0, dtype = int)
-b_runs = np.in1d(runs, bad_runs).astype(int)
-years = np.copy(configs)
-del bad_runs
+if Type == 'signal':
+    num_evts = 100
+if Type == 'noise':
+    num_evts = 1000
+config = np.full((d_len, 4), 0, dtype = int) # sim run, config, flavor, energy
+evt_rate = np.full((d_len, num_evts), np.nan, dtype = float)
+qual_indi = np.full((d_len, num_evts, q_len), 0, dtype = int)
+qual_tot = np.full((d_len, num_evts), 0, dtype = int)
 
-live_tot = np.full((d_len, 3), 0, dtype = float)
-live_indi = np.full((d_len, len(q_name), 3), 0, dtype = float)
+energys = np.array([16, 17, 18, 19, 20], dtype = int)
+en_bin_center = np.array([16.5, 17.5, 18.5, 19.5, 20.5], dtype = float)
+
+sig_eff_tot = np.full((num_configs, 3, 3), 0, dtype = float) # config, flavor, eff type
+sig_eff_energy_tot = np.full((num_configs, len(energys), 3, 3), 0, dtype = float) # config, energy, flavor, eff type
+sig_eff_indi = np.full((num_configs, q_len, 3, 3), 0, dtype = float) # config, qual type, flavor, eff type
+sig_eff_energy_indi = np.full((num_configs, len(energys), q_len, 3, 3), 0, dtype = float) # config, energy, qual type, flavor, eff type
 
 for r in tqdm(range(len(d_run_tot))):
     
@@ -51,55 +51,71 @@ for r in tqdm(range(len(d_run_tot))):
         print(d_list[r])
         continue
     con = hf['config'][:]
-    configs[r] = con[2]
-    years[r] = con[3]
-    tot_live = np.nansum(hf['tot_qual_live_time'][:])
-    bad_live = np.nansum(hf['tot_qual_sum_bad_live_time'][:])
-    bad_indi_live = np.nansum(hf['tot_qual_bad_live_time'][:], axis = 0)   
- 
-    live_tot[r, 0] = tot_live
-    live_tot[r, 1] = tot_live - bad_live
-    live_tot[r, 2] = bad_live
-    live_indi[r, :, 0] = tot_live
-    live_indi[r, :, 1] = tot_live - bad_indi_live
-    live_indi[r, :, 2] = bad_indi_live
-    del hf, tot_live, bad_live, bad_indi_live
+    cons = np.array([con[1], con[2], con[4], con[5]], dtype = int)
+    config[r, 0] = cons[0] # sim run
+    config[r, 1] = cons[1] # config
+    config[r, 2] = cons[2] # flavor
+    config[r, 3] = cons[3] # energy
 
-live_tot_sum = np.nansum(live_tot, axis = 0)
-live_indi_sum = np.nansum(live_indi, axis = 0)
-live_config_tot_sum = np.full((num_configs, 3), 0, dtype = float)
-live_config_indi_sum = np.full((num_configs, len(q_name), 3), 0, dtype = float)
+    evt_rates = hf['evt_rate'][:]
+    evt_rate[r] = evt_rates
+    tot_qual_cuts = hf['tot_qual_cut'][:] != 0
+    tot_qual_cut_sums = hf['tot_qual_cut_sum'][:] != 0
+    qual_indi[r] = tot_qual_cuts
+    qual_tot[r] = tot_qual_cut_sums
+    del tot_qual_cuts, tot_qual_cut_sums
+
+    tot_rate = np.nansum(evt_rates)
+    tot_rate_good = np.nansum(evt_rates[~tot_qual_cut_sums])
+    tot_rate_bad = np.nansum(evt_rates[tot_qual_cut_sums])
+    tot_r = np.array([tot_rate, tot_rate_good, tot_r])
+
+    evt_ep = np.repeat(evt_rates[:, np.newaxis], q_len, axis = 1)
+    evt_good = np.copy(evt_ep)
+    evt_good[tot_qual_cut_sums] = np.nan
+    evt_bad = np.copy(evt_ep)
+    evt_bad[~tot_qual_cut_sums] = np.nan
+    evt_ep = np.nansum(evt_ep, axis = 0)    
+    evt_good = np.nansum(evt_good, axis = 0)
+    evt_bad = np.nansum(evt_bad, axis = 0)
+    del evt_rates
+
+    sig_eff_tot[cons[1], cons[2]] += tot_r
+    sig_eff_energy_tot[cons[1], int(cons[3] - 16), cons[2]] += tot_r
+    sig_eff_indi[cons[1], :, cons[2], 0] += evt_ep
+    sig_eff_indi[cons[1], :, cons[2], 1] += evt_good
+    sig_eff_indi[cons[1], :, cons[2], 2] += evt_bad
+    sig_eff_energy_indi[cons[1], int(cons[3] - 16), :, cons[2], 0] += evt_ep
+    sig_eff_energy_indi[cons[1], int(cons[3] - 16), :, cons[2], 1] += evt_good
+    sig_eff_energy_indi[cons[1], int(cons[3] - 16), :, cons[2], 2] += evt_bad
+    del con, cons, tot_rate, tot_rate_good, tot_rate_bad, tot_r, evt_ep, evt_good, evt_bad
+
+per_tot = sig_eff_tot / sig_eff_tot[:, :, 0] * 100
 for c in range(num_configs):
-    live_config_tot_sum[c] = np.nansum(live_tot[configs == int(c + 1)], axis = 0)
-    live_config_indi_sum[c] = np.nansum(live_indi[configs == int(c + 1)], axis = 0)
+    print(f'tot config {int(c + 1)}: {np.round(per_tot[c, :, 2], 2)}')
+print()
 
-sec_to_day = 60 * 60 * 24
-print(np.round(live_tot_sum / sec_to_day, 2))
-print(np.round(live_config_tot_sum / sec_to_day, 2))
-
-summ = np.nansum(live_tot, axis = 0)
-print(np.round((summ/summ[0])*100, 2))
-summ_indi = np.nansum(live_indi, axis = 0)
-for t in range(len(q_name)):
-    print(f'{int(t + 1)}) {q_name[t]}:', (summ_indi[t]/summ_indi[t, 0])*100)
+per_indi = np.nanmean(sig_eff_indi / sig_eff_indi[:, :, :, 0] * 100, axis = 2)
+for c in range(num_configs):
+    print(f'indi config {int(c + 1)}: {np.round(per_indi[c, :, 2], 2)}')
+print()
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Livetime_Check_A{Station}.h5'
+file_name = f'Sig_Eff_Check_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
-hf.create_dataset('years', data=years, compression="gzip", compression_opts=9)
-hf.create_dataset('runs', data=runs, compression="gzip", compression_opts=9)
-hf.create_dataset('b_runs', data=b_runs, compression="gzip", compression_opts=9)
-hf.create_dataset('configs', data=configs, compression="gzip", compression_opts=9)
-hf.create_dataset('live_tot', data=live_tot, compression="gzip", compression_opts=9)
-hf.create_dataset('live_indi', data=live_indi, compression="gzip", compression_opts=9)
-hf.create_dataset('live_tot_sum', data=live_tot_sum, compression="gzip", compression_opts=9)
-hf.create_dataset('live_indi_sum', data=live_indi_sum, compression="gzip", compression_opts=9)
-hf.create_dataset('live_config_tot_sum', data=live_config_tot_sum, compression="gzip", compression_opts=9)
-hf.create_dataset('live_config_indi_sum', data=live_config_indi_sum, compression="gzip", compression_opts=9)
+hf.create_dataset('config', data=config, compression="gzip", compression_opts=9)
+hf.create_dataset('evt_rate', data=evt_rate, compression="gzip", compression_opts=9)
+hf.create_dataset('qual_indi', data=qual_indi, compression="gzip", compression_opts=9)
+hf.create_dataset('qual_tot', data=qual_tot, compression="gzip", compression_opts=9)
+hf.create_dataset('en_bin_center', data=en_bin_center, compression="gzip", compression_opts=9)
+hf.create_dataset('sig_eff_tot', data=sig_eff_tot, compression="gzip", compression_opts=9)
+hf.create_dataset('sig_eff_energy_tot', data=sig_eff_energy_tot, compression="gzip", compression_opts=9)
+hf.create_dataset('sig_eff_indi', data=sig_eff_indi, compression="gzip", compression_opts=9)
+hf.create_dataset('sig_eff_energy_indi', data=sig_eff_energy_indi, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name, size_checker(path+file_name))
 
