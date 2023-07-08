@@ -65,6 +65,7 @@ def get_pair_info(st, run, verbose = False, use_st_pair = False):
 
     known_issue = known_issue_loader(st)
     good_ant = known_issue.get_bad_antenna(run, good_ant_true = True, print_ant_idx = True) # good channel indexs in 1d array
+    good_ant = np.array([4,5,6,7,8,9,10,11])
     del known_issue
     if verbose:
         print('useful antenna chs for reco:', good_ant)

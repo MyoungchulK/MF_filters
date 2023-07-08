@@ -16,7 +16,6 @@ num_eles = ara_const.CHANNELS_PER_ATRI
 num_samps = ara_const.SAMPLES_PER_BLOCK
 num_chs = ara_const.RFCHAN_PER_DDA
 num_trigs = ara_const.TRIGGER_TYPE
-num_pols = ara_const.POLARIZATION
 
 def quick_qual_check(dat_bool, ser_val, dat_idx = None):
 
@@ -693,7 +692,7 @@ class pre_qual_cut_loader:
             print('Kill the CW!!!')
             tot_pre_qual_cut[:, 19] = self.get_cw_log_events()
             tot_pre_qual_cut[:, 20] = self.get_cw_ratio_events()
-        #tot_pre_qual_cut[:, 21] = 0 # empty for now
+            #tot_pre_qual_cut[:, 21] = 0 # empty for now
 
         self.daq_qual_cut_sum = np.nansum(tot_pre_qual_cut[:, :9], axis = 1)
         self.pre_qual_cut_sum = np.nansum(tot_pre_qual_cut, axis = 1)
@@ -827,7 +826,7 @@ class post_qual_cut_loader:
 class filt_qual_cut_loader:
 
     def __init__(self, st, run, evt_num, analyze_blind_dat = False, verbose = False, spark_unblind = False, cal_sur_unblind = False,
-                sim_spark_path = None, sim_corr_path = None, sim_mf_path = None):
+                sim_spark_path = None, sim_cal_sur_path = None):
 
         self.st = st
         self.run = run
@@ -838,10 +837,9 @@ class filt_qual_cut_loader:
         self.spark_unblind = spark_unblind
         self.cal_sur_unblind = cal_sur_unblind
         self.sim_spark_path = sim_spark_path
-        self.sim_corr_path = sim_corr_path
-        self.sim_mf_path = sim_mf_path
+        self.sim_cal_sur_path = sim_cal_sur_path
         self.run_info = run_info_loader(self.st, self.run, analyze_blind_dat = analyze_blind_dat)
-        if self.sim_spark_path is not None and self.sim_corr_path is not None and self.sim_mf_path is not None:
+        if self.sim_spark_path is not None and self.sim_cal_sur_path is not None:
             if self.verbose:
                 print('We are analyzing SIM!!!')
       
@@ -933,73 +931,26 @@ class filt_qual_cut_loader:
 
             return spark_evts
 
-    def get_calpulser_surface_events(self, cut_corr = 35, cut_mf = 3.5, use_max = False):
+    def get_calpulser_surface_events(self, cut_surface = 35):
 
-        use_sim = False
-        if self.sim_mf_path is not None and self.sim_corr_path is not None:
-            use_sim = True
-        elif self.sim_mf_path is None and self.sim_corr_path is None:
-            pass
-        else:
-            print('Something wrong in calpulser/surface cut!')
-            sys.exit(1)
-
-        cal_sur_evts = np.full((self.num_evts, 3), 0, dtype = int) # cal, corr, mf
+        cal_sur_evts = np.full((self.num_evts, 2), 0, dtype = int)
         
-        if use_sim:
-            reco_dat = self.sim_corr_path
-            mf_dat = self.sim_mf_path 
+        if self.sim_cal_sur_path is not None:
+            reco_dat = self.sim_cal_sur_path
         else:
             reco_dat = self.run_info.get_result_path(file_type = 'reco', verbose = self.verbose, force_unblind = self.cal_sur_unblind, return_none = True)
-            mf_dat = self.run_info.get_result_path(file_type = 'mf', verbose = self.verbose, force_unblind = self.cal_sur_unblind, return_none = True)
-
-        if reco_dat is None and mf_dat is None:
+        if reco_dat is None:
             return cal_sur_evts
-        elif mf_dat is not None:
-            mf_hf = h5py.File(mf_dat, 'r')
-            if use_sim:
-                evt_name = 'entry_num'
-            else:
-                evt_name = 'evt_num'
-            evt_num_reco = mf_hf[evt_name][:]
-            num_evts_reco = len(evt_num_reco)
-            del evt_name
-
-            mf_temp = mf_hf['mf_temp'][:, 1] # pol, evt
-            sur_cuts = np.any(mf_temp < cut_mf, axis = 0).astype(int)
-            del mf_hf, mf_temp
-
-            if use_sim:
-                cal_sur_evts[:, 2] = sur_cuts
-            else:
-                if self.num_evts != num_evts_reco:
-                    evt_idx = np.in1d(self.evt_num, evt_num_reco)
-                else:
-                    evt_idx = np.full((self.num_evts), True, dtype = bool)
-                try:
-                    cal_sur_evts[evt_idx, 2] = sur_cuts
-                except ValueError:
-                    for evt in tqdm(range(num_evts_reco)):
-                        evt_idx = np.where(self.evt_num == evt_num_reco[evt])[0]
-                        if len(evt_idx) > 0:
-                            cal_sur_evts[evt_idx, 2] = sur_cuts[evt]
-                del evt_idx
-            del evt_num_reco, num_evts_reco, sur_cuts
-
-            if self.verbose:
-                quick_qual_check(cal_sur_evts[:, 2] != 0, 'mf surface cut', self.evt_num)
-        elif reco_dat is not None:
+        else:
             reco_hf = h5py.File(reco_dat, 'r')
-            if use_sim:
-                evt_num_reco = reco_hf['entry_num'][:]
-            else:
+            if self.sim_cal_sur_path is None:
                 evt_num_reco = reco_hf['evt_num'][:]    
                 trig_type_reco = reco_hf['trig_type'][:]
+            else:
+                evt_num_reco = reco_hf['entry_num'][:]
             num_evts_reco = len(evt_num_reco)
-
             coord_max = reco_hf['coord'][:] # pol, thephi, rad, sol, evt
-            coord_shape = coord_max.shape
-            del reco_hf
+            del reco_dat, reco_hf
 
             cp_cut, num_cuts, pol_idx = get_calpulser_cut(self.st, self.run)
             cal_cuts = np.full((num_evts_reco), 0, dtype = int)
@@ -1008,29 +959,16 @@ class filt_qual_cut_loader:
                 azi_flag = np.digitize(coord_max[pol_idx, 1, 0, 0], cp_cut[cal, 1]) == 1
                 cal_cuts += np.logical_and(ele_flag, azi_flag).astype(int)
                 del ele_flag, azi_flag
-            if use_sim == False:
+            if self.sim_cal_sur_path is None:
                 cal_cuts[trig_type_reco == 1] = 0
                 del trig_type_reco
             del cp_cut, num_cuts, pol_idx
 
-            if use_max:
-                print('Wr are using max coef for suaface cut!!')
-                coef = hf['coef'][:]
-                coef_shape = coef.shape
-                coef_re = np.reshape(coef, (coef_shape[0], coef_shape[1] * coef_shape[2], -1))
-                coord_re = np.reshape(coord_max, (coord_shape[0], coord_shape[1], coord_shape[2] * coord_shape[3], -1))
-                coef_max_idx = np.argmax(coef_re, axis = 1)
-                pol_range = np.arange(num_pols, dtype = int)
-                evt_range = np.arange(coord_shape[-1], dtype = int)
-                coord_max_r = coord_re[pol_range[:, np.newaxis, np.newaxis], pol_range[np.newaxis, :, np.newaxis], coef_max_idx, evt_range[np.newaxis, np.newaxis, :]]
-                coord_max_flat = coord_max_r[:, 0]
-                del coef, coef_shape, coef_re, coord_re, coef_max_idx, pol_range, evt_range, coord_max_r
-            else:
-                coord_max_flat = np.reshape(coord_max[:, 0, 1, :, :], (coord_shape[0] * coord_shape[3], -1))
-            sur_cuts = np.any(coord_max_flat > cut_corr, axis = 0).astype(int)
-            del coord_max, coord_max_flat, coord_shape
+            coord_max_flat = np.reshape(coord_max[:, 0, 1, :, :], (4, -1))
+            sur_cuts = np.any(coord_max_flat > cut_surface, axis = 0).astype(int)
+            del coord_max, coord_max_flat
 
-            if use_sim:
+            if self.sim_cal_sur_path is not None:
                 cal_sur_evts[:, 0] = cal_cuts
                 cal_sur_evts[:, 1] = sur_cuts
             else:
@@ -1052,16 +990,15 @@ class filt_qual_cut_loader:
 
             if self.verbose:
                 quick_qual_check(cal_sur_evts[:, 0] != 0, 'calpulser cut', self.evt_num)
-                quick_qual_check(cal_sur_evts[:, 1] != 0, 'corr surface cut', self.evt_num)
-        del use_sim, reco_dat, mf_dat
+                quick_qual_check(cal_sur_evts[:, 1] != 0, 'surface cut', self.evt_num)
 
-        return cal_sur_evts
+            return cal_sur_evts
 
-    def run_filt_qual_cut(self, use_max = False, cut_ratio = None):
+    def run_filt_qual_cut(self, cut_ratio = None):
 
-        tot_filt_qual_cut = np.full((self.num_evts, 4), 0, dtype = int)
-        tot_filt_qual_cut[:, :3] = self.get_calpulser_surface_events(use_max = use_max)
-        tot_filt_qual_cut[:, 3] = self.get_spark_events(cut_ratio = cut_ratio)
+        tot_filt_qual_cut = np.full((self.num_evts, 3), 0, dtype = int)
+        tot_filt_qual_cut[:, :2] = self.get_calpulser_surface_events()
+        tot_filt_qual_cut[:, 2] = self.get_spark_events(cut_ratio = cut_ratio)
 
         self.filt_qual_cut_sum = np.nansum(tot_filt_qual_cut, axis = 1)
 
@@ -1381,7 +1318,7 @@ def get_bad_live_time(trig_type, unix_time, time_bins, sec_per_min, cuts, verbos
                         'single block', 'rf win', 'cal win', 'soft win', 'first minute', 
                         'dda voltage', 'bad cal min rate', 'bad cal sec rate', 'bad soft sec rate', 'no rf cal sec rate', 'bad l1 rate', 
                         'short runs', 'bad unix time', 'bad run', 'cw log', 'cw ratio', 'empty slot!', 'unlock calpulser', 
-                        'zero ped', 'single ped', 'low ped', 'known bad ped', 'calpuler cut', 'corr surface cut', 'mf surface cut', 'op antenna cut']
+                        'zero ped', 'single ped', 'low ped', 'known bad ped', 'calpuler cut', 'surface cut', 'op antenna cut']
             print(f'live time for each cuts. total number of cuts: {len(rough_tot_bad_time)}')
             for t in range(len(rough_tot_bad_time)):
                 print(f'{t + 1}) {q_name[t]}: ~{np.round(rough_tot_bad_time[t] / 60, 1)} min.')

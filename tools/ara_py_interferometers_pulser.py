@@ -75,6 +75,8 @@ class py_interferometers:
         arr_table = table_hf['arr_time_table'][:]
         del table_path, table_name, table_hf
 
+        print(f'!!!!!!!!!!!!!!!!! theta {self.theta[0]} ~ {self.theta[-1]} !!!!!!!')
+        print(f'!!!!!!!!!!!!!!!!! phi {self.phi[0]} ~ {self.phi[-1]} !!!!!!!')
         print(f'!!!!!!!!!!!!!!!!! {self.radius} !!!!!!!!!!!')
  
         self.table = arr_table[:, :, :, self.pairs[:, 0], :] - arr_table[:, :, :, self.pairs[:, 1], :]

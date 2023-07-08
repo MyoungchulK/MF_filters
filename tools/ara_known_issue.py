@@ -1249,6 +1249,7 @@ class known_issue_loader:
             bad_run = np.append(bad_run, 13583) # 13583 2019/04/01 unknown signal
             bad_run = np.append(bad_run, 15246) # 15246 2019/07/16 unknown signal
             bad_run = np.append(bad_run, np.arange(15340, 15343 + 1, dtype = int)) # 15340 ~ 15343 unknown signal
+            bad_run = np.append(bad_run, 15587) # 15587 2020/01/13 unknown signal
             bad_run = np.append(bad_run, np.arange(15604, 15606 + 1, dtype = int)) # 15604 15605 15606 wrong l1 goal
             bad_run = np.append(bad_run, 16885) # 16885 wrong l1 goal
 

@@ -26,11 +26,9 @@ def qual_cut_sim_collector(Data, Station, Year):
     cw_r_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/cw_ratio_sim/cw_ratio_{h5_file_name}.h5'
     rms_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/rms_sim/rms_{h5_file_name}.h5'
     reco_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco_sim/reco_{h5_file_name}.h5'
-    mf_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf_sim/mf_{h5_file_name}.h5'
     print('cw ratio path:', cw_r_path)
     print('rms path:', rms_path)
     print('reco path:', reco_path)
-    print('mf path:', mf_path)
     del h5_file_name
 
     ## entry number
@@ -46,10 +44,10 @@ def qual_cut_sim_collector(Data, Station, Year):
     del cw_r_path, pre_qual
 
     ## spark and cal, surface
-    filt_qual = filt_qual_cut_loader(Station, ex_run, entry_num, verbose = True, sim_spark_path = rms_path, sim_corr_path = reco_path, sim_mf_path = mf_path)
-    filt_qual_cut = filt_qual.run_filt_qual_cut(use_max = True)
+    filt_qual = filt_qual_cut_loader(Station, ex_run, entry_num, verbose = True, sim_spark_path = rms_path, sim_cal_sur_path = reco_path)
+    filt_qual_cut = filt_qual.run_filt_qual_cut()
     filt_qual_cut_sum = filt_qual.filt_qual_cut_sum
-    del filt_qual, ex_run, rms_path, reco_path, mf_path
+    del filt_qual, ex_run, rms_path, reco_path
 
     ## total quality cut
     tot_qual_cut = np.append(pre_qual_cut, filt_qual_cut, axis = 1)

@@ -75,11 +75,11 @@ for r in tqdm(range(len(d_run_tot1))):
     mf_ratio1 = hf['mf_ratio'][:]
     snr_3rd1 = hf['snr_3rd'][:] 
     coef_max = np.concatenate((coef_max, coef_max1), axis = 1)
-    coef_ratio = np.concatenate((coef_max, coef_ratio1), axis = 1)
+    coef_ratio = np.concatenate((coef_ratio, coef_ratio1), axis = 1)
     coord_max = np.concatenate((coord_max, coord_max1), axis = 2)
     mf_max = np.concatenate((mf_max, mf_max1), axis = 1)
     mf_temp = np.concatenate((mf_temp, mf_temp1), axis = 2)
-    mf_ratio = np.concatenate((mf_temp, mf_ratio1), axis = 1)
+    mf_ratio = np.concatenate((mf_ratio, mf_ratio1), axis = 1)
     snr_3rd = np.concatenate((snr_3rd, snr_3rd1), axis = 1)
     del hf, run_ep1, evt_ep1, trig_ep1, con_ep1, qual_ep1, coef_max1, coord_max1, mf_max1, mf_temp1, snr_3rd1
     del coef_ratio1, mf_ratio1
