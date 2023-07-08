@@ -955,7 +955,7 @@ class filt_qual_cut_loader:
 
         if reco_dat is None and mf_dat is None:
             return cal_sur_evts
-        elif mf_dat is not None:
+        if mf_dat is not None:
             mf_hf = h5py.File(mf_dat, 'r')
             if use_sim:
                 evt_name = 'entry_num'
@@ -988,7 +988,7 @@ class filt_qual_cut_loader:
 
             if self.verbose:
                 quick_qual_check(cal_sur_evts[:, 2] != 0, 'mf surface cut', self.evt_num)
-        elif reco_dat is not None:
+        if reco_dat is not None:
             reco_hf = h5py.File(reco_dat, 'r')
             if use_sim:
                 evt_num_reco = reco_hf['entry_num'][:]
@@ -999,7 +999,6 @@ class filt_qual_cut_loader:
 
             coord_max = reco_hf['coord'][:] # pol, thephi, rad, sol, evt
             coord_shape = coord_max.shape
-            del reco_hf
 
             cp_cut, num_cuts, pol_idx = get_calpulser_cut(self.st, self.run)
             cal_cuts = np.full((num_evts_reco), 0, dtype = int)
@@ -1015,7 +1014,7 @@ class filt_qual_cut_loader:
 
             if use_max:
                 print('Wr are using max coef for suaface cut!!')
-                coef = hf['coef'][:]
+                coef = reco_hf['coef'][:]
                 coef_shape = coef.shape
                 coef_re = np.reshape(coef, (coef_shape[0], coef_shape[1] * coef_shape[2], -1))
                 coord_re = np.reshape(coord_max, (coord_shape[0], coord_shape[1], coord_shape[2] * coord_shape[3], -1))
@@ -1028,7 +1027,7 @@ class filt_qual_cut_loader:
             else:
                 coord_max_flat = np.reshape(coord_max[:, 0, 1, :, :], (coord_shape[0] * coord_shape[3], -1))
             sur_cuts = np.any(coord_max_flat > cut_corr, axis = 0).astype(int)
-            del coord_max, coord_max_flat, coord_shape
+            del reco_hf, coord_max, coord_max_flat, coord_shape
 
             if use_sim:
                 cal_sur_evts[:, 0] = cal_cuts
