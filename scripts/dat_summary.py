@@ -133,7 +133,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Data_Summary_A{Station}_R{count_i}.h5'
+file_name = f'Data_Summary_A{Station}_R{count_i}_v1.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('runs', data=runs, compression="gzip", compression_opts=9)
 hf.create_dataset('b_runs', data=b_runs, compression="gzip", compression_opts=9)

@@ -71,7 +71,7 @@ mf_ser_max = np.full((d_len, 2, 2, num_evts), np.nan, dtype = float)
 mf_ratio = np.full((d_len, 2, num_evts), np.nan, dtype = float)
 snr = np.full((d_len, num_ants, num_evts), np.nan, dtype = float)
 snr_max = np.full((d_len, 2, num_evts), np.nan, dtype = float)
-qual = np.full((d_len, num_evts, 4), 0, dtype = int)
+qual = np.full((d_len, num_evts, 6), 0, dtype = int)
 qual_tot = np.full((d_len, num_evts), 0, dtype = int)
 sig_in = np.full((d_len, num_evts), 0, dtype = int)
 sig_in_wide = np.full((d_len, num_evts), 0, dtype = int)
@@ -220,7 +220,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Sim_Summary_{Type}_A{Station}.h5'
+file_name = f'Sim_Summary_{Type}_A{Station}_v1.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('sim_run', data=sim_run, compression="gzip", compression_opts=9)
 hf.create_dataset('config', data=config, compression="gzip", compression_opts=9)

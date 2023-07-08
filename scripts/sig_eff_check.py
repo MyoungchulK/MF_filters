@@ -64,7 +64,6 @@ for r in tqdm(range(len(d_run_tot))):
     qual_indi[r] = tot_qual_cuts
     qual_tot[r] = tot_qual_cut_sums
 
-    print(evt_rates.shape, tot_qual_cut_sums.shape)
     tot_rate = np.nansum(evt_rates)
     tot_rate_good = np.nansum(evt_rates[~tot_qual_cut_sums])
     tot_rate_bad = np.nansum(evt_rates[tot_qual_cut_sums])
@@ -81,10 +80,11 @@ for r in tqdm(range(len(d_run_tot))):
     del evt_rates, tot_qual_cuts, tot_qual_cut_sums
 
     sig_eff_tot[cons[1], cons[2]] += tot_r
-    sig_eff_energy_tot[cons[1], int(cons[3] - 16), cons[2]] += tot_r
     sig_eff_indi[cons[1], :, cons[2], 0] += evt_ep
     sig_eff_indi[cons[1], :, cons[2], 1] += evt_good
     sig_eff_indi[cons[1], :, cons[2], 2] += evt_bad
+    if Type == 'noise': continue
+    sig_eff_energy_tot[cons[1], int(cons[3] - 16), cons[2]] += tot_r
     sig_eff_energy_indi[cons[1], int(cons[3] - 16), :, cons[2], 0] += evt_ep
     sig_eff_energy_indi[cons[1], int(cons[3] - 16), :, cons[2], 1] += evt_good
     sig_eff_energy_indi[cons[1], int(cons[3] - 16), :, cons[2], 2] += evt_bad
