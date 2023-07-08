@@ -60,7 +60,7 @@ for r in tqdm(range(len(d_run_tot))):
     ped_bad_live = np.nansum(hf['ped_qual_sum_bad_live_time'][:])
     filt_bad_live = np.nansum(hf['filt_qual_sum_bad_live_time'][:])
     bad_indi_live = np.nansum(hf['tot_qual_bad_live_time'][:], axis = 0)   
-    bad_sec = np.array([bad_live, pre_bad_live, ped_bad_live, filt_bad_live], dtye = float) 
+    bad_sec = np.array([bad_live, pre_bad_live, ped_bad_live, filt_bad_live], dtype = float) 
 
     live_tot[r, 0] = tot_live
     live_tot[r, 1] = tot_live - bad_live
