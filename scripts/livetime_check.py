@@ -21,7 +21,7 @@ q_name = ['bad block length', 'bad block index', 'block gap', 'bad dda index', '
                         'single block', 'rf win', 'cal win', 'soft win', 'first minute',
                         'dda voltage', 'bad cal min rate', 'bad cal sec rate', 'bad soft sec rate', 'no rf cal sec rate', 'bad l1 rate',
                         'short runs', 'bad unix time', 'bad run', 'cw log', 'cw ratio', 'empty slot!', 'unlock calpulser',
-                        'zero ped', 'single ped', 'low ped', 'known bad ped', 'calpuler cut', 'surface cut', 'op antenna cut']
+                        'zero ped', 'single ped', 'low ped', 'known bad ped', 'calpuler cut', 'surface corr cut', 'surface mf cut', 'op antenna cut']
 print(len(q_name))
 
 known_issue = known_issue_loader(Station, verbose = True)
