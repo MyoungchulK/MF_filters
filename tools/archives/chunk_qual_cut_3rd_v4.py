@@ -58,9 +58,6 @@ def qual_cut_3rd_collector(Data,Ped, qual_type = 3, analyze_blind_dat = False, n
     # tot pre quality cut
     pre_qual_cut = np.append(pre_qual_cut, post_qual_cut, axis = 1)
     pre_qual_cut_sum = np.nansum(pre_qual_cut, axis = 1)
-    pre_qual_cut_sum_live = np.copy(pre_qual_cut)
-    pre_qual_cut_sum_live[:, 15] = 0 # l1 cut
-    pre_qual_cut_sum_live = np.nansum(pre_qual_cut_sum_live, axis = 1)
     del post_qual_cut
 
     # ped quailty cut
@@ -68,16 +65,12 @@ def qual_cut_3rd_collector(Data,Ped, qual_type = 3, analyze_blind_dat = False, n
     ped_qual_evt_num, ped_qual_type, ped_qual_num_evts, ped_blk_usage, ped_low_blk_usage, ped_qualities, ped_counts, ped_final_type = ped_qual.get_pedestal_information()
     ped_qual_cut = ped_qual.run_ped_qual_cut()
     ped_qual_cut_sum = ped_qual.ped_qual_cut_sum
-    ped_qual_cut_sum_live = np.copy(ped_qual_cut)
-    ped_qual_cut_sum_live = np.nansum(ped_qual_cut_sum_live, axis = 1)
     del ped_qual, ara_uproot
 
     ## filter cut
     filt_qual = filt_qual_cut_loader(st, run, evt_num, analyze_blind_dat = analyze_blind_dat, verbose = True, spark_unblind = False, cal_sur_unblind = True) 
     filt_qual_cut = filt_qual.run_filt_qual_cut(use_max = True)
     filt_qual_cut_sum = filt_qual.filt_qual_cut_sum
-    filt_qual_cut_sum_live = np.copy(filt_qual_cut)
-    filt_qual_cut_sum_live  = np.nansum(filt_qual_cut_sum_live, axis = 1)
     del filt_qual
 
     # total quality cut
@@ -98,11 +91,8 @@ def qual_cut_3rd_collector(Data,Ped, qual_type = 3, analyze_blind_dat = False, n
 
     # live time
     tot_qual_live_time, tot_qual_bad_live_time = get_bad_live_time(trig_type, unix_time, time_bins_sec, sec_per_sec, tot_qual_cut, verbose = True)
-    pre_qual_sum_bad_live_time = get_bad_live_time(trig_type, unix_time, time_bins_sec, sec_per_sec, pre_qual_cut_sum_live, verbose = True)[1]
-    ped_qual_sum_bad_live_time = get_bad_live_time(trig_type, unix_time, time_bins_sec, sec_per_sec, ped_qual_cut_sum_live, verbose = True)[1]
-    filt_qual_sum_bad_live_time = get_bad_live_time(trig_type, unix_time, time_bins_sec, sec_per_sec, filt_qual_cut_sum_live, verbose = True)[1]
     tot_qual_sum_bad_live_time = get_bad_live_time(trig_type, unix_time, time_bins_sec, sec_per_sec, tot_qual_cut_sum_live, verbose = True)[1]
-    del tot_qual_cut_sum_live, pre_qual_cut_sum_live, ped_qual_cut_sum_live, filt_qual_cut_sum_live
+    del tot_qual_cut_sum_live
 
     print('Quality cut 3rd is done!')
 
@@ -136,9 +126,6 @@ def qual_cut_3rd_collector(Data,Ped, qual_type = 3, analyze_blind_dat = False, n
             'bad_run':bad_run,
             'tot_qual_live_time':tot_qual_live_time,
             'tot_qual_bad_live_time':tot_qual_bad_live_time,
-            'pre_qual_sum_bad_live_time':pre_qual_sum_bad_live_time,
-            'ped_qual_sum_bad_live_time':ped_qual_sum_bad_live_time,
-            'filt_qual_sum_bad_live_time':filt_qual_sum_bad_live_time,
             'tot_qual_sum_bad_live_time':tot_qual_sum_bad_live_time}
 
 
