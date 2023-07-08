@@ -65,8 +65,8 @@ def qual_cut_sim_collector(Data, Station, Year):
         sim_run_tot = wei_hf['sim_run'][:]
         exponent_tot = wei_hf['exponent'][:, 0]
         idxs = np.all((sim_run_tot == sim_run, flavor_tot == flavor, config_tot == config, exponent_tot == int(exponent - 9)), axis = 0)       
-        one_weight = one_weight_tot[idxs]
-        evt_rate = evt_rate_tot[idxs]
+        one_weight = one_weight_tot[idxs][0]
+        evt_rate = evt_rate_tot[idxs][0]
         daq_qual_cut = np.full((len(entry_num), 1), 0, dtype = int)
         daq_qual_cut[:, 0] = sig_in_wide[idxs]
         del wei_path, wei_hf, flavor_tot, config_tot, sim_run_tot, one_weight_tot, evt_rate_tot, exponent_tot, idxs, sig_in_wide

@@ -92,7 +92,7 @@ print()
 
 q_sec_name = ['pre cut', 'ped cut', 'filt cut']
 summ_sec = np.nansum(live_sec, axis = 0)[1:]
-for t in range(4):
+for t in range(3):
     print(f'{int(t + 1)}) {q_sec_name[t]}:', (summ_sec[t]/summ_sec[t, 0])*100)
 print()
 

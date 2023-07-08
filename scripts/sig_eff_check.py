@@ -20,7 +20,7 @@ q_len = len(q_name)
 print(q_len)
 
 # sort
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/qual_cut_sim/*'
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/qual_cut_sim/*{Type}*'
 d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 del d_run_range
 
@@ -51,7 +51,7 @@ for r in tqdm(range(len(d_run_tot))):
         print(d_list[r])
         continue
     con = hf['config'][:]
-    cons = np.array([con[1], con[2], con[4], con[5]], dtype = int)
+    cons = np.array([con[1], con[2] - 1, con[4] - 1, con[5]], dtype = int)
     config[r, 0] = cons[0] # sim run
     config[r, 1] = cons[1] # config
     config[r, 2] = cons[2] # flavor
@@ -63,22 +63,22 @@ for r in tqdm(range(len(d_run_tot))):
     tot_qual_cut_sums = hf['tot_qual_cut_sum'][:] != 0
     qual_indi[r] = tot_qual_cuts
     qual_tot[r] = tot_qual_cut_sums
-    del tot_qual_cuts, tot_qual_cut_sums
 
+    print(evt_rates.shape, tot_qual_cut_sums.shape)
     tot_rate = np.nansum(evt_rates)
     tot_rate_good = np.nansum(evt_rates[~tot_qual_cut_sums])
     tot_rate_bad = np.nansum(evt_rates[tot_qual_cut_sums])
-    tot_r = np.array([tot_rate, tot_rate_good, tot_r])
+    tot_r = np.array([tot_rate, tot_rate_good, tot_rate_bad])
 
     evt_ep = np.repeat(evt_rates[:, np.newaxis], q_len, axis = 1)
     evt_good = np.copy(evt_ep)
-    evt_good[tot_qual_cut_sums] = np.nan
+    evt_good[tot_qual_cuts] = np.nan
     evt_bad = np.copy(evt_ep)
-    evt_bad[~tot_qual_cut_sums] = np.nan
+    evt_bad[~tot_qual_cuts] = np.nan
     evt_ep = np.nansum(evt_ep, axis = 0)    
     evt_good = np.nansum(evt_good, axis = 0)
     evt_bad = np.nansum(evt_bad, axis = 0)
-    del evt_rates
+    del evt_rates, tot_qual_cuts, tot_qual_cut_sums
 
     sig_eff_tot[cons[1], cons[2]] += tot_r
     sig_eff_energy_tot[cons[1], int(cons[3] - 16), cons[2]] += tot_r
@@ -90,12 +90,12 @@ for r in tqdm(range(len(d_run_tot))):
     sig_eff_energy_indi[cons[1], int(cons[3] - 16), :, cons[2], 2] += evt_bad
     del con, cons, tot_rate, tot_rate_good, tot_rate_bad, tot_r, evt_ep, evt_good, evt_bad
 
-per_tot = sig_eff_tot / sig_eff_tot[:, :, 0] * 100
+per_tot = sig_eff_tot / sig_eff_tot[:, :, 0][:, :, np.newaxis] * 100
 for c in range(num_configs):
     print(f'tot config {int(c + 1)}: {np.round(per_tot[c, :, 2], 2)}')
 print()
 
-per_indi = np.nanmean(sig_eff_indi / sig_eff_indi[:, :, :, 0] * 100, axis = 2)
+per_indi = np.nanmean(sig_eff_indi / sig_eff_indi[:, :, :, 0][:, :, np.newaxis] * 100, axis = 2)
 for c in range(num_configs):
     print(f'indi config {int(c + 1)}: {np.round(per_indi[c, :, 2], 2)}')
 print()
