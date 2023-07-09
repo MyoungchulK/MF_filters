@@ -121,10 +121,7 @@ def wf_sim_collector(Data, Station, Year, act_evt):
     pairs = ara_int.pairs
     v_pairs_len = ara_int.v_pairs_len
     lags = ara_int.lags
-    weights, wei_pol = get_products(snr, pairs, v_pairs_len)
-    radius = ara_int.radius
-    num_pols_com = ara_int.num_pols_com
-    num_angs = ara_int.num_angs
+    snr_weights = get_products(snr, pairs, v_pairs_len)
 
     # wf arr
     blk_max = 48
@@ -168,11 +165,11 @@ def wf_sim_collector(Data, Station, Year, act_evt):
     bp_sky_map = np.copy(sky_map)
     cw_sky_map = np.copy(sky_map)
     cw_bp_sky_map = np.copy(sky_map)
-    coef = np.full((num_pols_com, num_rads, num_ray_sol, sel_evt_len), np.nan, dtype = float) # pol, rad, sol
+    coef = np.full((num_pols, num_rads, num_ray_sol, sel_evt_len), np.nan, dtype = float) # pol, rad, sol
     bp_coef = np.copy(coef) 
     cw_coef = np.copy(coef) 
     cw_bp_coef = np.copy(coef) 
-    coord = np.full((num_pols_com, num_angs, num_rads, num_ray_sol, sel_evt_len), np.nan, dtype = float) # pol, thephi, rad, sol
+    coord = np.full((num_pols, 2, num_rads, num_ray_sol, sel_evt_len), np.nan, dtype = float) # pol, thephi, rad, sol
     bp_coord = np.copy(coord)
     cw_coord = np.copy(coord)
     cw_bp_coord = np.copy(coord)
@@ -221,7 +218,7 @@ def wf_sim_collector(Data, Station, Year, act_evt):
         
         for ant in range(num_ants):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_band_pass = False, use_cw = False, evt = sel_evts[evt])
-        ara_int.get_sky_map(wf_int.pad_v, weights = weights[:, sel_evts[evt]], wei_pol = wei_pol[:, sel_evts[evt]])
+        ara_int.get_sky_map(wf_int.pad_v, weights = snr_weights[:, sel_evts[evt]])
         corr[:,:,evt] = ara_int.corr
         corr_nonorm[:,:,evt] = ara_int.corr_nonorm
         corr_01[:,:,evt] = ara_int.nor_fac
@@ -232,7 +229,7 @@ def wf_sim_collector(Data, Station, Year, act_evt):
 
         for ant in range(num_ants):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_band_pass = True, use_cw = False, evt = sel_evts[evt])
-        ara_int.get_sky_map(wf_int.pad_v, weights = weights[:, sel_evts[evt]], wei_pol = wei_pol[:, sel_evts[evt]])
+        ara_int.get_sky_map(wf_int.pad_v, weights = snr_weights[:, sel_evts[evt]])
         bp_corr[:,:,evt] = ara_int.corr
         bp_corr_nonorm[:,:,evt] = ara_int.corr_nonorm
         bp_corr_01[:,:,evt] = ara_int.nor_fac
@@ -243,7 +240,7 @@ def wf_sim_collector(Data, Station, Year, act_evt):
 
         for ant in range(num_ants):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_band_pass = False, use_cw = True, evt = sel_evts[evt])
-        ara_int.get_sky_map(wf_int.pad_v, weights = weights[:, sel_evts[evt]], wei_pol = wei_pol[:, sel_evts[evt]])
+        ara_int.get_sky_map(wf_int.pad_v, weights = snr_weights[:, sel_evts[evt]])
         cw_corr[:,:,evt] = ara_int.corr
         cw_corr_nonorm[:,:,evt] = ara_int.corr_nonorm
         cw_corr_01[:,:,evt] = ara_int.nor_fac
@@ -254,7 +251,7 @@ def wf_sim_collector(Data, Station, Year, act_evt):
 
         for ant in range(num_ants):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_band_pass = True, use_cw = True, evt = sel_evts[evt])
-        ara_int.get_sky_map(wf_int.pad_v, weights = weights[:, sel_evts[evt]], wei_pol = wei_pol[:, sel_evts[evt]])
+        ara_int.get_sky_map(wf_int.pad_v, weights = snr_weights[:, sel_evts[evt]])
         cw_bp_corr[:,:,evt] = ara_int.corr
         cw_bp_corr_nonorm[:,:,evt] = ara_int.corr_nonorm
         cw_bp_corr_01[:,:,evt] = ara_int.nor_fac
@@ -507,8 +504,7 @@ def wf_sim_collector(Data, Station, Year, act_evt):
             'trig_ch':trig_ch,
             'bad_ant':bad_ant,
             'snr':snr,
-            'weights':weights,
-            'wei_pol':wei_pol,
+            'snr_weights':snr_weights,
             'pad_time':pad_time,
             'pad_freq':pad_freq,
             'pairs':pairs,
@@ -558,7 +554,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
             'bp_coord':bp_coord,
             'cw_coord':cw_coord,
             'cw_bp_coord':cw_bp_coord,
-            'radius':radius,
             'good_chs':good_chs,
             'search_map':search_map,
             'mf_theta_bin':mf_theta_bin,

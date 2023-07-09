@@ -21,7 +21,7 @@ d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco/*'
 d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 del d_run_range
 
-d_path1 = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/Data_Summary_A*'
+d_path1 = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/Data_Summary_v1_A*'
 d_list1, d_run_tot1, d_run_range1, d_len1 = file_sorter(d_path1)
 del d_run_range1
 
@@ -89,7 +89,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Data_Summary_A{Station}.h5'
+file_name = f'Data_Summary_v1_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('runs', data=runs, compression="gzip", compression_opts=9)
 hf.create_dataset('b_runs', data=b_runs, compression="gzip", compression_opts=9)

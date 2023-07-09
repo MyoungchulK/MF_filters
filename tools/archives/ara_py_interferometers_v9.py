@@ -17,11 +17,12 @@ num_pols = ara_const.POLARIZATION
 
 class py_interferometers:
 
-    def __init__(self, pad_len, dt, st, run = None, get_sub_file = False, use_ele_max = False, use_debug = False, verbose = False):
+    def __init__(self, pad_len, dt, st, yrs, run = None, get_sub_file = False, use_ele_max = False, use_debug = False, verbose = False):
 
         self.verbose = verbose
         self.dt = dt
         self.st = st
+        self.yrs = yrs
         self.run = run
         self.use_debug = use_debug
         self.use_ele_max = use_ele_max
@@ -51,10 +52,17 @@ class py_interferometers:
 
     def get_arrival_time_tables(self):
 
+        if self.st == 2 or (self.st == 3 and self.yrs <= 1515974400):
+            year = 2015
+        else:
+            year = 2018
+        year = 2016
+
         table_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{self.st}/arr_time_table/'
-        table_name = f'arr_time_table_A{self.st}.h5'
+        table_name = f'arr_time_table_A{self.st}_Y{year}.h5'
         if self.verbose:
             print('arrival time table:', table_path + table_name)        
+        del year
 
         table_hf = h5py.File(table_path + table_name, 'r')
         self.theta = 90 - table_hf['theta_bin'][:] # nadir to elevation angle
@@ -67,18 +75,14 @@ class py_interferometers:
         self.num_rads = len(self.radius)
         self.num_ray_sol = len(table_hf['num_ray_sol'][:])
         self.num_angs = int(2)
-        self.num_pols = num_pols
-        self.num_pols_com = int(num_pols + 1)
         arr_table = table_hf['arr_time_table'][:]
         del table_path, table_name, table_hf
  
         self.table = arr_table[:, :, :, self.pairs[:, 0], :] - arr_table[:, :, :, self.pairs[:, 1], :]
         self.table = np.transpose(self.table, (0, 1, 2, 4, 3))
-        self.sky_map_shape = (self.num_pols_com, self.num_thetas * self.num_phis, self.num_rads, self.num_ray_sol)
-        if self.use_debug or self.use_ele_max:
-            self.table_ori_shape = self.table.shape
-            self.table_pol_shape = (self.num_pols_com, self.num_thetas, self.num_phis, self.num_rads, self.num_ray_sol)
-        self.coord_shape = (self.num_pols_com, self.num_angs, self.num_rads, self.num_ray_sol)
+        self.table_ori_shape = self.table.shape
+        self.table_pol_shape = (num_pols, self.num_thetas, self.num_phis, self.num_rads, self.num_ray_sol)
+        self.coord_shape = (num_pols, self.num_angs, self.num_rads, self.num_ray_sol)
         self.table = np.reshape(self.table, (-1, self.num_rads, self.num_ray_sol, self.pair_len))
         self.table_shape = self.table.shape
         if self.verbose:
@@ -88,8 +92,8 @@ class py_interferometers:
         table_p2 = np.reshape(np.transpose(arr_table[:, :, :, self.pairs[:, 1], :], (0, 1, 2, 4, 3)), self.table_shape)
         self.bad_arr = np.logical_or(table_p1 < -100, table_p2 < -100)
         del table_p1, table_p2, arr_table
-    
-        self.pol_range = np.arange(self.num_pols_com, dtype = int)
+
+        self.pol_range = np.arange(num_pols, dtype = int)
         self.rad_range = np.arange(self.num_rads, dtype = int)
         self.ray_range = np.arange(self.num_ray_sol, dtype = int)
         self.ang_range = np.arange(self.num_angs, dtype = int)
@@ -111,10 +115,9 @@ class py_interferometers:
         if self.use_debug:
             self.coval = np.reshape(coval, self.table_ori_shape)
 
-        sky_map = np.full(self.sky_map_shape, np.nan, dtype = float) # array dim (# of pols, # of thetas X # of phis, # of rs, # of rays) 
-        sky_map[0] = np.nansum(coval[:, :, :, :self.v_pairs_len], axis = 3)
-        sky_map[1] = np.nansum(coval[:, :, :, self.v_pairs_len:], axis = 3)
-        sky_map[2] = np.nansum(sky_map[:2] * self.wei_pol[:, np.newaxis, np.newaxis, np.newaxis], axis = 0)
+        corr_v_sum = np.nansum(coval[:, :, :, :self.v_pairs_len], axis = 3)
+        corr_h_sum = np.nansum(coval[:, :, :, self.v_pairs_len:], axis = 3)
+        sky_map = np.asarray([corr_v_sum, corr_h_sum]) # array dim (# of pols, # of thetas X # of phis, # of rs, # of rays) 
         if self.use_ele_max:
             sky_map_ele = np.reshape(sky_map, self.table_pol_shape) # array dim (# of pols, # of thetas, # of phis, # of rs, # of rays)
             self.coval_ele_max = np.nanmax(sky_map_ele, axis = 2) # array dim (# of pols, # of thetas, # of rs, # of rays)
@@ -128,7 +131,7 @@ class py_interferometers:
         self.coord_max = np.full(self.coord_shape, np.nan, dtype = float) # array dim (# of pols, theta and phi, # of rs, # of rays)
         self.coord_max[:, 0] = self.theta[coord // self.num_phis]
         self.coord_max[:, 1] = self.phi[coord % self.num_phis]
-        del sky_map, coord
+        del corr_v_sum, corr_h_sum, sky_map, coord
 
     def get_padded_wf(self, pad_v):
 
@@ -155,7 +158,7 @@ class py_interferometers:
         # hilbert
         self.corr = np.abs(hilbert(self.corr, axis = 0))
     
-    def get_sky_map(self, pad_v, weights = None, wei_pol = None):
+    def get_sky_map(self, pad_v, weights = None):
 
         #zero pad
         self.get_padded_wf(pad_v)
@@ -163,10 +166,8 @@ class py_interferometers:
         # correlation
         self.get_cross_correlation()
 
-        self.wei_pol = np.full((self.num_pols), 1, dtype = float)
         if weights is not None:
-            self.corr *= weights
-            self.wei_pol = wei_pol
+           self.corr *= weights
 
         # coval
         self.get_coval_sample()
@@ -176,14 +177,13 @@ class py_interferometers:
 def get_products(weights, pairs, v_pairs_len):
    
     wei_pairs = weights[pairs[:, 0]] * weights[pairs[:, 1]]
-    wei_pol = np.full((num_pols, weights.shape[1]), np.nan, dtype = float)
-    wei_pol[0] = np.nansum(wei_pairs[:v_pairs_len], axis = 0)
-    wei_pol[1] = np.nansum(wei_pairs[v_pairs_len:], axis = 0)
-    wei_pairs[:v_pairs_len] /= wei_pol[0][np.newaxis, :]
-    wei_pairs[v_pairs_len:] /= wei_pol[1][np.newaxis, :]
-    wei_pol /= np.nansum(wei_pol, axis = 0)[np.newaxis, :]
+    wei_v_sum = np.nansum(wei_pairs[:v_pairs_len], axis = 0)
+    wei_h_sum = np.nansum(wei_pairs[v_pairs_len:], axis = 0)
+    wei_pairs[:v_pairs_len] /= wei_v_sum[np.newaxis, :]
+    wei_pairs[v_pairs_len:] /= wei_h_sum[np.newaxis, :]
+    del wei_v_sum, wei_h_sum 
 
-    return wei_pairs, wei_pol
+    return wei_pairs
 
 
 

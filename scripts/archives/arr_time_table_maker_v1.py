@@ -8,7 +8,7 @@ sys.path.append(curr_path+'/../')
 from tools.ara_utility import size_checker
 from tools.ara_sim_load import ara_raytrace_loader
 
-def arr_time_table_loader(Station = None):
+def arr_time_table_loader(Station = None, Year = None):
 
     print('Collecting arrival time starts!')
 
@@ -17,7 +17,7 @@ def arr_time_table_loader(Station = None):
 
     # get posisiton for vertex and antenna
     radius_bin = np.array([41, 170, 300])
-    ara_ray.get_src_trg_position(Station, 2016, radius_bin = radius_bin)
+    ara_ray.get_src_trg_position(Station, Year, radius_bin = radius_bin)
 
     # arrival time table
     path_len, arr_time_table, launch_ang, receipt_ang, reflection_ang, miss, attenuation = ara_ray.get_arrival_time_table() 
@@ -27,7 +27,7 @@ def arr_time_table_loader(Station = None):
     print(f'Output path check:{Output}')
     if not os.path.exists(Output):
         os.makedirs(Output)
-    h5_file_name = f'{Output}arr_time_table_A{Station}.h5'
+    h5_file_name = f'{Output}arr_time_table_A{Station}_Y{Year}.h5'
     hf = h5py.File(h5_file_name, 'w')
     
     #saving result
@@ -49,13 +49,14 @@ def arr_time_table_loader(Station = None):
 
 if __name__ == "__main__":
 
-    if len (sys.argv) < 2:
+    if len (sys.argv) < 3:
         Usage = """
 
     If it is data,
     Usage = python3 %s
 
     <Station ex)3>
+    <Year ex)2018>
 
         """ %(sys.argv[0])
         print(Usage)
@@ -63,8 +64,9 @@ if __name__ == "__main__":
 
     # argv
     station=int(sys.argv[1])
+    year=int(sys.argv[2])
 
-    arr_time_table_loader(Station = station)
+    arr_time_table_loader(Station = station, Year = year)
 
 
 

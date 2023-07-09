@@ -22,6 +22,7 @@ def reco_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm
     # geom. info.
     ara_const = ara_const()
     num_ants = ara_const.USEFUL_CHAN_PER_STATION
+    num_pols = ara_const.POLARIZATION
     del ara_const
 
     # data config
@@ -32,6 +33,7 @@ def reco_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm
         daq_qual_cut_sum = ara_root.daq_cut
         trig_type = ara_root.trig_type
         st = ara_root.station_id
+        yr = ara_root.year
         run = ara_root.run
     else:
         ara_uproot = ara_uproot_loader(Data)
@@ -42,7 +44,7 @@ def reco_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm
         yr = ara_uproot.year
         run = ara_uproot.run
         ara_root = ara_root_loader(Data, Ped, st, yr)
-        del ara_uproot, yr
+        del ara_uproot
 
     # pre quality cut
     if use_l2 == False:
@@ -54,30 +56,35 @@ def reco_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm
 
     # snr info
     run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
-    wei_dat = run_info.get_result_path(file_type = 'snr', verbose = True)
+    wei_key = 'snr'
+    wei_dat = run_info.get_result_path(file_type = wei_key, verbose = True)
     wei_hf = h5py.File(wei_dat, 'r')
-    weights = wei_hf['snr'][:]
-    del run_info, wei_dat, wei_hf
+    if wei_key == 'mf':
+        wei_ant = wei_hf['evt_wise_ant'][:]
+        weights = np.full((num_ants, num_evts), np.nan, dtype = float)
+        weights[:8] = wei_ant[0, :8]
+        weights[8:] = wei_ant[1, 8:]
+        del wei_ant 
+    else:
+        weights = wei_hf['snr'][:]
+    del run_info, wei_key, wei_dat, wei_hf
 
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, verbose = True, use_l2 = use_l2, analyze_blind_dat = analyze_blind_dat, st = st, run = run)
 
     # interferometers
-    ara_int = py_interferometers(wf_int.pad_len, wf_int.dt, st, run = run, get_sub_file = True, verbose = True)
+    ara_int = py_interferometers(wf_int.pad_len, wf_int.dt, st, yr, run = run, get_sub_file = True, verbose = True)
     pairs = ara_int.pairs
     v_pairs_len = ara_int.v_pairs_len
-    radius = ara_int.radius
     num_rads = ara_int.num_rads
     num_ray_sol = ara_int.num_ray_sol
-    num_pols_com = ara_int.num_pols_com
-    num_angs = ara_int.num_angs
-    wei_pairs, wei_pol = get_products(weights, pairs, v_pairs_len)
-    del st, run, pairs, v_pairs_len, weights
+    wei_pairs = get_products(weights, pairs, v_pairs_len)
+    del st, yr, run, pairs, v_pairs_len, weights
 
     # output array  
-    coef = np.full((num_pols_com, num_rads, num_ray_sol, num_evts), np.nan, dtype = float) # pol, rad, sol
-    coord = np.full((num_pols_com, num_angs, num_rads, num_ray_sol, num_evts), np.nan, dtype = float) # pol, thephi, rad, sol
-    del num_pols_com, num_angs, num_rads, num_ray_sol
+    coef = np.full((num_pols, num_rads, num_ray_sol, num_evts), np.nan, dtype = float) # pol, rad, sol
+    coord = np.full((num_pols, 2, num_rads, num_ray_sol, num_evts), np.nan, dtype = float) # pol, thephi, rad, sol
+    del num_pols, num_rads, num_ray_sol
 
     # loop over the events
     for evt in tqdm(range(num_evts), disable = no_tqdm):
@@ -98,18 +105,17 @@ def reco_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()   
 
-        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], wei_pol = wei_pol[:, evt])
+        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt])
         coef[:, :, :, evt] = ara_int.coval_max
         coord[:, :, :, :, evt] = ara_int.coord_max
-        #print(coef[:, 1, 0, evt], coord[:, :, 1, 0, evt])       
-    del ara_root, num_evts, num_ants, wf_int, ara_int, daq_qual_cut_sum, wei_pairs, wei_pol
+        #print(coef[:, :, :, evt], coord[:, :, :, :, evt])       
+    del ara_root, num_evts, num_ants, wf_int, ara_int, daq_qual_cut_sum, wei_pairs
 
     print('Reco collecting is done!')
 
     return {'evt_num':evt_num,
             'trig_type':trig_type,
             'bad_ant':bad_ant,
-            'radius':radius,
             'coef':coef,
             'coord':coord}
 

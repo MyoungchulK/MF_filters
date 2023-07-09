@@ -20,6 +20,7 @@ def reco_sim_collector(Data, Station, Year):
     # const. info.
     ara_const = ara_const()
     num_ants = ara_const.USEFUL_CHAN_PER_STATION
+    num_pols = ara_const.POLARIZATION
     del ara_const
 
     # data config
@@ -27,8 +28,7 @@ def reco_sim_collector(Data, Station, Year):
     ara_root.get_sub_info(Data, get_angle_info = False)
     num_evts = ara_root.num_evts
     entry_num = ara_root.entry_num
-    wf_time = ara_root.wf_time
-    del Year 
+    wf_time = ara_root.wf_time 
  
     # bad antenna
     config = int(get_path_info_v2(Data, '_R', '.txt'))
@@ -46,24 +46,21 @@ def reco_sim_collector(Data, Station, Year):
     del h5_file_name 
 
     # wf analyzer
-    wf_int = wf_analyzer(verbose = True, use_time_pad = True, use_band_pass = True, use_cw = True, st = Station, run = ex_run, new_wf_time = wf_time, sim_path = band_path)
+    wf_int = wf_analyzer(verbose = True, use_time_pad = True, use_band_pass = True, use_cw = True, new_wf_time = wf_time, sim_path = band_path)
     del band_path
 
-    ara_int = py_interferometers(wf_int.pad_len, wf_int.dt, Station, run = ex_run, get_sub_file = True, verbose = True)
-    radius = ara_int.radius
-    num_pols_com = ara_int.num_pols_com
-    num_angs = ara_int.num_angs
+    ara_int = py_interferometers(wf_int.pad_len, wf_int.dt, Station, Year, run = ex_run, get_sub_file = True, verbose = True)
     num_rads = ara_int.num_rads
     num_ray_sol = ara_int.num_ray_sol
     snr_hf = h5py.File(snr_path, 'r')
     snr = snr_hf['snr'][:]
-    wei_pairs, wei_pol = get_products(snr, ara_int.pairs, ara_int.v_pairs_len)
-    del ex_run, snr_path, snr_hf, snr
+    wei_pairs = get_products(snr, ara_int.pairs, ara_int.v_pairs_len)
+    del Year, ex_run, snr_path, snr_hf, snr
 
     # output array
-    coef = np.full((num_pols_com, num_rads, num_ray_sol, num_evts), np.nan, dtype = float) # pol, rad, sol
-    coord = np.full((num_pols_com, num_angs, num_rads, num_ray_sol, num_evts), np.nan, dtype = float) # pol, thephi, rad, sol
-    del num_pols_com, num_angs, num_rads, num_ray_sol
+    coef = np.full((num_pols, num_rads, num_ray_sol, num_evts), np.nan, dtype = float) # pol, rad, sol
+    coord = np.full((num_pols, 2, num_rads, num_ray_sol, num_evts), np.nan, dtype = float) # pol, thephi, rad, sol
+    del num_pols, num_rads, num_ray_sol
 
     # loop over the events
     for evt in tqdm(range(num_evts)):
@@ -72,18 +69,17 @@ def reco_sim_collector(Data, Station, Year):
         wf_v = ara_root.get_rf_wfs(evt)
         for ant in range(num_ants):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_band_pass = True, use_cw = True, evt = evt)
-        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], wei_pol = wei_pol[:, evt])
+        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt])
         coef[:, :, :, evt] = ara_int.coval_max
         coord[:, :, :, :, evt] = ara_int.coord_max
-        #print(coef[:, 1, 0, evt], coord[:, :, 1, 0, evt])
+        #print(coef[:, :, :, evt], coord[:, :, :, :, evt])
         del wf_v
-    del ara_root, num_evts, wf_int, ara_int, num_ants, wf_time, wei_pairs, wei_pol
+    del ara_root, num_evts, wf_int, ara_int, num_ants, wf_time, wei_pairs
 
     print('Reco sim collecting is done!')
 
     return {'entry_num':entry_num,
             'bad_ant':bad_ant,
-            'radius':radius,
             'coef':coef,
             'coord':coord}
 
