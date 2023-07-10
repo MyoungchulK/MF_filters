@@ -435,7 +435,7 @@ class ara_matched_filter:
         self.mf_temp[1, self.good_h_idx + 3] = off_max_idx[self.good_v_len:, h_max_idx[1], self.res_theta_idx[h_max_idx[2]]]
         self.mf_temp_com = np.full(self.mf_param_com_shape, -1, dtype = int) # array dim: (# of temp params (sho, theta, phi, off (16)))
         self.mf_temp_com[:3] = b_max_idx[1:]
-        self.mf_temp_com[3 + self.good_chs] = off_max_idx[self.good_chs, b_max_idx[1], self.res_theta_idx[b_max_idx[2]]]
+        self.mf_temp_com[3 + self.good_chs] = off_max_idx[:, b_max_idx[1], self.res_theta_idx[b_max_idx[2]]]
         if self.use_debug:
             self.mf_temp_val = np.full(self.mf_param_shape, np.nan, dtype = float) # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)))
             self.mf_temp_val[0, :3] = np.array([self.sho_bin[v_max_idx[1]], self.theta_bin[v_max_idx[2]], self.phi_bin[v_max_idx[3]]], dtype = int)
@@ -444,7 +444,7 @@ class ara_matched_filter:
             self.mf_temp_val[1, self.good_h_idx + 3] = self.off_bin[off_max_idx[self.good_v_len:, h_max_idx[1], self.res_theta_idx[h_max_idx[2]]]]
             self.mf_temp_val_com = np.full(self.mf_param_com_shape, -1, dtype = int) # array dim: (# of temp params (sho, theta, phi, off (16)))
             self.mf_temp_val_com[:3] = np.array([self.sho_bin[b_max_idx[1]], self.theta_bin[b_max_idx[2]], self.phi_bin[b_max_idx[3]]], dtype = int)
-            self.mf_temp_val_com[3 + self.good_chs] = self.off_bin[off_max_idx[self.good_chs, b_max_idx[1], self.res_theta_idx[b_max_idx[2]]]]
+            self.mf_temp_val_com[3 + self.good_chs] = self.off_bin[off_max_idx[:, b_max_idx[1], self.res_theta_idx[b_max_idx[2]]]]
             self.mf_search = np.full((self.num_pols_com, self.num_temp_params[0], self.search_map.shape[1], self.search_map.shape[2]), np.nan, dtype = float)
             for t in range(len(self.theta_bin)):
                 for p in range(len(self.phi_bin)):
