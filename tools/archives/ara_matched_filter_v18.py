@@ -53,8 +53,6 @@ class ara_matched_filter:
         self.verbose = verbose
         self.sim_psd_path = sim_psd_path
         self.roll_win = roll_win
-        self.num_pols = num_pols
-        self.num_pols_com = int(self.num_pols + 1)
 
         if get_sub_file:
             self.get_zero_pad()
@@ -149,11 +147,8 @@ class ara_matched_filter:
         if self.verbose:
             print('template:', temp_dat)
         temp_hf = h5py.File(temp_dat, 'r')
-        corr_idx = np.array([0, 1, 2, 4], dtype = int)
         self.temp = temp_hf['temp'][:]
-        self.temp = self.temp[:, :, :, corr_idx]
         self.snr = temp_hf['snr'][:]
-        self.snr = self.snr[:, :, corr_idx]
         if self.use_debug:
             self.temp_ori = np.copy(self.temp)
             temp_rffts = np.fft.rfft(self.temp_ori, axis = 0)
@@ -182,18 +177,16 @@ class ara_matched_filter:
             self.temp_phase_pad_conj = np.angle(self.temp)
         self.sho_bin = temp_hf['sho_bin'][:] # 0, 1
         self.res_bin = temp_hf['res_bin'][:] # -60, -40, -20, -10, 0
-        self.res_bin = self.res_bin[corr_idx]
         self.off_bin = temp_hf['off_bin'][:] # 0, 2, 4
         self.num_temp_params = np.array([len(self.sho_bin), len(self.res_bin), len(self.off_bin)], dtype = int)
         self.sho_range = np.arange(self.num_temp_params[0], dtype = int)
         self.res_range = np.arange(self.num_temp_params[1], dtype = int)
 
-        self.corr_sum_shape = (self.lag_len, self.num_pols_com, self.num_temp_params[0], self.num_arr_params[0], self.num_arr_params[1]) # array dim: (# of lag bins, # of pols, # of sho, # of theta, # of phi)
-        self.norm_sum_shape = (self.num_pols_com, self.num_temp_params[0], self.num_temp_params[1]) # array dim: (# of pols, # of sho, # of res)
+        self.corr_sum_shape = (self.lag_len, num_pols, self.num_temp_params[0], self.num_arr_params[0], self.num_arr_params[1]) # array dim: (# of lag bins, # of pols, # of sho, # of theta, # of phi)
+        self.norm_sum_shape = (num_pols, self.num_temp_params[0], self.num_temp_params[1]) # array dim: (# of pols, # of sho, # of res)
         self.corr_sum_each_pol_shape = (self.lag_len, self.num_temp_params[0], self.num_arr_params[0], self.num_arr_params[1]) # array dim: (# of lag bins, # of sho, # of theta, # of phi)
-        self.mf_param_shape = (self.num_pols, 3 + num_ants // self.num_pols) # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)))
-        self.mf_param_com_shape = (3 + num_ants) # array dim: (# of temp params (sho, theta, phi, off (16)))
-        del corr_idx, run_info, config, temp_dat, temp_hf
+        self.mf_param_shape = (num_pols, 3 + num_ants // num_pols) # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)))
+        del run_info, config, temp_dat, temp_hf
 
         if self.verbose:
             print('template dim:', self.temp.shape)
@@ -204,23 +197,25 @@ class ara_matched_filter:
         ## arrival time table
         rad_con = 1
         ray_con = 0
+        ice_air_tran = 53 # 37 deg. elevaton angle
 
         ## set indexs
-        self.theta_bin = np.array([60, 40, 20, 0, -20, -40, -60], dtype = int)
+        self.theta_bin = np.array([60, 40, 20, 0, 20, 10, 0, -10, -20, -40, -60], dtype = int)
         self.phi_bin = np.array([-150, -90, -30, 30, 90, 150], dtype = int)
         self.num_arr_params = np.array([len(self.theta_bin), len(self.phi_bin)], dtype = int)
-        self.res_theta_idx = np.array([0, 1, 2, 3, 2, 1, 0], dtype = int)        
+        self.res_theta_idx = np.array([0, 1, 2, 4, 2, 3, 4, 3, 2, 1, 0], dtype = int)        
         theta_len = len(self.theta_bin)
         phi_len = len(self.phi_bin)
 
-        ver_theta_idx = (90 - self.theta_bin).astype(int)
-        ver_phi_idx = (self.phi_bin + 180).astype(int)
-        upper_width = np.array([10, 10, 10, 10, 10, 10, 10], dtype = int)
-        bottom_width = np.array([10, 10, 10, 10, 10, 10, 10], dtype = int)
+        ver_theta_idx = np.array([22, 35, 45, 52, 55, 74, 86, 98, 109, 129, 149], dtype = int) 
+        ver_phi_idx = np.array([30, 90, 150, 210, 270, 330], dtype = int)
+        upper_width = np.array([10, 10, 10, 10, 10, 5, 5, 5, 5, 10, 10], dtype = int)
+        bottom_width = np.array([10, 10, 10, 10, 5, 5, 5, 5, 10, 10, 10], dtype = int)
+        ice_air_idx = np.array([1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0], dtype = int)
         phi_width = int(np.abs(ver_phi_idx[1] - ver_phi_idx[0])) // 2
 
         ## load table
-        table_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{self.st}/arr_time_table/arr_time_table_A{self.st}.h5'
+        table_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{self.st}/arr_time_table/arr_time_table_A{self.st}_Y2015.h5'
         if self.verbose:
             print('arrival time table:', table_path)       
         table_hf = h5py.File(table_path, 'r')
@@ -229,7 +224,10 @@ class ara_matched_filter:
         del table_path, table_hf
 
         ## prepare time table and rec angle
-        arr_ice = np.copy(arr_time_table[:, :, rad_con, :, ray_con])
+        arr_ice = np.full((arr_time_table.shape[0], arr_time_table.shape[1], num_ants), np.nan, dtype = float)
+        arr_ice[ice_air_tran:] = arr_time_table[ice_air_tran:, :, rad_con, :, ray_con]
+        arr_air = np.full((arr_time_table.shape[0], arr_time_table.shape[1], num_ants), np.nan, dtype = float)
+        arr_air[:ice_air_tran] = arr_time_table[:ice_air_tran, :, rad_con, :, ray_con]
         rec_avg = np.nanmean(receipt_ang[:, :, rad_con, :, ray_con], axis = 2)
         
         diff_max = np.full((theta_len, phi_len), np.nan, dtype = float)
@@ -251,7 +249,8 @@ class ara_matched_filter:
                 rec_re = rec_avg[:, ver_phi_idx[p] - phi_width:ver_phi_idx[p] + phi_width]
                 rec_bool = np.all((rec_re > self.theta_bin[t] - bottom_width[t], rec_re < self.theta_bin[t] + upper_width[t]), axis = 0)
 
-                arr = np.copy(arr_ice[:, ver_phi_idx[p] - phi_width:ver_phi_idx[p] + phi_width])
+                if ice_air_idx[t] == 0: arr = np.copy(arr_ice[:, ver_phi_idx[p] - phi_width:ver_phi_idx[p] + phi_width])
+                else: arr = np.copy(arr_air[:, ver_phi_idx[p] - phi_width:ver_phi_idx[p] + phi_width])
                 arr[~rec_bool] = np.nan
                 arr_avg = np.nanmean(arr, axis = 2)
                 arr_diff = arr - arr_avg[:, :, np.newaxis]
@@ -269,7 +268,7 @@ class ara_matched_filter:
             print(f'rolling max window: {diff_max_fin} ns')
             print(f'rolling max ceil window: {diff_max_ceil} ns')
             print(f'rolling max ceil bin length: {self.roll_win_idx}')
-        del theta_len, phi_len
+        del theta_len, phi_len, ice_air_tran
 
         if self.use_debug:
             self.diff_max_all = np.transpose(self.diff_max_all, (2, 0, 1))
@@ -283,9 +282,11 @@ class ara_matched_filter:
             self.ver_phi_idx = np.copy(ver_phi_idx)
             self.upper_width = np.copy(upper_width)
             self.bottom_width = np.copy(bottom_width)
+            self.ice_air_idx = np.copy(ice_air_idx)
             self.arr_ice = np.copy(arr_ice)
+            self.arr_air = np.copy(arr_air)
             self.rec_avg = np.copy(rec_avg)
-        del diff_max, arr_time_table, receipt_ang, diff_max_fin, diff_max_ceil, ver_theta_idx, ver_phi_idx, upper_width, bottom_width, phi_width, arr_ice, rec_avg, rad_con, ray_con
+        del diff_max, arr_time_table, receipt_ang, diff_max_fin, diff_max_ceil, ver_theta_idx, ver_phi_idx, upper_width, bottom_width, ice_air_idx, phi_width, arr_ice, arr_air, rec_avg, rad_con, ray_con
 
         if self.verbose:        
             print('arrival time table is on!')
@@ -338,7 +339,6 @@ class ara_matched_filter:
         norm_sum = np.full(self.norm_sum_shape, np.nan, dtype = float) # array dim: (# of pols, # of sho, # of res)
         norm_sum[0] = np.nansum(norm_fac_2nd[:self.good_v_len], axis = 0)
         norm_sum[1] = np.nansum(norm_fac_2nd[self.good_v_len:], axis = 0)
-        norm_sum[2] = np.nansum(norm_fac_2nd, axis = 0)
         norm_sqrt = np.sqrt(norm_sum)
         if self.use_debug:
             self.corr_best_off_idx = np.copy(off_max_idx) # best off-cone match index
@@ -348,17 +348,16 @@ class ara_matched_filter:
             self.norm_sum = np.copy(norm_sum)
             self.norm_sqrt = np.copy(norm_sqrt)
         del corr_max, norm_fac_2nd, norm_sum
+        corr_2nd[:, :self.good_v_len] /= norm_sqrt[0, :, :][np.newaxis, np.newaxis, :, :]
+        corr_2nd[:, self.good_v_len:] /= norm_sqrt[1, :, :][np.newaxis, np.newaxis, :, :]
         if self.use_debug:
             self.corr_norm_no_off = np.copy(corr_2nd)
-            self.corr_norm_no_off[:, :self.good_v_len] /= norm_sqrt[0, :, :][np.newaxis, np.newaxis, :, :]
-            self.corr_norm_no_off[:, self.good_v_len:] /= norm_sqrt[1, :, :][np.newaxis, np.newaxis, :, :]
+        del norm_sqrt
 
         ## rolling max
         corr_roll_max = maximum_filter1d(corr_2nd, axis = 0, size = self.roll_win_idx, mode='constant') # arr dim: (# of lag bins, # of good ants, # of shos, # of ress)
         if self.use_debug:
             self.corr_roll_no_off = np.copy(corr_roll_max) # rolling maximum
-            self.corr_roll_no_off[:, :self.good_v_len] /= norm_sqrt[0, :, :][np.newaxis, np.newaxis, :, :]
-            self.corr_roll_no_off[:, self.good_v_len:] /= norm_sqrt[1, :, :][np.newaxis, np.newaxis, :, :]
         if self.use_debug == False:
             del corr_2nd
 
@@ -394,38 +393,24 @@ class ara_matched_filter:
                             self.corr_sum_indi_roll[:, self.good_chs[ant], :, theta, phi] = corr_ch
                     del arr_idx
                 del corr_ch
-        corr_sum[:, 2] = np.nansum(corr_sum[:, :2], axis = 1)
-        corr_sum /= norm_sqrt[:, :, self.res_theta_idx][np.newaxis, :, :, :, np.newaxis] 
-        if self.use_debug:
-            norm_sqrt_theta = norm_sqrt[:2, :, self.res_theta_idx]
-            self.corr_sum_indi[:, :self.good_v_len] /= norm_sqrt_theta[0, :, :][np.newaxis, np.newaxis, :, :, np.newaxis]
-            self.corr_sum_indi[:, self.good_v_len:] /= norm_sqrt_theta[1, :, :][np.newaxis, np.newaxis, :, :, np.newaxis]
-            self.corr_sum_indi_roll[:, :self.good_v_len] /= norm_sqrt_theta[0, :, :][np.newaxis, np.newaxis, :, :, np.newaxis]
-            self.corr_sum_indi_roll[:, self.good_v_len:] /= norm_sqrt_theta[1, :, :][np.newaxis, np.newaxis, :, :, np.newaxis] 
-            self.corr_sum_indi_off[:self.good_v_len] /= norm_sqrt_theta[0, :, :][np.newaxis, :, :, np.newaxis]
-            self.corr_sum_indi_off[self.good_v_len:] /= norm_sqrt_theta[1, :, :][np.newaxis, :, :, np.newaxis]
+        if self.use_debug: 
             self.corr_roll_sum = np.copy(corr_sum) # sum of each pol
-            del norm_sqrt_theta
         del corr_roll_max
 
         ## max finding
         v_max_idx = np.unravel_index(corr_sum[:, 0].argmax(), self.corr_sum_each_pol_shape) # array dim: (# of lag bins, # of shos, # of thetas, # of phis) 
         h_max_idx = np.unravel_index(corr_sum[:, 1].argmax(), self.corr_sum_each_pol_shape) 
-        b_max_idx = np.unravel_index(corr_sum[:, 2].argmax(), self.corr_sum_each_pol_shape) 
         if self.use_debug:
-            self.corr_roll_sum_peak_idx = np.full((self.num_pols_com, len(self.corr_sum_each_pol_shape)), 0, dtype = int)
+            self.corr_roll_sum_peak_idx = np.full((num_pols, len(self.corr_sum_each_pol_shape)), 0, dtype = int)
             self.corr_roll_sum_peak_idx[0] = v_max_idx 
             self.corr_roll_sum_peak_idx[1] = h_max_idx 
-            self.corr_roll_sum_peak_idx[2] = b_max_idx 
-            self.mf_wf_fin = np.full((self.lag_len, self.num_pols_com), np.nan, dtype = float)
+            self.mf_wf_fin = np.full((self.lag_len, num_pols), np.nan, dtype = float)
             self.mf_wf_fin[:, 0] = corr_sum[:, 0, v_max_idx[1], v_max_idx[2], v_max_idx[3]]
             self.mf_wf_fin[:, 1] = corr_sum[:, 1, h_max_idx[1], h_max_idx[2], h_max_idx[3]]
-            self.mf_wf_fin[:, 2] = corr_sum[:, 2, b_max_idx[1], b_max_idx[2], b_max_idx[3]]
 
-        self.mf_max = np.full((self.num_pols_com), np.nan, dtype = float)
+        self.mf_max = np.full((num_pols), np.nan, dtype = float)
         self.mf_max[0] = corr_sum[:, 0][v_max_idx]
         self.mf_max[1] = corr_sum[:, 1][h_max_idx]
-        self.mf_max[2] = corr_sum[:, 2][b_max_idx]
         self.mf_max_each = np.nanmax(corr_sum, axis = 0) # array dim: (# of pols, # of shos, # of thetas, # of phis)
         self.mf_temp_off = self.off_bin[off_max_idx]
         self.mf_temp = np.full(self.mf_param_shape, -1, dtype = int) # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)))
@@ -433,76 +418,63 @@ class ara_matched_filter:
         self.mf_temp[0, self.good_v_idx + 3] = off_max_idx[:self.good_v_len, v_max_idx[1], self.res_theta_idx[v_max_idx[2]]]
         self.mf_temp[1, :3] = h_max_idx[1:]
         self.mf_temp[1, self.good_h_idx + 3] = off_max_idx[self.good_v_len:, h_max_idx[1], self.res_theta_idx[h_max_idx[2]]]
-        self.mf_temp_com = np.full(self.mf_param_com_shape, -1, dtype = int) # array dim: (# of temp params (sho, theta, phi, off (16)))
-        self.mf_temp_com[:3] = b_max_idx[1:]
-        self.mf_temp_com[3 + self.good_chs] = off_max_idx[self.good_chs, b_max_idx[1], self.res_theta_idx[b_max_idx[2]]]
         if self.use_debug:
             self.mf_temp_val = np.full(self.mf_param_shape, np.nan, dtype = float) # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)))
             self.mf_temp_val[0, :3] = np.array([self.sho_bin[v_max_idx[1]], self.theta_bin[v_max_idx[2]], self.phi_bin[v_max_idx[3]]], dtype = int)
             self.mf_temp_val[0, self.good_v_idx + 3] = self.off_bin[off_max_idx[:self.good_v_len, v_max_idx[1], self.res_theta_idx[v_max_idx[2]]]]
             self.mf_temp_val[1, :3] = np.array([self.sho_bin[h_max_idx[1]], self.theta_bin[h_max_idx[2]], self.phi_bin[h_max_idx[3]]], dtype = int)
             self.mf_temp_val[1, self.good_h_idx + 3] = self.off_bin[off_max_idx[self.good_v_len:, h_max_idx[1], self.res_theta_idx[h_max_idx[2]]]]
-            self.mf_temp_val_com = np.full(self.mf_param_com_shape, -1, dtype = int) # array dim: (# of temp params (sho, theta, phi, off (16)))
-            self.mf_temp_val_com[:3] = np.array([self.sho_bin[b_max_idx[1]], self.theta_bin[b_max_idx[2]], self.phi_bin[b_max_idx[3]]], dtype = int)
-            self.mf_temp_val_com[3 + self.good_chs] = self.off_bin[off_max_idx[self.good_chs, b_max_idx[1], self.res_theta_idx[b_max_idx[2]]]]
-            self.mf_search = np.full((self.num_pols_com, self.num_temp_params[0], self.search_map.shape[1], self.search_map.shape[2]), np.nan, dtype = float)
+            self.mf_search = np.full((num_pols, self.num_temp_params[0], self.search_map.shape[1], self.search_map.shape[2]), np.nan, dtype = float)
             for t in range(len(self.theta_bin)):
                 for p in range(len(self.phi_bin)):
                     map_idx = np.logical_and(self.search_map[0] == t, self.search_map[1] == p)
-                    for o in range(self.num_pols_com):
+                    for o in range(num_pols):
                         for s in range(self.num_temp_params[0]):
                             self.mf_search[o, s][map_idx] = self.mf_max_each[o, s, t, p]
 
-            self.temp_ori_best = np.full((self.temp_wf_len_ori, num_ants, 2), np.nan, dtype = float)
+            self.temp_ori_best = np.full((self.temp_wf_len_ori, num_ants), np.nan, dtype = float)
             self.temp_ori_shift_best = np.copy(self.temp_ori_best)
             #self.temp_ori_arr_shift_best = np.copy(self.temp_ori_best)
-            self.temp_rfft_best = np.full((self.temp_fft_len_ori, num_ants, 2), np.nan, dtype = float)
-            self.temp_phase_best = np.full((self.temp_fft_len_ori, num_ants, 2), np.nan, dtype = float)
-            self.corr_best = np.full((self.lag_len, num_ants, 2), np.nan, dtype = float)
-            self.corr_temp_dat_best = np.full((self.temp_fft_len_pad, num_ants, 2), np.nan, dtype = float)
+            self.temp_rfft_best = np.full((self.temp_fft_len_ori, num_ants), np.nan, dtype = float)
+            self.temp_phase_best = np.full((self.temp_fft_len_ori, num_ants), np.nan, dtype = float)
+            self.corr_best = np.full((self.lag_len, num_ants), np.nan, dtype = float)
+            self.corr_temp_dat_best = np.full((self.temp_fft_len_pad, num_ants), np.nan, dtype = float)
             self.corr_temp_dat_psd_best = np.copy(self.corr_temp_dat_best)
             self.corr_arr_best = np.copy(self.corr_best)
-            for com in range(2):
-              ant_1 = 0
-              for ant in range(num_ants):
+            ant_1 = 0
+            for ant in range(num_ants):
                 if ant in self.good_chs:
-                    if com == 0:
-                        sho_best_idx = self.mf_temp[ant // 8, 0]
-                        res_best_idx = self.mf_temp[ant // 8, 1]
-                        phi_best_idx = self.mf_temp[ant // 8, 2]
-                        off_best_idx = self.mf_temp[ant // 8, 3 + ant % 8]
-                    else:
-                        sho_best_idx = self.mf_temp_com[0]
-                        res_best_idx = self.mf_temp_com[1]
-                        phi_best_idx = self.mf_temp_com[2]
-                        off_best_idx = self.mf_temp_com[3 + ant]
+                    sho_best_idx = self.mf_temp[ant // 8, 0]
+                    res_best_idx = self.mf_temp[ant // 8, 1]
+                    phi_best_idx = self.mf_temp[ant // 8, 2]
+                    off_best_idx = self.mf_temp[ant // 8, 3 + ant % 8]
                     arr_idx = self.arr_time_diff_idx[ant_1, res_best_idx, phi_best_idx]
-                    self.temp_ori_best[:, ant, com] = self.temp_ori[:, ant, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx]
-                    self.temp_rfft_best[:, ant, com] = self.temp_rfft_ori[:, ant, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx]
-                    self.temp_phase_best[:, ant, com] = self.temp_phase_ori[:, ant, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx]
-                    self.corr_best[:, ant, com] = self.corr[:, ant_1, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx] / self.norm_sqrt[ant // 8, sho_best_idx, self.res_theta_idx[res_best_idx]]
-                    self.corr_temp_dat_best[:, ant, com] = np.abs(self.corr_temp_dat[:, ant_1, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx])
-                    self.corr_temp_dat_psd_best[:, ant, com] = np.abs(self.corr_temp_dat_psd[:, ant_1, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx])
-                    shift_idx = int(self.lags[np.nanargmax(self.corr_best[:, ant, com])] / self.dt)
+                    self.temp_ori_best[:, ant] = self.temp_ori[:, ant, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx]
+                    self.temp_rfft_best[:, ant] = self.temp_rfft_ori[:, ant, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx]
+                    self.temp_phase_best[:, ant] = self.temp_phase_ori[:, ant, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx]
+                    self.corr_best[:, ant] = self.corr[:, ant_1, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx] / self.norm_sqrt[ant // 8, sho_best_idx, self.res_theta_idx[res_best_idx]]
+                    self.corr_temp_dat_best[:, ant] = np.abs(self.corr_temp_dat[:, ant_1, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx])
+                    self.corr_temp_dat_psd_best[:, ant] = np.abs(self.corr_temp_dat_psd[:, ant_1, sho_best_idx, self.res_theta_idx[res_best_idx], off_best_idx])
+                    shift_idx = int(self.lags[np.nanargmax(self.corr_best[:, ant])] / self.dt)
                     if shift_idx > 0:
-                        self.temp_ori_shift_best[shift_idx:, ant, com] = self.temp_ori_best[:-shift_idx, ant, com]
+                        self.temp_ori_shift_best[shift_idx:, ant] = self.temp_ori_best[:-shift_idx, ant]
                     elif shift_idx < 0:
-                        self.temp_ori_shift_best[:shift_idx, ant, com] = self.temp_ori_best[-shift_idx:, ant, com]
+                        self.temp_ori_shift_best[:shift_idx, ant] = self.temp_ori_best[-shift_idx:, ant]
                     else:
-                        self.temp_ori_shift_best[:, ant, com] = self.temp_ori_best[:, ant, com]
+                        self.temp_ori_shift_best[:, ant] = self.temp_ori_best[:, ant]
                     if arr_idx > 0:
-                        self.corr_arr_best[:-arr_idx, ant, com] = corr_2nd[arr_idx:, ant_1, sho_best_idx, self.res_theta_idx[res_best_idx]]
+                        self.corr_arr_best[:-arr_idx, ant] = corr_2nd[arr_idx:, ant_1, sho_best_idx, self.res_theta_idx[res_best_idx]]
                     elif arr_idx < 0:
-                        self.corr_arr_best[-arr_idx:, ant, com] = corr_2nd[:arr_idx, ant_1, sho_best_idx, self.res_theta_idx[res_best_idx]]
+                        self.corr_arr_best[-arr_idx:, ant] = corr_2nd[:arr_idx, ant_1, sho_best_idx, self.res_theta_idx[res_best_idx]]
                     else:
-                        self.corr_arr_best[:, ant, com] = corr_2nd[:, ant_1, sho_best_idx, self.res_theta_idx[res_best_idx]]
+                        self.corr_arr_best[:, ant] = corr_2nd[:, ant_1, sho_best_idx, self.res_theta_idx[res_best_idx]]
                     del sho_best_idx, res_best_idx, off_best_idx, arr_idx, shift_idx
                     ant_1 += 1
             self.corr_roll_best = maximum_filter1d(self.corr_best, axis = 0, size = self.roll_win_idx, mode='constant')
             self.corr_arr_roll_best = maximum_filter1d(self.corr_arr_best, axis = 0, size = self.roll_win_idx, mode='constant')
         del corr_sum, off_max_idx
         if self.use_debug == False:
-            del v_max_idx, h_max_idx, b_max_idx
+            del v_max_idx, h_max_idx
         if self.use_debug:
             del corr_2nd
 

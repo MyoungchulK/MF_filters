@@ -19,6 +19,7 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
     # geom. info.
     ara_const = ara_const()
     num_ants = ara_const.USEFUL_CHAN_PER_STATION
+    num_pols = ara_const.POLARIZATION
     del ara_const
 
     # data config
@@ -60,17 +61,13 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
     num_temp_params = ara_mf.num_temp_params
     num_arr_params = ara_mf.num_arr_params
     mf_param_shape = ara_mf.mf_param_shape
-    mf_param_com_shape = ara_mf.mf_param_com_shape
-    num_pols = ara_mf.num_pols
-    num_pols_com = ara_mf.num_pols_com
     del st, run
      
-    mf_max = np.full((num_pols_com, num_evts), np.nan, dtype = float) # array dim: (# of pols, # of evts)
-    mf_max_each = np.full((num_pols_com, num_temp_params[0], num_arr_params[0], num_arr_params[1], num_evts), np.nan, dtype = float) # array dim: (# of pols, # of shos, # of thetas, # of phis, # of evts)
+    mf_max = np.full((num_pols, num_evts), np.nan, dtype = float) # array dim: (# of pols, # of evts)
+    mf_max_each = np.full((num_pols, num_temp_params[0], num_arr_params[0], num_arr_params[1], num_evts), np.nan, dtype = float) # array dim: (# of pols, # of shos, # of thetas, # of phis, # of evts)
     mf_temp = np.full((num_pols, mf_param_shape[1], num_evts), -1, dtype = int) # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)), # of evts) 
-    mf_temp_com = np.full((mf_param_com_shape, num_evts), -1, dtype = int) # array dim: (# of temp params (sho, theta, phi, off (8)), # of evts) 
     mf_temp_off = np.full((good_ch_len, num_temp_params[0], num_temp_params[1], num_evts), np.nan, dtype = float) #  arr dim: (# of good ants, # of shos, # of ress)
-    del num_pols, num_pols_com, mf_param_shape, mf_param_com_shape, good_ch_len, num_temp_params, num_arr_params
+    del num_pols, mf_param_shape, good_ch_len, num_temp_params, num_arr_params
 
     # loop over the events
     for evt in tqdm(range(num_evts), disable = no_tqdm):
@@ -95,7 +92,6 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
         mf_max[:, evt] = ara_mf.mf_max
         mf_max_each[:, :, :, :, evt] = ara_mf.mf_max_each
         mf_temp[:, :, evt] = ara_mf.mf_temp
-        mf_temp_com[:, evt] = ara_mf.mf_temp_com
         mf_temp_off[:, :, :, evt] = ara_mf.mf_temp_off
         #print(mf_max[:, evt], mf_temp[:, :, evt])
     del ara_root, num_evts, num_ants, wf_int, ara_mf, daq_qual_cut_sum
@@ -108,7 +104,6 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
             'mf_max':mf_max,
             'mf_max_each':mf_max_each,
             'mf_temp':mf_temp,
-            'mf_temp_com':mf_temp_com,
             'mf_temp_off':mf_temp_off}
 
 

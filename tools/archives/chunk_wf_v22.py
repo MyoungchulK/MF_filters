@@ -131,7 +131,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     testbed_freq_range = cw_testbed.useful_freq_range_debug
 
     # interferometers
-    ara_int = py_interferometers(pad_len, dt[0], st, run = run, use_debug = True, get_sub_file = True, verbose = True)
+    ara_int = py_interferometers(pad_len, dt[0], st, year, run = run, use_debug = True, get_sub_file = True, verbose = True)
     pairs = ara_int.pairs
     v_pairs_len = ara_int.v_pairs_len    
     lags = ara_int.lags
@@ -458,7 +458,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         bp_coef[:, :, :, evt] = ara_int.coval_max
         bp_coord[:, :, :, :, evt] = ara_int.coord_max       
 
-        print(wei_pairs[:, sel_entries[evt]], wei_pol[:, sel_entries[evt]]) 
+        print(wei_pairs[:, sel_entries[evt]], wei_pol = wei_pol[:, sel_entries[evt]]) 
         
         # reco w/ cw wf
         for ant in range(num_ants):
@@ -515,7 +515,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
 
     wf_int = wf_analyzer(use_time_pad = True, use_freq_pad = True, use_band_pass = True, use_rfft = True, use_cw = True, verbose = True, analyze_blind_dat = analyze_blind_dat, st = st, run = run)
     ara_mf = ara_matched_filter(st, run, wf_int.dt, wf_int.pad_len, get_sub_file = True, use_debug = True, verbose = True)
-    mf_param_com_shape = ara_mf.mf_param_com_shape
     mf_theta_bin = ara_mf.theta_bin
     mf_phi_bin = ara_mf.phi_bin
     search_map = ara_mf.search_map
@@ -553,28 +552,26 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     mf_corr_best_off_ang = np.copy(mf_corr_best_off_idx)
     mf_corr_no_off = np.full((ara_mf.lag_len, good_ch_len, temp_param[0], temp_param[1], sel_evt_len), np.nan, dtype = float)
     mf_corr_roll_no_off = np.full((ara_mf.lag_len, good_ch_len, temp_param[0], temp_param[1], sel_evt_len), np.nan, dtype = float)
-    mf_corr_roll_sum =  np.full((ara_mf.lag_len, num_pols_com, temp_param[0], arr_param[0], arr_param[1], sel_evt_len), np.nan, dtype = float)
-    mf_corr_roll_sum_peak_idx = np.full((num_pols_com, 4, sel_evt_len), np.nan, dtype = float)
+    mf_corr_roll_sum =  np.full((ara_mf.lag_len, num_pols, temp_param[0], arr_param[0], arr_param[1], sel_evt_len), np.nan, dtype = float)
+    mf_corr_roll_sum_peak_idx = np.full((num_pols, 4, sel_evt_len), np.nan, dtype = float)
     mf_corr_sum_indi = np.full((ara_mf.lag_len, num_ants, temp_param[0], arr_param[0], arr_param[1], sel_evt_len), np.nan, dtype = float)
     mf_corr_sum_indi_roll = np.copy(mf_corr_sum_indi)
     mf_corr_sum_indi_off = np.full((num_ants, temp_param[0], arr_param[0], arr_param[1], sel_evt_len), np.nan, dtype = float)
-    mf_wf_fin = np.full((ara_mf.lag_len, num_pols_com, sel_evt_len), np.nan, dtype = float)
-    mf_max = np.full((num_pols_com, sel_evt_len), np.nan, dtype = float)
+    mf_wf_fin = np.full((ara_mf.lag_len, num_pols, sel_evt_len), np.nan, dtype = float)
+    mf_max = np.full((num_pols, sel_evt_len), np.nan, dtype = float)
     mf_temp_idx = np.full((num_pols, mf_param_shape[1], sel_evt_len), -1, dtype = int)
     mf_temp = np.full((num_pols, mf_param_shape[1], sel_evt_len), np.nan, dtype = float)
-    mf_temp_com_idx = np.full((mf_param_com_shape, sel_evt_len), -1, dtype = int)
-    mf_temp_com = np.full((mf_param_com_shape, sel_evt_len), np.nan, dtype = float)
-    mf_max_each = np.full((num_pols_com, temp_param[0], arr_param[0], arr_param[1], sel_evt_len), np.nan, dtype = float)
-    mf_temp_ori_best = np.full((temp_wf_len, num_ants, 2, sel_evt_len), np.nan, dtype = float)
-    mf_search = np.full((num_pols_com, temp_param[0], search_map.shape[1], search_map.shape[2], sel_evt_len), np.nan, dtype = float)
+    mf_max_each = np.full((num_pols, temp_param[0], arr_param[0], arr_param[1], sel_evt_len), np.nan, dtype = float)
+    mf_temp_ori_best = np.full((temp_wf_len, num_ants, sel_evt_len), np.nan, dtype = float)
+    mf_search = np.full((num_pols, temp_param[0], search_map.shape[1], search_map.shape[2], sel_evt_len), np.nan, dtype = float)
     mf_temp_ori_shift_best = np.copy(mf_temp_ori_best)
-    mf_temp_rfft_best = np.full((temp_fft_len, num_ants, 2, sel_evt_len), np.nan, dtype = float) 
-    mf_temp_phase_best = np.full((temp_fft_len, num_ants, 2, sel_evt_len), np.nan, dtype = float) 
-    mf_corr_best = np.full((ara_mf.lag_len, num_ants, 2, sel_evt_len), np.nan, dtype = float)
+    mf_temp_rfft_best = np.full((temp_fft_len, num_ants, sel_evt_len), np.nan, dtype = float) 
+    mf_temp_phase_best = np.full((temp_fft_len, num_ants, sel_evt_len), np.nan, dtype = float) 
+    mf_corr_best = np.full((ara_mf.lag_len, num_ants, sel_evt_len), np.nan, dtype = float)
     mf_corr_arr_best = np.copy(mf_corr_best)
     mf_corr_roll_best = np.copy(mf_corr_best)
     mf_corr_arr_roll_best = np.copy(mf_corr_best)
-    mf_corr_temp_dat_best = np.full((temp_fft_len_pad, num_ants, 2, sel_evt_len), np.nan, dtype = float)
+    mf_corr_temp_dat_best = np.full((temp_fft_len_pad, num_ants, sel_evt_len), np.nan, dtype = float)
     mf_corr_temp_dat_psd_best = np.copy(mf_corr_temp_dat_best)
 
     for evt in tqdm(range(sel_evt_len)):
@@ -604,10 +601,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         mf_max_each[:, :, :, :, evt] = ara_mf.mf_max_each
         mf_temp_idx[:, :, evt] = ara_mf.mf_temp
         mf_temp[:, :, evt] = ara_mf.mf_temp_val
-        mf_temp_com_idx[:, evt] = ara_mf.mf_temp_com
-        mf_temp_com[:, evt] = ara_mf.mf_temp_val_com
         print(mf_temp[:, :, evt])
-        print(mf_temp_com[:, evt])
         mf_corr_no_hill[:, :, :, :, :, evt] = ara_mf.corr_no_hill    
         mf_corr_hill[:, :, :, :, :, evt] = ara_mf.corr_hill    
         mf_corr[:, :, :, :, :, evt] = ara_mf.corr    
@@ -627,18 +621,18 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         mf_corr_sum_indi_roll[:, :, :, :, :, evt] = ara_mf.corr_sum_indi_roll
         mf_corr_sum_indi_off[:, :, :, :, evt] = ara_mf.corr_sum_indi_off
         mf_wf_fin[:, :, evt] = ara_mf.mf_wf_fin
-        mf_temp_ori_best[:, :, :, evt] =  ara_mf.temp_ori_best
-        mf_temp_ori_shift_best[:, :, :, evt] = ara_mf.temp_ori_shift_best
-        mf_temp_rfft_best[:, :, :, evt] = ara_mf.temp_rfft_best
-        mf_temp_phase_best[:, :, :, evt] = ara_mf.temp_phase_best
-        mf_corr_best[:, :, :, evt] = ara_mf.corr_best
-        mf_corr_arr_best[:, :, :, evt] = ara_mf.corr_arr_best
-        mf_corr_roll_best[:, :, :, evt] = ara_mf.corr_roll_best
-        mf_corr_arr_roll_best[:, :, :, evt] = ara_mf.corr_arr_roll_best
-        mf_corr_temp_dat_best[:, :, :, evt] = ara_mf.corr_temp_dat_best
-        mf_corr_temp_dat_psd_best[:, :, :, evt] = ara_mf.corr_temp_dat_psd_best
+        mf_temp_ori_best[:, :, evt] =  ara_mf.temp_ori_best
+        mf_temp_ori_shift_best[:, :, evt] = ara_mf.temp_ori_shift_best
+        mf_temp_rfft_best[:, :, evt] = ara_mf.temp_rfft_best
+        mf_temp_phase_best[:, :, evt] = ara_mf.temp_phase_best
+        mf_corr_best[:, :, evt] = ara_mf.corr_best
+        mf_corr_arr_best[:, :, evt] = ara_mf.corr_arr_best
+        mf_corr_roll_best[:, :, evt] = ara_mf.corr_roll_best
+        mf_corr_arr_roll_best[:, :, evt] = ara_mf.corr_arr_roll_best
+        mf_corr_temp_dat_best[:, :, evt] = ara_mf.corr_temp_dat_best
+        mf_corr_temp_dat_psd_best[:, :, evt] = ara_mf.corr_temp_dat_psd_best
         mf_search[:, :, :, :, evt] = ara_mf.mf_search
-    """
+
     from tools.ara_csw import ara_csw
 
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, verbose = True, analyze_blind_dat = analyze_blind_dat, st = st, run = run)
@@ -736,7 +730,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         csw_cdf[:, :, :, evt] = ara_csw.cdf
         csw_cdf_time[:, :, :, evt] = ara_csw.cdf_time
         csw_cdf_ks[:, :, :, evt] = ara_csw.cdf_ks
-    """
+
 
     print('WF collecting is done!')
 
@@ -896,8 +890,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'mf_max_each':mf_max_each,
             'mf_temp':mf_temp,
             'mf_temp_idx':mf_temp_idx,
-            'mf_temp_com':mf_temp_com,
-            'mf_temp_com_idx':mf_temp_com_idx,
             'mf_temp_ori_best':mf_temp_ori_best,
             'mf_temp_ori_shift_best':mf_temp_ori_shift_best,
             'mf_temp_rfft_best':mf_temp_rfft_best,
@@ -908,47 +900,47 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'mf_corr_arr_roll_best':mf_corr_arr_roll_best,
             'mf_corr_temp_dat_best':mf_corr_temp_dat_best,
             'mf_corr_temp_dat_psd_best':mf_corr_temp_dat_psd_best,
-            'mf_search':mf_search}#,
-            #'time_pad':time_pad,
-            #'arr_table':arr_table,
-            #'arr_delay':arr_delay,
-            #'corf_r_max':corf_r_max,
-            #'coef_r_max_idx':coef_r_max_idx,
-            #'coord_r_max_idx':coord_r_max_idx,
-            #'sc_rms':sc_rms,
-            #'sc_freq_amp':sc_freq_amp,
-            #'sc_amp':sc_amp,
-            #'sc_freq_phase':sc_freq_phase,
-            #'sc_phase':sc_phase,
-            #'csw_int_sc_freqs':csw_int_sc_freqs,
-            #'csw_int_sc_phases':csw_int_sc_phases,
-            #'csw_dd_fft_vs':csw_dd_fft_vs,
-            #'csw_dd_wf_ts':csw_dd_wf_ts,
-            #'csw_dd_wf_vs':csw_dd_wf_vs,
-            #'csw_shift_time':csw_shift_time,
-            #'csw_shift_dd_wf':csw_shift_dd_wf,
-            #'csw_bool_pad':csw_bool_pad,
-            #'csw_norm_pad':csw_norm_pad,
-            #'csw_zero_pad':csw_zero_pad,
-            #'csw_wf':csw_wf,
-            #'csw_wf_wo_dd':csw_wf_wo_dd,
-            #'csw_wf_norm_wo_dd':csw_wf_norm_wo_dd,
-            #'csw_hill':csw_hill,
-            #'csw_wf_p2p':csw_wf_p2p,
-            #'csw_wf_p2p_time':csw_wf_p2p_time,
-            #'csw_sort':csw_sort,
-            #'csw_cdf':csw_cdf,
-            #'csw_cdf_time':csw_cdf_time,
-            #'csw_cdf_ks':csw_cdf_ks,
-            #'hill_max_idx':hill_max_idx,
-            #'hill_max':hill_max,
-            #'snr_csw':snr_csw,
-            #'cdf_avg':cdf_avg,
-            #'slope':slope,
-            #'intercept':intercept,
-            #'r_value':r_value,
-            #'p_value':p_value,
-            #'std_err':std_err,
-            #'ks':ks,
-            #'nan_flag':nan_flag}
+            'mf_search':mf_search,
+            'time_pad':time_pad,
+            'arr_table':arr_table,
+            'arr_delay':arr_delay,
+            'corf_r_max':corf_r_max,
+            'coef_r_max_idx':coef_r_max_idx,
+            'coord_r_max_idx':coord_r_max_idx,
+            'sc_rms':sc_rms,
+            'sc_freq_amp':sc_freq_amp,
+            'sc_amp':sc_amp,
+            'sc_freq_phase':sc_freq_phase,
+            'sc_phase':sc_phase,
+            'csw_int_sc_freqs':csw_int_sc_freqs,
+            'csw_int_sc_phases':csw_int_sc_phases,
+            'csw_dd_fft_vs':csw_dd_fft_vs,
+            'csw_dd_wf_ts':csw_dd_wf_ts,
+            'csw_dd_wf_vs':csw_dd_wf_vs,
+            'csw_shift_time':csw_shift_time,
+            'csw_shift_dd_wf':csw_shift_dd_wf,
+            'csw_bool_pad':csw_bool_pad,
+            'csw_norm_pad':csw_norm_pad,
+            'csw_zero_pad':csw_zero_pad,
+            'csw_wf':csw_wf,
+            'csw_wf_wo_dd':csw_wf_wo_dd,
+            'csw_wf_norm_wo_dd':csw_wf_norm_wo_dd,
+            'csw_hill':csw_hill,
+            'csw_wf_p2p':csw_wf_p2p,
+            'csw_wf_p2p_time':csw_wf_p2p_time,
+            'csw_sort':csw_sort,
+            'csw_cdf':csw_cdf,
+            'csw_cdf_time':csw_cdf_time,
+            'csw_cdf_ks':csw_cdf_ks,
+            'hill_max_idx':hill_max_idx,
+            'hill_max':hill_max,
+            'snr_csw':snr_csw,
+            'cdf_avg':cdf_avg,
+            'slope':slope,
+            'intercept':intercept,
+            'r_value':r_value,
+            'p_value':p_value,
+            'std_err':std_err,
+            'ks':ks,
+            'nan_flag':nan_flag}
 
