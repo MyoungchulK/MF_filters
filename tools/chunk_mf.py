@@ -68,7 +68,7 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
     mf_max = np.full((num_pols_com, num_evts), np.nan, dtype = float) # array dim: (# of pols, # of evts)
     mf_max_each = np.full((num_pols_com, num_temp_params[0], num_arr_params[0], num_arr_params[1], num_evts), np.nan, dtype = float) # array dim: (# of pols, # of shos, # of thetas, # of phis, # of evts)
     mf_temp = np.full((num_pols, mf_param_shape[1], num_evts), -1, dtype = int) # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)), # of evts) 
-    mf_temp_com = np.full((mf_param_com_shape, num_evts), -1, dtype = int) # array dim: (# of temp params (sho, theta, phi, off (8)), # of evts) 
+    mf_temp_com = np.full((mf_param_com_shape, num_evts), -1, dtype = int) # array dim: (# of temp params (sho, theta, phi, off (16)), # of evts) 
     mf_temp_off = np.full((good_ch_len, num_temp_params[0], num_temp_params[1], num_evts), np.nan, dtype = float) #  arr dim: (# of good ants, # of shos, # of ress)
     del num_pols, num_pols_com, mf_param_shape, mf_param_com_shape, good_ch_len, num_temp_params, num_arr_params
 

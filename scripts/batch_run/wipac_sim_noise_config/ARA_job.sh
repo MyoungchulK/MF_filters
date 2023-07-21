@@ -6,7 +6,7 @@ st=$1
 run=$2
 sim_run=$3
 setup=/home/mkim/analysis/MF_filters/sim/ARA0${st}/sim_${key}_setup_full/${key}_A${st}_R${run}.txt
-user_path=/misc/disk19/users/
+user_path=/misc/disk20/users/
 if [ -d "$user_path" ]; then
     echo "There is ${user_path}"
 else
