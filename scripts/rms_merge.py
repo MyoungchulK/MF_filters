@@ -10,9 +10,14 @@ from tools.ara_run_manager import file_sorter
 from tools.ara_utility import size_checker
 
 Station = int(sys.argv[1])
+rms_type = ''
+if if len (sys.argv) == 3:
+    rms_type = str(sys.argv[2])
+    rms_type += '_'
+print('rms type:', rms_type)
 
 # sort
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/rms_sim/*noise*'
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/rms_{rms_type}sim/*noise*'
 d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 del d_run_range
 
@@ -34,7 +39,7 @@ for r in tqdm(range(len(d_run_tot))):
     rms_tot[:, :, r] = hf['rms'][:]
     del hf
 
-output_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/rms_sim_merge/'
+output_path = os.path.expandvars("$OUTPUT_PATH") + f'/OMF_filter/ARA0{Station}/rms_{rms_type}sim_merge/'
 if not os.path.exists(output_path):
     os.makedirs(output_path)
 
@@ -47,7 +52,7 @@ for c in range(num_configs):
     rms_mean = np.nanmean(rms_c, axis = 1)
     del idx, rms_c
 
-    file_name = f'{output_path}rms_A{Station}_R{c + 1}.h5'
+    file_name = f'{output_path}rms_{rms_type}A{Station}_R{c + 1}.h5'
     hf = h5py.File(file_name, 'w')
     hf.create_dataset('rms_mean', data=rms_mean, compression="gzip", compression_opts=9)
     hf.close()

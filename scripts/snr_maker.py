@@ -25,20 +25,27 @@ def main(Station, Data):
     #    print('already there!!', snr_path)
     #    return
 
+    banila_key = 'banila'
+    if Data.find(banila_key) != -1:
+        banila_key += '_'
+        pass
+    else:
+        banila_key = ''
+
     if Station == 2: num_configs = 7
     if Station == 3: num_configs = 9
 
-    r_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/rms_sim_merge/'
+    r_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/rms_{banila_key}sim_merge/'
     rms_mean = np.full((16, num_configs), np.nan, dtype = float)
     for c in range(num_configs):
-        file_name = f'{r_path}rms_A{Station}_R{c + 1}.h5'
+        file_name = f'{r_path}rms_{banila_key}A{Station}_R{c + 1}.h5'
         hf = h5py.File(file_name, 'r')
         rms_mean[:, c] = hf['rms_mean'][:]
         print(rms_mean[:, c])
         print(file_name, size_checker(file_name))
         del file_name, hf
 
-    output_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/snr_sim/'
+    output_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/snr_{banila_key}sim/'
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
