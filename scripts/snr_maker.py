@@ -28,6 +28,7 @@ def main(Station, Data):
     banila_key = 'banila'
     if Data.find(banila_key) != -1:
         banila_key += '_'
+        print('banila shit!!!!')
         pass
     else:
         banila_key = ''

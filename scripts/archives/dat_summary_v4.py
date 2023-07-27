@@ -22,16 +22,14 @@ known_issue = known_issue_loader(Station, verbose = True)
 bad_runs = known_issue.get_knwon_bad_run(use_qual = True)
 
 # sort
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco/*'
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco_ele/*'
 d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 m_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf/'
 s_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/snr/'
-sb_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/snr_banila/'
 q_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/qual_cut_3rd_full/'
 del d_run_range
 
-pol_range = np.arange(3, dtype = int)
-ang_range = np.arange(2, dtype = int)
+pol_range = np.arange(2, dtype = int)
 
 runs = np.copy(d_run_tot)
 configs = np.full((d_len), 0, dtype = int)
@@ -43,14 +41,14 @@ evt_ep = np.copy(run_ep)
 trig_ep = np.copy(run_ep)
 con_ep = np.copy(run_ep)
 qual_ep = np.copy(run_ep)
-qual_no_s_ep = np.copy(run_ep)
 
-coef_max = np.full((3, 0), 0, dtype = float) # pols, evts
-coord_max = np.full((2, 3, 0), 0, dtype = float) # thephi, pols, evts
-mf_max = np.copy(coef_max) # pols, evts
-mf_temp = np.full((3, 2, 0), 0, dtype = float) # pols, thephi, evts 
-snr_3rd = np.copy(coef_max) # pols, evts
-snr_b_3rd = np.copy(coef_max)
+coef_max = np.full((2, 0), 0, dtype = float)
+coef_ratio = np.copy(coef_max)
+coord_max = np.full((2, 2, 0), 0, dtype = float)
+mf_max = np.copy(coef_max)
+mf_ratio = np.copy(coef_max)
+mf_temp = np.copy(coord_max)
+snr_3rd = np.copy(coef_max)
 
 for r in tqdm(range(len(d_run_tot))):
     
@@ -75,73 +73,55 @@ for r in tqdm(range(len(d_run_tot))):
     con_ep = np.concatenate((con_ep, con_r))
     del trig_type, num_evts, run_r, con_r 
 
-    coef_re = np.reshape(hf['coef'][:], (3, 6, -1))
-    coord_re = np.reshape(hf['coord'][:], (3, 2, 6, -1))
-    coord_re = np.transpose(coord_re, (1, 0, 2, 3))
+    coef_re = np.reshape(hf['coef'][:], (2, 4, -1))
+    coord_re = np.reshape(hf['coord'][:], (2, 2, 4, -1))
     coef_max_idx = np.argmax(coef_re, axis = 1)
     coef_max_r = coef_re[pol_range[:, np.newaxis], coef_max_idx, evt_range[np.newaxis, :]]
-    coord_max_r = coord_re[ang_range[:, np.newaxis, np.newaxis], pol_range[np.newaxis, :, np.newaxis], coef_max_idx, evt_range[np.newaxis, np.newaxis, :]]
+    coord_max_r = coord_re[pol_range[:, np.newaxis, np.newaxis], pol_range[np.newaxis, :, np.newaxis], coef_max_idx, evt_range[np.newaxis, np.newaxis, :]]
     coef_max = np.concatenate((coef_max, coef_max_r), axis = 1)
     coord_max = np.concatenate((coord_max, coord_max_r), axis = 2)
-    del hf,evt_range, coef_re, coord_re, coef_max_idx, coef_max_r, coord_max_r
+    coef_ele = hf['coef_ele'][:] # pol, theta, rad, sol, evt
+    coef_ele_max = np.nanmax(coef_ele[:, :53], axis = (1, 2, 3)) # pol, evt
+    coef_ratio1 = coef_ele_max / coef_max_r
+    coef_ratio = np.concatenate((coef_ratio, coef_ratio1), axis = 1)
+    del hf,evt_range, coef_re, coord_re, coef_max_idx, coef_max_r, coord_max_r, coef_ele, coef_ele_max, coef_ratio1
 
     q_name = f'{q_path}qual_cut_3rd_full_A{Station}_R{d_run_tot[r]}.h5'
     hf_q = h5py.File(q_name, 'r')
     evt_full = hf_q['evt_num'][:]
     qual = hf_q['tot_qual_cut_sum'][:] != 0
-    qual_indi = hf_q['tot_qual_cut'][:]
-    qual_indi[:, 14] = 0 # no l1 cut
-    qual_indi[:, 15] = 0 # no rf/cal cut
-    qual_indi[:, -3] = 0 # corr surface cut
-    qual_indi[:, -2] = 0 # mf surface cut
-    qual_indi_sum = np.nansum(qual_indi, axis = 1) != 0
     cut = np.in1d(evt, evt_full[qual])
-    cut_no_s = np.in1d(evt, evt_full[qual_indi_sum])
     qual_ep = np.concatenate((qual_ep, cut.astype(int))) 
-    qual_no_s_ep = np.concatenate((qual_no_s_ep, cut_no_s.astype(int))) 
     tot_live = np.nansum(hf_q['tot_qual_live_time'][:])
     bad_live = np.nansum(hf_q['tot_qual_sum_bad_live_time'][:])
     good_live = tot_live - bad_live
     livetime[r, 0] = tot_live
     livetime[r, 1] = good_live
     livetime[r, 2] = bad_live
-    del q_name, hf_q, qual, evt_full, tot_live, bad_live, good_live, evt, cut, qual_indi, qual_indi_sum, cut_no_s
-
-    bad_ant = known_issue.get_bad_antenna(d_run_tot[r])
+    del q_name, hf_q, qual, evt_full, tot_live, bad_live, good_live, evt, cut
 
     s_name = f'{s_path}snr_A{Station}_R{d_run_tot[r]}.h5'
     hf = h5py.File(s_name, 'r')
     snr = hf['snr'][:]
+    bad_ant = known_issue.get_bad_antenna(d_run_tot[r])
     snr[bad_ant] = np.nan
-    snr_max = np.full((3, len(snr[0])), np.nan, dtype = float)
+    snr_max = np.full((2, len(snr[0])), np.nan, dtype = float)
     snr_max[0] = -np.sort(-snr[:8], axis = 0)[2]
     snr_max[1] = -np.sort(-snr[8:], axis = 0)[2]
-    snr_max[2] = -np.sort(-snr, axis = 0)[2]
     snr_3rd = np.concatenate((snr_3rd, snr_max), axis = 1)
-    del s_name, hf, snr, snr_max 
-
-    s_name = f'{sb_path}snr_banila_A{Station}_R{d_run_tot[r]}.h5'
-    hf = h5py.File(s_name, 'r')
-    snr = hf['snr'][:]
-    snr[bad_ant] = np.nan
-    snr_max = np.full((3, len(snr[0])), np.nan, dtype = float)
-    snr_max[0] = -np.sort(-snr[:8], axis = 0)[2]
-    snr_max[1] = -np.sort(-snr[8:], axis = 0)[2]
-    snr_max[2] = -np.sort(-snr, axis = 0)[2]
-    snr_b_3rd = np.concatenate((snr_b_3rd, snr_max), axis = 1)
-    del bad_ant, s_name, hf, snr, snr_max
+    del s_name, hf, snr, bad_ant, snr_max 
 
     m_name = f'{m_path}mf_A{Station}_R{d_run_tot[r]}.h5'
     hf = h5py.File(m_name, 'r')
     mf_m = hf['mf_max'][:]
-    mf_t_p = hf['mf_temp'][:, 1:3]
-    mf_t_c = hf['mf_temp_com'][1:3] # of pols, theta n phi, # of evts
-    mf_t = np.full((3, 2, mf_m.shape[-1]), np.nan, dtype = float)
-    mf_t[:2] = mf_t_p
-    mf_t[2] = mf_t_c
+    mf_t = hf['mf_temp'][:, 1:3]
     mf_max = np.concatenate((mf_max, mf_m), axis = 1)
     mf_temp = np.concatenate((mf_temp, mf_t), axis = 2) 
-    del m_name, hf, mf_m, mf_t, mf_t_p, mf_t_c
+    mf_max_each = hf['mf_max_each'][:]
+    mf_the_max = np.nanmax(mf_max_each[:, :, :4], axis = (1, 2, 3))
+    mf_ratio1 = mf_the_max / mf_m
+    mf_ratio = np.concatenate((mf_ratio, mf_ratio1), axis = 1)
+    del m_name, hf, mf_m, mf_t, mf_max_each, mf_the_max, mf_ratio1
     
 print(coef_max.shape)
 print(coord_max.shape)
@@ -153,7 +133,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Data_Summary_v2_A{Station}_R{count_i}.h5'
+file_name = f'Data_Summary_v1_A{Station}_R{count_i}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('runs', data=runs, compression="gzip", compression_opts=9)
 hf.create_dataset('b_runs', data=b_runs, compression="gzip", compression_opts=9)
@@ -164,13 +144,13 @@ hf.create_dataset('evt_ep', data=evt_ep, compression="gzip", compression_opts=9)
 hf.create_dataset('trig_ep', data=trig_ep, compression="gzip", compression_opts=9)
 hf.create_dataset('con_ep', data=con_ep, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_ep', data=qual_ep, compression="gzip", compression_opts=9)
-hf.create_dataset('qual_no_s_ep', data=qual_no_s_ep, compression="gzip", compression_opts=9)
 hf.create_dataset('coef_max', data=coef_max, compression="gzip", compression_opts=9)
+hf.create_dataset('coef_ratio', data=coef_ratio, compression="gzip", compression_opts=9)
 hf.create_dataset('coord_max', data=coord_max, compression="gzip", compression_opts=9)
 hf.create_dataset('mf_max', data=mf_max, compression="gzip", compression_opts=9)
 hf.create_dataset('mf_temp', data=mf_temp, compression="gzip", compression_opts=9)
+hf.create_dataset('mf_ratio', data=mf_ratio, compression="gzip", compression_opts=9)
 hf.create_dataset('snr_3rd', data=snr_3rd, compression="gzip", compression_opts=9)
-hf.create_dataset('snr_b_3rd', data=snr_b_3rd, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name, size_checker(path+file_name))
 
