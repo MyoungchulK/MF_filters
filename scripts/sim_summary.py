@@ -175,7 +175,7 @@ for r in tqdm(range(len(d_run_tot))):
         coord_re = np.reshape(coord_tot, (3, 2, 6, -1))
         coord_re = np.transpose(coord_re, (1, 0, 2, 3))
         coef_max_idx = np.nanargmax(coef_re, axis = 1)
-        #coord_max[r, :, :2] = coord_re[pol_num[:, np.newaxis, np.newaxis], ang_num[np.newaxis, :, np.newaxis], coef_max_idx, evt_num[np.newaxis, np.newaxis, :]]
+        coef_max[r] = coef_re[pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]]
         coord_max[r, :2] = coord_re[ang_num[:, np.newaxis, np.newaxis], pol_num[np.newaxis, :, np.newaxis], coef_max_idx, evt_num[np.newaxis, np.newaxis, :]]
         coord_max[r, 2] = rad_o[coef_max_idx // 3]
         del hf, coef_tot, coord_tot, coef_re, coord_re, coef_max_idx

@@ -37,6 +37,8 @@ con_ep = np.copy(run_ep)
 qual_ep = np.copy(run_ep)
 qual_no_s_ep = np.copy(run_ep)
 
+coef = np.full((3, 3, 2, 0), 0, dtype = float)
+coord = np.full((3, 2, 3, 2, 0), 0, dtype = float)
 coef_max = np.full((3, 0), 0, dtype = float)
 coord_max = np.full((2, 3, 0), 0, dtype = float)
 mf_max = np.copy(coef_max)
@@ -69,12 +71,16 @@ for r in tqdm(range(len(d_run_tot1))):
     qual_ep = np.concatenate((qual_ep, qual_ep1))
     qual_no_s_ep = np.concatenate((qual_no_s_ep, qual_no_s_ep1))
 
+    coef1 = hf['coef'][:] 
+    coord1 = hf['coord'][:] 
     coef_max1 = hf['coef_max'][:] 
     coord_max1 = hf['coord_max'][:] 
     mf_max1 = hf['mf_max'][:] 
     mf_temp1 = hf['mf_temp'][:]
     snr_3rd1 = hf['snr_3rd'][:] 
     snr_b_3rd1 = hf['snr_b_3rd'][:] 
+    coef = np.concatenate((coef, coef1), axis = 3)
+    coord = np.concatenate((coord, coord1), axis = 4)
     coef_max = np.concatenate((coef_max, coef_max1), axis = 1)
     coord_max = np.concatenate((coord_max, coord_max1), axis = 2)
     mf_max = np.concatenate((mf_max, mf_max1), axis = 1)
@@ -101,6 +107,8 @@ hf.create_dataset('trig_ep', data=trig_ep, compression="gzip", compression_opts=
 hf.create_dataset('con_ep', data=con_ep, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_ep', data=qual_ep, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_no_s_ep', data=qual_no_s_ep, compression="gzip", compression_opts=9)
+hf.create_dataset('coef', data=coef, compression="gzip", compression_opts=9)
+hf.create_dataset('coord', data=coord, compression="gzip", compression_opts=9)
 hf.create_dataset('coef_max', data=coef_max, compression="gzip", compression_opts=9)
 hf.create_dataset('coord_max', data=coord_max, compression="gzip", compression_opts=9)
 hf.create_dataset('mf_max', data=mf_max, compression="gzip", compression_opts=9)

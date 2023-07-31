@@ -45,6 +45,8 @@ con_ep = np.copy(run_ep)
 qual_ep = np.copy(run_ep)
 qual_no_s_ep = np.copy(run_ep)
 
+coef = np.full((3, 3, 2, 0), 0, dtype = float) # pols, rads, rays, evts
+coord = np.full((3, 2, 3, 2, 0), 0, dtype = float) # pols, thephi, rads, rays, evts
 coef_max = np.full((3, 0), 0, dtype = float) # pols, evts
 coord_max = np.full((2, 3, 0), 0, dtype = float) # thephi, pols, evts
 mf_max = np.copy(coef_max) # pols, evts
@@ -75,15 +77,19 @@ for r in tqdm(range(len(d_run_tot))):
     con_ep = np.concatenate((con_ep, con_r))
     del trig_type, num_evts, run_r, con_r 
 
-    coef_re = np.reshape(hf['coef'][:], (3, 6, -1))
-    coord_re = np.reshape(hf['coord'][:], (3, 2, 6, -1))
+    coef_r = hf['coef'][:]
+    coord_r = hf['coord'][:]
+    coef = np.concatenate((coef, coef_r), axis = 3) 
+    coord = np.concatenate((coord, coord_r), axis = 4) 
+    coef_re = np.reshape(coef_r, (3, 6, -1))
+    coord_re = np.reshape(coord_r, (3, 2, 6, -1))
     coord_re = np.transpose(coord_re, (1, 0, 2, 3))
     coef_max_idx = np.argmax(coef_re, axis = 1)
     coef_max_r = coef_re[pol_range[:, np.newaxis], coef_max_idx, evt_range[np.newaxis, :]]
     coord_max_r = coord_re[ang_range[:, np.newaxis, np.newaxis], pol_range[np.newaxis, :, np.newaxis], coef_max_idx, evt_range[np.newaxis, np.newaxis, :]]
     coef_max = np.concatenate((coef_max, coef_max_r), axis = 1)
     coord_max = np.concatenate((coord_max, coord_max_r), axis = 2)
-    del hf,evt_range, coef_re, coord_re, coef_max_idx, coef_max_r, coord_max_r
+    del coef_r, coord_r, hf,evt_range, coef_re, coord_re, coef_max_idx, coef_max_r, coord_max_r
 
     q_name = f'{q_path}qual_cut_3rd_full_A{Station}_R{d_run_tot[r]}.h5'
     hf_q = h5py.File(q_name, 'r')
@@ -165,6 +171,8 @@ hf.create_dataset('trig_ep', data=trig_ep, compression="gzip", compression_opts=
 hf.create_dataset('con_ep', data=con_ep, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_ep', data=qual_ep, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_no_s_ep', data=qual_no_s_ep, compression="gzip", compression_opts=9)
+hf.create_dataset('coef', data=coef, compression="gzip", compression_opts=9)
+hf.create_dataset('coord', data=coord, compression="gzip", compression_opts=9)
 hf.create_dataset('coef_max', data=coef_max, compression="gzip", compression_opts=9)
 hf.create_dataset('coord_max', data=coord_max, compression="gzip", compression_opts=9)
 hf.create_dataset('mf_max', data=mf_max, compression="gzip", compression_opts=9)
