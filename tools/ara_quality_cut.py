@@ -1392,7 +1392,7 @@ def get_bad_live_time(trig_type, unix_time, time_bins, sec_per_min, cuts, verbos
 def get_calpulser_cut(st, run):
 
     if st == 2:
-        cp6 = np.full((2, 2), np.nan, dtype = float)
+        cp6 = np.full((2, 2), np.nan, dtype = float) # [0]: thetas, [1]: phis
         cp6[0, 0] = -1.45
         cp6[0, 1] = 10.45
         cp6[1, 0] = 56.65
@@ -1423,8 +1423,9 @@ def get_calpulser_cut(st, run):
             cp_cut[0] = cp5
             cp_cut[1] = cp6
         elif run > 1935 and run < 7006:
-            cp_cut = np.full((1, 2, 2), np.nan, dtype = float)
-            cp_cut[0] = cp6
+            cp_cut = np.full((2, 2, 2), np.nan, dtype = float)
+            cp_cut[0] = cp5
+            cp_cut[1] = cp6
         elif run > 7005 and run < 8098:
             cp_cut = np.full((2, 2, 2), np.nan, dtype = float)
             cp_cut[0] = cp5
