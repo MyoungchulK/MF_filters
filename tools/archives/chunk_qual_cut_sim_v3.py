@@ -47,7 +47,7 @@ def qual_cut_sim_collector(Data, Station, Year):
 
     ## spark and cal, surface
     filt_qual = filt_qual_cut_loader(Station, ex_run, entry_num, verbose = True, sim_spark_path = rms_path, sim_corr_path = reco_path, sim_mf_path = mf_path)
-    filt_qual_cut = filt_qual.run_filt_qual_cut(use_max = False)
+    filt_qual_cut = filt_qual.run_filt_qual_cut(use_max = True)
     filt_qual_cut_sum = filt_qual.filt_qual_cut_sum
     del filt_qual, ex_run, rms_path, reco_path, mf_path
 

@@ -952,16 +952,10 @@ class filt_qual_cut_loader:
         else:
             reco_dat = self.run_info.get_result_path(file_type = 'reco', verbose = self.verbose, force_unblind = self.cal_sur_unblind, return_none = True)
             mf_dat = self.run_info.get_result_path(file_type = 'mf', verbose = self.verbose, force_unblind = self.cal_sur_unblind, return_none = True)
-        
-        ## temp
-        mf_dat = None
-        print('MF is off for surface cut!')
-        ## temp
 
         if reco_dat is None and mf_dat is None:
             return cal_sur_evts
         if mf_dat is not None:
-            print('MF is on for surface cut!')
             mf_hf = h5py.File(mf_dat, 'r')
             if use_sim:
                 evt_name = 'entry_num'
@@ -1003,7 +997,7 @@ class filt_qual_cut_loader:
                 trig_type_reco = reco_hf['trig_type'][:]
             num_evts_reco = len(evt_num_reco)
 
-            coord_max = reco_hf['coord'][:num_pols] # pol, thephi, rad, sol, evt
+            coord_max = reco_hf['coord'][:] # pol, thephi, rad, sol, evt
             coord_shape = coord_max.shape
 
             cp_cut, num_cuts, pol_idx = get_calpulser_cut(self.st, self.run)
@@ -1020,7 +1014,7 @@ class filt_qual_cut_loader:
 
             if use_max:
                 print('Wr are using max coef for suaface cut!!')
-                coef = reco_hf['coef'][:num_pols]
+                coef = reco_hf['coef'][:]
                 coef_shape = coef.shape
                 coef_re = np.reshape(coef, (coef_shape[0], coef_shape[1] * coef_shape[2], -1))
                 coord_re = np.reshape(coord_max, (coord_shape[0], coord_shape[1], coord_shape[2] * coord_shape[3], -1))
@@ -1031,11 +1025,7 @@ class filt_qual_cut_loader:
                 coord_max_flat = coord_max_r[:, 0]
                 del coef, coef_shape, coef_re, coord_re, coef_max_idx, pol_range, evt_range, coord_max_r
             else:
-                print('Wr are using indi coord for suaface cut!!')
-                #coord_max_flat = np.reshape(coord_max[:, 0, 1, :, :], (coord_shape[0] * coord_shape[3], -1)) # pol, thephi, rad, sol, evt
-                rad_opt = np.array([1, 2], dtype = int)
-                coord_max_flat = np.reshape(coord_max[:, 0, rad_opt, 0, :], (coord_shape[0] * len(rad_opt), -1)) # pol, thephi, rad, sol, evt
-                del rad_opt
+                coord_max_flat = np.reshape(coord_max[:, 0, 1, :, :], (coord_shape[0] * coord_shape[3], -1))
             sur_cuts = np.any(coord_max_flat > cut_corr, axis = 0).astype(int)
             del reco_hf, coord_max, coord_max_flat, coord_shape
 
