@@ -36,6 +36,7 @@ for r in tqdm(range(len(d_run_tot))):
     del hf
 
     s_name = f'{s_path}sub_info_burn_A{Station}_R{d_run_tot[r]}.h5'
+    print(s_name)
     hf_s = h5py.File(s_name, 'r')
     unix_time = hf_s['unix_time'][:]
     date_time = np.full((num_evts), 0, dtype = int)
