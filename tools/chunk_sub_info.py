@@ -1,7 +1,7 @@
 import numpy as np
 from tqdm import tqdm
 
-def sub_info_collector(Data, Ped, analyze_blind_dat = False):
+def sub_info_collector(Data, Ped, use_l2 = False, no_tqdm = False, analyze_blind_dat = False):
 
     print('Collecting sub info starts!')
 
@@ -20,7 +20,7 @@ def sub_info_collector(Data, Ped, analyze_blind_dat = False):
     trig_type = ara_uproot.get_trig_type()
     unix_time = ara_uproot.unix_time
     pps_number = ara_uproot.pps_number
-    time_stamp = ara_uproot.time_stamp
+    time_stamp = ara_uproot.get_time_stamp()
     blk_len, rf_blk_len, cal_blk_len, soft_blk_len = ara_uproot.get_block_length()
 
     #geom info

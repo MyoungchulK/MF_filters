@@ -316,7 +316,7 @@ class run_info_loader:
       
         if os.path.exists(dat_path):
             if verbose:
-                print(f'{file_type}_dat_path:{dat_path}.', size_checker(ped_path))
+                print(f'{file_type}_dat_path:{dat_path}.', size_checker(dat_path))
         else:
             print(f'There is no desired {file_type} data!')
             if return_none == True:

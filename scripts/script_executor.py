@@ -63,7 +63,7 @@ def script_loader(key, station, run, qual_type, act_evt, blind_dat, condor_run, 
         file_type = 'eventHk'
         return_none = True
         return_dat_only = True
-    elif key == 'blk_len' or key == 'rf_len' or key == 'dead' or key == 'dupl' or  key == 'run_time' or key == 'ped' or key == 'cw_band' or key == 'cw_flag_merge' or key == 'cw_ratio_merge' or key == 'evt_num' or key == 'medi' or key == 'sub_info' or key == 'cw_time':
+    elif key == 'blk_len' or key == 'rf_len' or key == 'dead' or key == 'dupl' or  key == 'run_time' or key == 'ped' or key == 'cw_band' or key == 'cw_flag_merge' or key == 'cw_ratio_merge' or key == 'evt_num' or key == 'medi' or key == 'sub_info' or key == 'sub_info_burn' or key == 'cw_time':
         return_dat_only = True
     Data, Ped = run_info.get_data_ped_path(file_type = file_type, return_none = return_none, verbose = verbose, return_dat_only = return_dat_only, l2_data = l2_data)
     station, run, Config, Year, Month, Date = run_info.get_data_info()

@@ -18,12 +18,12 @@ hf_name1 = f'{d_path}Data_Summary_v2_1_A{Station}_b.h5'
 
 hf1 = h5py.File(hf_name1, 'r')
 mf_max = hf1['mf_max'][:]
-print(mf_max.shape, np.round(mf_max.nbytes/1024/1024))
 mf_temp = hf1['mf_temp'][:]
-print(mf_temp.shape, np.round(mf_temp.nbytes/1024/1024))
 snr_3rd = hf1['snr_3rd'][:]
-print(snr_3rd.shape, np.round(snr_3rd.nbytes/1024/1024))
 snr_b_3rd = hf1['snr_b_3rd'][:]
+print(mf_max.shape, np.round(mf_max.nbytes/1024/1024))
+print(mf_temp.shape, np.round(mf_temp.nbytes/1024/1024))
+print(snr_3rd.shape, np.round(snr_3rd.nbytes/1024/1024))
 print(snr_b_3rd.shape, np.round(snr_b_3rd.nbytes/1024/1024))
 del hf1
 
