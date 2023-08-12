@@ -306,7 +306,8 @@ class run_info_loader:
                 print(f'There is no desired {file_type} data!')
                 print(f'File on the search: {dat_goal}')
                 print(f'Possible location: {dat_ls_path}')
-                print('Files in the location:', os.listdir(dat_ls_path[0]))
+                if len(dat_ls_path) != 0:
+                    print('Files in the location:', os.listdir(dat_ls_path[0]))
                 if return_none == True:
                     return None
                 else:
