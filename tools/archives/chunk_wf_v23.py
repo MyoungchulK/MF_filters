@@ -71,30 +71,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     daq_qual_cut_sum = np.in1d(evt_num, evt_full[daq_qual_cut]).astype(int)
     del qual_dat, daq_hf
 
-    sub_dat = run_info1.get_result_path(file_type = 'sub_info', verbose = True, force_blind = True)
-    sub_hf = h5py.File(sub_dat, 'r')
-    event_unix_time = sub_hf['event_unix_time'][:]
-    l1_rate = sub_hf['l1_rate'][:]
-    l1_thres = sub_hf['l1_thres'][:]
-    sensor_unix_time = sub_hf['sensor_unix_time'][:]
-    dda_volt = sub_hf['dda_volt'][:]
-    dda_curr = sub_hf['dda_curr'][:]
-    tda_volt = sub_hf['tda_volt'][:]
-    tda_curr = sub_hf['tda_curr'][:]
-    unix_min_bins = sub_hf['unix_min_bins'][:]
-    unix_min_bin_center = sub_hf['unix_min_bin_center'][:]
-    evt_min_rate_unix = sub_hf['evt_min_rate_unix'][:]
-    rf_min_rate_unix = sub_hf['rf_min_rate_unix'][:]
-    cal_min_rate_unix = sub_hf['cal_min_rate_unix'][:]
-    soft_min_rate_unix = sub_hf['soft_min_rate_unix'][:]
-    unix_sec_bins = sub_hf['unix_sec_bins'][:]
-    unix_sec_bin_center = sub_hf['unix_sec_bin_center'][:]
-    evt_sec_rate_unix = sub_hf['evt_sec_rate_unix'][:]
-    rf_sec_rate_unix = sub_hf['rf_sec_rate_unix'][:]
-    cal_sec_rate_unix = sub_hf['cal_sec_rate_unix'][:]
-    soft_sec_rate_unix = sub_hf['soft_sec_rate_unix'][:]
-    del sub_dat, sub_hf
-
     # weight
     wei_key = 'snr'
     wei_dat = run_info1.get_result_path(file_type = wei_key, verbose = True)
@@ -777,26 +753,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'time_stamp':time_stamp,
             'pps_number':pps_number,
             'unix_time':unix_time,
-            'unix_min_bins':unix_min_bins,
-            'unix_min_bin_center':unix_min_bin_center,
-            'evt_min_rate_unix':evt_min_rate_unix,
-            'rf_min_rate_unix':rf_min_rate_unix,
-            'cal_min_rate_unix':cal_min_rate_unix,
-            'soft_min_rate_unix':soft_min_rate_unix,
-            'unix_sec_bins':unix_sec_bins,
-            'unix_sec_bin_center':unix_sec_bin_center,
-            'evt_sec_rate_unix':evt_sec_rate_unix,
-            'rf_sec_rate_unix':rf_sec_rate_unix,
-            'cal_sec_rate_unix':cal_sec_rate_unix,
-            'soft_sec_rate_unix':soft_sec_rate_unix,
-            'sensor_unix_time':sensor_unix_time,
-            'dda_volt':dda_volt,
-            'dda_curr':dda_curr,
-            'tda_volt':tda_volt,
-            'tda_curr':tda_curr,
-            'event_unix_time':event_unix_time,
-            'l1_rate':l1_rate,
-            'l1_thres':l1_thres,
             'run_info':run_info,
             'rf_ch':rf_ch,
             'ele_ch':ele_ch,

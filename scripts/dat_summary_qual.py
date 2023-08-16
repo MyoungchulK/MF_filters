@@ -43,7 +43,7 @@ for r in tqdm(range(len(d_run_tot))):
     for u in range(num_evts):
         date_time[u] = int(datetime.utcfromtimestamp(unix_time[u]).strftime('%Y%m%d%H%M%S'))
     unix_ep = np.concatenate((unix_ep, unix_time))
-    date_ep = np.concatenate((unix_ep, date_time))    
+    date_ep = np.concatenate((date_ep, date_time))    
     del s_name, hf_s, unix_time, date_time, num_evts
 
     q_name = f'{q_path}qual_cut_3rd_full_A{Station}_R{d_run_tot[r]}.h5'
@@ -52,7 +52,11 @@ for r in tqdm(range(len(d_run_tot))):
     qual = hf_q['tot_qual_cut_sum'][:] != 0
     cut = np.in1d(evt, evt_full[qual])
     qual_ep = np.concatenate((qual_ep, cut.astype(int))) 
-    del q_name, hf_q, qual, evt_full, evt, cut
+    lens = np.array([len(unix_ep), len(date_ep), len(qual_ep)], dtype = int)
+    lens1 = lens - lens[0]
+    if np.any(lens1 != 0):
+        print(lens)
+    del q_name, hf_q, qual, evt_full, evt, cut, lens, lens1
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 if not os.path.exists(path):
