@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import h5py
-from scipy.signal import hilbert, correlation_lags
+from scipy.signal import hilbert, fftconvolve, correlation_lags
 from scipy.ndimage import maximum_filter1d
 from scipy.interpolate import interp1d
 

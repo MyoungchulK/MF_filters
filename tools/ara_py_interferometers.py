@@ -3,6 +3,7 @@ import numpy as np
 from scipy.signal import fftconvolve
 from scipy.signal import correlation_lags
 from scipy.signal import hilbert
+from scipy.ndimage import uniform_filter1d
 from tqdm import tqdm
 import h5py
 from itertools import combinations
@@ -43,7 +44,7 @@ class py_interferometers:
     def get_zero_pad(self, pad_len):
     
         self.double_pad_len = pad_len * 2 
-        self.pad_one = np.full((self.double_pad_len, num_ants), 1, dtype = float) 
+        self.double_pad_len_float = float(self.double_pad_len)
         self.zero_pad = np.full((self.double_pad_len, num_ants), 0, dtype = float)
         self.quater_idx = pad_len // 2
         if self.verbose:
@@ -143,7 +144,7 @@ class py_interferometers:
             self.corr_nonorm = np.copy(self.corr)
 
         # normalization factor by wf weight
-        nor_fac = fftconvolve(self.zero_pad**2, self.pad_one, 'same', axes = 0)
+        nor_fac = uniform_filter1d(self.zero_pad**2, size = self.double_pad_len, mode = 'constant', axis = 0) * self.double_pad_len_float
         nor_fac = np.sqrt(nor_fac[::-1, self.pairs[:, 0]] * nor_fac[:, self.pairs[:, 1]])
         self.corr /= nor_fac
         self.corr[np.isnan(self.corr) | np.isinf(self.corr)] = 0 # convert x/nan result

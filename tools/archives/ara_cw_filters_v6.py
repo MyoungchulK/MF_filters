@@ -10,8 +10,7 @@
 
 import h5py
 import numpy as np
-from scipy.signal import medfilt
-from scipy.ndimage import uniform_filter1d
+from scipy.signal import fftconvolve, medfilt
 from itertools import combinations
 from scipy.interpolate import interp1d
 
@@ -73,12 +72,12 @@ class py_testbed:
         self.freq_range_near = freq_range_near
 
         df = np.abs(freq_range[1] - freq_range[0]) # delta frequency.
-        self.freq_broad_len = int(self.freq_range_broad / df) # number of elements in 40 MHz frequency window
-        self.freq_broad_len_float = float(self.freq_broad_len)
-        self.freq_near_len = int(self.freq_range_near / df) # number of elements in 5 MHz frequency window
-        self.freq_near_len_float = float(self.freq_near_len)
-        self.freq_broad_per = float(self.freq_broad_len - 1) / 2 # what would be 50 % of number of elements in 40 MHz frequency window
-        del df
+        freq_broad_len = int(self.freq_range_broad / df) # number of elements in 40 MHz frequency window
+        freq_near_len = int(self.freq_range_near / df) # number of elements in 5 MHz frequency window
+        self.freq_broad_per = float(freq_broad_len - 1) / 2 # what would be 50 % of number of elements in 40 MHz frequency window
+        self.freq_broad_one = np.full((freq_broad_len, num_ants), 1, dtype = int) # for rolling sum in 40 MHz frequency window
+        self.freq_near_one = np.full((freq_near_len, num_ants), 1, dtype = int) # for rolling sum in 5 MHz frequency window
+        del df, freq_broad_len, freq_near_len
 
         self.pairs, self.pair_len, self.v_pairs_len = get_pair_info(self.st, self.run)
         self.use_st_pair = use_st_pair
@@ -160,7 +159,7 @@ class py_testbed:
 
         ## flag potentially bad frequencies and other frequencies that also have a big peak near bad frequencies
         self.bad_freqs = delta_mag > self.dB_cut             # it is Boolean array now
-        self.bad_freqs_broad = (delta_mag > self.dB_cut_broad).astype(float) # it is Boolean array now
+        self.bad_freqs_broad = delta_mag > self.dB_cut_broad # it is Boolean array now
         del delta_mag
 
     def get_bad_frequency(self):
@@ -180,7 +179,7 @@ class py_testbed:
         ## using rolling sum with 40 MHz frequency window to calculate how many big peaks are corresponded to each frequencies
         ## if the corresponded frequency has a flag for 'potentially' bad frequencies and less than 50 % of big peaks (by logical_and()),
         ## now it is 'really' bad frequencies  
-        bad_freqs_broad_sum = np.round(uniform_filter1d(self.bad_freqs_broad, size = self.freq_broad_len, mode = 'constant', axis = 0) * self.freq_broad_len_float).astype(int) # yeahhhh, this is rolling sum... I dont want pandas...
+        bad_freqs_broad_sum = np.round(fftconvolve(self.bad_freqs_broad, self.freq_broad_one, 'same', axes = 0)).astype(int) # yeahhhh, this is rolling sum... I dont want pandas...
         bad_freq_1st = np.logical_and(self.bad_freqs, (bad_freqs_broad_sum - 1) <= self.freq_broad_per) # it is Boolean array now
         del bad_freqs_broad_sum
 
@@ -189,7 +188,7 @@ class py_testbed:
         ## to prevent the accidantal increase of coincidances by rolling sum of neighboring 'really' bad frequencies, if rolling sum result in each frequency is bigger than 1, now it is just 'True'
         ## if each channel pair has 'really' bad frequencies in both channels (by logical_and()), now it is 'really really' bad frequencies
         ## to prevent the accidantal increase of coincidances between two antennas by rolling sum, only oneside of pairs is spreaded by rolling sum
-        bad_freq_1st_sum = np.round(uniform_filter1d(bad_freq_1st.astype(float), size = self.freq_near_len, mode = 'constant', axis = 0) * self.freq_near_len_float).astype(int) != 0 # it is Boolean array now
+        bad_freq_1st_sum = np.round(fftconvolve(bad_freq_1st, self.freq_near_one, 'same', axes = 0)).astype(int) != 0 # it is Boolean array now
         bad_freq_2nd = np.logical_and(bad_freq_1st[:, self.pairs[:, 0]], bad_freq_1st_sum[:, self.pairs[:, 1]])
         if self.use_st_pair:
             bad_freq_2nd_st = np.logical_and(bad_freq_1st[:, self.pairs_st[:, 0]], bad_freq_1st_sum[:, self.pairs_st[:, 1]]) 
@@ -593,23 +592,22 @@ class py_geometric_filter:
         ## storing which fft elemnts are identified as an bad frequency
         ## by applying rolling sum into this array, we can 'count' how many elements are summed by rolling sum for each frequency 
         ## and we can use this for calculating rolling mean (averaged phase) by dvideding rolling sum of phase
-        ffts_01 = np.full((fft_len, 2), 0, dtype = float)
+        ffts_01 = np.full((fft_len, 2), 0, dtype = int)
         ffts_01[:, 0] = bad_idx_front
         ffts_01[:, 1] = bad_idx_back
 
-        ## apply rolling sum to ffts and ffts_01
+        ## apply rolling sum to ffts and ffts_01 by magic fftconvolve()
         ## original code is using maximum 5 bin for rolling sum window. But in this code, im using same window length that uesd for grouping bad frequencies which is 10 MHz
         ## good frequency region would be filled with '0'. So dont worry about it
         freq_win_len = np.round(self.freq_win / np.abs(self.freq[1] - self.freq[0])).astype(int) # how many bins are in the 10 MHz frequency window?
-        freq_win_len_float = float(freq_win_len)
-        freq_win_one = np.full((freq_win_len, 2), 1, dtype = float) # creating array that has a same 2nd dim with the ffts and all the element in 1 to mimic rolling sum
-        roll_sum = uniform_filter1d(ffts, size = freq_win_len, mode = 'constant', axis = 0) * freq_win_len_float
-        roll_sum_01 = uniform_filter1d(ffts_01, size = freq_win_len, mode = 'constant', axis = 0) * freq_win_len_float 
+        freq_win_one = np.full((freq_win_len, 4), 1, dtype = float) # creating array that has a same 2nd dim with the ffts and all the element in 1 to mimic rolling sum
+        roll_sum = fftconvolve(ffts, freq_win_one, 'same', axes = 0)
+        roll_sum_01 = np.round(fftconvolve(ffts_01, freq_win_one[:, :2], 'same', axes = 0)) # numpy round is applied to correct minor differences from 'fft'convolve...
         if self.use_debug:
             self.freq_win_len_debug = np.copy(freq_win_len)
             self.roll_sum_debug = np.copy(roll_sum)
             self.roll_sum_01_debug = np.copy(roll_sum_01)
-        del freq_win_len, freq_win_len_float, ffts, ffts_01, freq_win_one
+        del freq_win_len, ffts, ffts_01, freq_win_one
 
         ## apply rolling mean by dvide 'ffts' by 'ffts_01'
         ## since rolling sum of front and back goup was done seperatly, now we put them into one array by using bad freqeuncy index. 
