@@ -17,15 +17,12 @@ def wf_sim_collector(Data, Station, Year, act_evt):
     from tools.ara_wf_analyzer import wf_analyzer
     from tools.ara_py_interferometers import py_interferometers
     from tools.ara_py_interferometers import get_products
-    from tools.ara_py_vertex import py_reco_handler
-    from tools.ara_py_vertex import py_ara_vertex
 
     # const. info.
     ara_const = ara_const()
     num_ants = ara_const.USEFUL_CHAN_PER_STATION
     num_samps = ara_const.SAMPLES_PER_BLOCK
     num_pols = ara_const.POLARIZATION
-    num_pols_com = int(num_pols + 1)
     del ara_const
 
     # config
@@ -118,7 +115,7 @@ def wf_sim_collector(Data, Station, Year, act_evt):
     pad_fft_len = wf_int.pad_fft_len
     df = wf_int.df
 
-    ara_int = py_interferometers(pad_len, dt, Station, run = ex_run, get_sub_file = True, verbose = True, use_debug = True)
+    ara_int = py_interferometers(pad_len, dt, Station, Year, run = ex_run, get_sub_file = True, verbose = True, use_debug = True)
     num_rads = ara_int.num_rads
     num_ray_sol = ara_int.num_ray_sol
     pairs = ara_int.pairs
@@ -128,12 +125,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
     radius = ara_int.radius
     num_pols_com = ara_int.num_pols_com
     num_angs = ara_int.num_angs
-
-    # hit time
-    handler = py_reco_handler(Station, ex_run, dt[0], 8)
-
-    # vertex
-    vertex = py_ara_vertex(Station)
 
     # wf arr
     blk_max = 48
@@ -185,22 +176,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
     bp_coord = np.copy(coord)
     cw_coord = np.copy(coord)
     cw_bp_coord = np.copy(coord)
-    ver_snr = np.full((num_ants, sel_evt_len), np.nan, dtype = float)
-    ver_hit = np.copy(ver_snr)
-    ver_theta = np.full((num_pols_com, sel_evt_len), np.nan, dtype = float)
-    ver_phi = np.copy(ver_theta)
-    ver_bp_snr = np.copy(ver_snr)
-    ver_bp_hit = np.copy(ver_snr)
-    ver_bp_theta = np.copy(ver_theta)
-    ver_bp_phi = np.copy(ver_phi)
-    ver_cw_snr = np.copy(ver_snr)
-    ver_cw_hit = np.copy(ver_snr)
-    ver_cw_theta = np.copy(ver_theta)
-    ver_cw_phi = np.copy(ver_phi)
-    ver_cw_bp_snr = np.copy(ver_snr)
-    ver_cw_bp_hit = np.copy(ver_snr)
-    ver_cw_bp_theta = np.copy(ver_theta)
-    ver_cw_bp_phi = np.copy(ver_phi)
 
     print(sel_evt_len) 
     # loop over the events
@@ -219,12 +194,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
         freq[:, :, evt] = wf_int.pad_freq
         fft[:, :, evt] = wf_int.pad_fft
         phase[:, :, evt] = wf_int.pad_phase
-        handler.get_id_hits_prep_to_vertex(wf_int.pad_v, wf_int.pad_t, wf_int.pad_num)
-        ver_snr[:, evt] = handler.snr_arr
-        ver_hit[:, evt] = handler.hit_time_arr
-        vertex.get_pair_fit_spherical(handler.pair_info, handler.useful_num_ants)
-        ver_theta[:, evt] = vertex.theta
-        ver_phi[:, evt] = vertex.phi
 
         for ant in range(num_ants):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_band_pass = False, use_cw = True, evt = sel_evts[evt])
@@ -233,12 +202,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
         wf_int.get_fft_wf(use_rfft = True, use_abs = True, use_norm = True, use_phase = True)
         cw_fft[:, :, evt] = wf_int.pad_fft
         cw_phase[:, :, evt] = wf_int.pad_phase
-        handler.get_id_hits_prep_to_vertex(wf_int.pad_v, wf_int.pad_t, wf_int.pad_num)
-        ver_cw_snr[:, evt] = handler.snr_arr
-        ver_cw_hit[:, evt] = handler.hit_time_arr
-        vertex.get_pair_fit_spherical(handler.pair_info, handler.useful_num_ants)
-        ver_cw_theta[:, evt] = vertex.theta
-        ver_cw_phi[:, evt] = vertex.phi
 
         for ant in range(num_ants):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_band_pass = True, use_cw = False, evt = sel_evts[evt])
@@ -247,12 +210,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
         wf_int.get_fft_wf(use_rfft = True, use_abs = True, use_norm = True, use_phase = True)
         bp_fft[:, :, evt] = wf_int.pad_fft
         bp_phase[:, :, evt] = wf_int.pad_phase
-        handler.get_id_hits_prep_to_vertex(wf_int.pad_v, wf_int.pad_t, wf_int.pad_num)
-        ver_bp_snr[:, evt] = handler.snr_arr
-        ver_bp_hit[:, evt] = handler.hit_time_arr
-        vertex.get_pair_fit_spherical(handler.pair_info, handler.useful_num_ants)
-        ver_bp_theta[:, evt] = vertex.theta
-        ver_bp_phi[:, evt] = vertex.phi
 
         for ant in range(num_ants):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_band_pass = True, use_cw = True, evt = sel_evts[evt])
@@ -261,13 +218,7 @@ def wf_sim_collector(Data, Station, Year, act_evt):
         wf_int.get_fft_wf(use_rfft = True, use_abs = True, use_norm = True, use_phase = True)
         cw_bp_fft[:, :, evt] = wf_int.pad_fft
         cw_bp_phase[:, :, evt] = wf_int.pad_phase
-        handler.get_id_hits_prep_to_vertex(wf_int.pad_v, wf_int.pad_t, wf_int.pad_num)
-        ver_cw_bp_snr[:, evt] = handler.snr_arr
-        ver_cw_bp_hit[:, evt] = handler.hit_time_arr
-        vertex.get_pair_fit_spherical(handler.pair_info, handler.useful_num_ants)
-        ver_cw_bp_theta[:, evt] = vertex.theta
-        ver_cw_bp_phi[:, evt] = vertex.phi        
-
+        
         for ant in range(num_ants):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_band_pass = False, use_cw = False, evt = sel_evts[evt])
         ara_int.get_sky_map(wf_int.pad_v, weights = weights[:, sel_evts[evt]], wei_pol = wei_pol[:, sel_evts[evt]])
@@ -317,7 +268,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
 
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, use_freq_pad = True, use_rfft = True, verbose = True, st = Station, run = ex_run, new_wf_time = wf_time, sim_path = band_path)
     ara_mf = ara_matched_filter(Station, ex_run, wf_int.dt, wf_int.pad_len, get_sub_file = True, verbose = True, use_debug = True, sim_psd_path = base_path)
-    mf_param_com_shape = ara_mf.mf_param_com_shape
     mf_theta_bin = ara_mf.theta_bin
     mf_phi_bin = ara_mf.phi_bin
     search_map = ara_mf.search_map
@@ -355,28 +305,26 @@ def wf_sim_collector(Data, Station, Year, act_evt):
     mf_corr_best_off_ang = np.copy(mf_corr_best_off_idx)
     mf_corr_no_off = np.full((ara_mf.lag_len, good_ch_len, temp_param[0], temp_param[1], sel_evt_len), np.nan, dtype = float)
     mf_corr_roll_no_off = np.full((ara_mf.lag_len, good_ch_len, temp_param[0], temp_param[1], sel_evt_len), np.nan, dtype = float)
-    mf_corr_roll_sum =  np.full((ara_mf.lag_len, num_pols_com, temp_param[0], arr_param[0], arr_param[1], sel_evt_len), np.nan, dtype = float)
-    mf_corr_roll_sum_peak_idx = np.full((num_pols_com, 4, sel_evt_len), np.nan, dtype = float)
+    mf_corr_roll_sum =  np.full((ara_mf.lag_len, num_pols, temp_param[0], arr_param[0], arr_param[1], sel_evt_len), np.nan, dtype = float)
+    mf_corr_roll_sum_peak_idx = np.full((num_pols, 4, sel_evt_len), np.nan, dtype = float)
     mf_corr_sum_indi = np.full((ara_mf.lag_len, num_ants, temp_param[0], arr_param[0], arr_param[1], sel_evt_len), np.nan, dtype = float)
     mf_corr_sum_indi_roll = np.copy(mf_corr_sum_indi)
     mf_corr_sum_indi_off = np.full((num_ants, temp_param[0], arr_param[0], arr_param[1], sel_evt_len), np.nan, dtype = float)
-    mf_wf_fin = np.full((ara_mf.lag_len, num_pols_com, sel_evt_len), np.nan, dtype = float)
-    mf_max = np.full((num_pols_com, sel_evt_len), np.nan, dtype = float)
+    mf_wf_fin = np.full((ara_mf.lag_len, num_pols, sel_evt_len), np.nan, dtype = float)
+    mf_max = np.full((num_pols, sel_evt_len), np.nan, dtype = float)
     mf_temp_idx = np.full((num_pols, mf_param_shape[1], sel_evt_len), -1, dtype = int)
     mf_temp = np.full((num_pols, mf_param_shape[1], sel_evt_len), np.nan, dtype = float)
-    mf_max_each = np.full((num_pols_com, temp_param[0], arr_param[0], arr_param[1], sel_evt_len), np.nan, dtype = float)
-    mf_temp_com_idx = np.full((mf_param_com_shape, sel_evt_len), -1, dtype = int)
-    mf_temp_com = np.full((mf_param_com_shape, sel_evt_len), np.nan, dtype = float)
-    mf_search = np.full((num_pols_com, temp_param[0], search_map.shape[1], search_map.shape[2], sel_evt_len), np.nan, dtype = float)
-    mf_temp_ori_best = np.full((temp_wf_len, num_ants, 2, sel_evt_len), np.nan, dtype = float)
+    mf_max_each = np.full((num_pols, temp_param[0], arr_param[0], arr_param[1], sel_evt_len), np.nan, dtype = float)
+    mf_search = np.full((num_pols, temp_param[0], search_map.shape[1], search_map.shape[2], sel_evt_len), np.nan, dtype = float)
+    mf_temp_ori_best = np.full((temp_wf_len, num_ants, sel_evt_len), np.nan, dtype = float)
     mf_temp_ori_shift_best = np.copy(mf_temp_ori_best)
-    mf_temp_rfft_best = np.full((temp_fft_len, num_ants, 2, sel_evt_len), np.nan, dtype = float)
-    mf_temp_phase_best = np.full((temp_fft_len, num_ants, 2, sel_evt_len), np.nan, dtype = float)
-    mf_corr_best = np.full((ara_mf.lag_len, num_ants, 2, sel_evt_len), np.nan, dtype = float)
+    mf_temp_rfft_best = np.full((temp_fft_len, num_ants, sel_evt_len), np.nan, dtype = float)
+    mf_temp_phase_best = np.full((temp_fft_len, num_ants, sel_evt_len), np.nan, dtype = float)
+    mf_corr_best = np.full((ara_mf.lag_len, num_ants, sel_evt_len), np.nan, dtype = float)
     mf_corr_arr_best = np.copy(mf_corr_best)
     mf_corr_roll_best = np.copy(mf_corr_best)
     mf_corr_arr_roll_best = np.copy(mf_corr_best)
-    mf_corr_temp_dat_best = np.full((temp_fft_len_pad, num_ants, 2, sel_evt_len), np.nan, dtype = float)
+    mf_corr_temp_dat_best = np.full((temp_fft_len_pad, num_ants, sel_evt_len), np.nan, dtype = float)
     mf_corr_temp_dat_psd_best = np.copy(mf_corr_temp_dat_best)
 
     print(sel_evt_len)
@@ -400,8 +348,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
         mf_max_each[:, :, :, :, evt] = ara_mf.mf_max_each
         mf_temp_idx[:, :, evt] = ara_mf.mf_temp
         mf_temp[:, :, evt] = ara_mf.mf_temp_val
-        mf_temp_com_idx[:, evt] = ara_mf.mf_temp_com
-        mf_temp_com[:, evt] = ara_mf.mf_temp_val_com
         print(mf_temp[:, :, evt])
         mf_corr_no_hill[:, :, :, :, :, evt] = ara_mf.corr_no_hill
         mf_corr_hill[:, :, :, :, :, evt] = ara_mf.corr_hill
@@ -422,18 +368,18 @@ def wf_sim_collector(Data, Station, Year, act_evt):
         mf_corr_sum_indi_roll[:, :, :, :, :, evt] = ara_mf.corr_sum_indi_roll
         mf_corr_sum_indi_off[:, :, :, :, evt] = ara_mf.corr_sum_indi_off
         mf_wf_fin[:, :, evt] = ara_mf.mf_wf_fin
-        mf_temp_ori_best[:, :, :, evt] =  ara_mf.temp_ori_best
-        mf_temp_ori_shift_best[:, :, :, evt] = ara_mf.temp_ori_shift_best
-        mf_temp_rfft_best[:, :, :, evt] = ara_mf.temp_rfft_best
-        mf_temp_phase_best[:, :, :, evt] = ara_mf.temp_phase_best
-        mf_corr_best[:, :, :, evt] = ara_mf.corr_best
-        mf_corr_arr_best[:, :, :, evt] = ara_mf.corr_arr_best
-        mf_corr_roll_best[:, :, :, evt] = ara_mf.corr_roll_best
-        mf_corr_arr_roll_best[:, :, :, evt] = ara_mf.corr_arr_roll_best
-        mf_corr_temp_dat_best[:, :, :, evt] = ara_mf.corr_temp_dat_best
-        mf_corr_temp_dat_psd_best[:, :, :, evt] = ara_mf.corr_temp_dat_psd_best
+        mf_temp_ori_best[:, :, evt] =  ara_mf.temp_ori_best
+        mf_temp_ori_shift_best[:, :, evt] = ara_mf.temp_ori_shift_best
+        mf_temp_rfft_best[:, :, evt] = ara_mf.temp_rfft_best
+        mf_temp_phase_best[:, :, evt] = ara_mf.temp_phase_best
+        mf_corr_best[:, :, evt] = ara_mf.corr_best
+        mf_corr_arr_best[:, :, evt] = ara_mf.corr_arr_best
+        mf_corr_roll_best[:, :, evt] = ara_mf.corr_roll_best
+        mf_corr_arr_roll_best[:, :, evt] = ara_mf.corr_arr_roll_best
+        mf_corr_temp_dat_best[:, :, evt] = ara_mf.corr_temp_dat_best
+        mf_corr_temp_dat_psd_best[:, :, evt] = ara_mf.corr_temp_dat_psd_best
         mf_search[:, :, :, :, evt] = ara_mf.mf_search
-    """ 
+
     from tools.ara_csw import ara_csw
 
     reco_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco_sim/reco_{h5_file_name}.h5'
@@ -527,7 +473,7 @@ def wf_sim_collector(Data, Station, Year, act_evt):
         csw_cdf[:, :, :, evt] = ara_csw.cdf
         csw_cdf_time[:, :, :, evt] = ara_csw.cdf_time
         csw_cdf_ks[:, :, :, evt] = ara_csw.cdf_ks
-    """
+
     print('Sim wf collecting is done!')
 
     return {'sel_evts':sel_evts,
@@ -612,22 +558,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
             'bp_coord':bp_coord,
             'cw_coord':cw_coord,
             'cw_bp_coord':cw_bp_coord,
-            'ver_snr':ver_snr,
-            'ver_hit':ver_hit,
-            'ver_theta':ver_theta,
-            'ver_phi':ver_phi,
-            'ver_cw_snr':ver_cw_snr,
-            'ver_cw_hit':ver_cw_hit,
-            'ver_cw_theta':ver_cw_theta,
-            'ver_cw_phi':ver_cw_phi,
-            'ver_bp_snr':ver_bp_snr,
-            'ver_bp_hit':ver_bp_hit,
-            'ver_bp_theta':ver_bp_theta,
-            'ver_bp_phi':ver_bp_phi,
-            'ver_cw_bp_snr':ver_cw_bp_snr,
-            'ver_cw_bp_hit':ver_cw_bp_hit,
-            'ver_cw_bp_theta':ver_cw_bp_theta,
-            'ver_cw_bp_phi':ver_cw_bp_phi,
             'radius':radius,
             'good_chs':good_chs,
             'search_map':search_map,
@@ -670,8 +600,6 @@ def wf_sim_collector(Data, Station, Year, act_evt):
             'mf_max_each':mf_max_each,
             'mf_temp':mf_temp,
             'mf_temp_idx':mf_temp_idx,
-            'mf_temp_com':mf_temp_com,
-            'mf_temp_com_idx':mf_temp_com_idx,
             'mf_temp_ori_best':mf_temp_ori_best,
             'mf_temp_ori_shift_best':mf_temp_ori_shift_best,
             'mf_temp_rfft_best':mf_temp_rfft_best,
@@ -682,46 +610,46 @@ def wf_sim_collector(Data, Station, Year, act_evt):
             'mf_corr_arr_roll_best':mf_corr_arr_roll_best,
             'mf_corr_temp_dat_best':mf_corr_temp_dat_best,
             'mf_corr_temp_dat_psd_best':mf_corr_temp_dat_psd_best,
-            'mf_search':mf_search}#,
-            #'time_pad':time_pad,
-            #'arr_table':arr_table,
-            #'arr_delay':arr_delay,
-            #'corf_r_max':corf_r_max,
-            #'coef_r_max_idx':coef_r_max_idx,
-            #'coord_r_max_idx':coord_r_max_idx,
-            #'sc_rms':sc_rms,
-            #'sc_freq_amp':sc_freq_amp,
-            #'sc_amp':sc_amp,
-            #'sc_freq_phase':sc_freq_phase,
-            #'sc_phase':sc_phase,
-            #'csw_int_sc_freqs':csw_int_sc_freqs,
-            #'csw_int_sc_phases':csw_int_sc_phases,
-            #'csw_dd_fft_vs':csw_dd_fft_vs,
-            #'csw_dd_wf_ts':csw_dd_wf_ts,
-            #'csw_dd_wf_vs':csw_dd_wf_vs,
-            #'csw_shift_time':csw_shift_time,
-            #'csw_shift_dd_wf':csw_shift_dd_wf,
-            #'csw_bool_pad':csw_bool_pad,
-            #'csw_norm_pad':csw_norm_pad,
-            #'csw_zero_pad':csw_zero_pad,
-            #'csw_wf':csw_wf,
-            #'csw_wf_wo_dd':csw_wf_wo_dd,
-            #'csw_wf_norm_wo_dd':csw_wf_norm_wo_dd,
-            #'csw_hill':csw_hill,
-            #'csw_wf_p2p':csw_wf_p2p,
-            #'csw_wf_p2p_time':csw_wf_p2p_time,
-            #'csw_sort':csw_sort,
-            #'csw_cdf':csw_cdf,
-            #'csw_cdf_time':csw_cdf_time,
-            #'csw_cdf_ks':csw_cdf_ks,
-            #'hill_max_idx':hill_max_idx,
-            #'hill_max':hill_max,
-            #'snr_csw':snr_csw,
-            #'cdf_avg':cdf_avg,
-            #'slope':slope,
-            #'intercept':intercept,
-            #'r_value':r_value,
-            #'p_value':p_value,
-            #'std_err':std_err,
-            #'ks':ks,
-            #'nan_flag':nan_flag}
+            'mf_search':mf_search,
+            'time_pad':time_pad,
+            'arr_table':arr_table,
+            'arr_delay':arr_delay,
+            'corf_r_max':corf_r_max,
+            'coef_r_max_idx':coef_r_max_idx,
+            'coord_r_max_idx':coord_r_max_idx,
+            'sc_rms':sc_rms,
+            'sc_freq_amp':sc_freq_amp,
+            'sc_amp':sc_amp,
+            'sc_freq_phase':sc_freq_phase,
+            'sc_phase':sc_phase,
+            'csw_int_sc_freqs':csw_int_sc_freqs,
+            'csw_int_sc_phases':csw_int_sc_phases,
+            'csw_dd_fft_vs':csw_dd_fft_vs,
+            'csw_dd_wf_ts':csw_dd_wf_ts,
+            'csw_dd_wf_vs':csw_dd_wf_vs,
+            'csw_shift_time':csw_shift_time,
+            'csw_shift_dd_wf':csw_shift_dd_wf,
+            'csw_bool_pad':csw_bool_pad,
+            'csw_norm_pad':csw_norm_pad,
+            'csw_zero_pad':csw_zero_pad,
+            'csw_wf':csw_wf,
+            'csw_wf_wo_dd':csw_wf_wo_dd,
+            'csw_wf_norm_wo_dd':csw_wf_norm_wo_dd,
+            'csw_hill':csw_hill,
+            'csw_wf_p2p':csw_wf_p2p,
+            'csw_wf_p2p_time':csw_wf_p2p_time,
+            'csw_sort':csw_sort,
+            'csw_cdf':csw_cdf,
+            'csw_cdf_time':csw_cdf_time,
+            'csw_cdf_ks':csw_cdf_ks,
+            'hill_max_idx':hill_max_idx,
+            'hill_max':hill_max,
+            'snr_csw':snr_csw,
+            'cdf_avg':cdf_avg,
+            'slope':slope,
+            'intercept':intercept,
+            'r_value':r_value,
+            'p_value':p_value,
+            'std_err':std_err,
+            'ks':ks,
+            'nan_flag':nan_flag}

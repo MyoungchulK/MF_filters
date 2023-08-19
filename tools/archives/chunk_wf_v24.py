@@ -20,8 +20,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     from tools.ara_known_issue import known_issue_loader
     from tools.ara_cw_filters import py_phase_variance
     from tools.ara_cw_filters import py_testbed
-    from tools.ara_py_vertex import py_reco_handler
-    from tools.ara_py_vertex import py_ara_vertex
 
     # const. info.
     ara_const = ara_const()
@@ -29,7 +27,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     num_samps = ara_const.SAMPLES_PER_BLOCK
     num_eles = ara_const.CHANNELS_PER_ATRI
     num_pols = ara_const.POLARIZATION
-    num_pols_com = int(num_pols + 1)
     del ara_const
 
     # data config
@@ -169,12 +166,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     num_pols_com = ara_int.num_pols_com
     num_angs = ara_int.num_angs
 
-    # hit time
-    handler = py_reco_handler(st, run, wf_int.dt, 8)
-
-    # vertex
-    vertex = py_ara_vertex(st)
-
     # output array
     blk_max = 48
     samp_pad = blk_max * num_samps
@@ -264,22 +255,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     bp_coord = np.copy(coord)
     cw_coord = np.copy(coord)
     cw_bp_coord = np.copy(coord)    
-    ver_snr = np.full((num_ants, sel_evt_len), np.nan, dtype = float)
-    ver_hit = np.copy(ver_snr)
-    ver_theta = np.full((num_pols_com, sel_evt_len), np.nan, dtype = float)
-    ver_phi = np.copy(ver_theta)
-    ver_bp_snr = np.copy(ver_snr)
-    ver_bp_hit = np.copy(ver_snr)
-    ver_bp_theta = np.copy(ver_theta)
-    ver_bp_phi = np.copy(ver_phi)
-    ver_cw_snr = np.copy(ver_snr)
-    ver_cw_hit = np.copy(ver_snr)
-    ver_cw_theta = np.copy(ver_theta)
-    ver_cw_phi = np.copy(ver_phi)
-    ver_cw_bp_snr = np.copy(ver_snr)
-    ver_cw_bp_hit = np.copy(ver_snr)
-    ver_cw_bp_theta = np.copy(ver_theta)
-    ver_cw_bp_phi = np.copy(ver_phi)
 
     # cw detection
     evt_counts = 0
@@ -436,13 +411,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         freq[:, :, evt] = wf_int.pad_freq
         fft[:, :, evt] = wf_int.pad_fft
         phase[:, :, evt] = wf_int.pad_phase
-        handler.get_id_hits_prep_to_vertex(wf_int.pad_v, wf_int.pad_t, wf_int.pad_num)
-        ver_snr[:, evt] = handler.snr_arr
-        ver_hit[:, evt] = handler.hit_time_arr
-        vertex.get_pair_fit_spherical(handler.pair_info, handler.useful_num_ants)
-        ver_theta[:, evt] = vertex.theta
-        ver_phi[:, evt] = vertex.phi
- 
+     
         # band-pass wf  
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
@@ -456,13 +425,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         wf_int.get_fft_wf(use_rfft = True, use_abs = True, use_norm = True, use_phase = True)        
         bp_fft[:, :, evt] = wf_int.pad_fft
         bp_phase[:, :, evt] = wf_int.pad_phase
-        handler.get_id_hits_prep_to_vertex(wf_int.pad_v, wf_int.pad_t, wf_int.pad_num)
-        ver_bp_snr[:, evt] = handler.snr_arr
-        ver_bp_hit[:, evt] = handler.hit_time_arr
-        vertex.get_pair_fit_spherical(handler.pair_info, handler.useful_num_ants)
-        ver_bp_theta[:, evt] = vertex.theta
-        ver_bp_phi[:, evt] = vertex.phi        
-
+        
         # cw wf
         for ant in range(num_ants):
             raw_t, raw_v = ara_root.get_rf_ch_wf(ant)
@@ -476,12 +439,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         wf_int.get_fft_wf(use_rfft = True, use_abs = True, use_norm = True, use_phase = True)
         cw_fft[:, :, evt] = wf_int.pad_fft
         cw_phase[:, :, evt] = wf_int.pad_phase
-        handler.get_id_hits_prep_to_vertex(wf_int.pad_v, wf_int.pad_t, wf_int.pad_num)
-        ver_cw_snr[:, evt] = handler.snr_arr
-        ver_cw_hit[:, evt] = handler.hit_time_arr
-        vertex.get_pair_fit_spherical(handler.pair_info, handler.useful_num_ants)
-        ver_cw_theta[:, evt] = vertex.theta
-        ver_cw_phi[:, evt] = vertex.phi
 
         # cw (and band-passed) wf
         for ant in range(num_ants):
@@ -496,12 +453,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         wf_int.get_fft_wf(use_rfft = True, use_abs = True, use_norm = True, use_phase = True)
         cw_bp_fft[:, :, evt] = wf_int.pad_fft
         cw_bp_phase[:, :, evt] = wf_int.pad_phase
-        handler.get_id_hits_prep_to_vertex(wf_int.pad_v, wf_int.pad_t, wf_int.pad_num)
-        ver_cw_bp_snr[:, evt] = handler.snr_arr
-        ver_cw_bp_hit[:, evt] = handler.hit_time_arr
-        vertex.get_pair_fit_spherical(handler.pair_info, handler.useful_num_ants)
-        ver_cw_bp_theta[:, evt] = vertex.theta
-        ver_cw_bp_phi[:, evt] = vertex.phi
 
         # reco w/ interpolated wf
         for ant in range(num_ants):
@@ -948,22 +899,6 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
             'bp_coord':bp_coord,
             'cw_coord':cw_coord,
             'cw_bp_coord':cw_bp_coord,
-            'ver_snr':ver_snr,
-            'ver_hit':ver_hit,
-            'ver_theta':ver_theta,
-            'ver_phi':ver_phi,
-            'ver_cw_snr':ver_cw_snr,
-            'ver_cw_hit':ver_cw_hit,
-            'ver_cw_theta':ver_cw_theta,
-            'ver_cw_phi':ver_cw_phi,
-            'ver_bp_snr':ver_bp_snr,
-            'ver_bp_hit':ver_bp_hit,
-            'ver_bp_theta':ver_bp_theta,
-            'ver_bp_phi':ver_bp_phi,
-            'ver_cw_bp_snr':ver_cw_bp_snr,
-            'ver_cw_bp_hit':ver_cw_bp_hit,
-            'ver_cw_bp_theta':ver_cw_bp_theta,
-            'ver_cw_bp_phi':ver_cw_bp_phi,
             'radius':radius,
             'good_chs':good_chs,
             'search_map':search_map,
