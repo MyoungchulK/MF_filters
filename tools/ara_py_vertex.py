@@ -2,7 +2,6 @@ import os
 import numpy as np
 from scipy.ndimage import uniform_filter1d
 from tqdm import tqdm
-import h5py
 from itertools import combinations
 
 # custom lib
