@@ -170,7 +170,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     num_angs = ara_int.num_angs
 
     # hit time
-    handler = py_reco_handler(st, run, wf_int.dt, 8)
+    handler = py_reco_handler(st, run, wf_int.dt, 4.5, num_ants_cut = 2)
 
     # vertex
     vertex = py_ara_vertex(st)
@@ -502,6 +502,8 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         vertex.get_pair_fit_spherical(handler.pair_info, handler.useful_num_ants)
         ver_cw_bp_theta[:, evt] = vertex.theta
         ver_cw_bp_phi[:, evt] = vertex.phi
+        print(ver_cw_bp_snr[:, evt], ver_cw_bp_hit[:, evt])
+        print(ver_cw_bp_theta[:, evt], ver_cw_bp_phi[:, evt])
 
         # reco w/ interpolated wf
         for ant in range(num_ants):
