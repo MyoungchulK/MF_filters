@@ -3,15 +3,11 @@ import numpy as np
 from scipy.ndimage import uniform_filter1d
 from tqdm import tqdm
 from itertools import combinations
-import ROOT
 
 # custom lib
 from tools.ara_constant import ara_const
 from tools.ara_known_issue import known_issue_loader
 from tools.ara_data_load import ara_geom_loader
-
-#link AraRoot
-ROOT.gSystem.Load(os.environ.get('ARA_UTIL_INSTALL_DIR')+"/lib/libAraVertex.so")
 
 ara_const = ara_const()
 num_ants = ara_const.USEFUL_CHAN_PER_STATION
@@ -149,29 +145,14 @@ class py_reco_handler:
         if use_debug == False:
             del self.hit_time_arr           
          
-class py_ara_vertex:
 
-    def __init__(self):
 
-        ara_geom = ara_geom_loader(st, int(2015))
-        self.ant_pos_mean = ara_geom.get_ant_xyz(use_mean = True) # (xyz)
-        del ara_geom
 
-        self.reco = ROOT.AraVertex()
-        self.reco.SetLOG(self.ant_pos_mean[0], self.ant_pos_mean[1], self.ant_pos_mean[2])
 
-    def get_add_pair(self, pair_num):
 
-        pair_indi = self.pair_info[pair_num]
-        pair_len = len(pair_indi)
 
-        self.reco.clear()
-        for pair in range(pair_len):
-            self.reco.addPair(pair_indi[0], pair_indi[1], pair_indi[2], pair_indi[3], pair_indi[4], pair_indi[5], pair_indi[6])
 
-    def get_print_pair(self):
 
-        self.reco.printPairs()
 
 
 
