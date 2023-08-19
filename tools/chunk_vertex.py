@@ -1,6 +1,5 @@
 import numpy as np
 from tqdm import tqdm
-import h5py
 
 def vertex_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm = False):
 
@@ -70,7 +69,7 @@ def vertex_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tq
 
     # loop over the events
     for evt in tqdm(range(num_evts), disable = no_tqdm):
-      if evt == 1:        
+      #if evt == 500:        
         
         if daq_qual_cut_sum[evt]:
             continue
@@ -94,10 +93,11 @@ def vertex_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tq
         #print(snr[:, evt], hit[:, evt])
 
         # get vertex reco
+        #print(handler.pair_info, handler.useful_num_ants)
         vertex.get_pair_fit_spherical(handler.pair_info, handler.useful_num_ants)
         theta[:, evt] = vertex.theta
         phi[:, evt] = vertex.phi
-        print(theta[:, evt], phi[:, evt])
+        #print(theta[:, evt], phi[:, evt])
     del num_ants, num_pols_com, ara_root, num_evts, daq_qual_cut_sum, wf_int, handler, vertex 
 
     print('Vertex collecting is done!')

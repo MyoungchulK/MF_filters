@@ -185,7 +185,7 @@ class py_ara_vertex:
                     pass
 
             pair_indi = pair_info[pol]
-            pair_len = len(pair_indi)
+            pair_len = len(pair_indi[0])
             
             self.get_add_pair(pair_indi, pair_len)
             #self.get_print_pair()
