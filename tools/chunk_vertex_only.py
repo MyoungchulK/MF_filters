@@ -49,7 +49,7 @@ def vertex_only_collector(st, run, analyze_blind_dat = False, no_tqdm = False):
 
     # loop over the events
     for evt in tqdm(range(num_evts), disable = no_tqdm):
-      if evt == 500:        
+      #if evt == 500:        
         
         if daq_qual_cut_sum[evt]:
             continue
