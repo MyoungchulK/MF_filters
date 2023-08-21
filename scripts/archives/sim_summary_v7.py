@@ -26,7 +26,6 @@ sb_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/snr_banila_sim/'
 r_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco_sim/'
 m_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf_sim/'
 c_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/csw_sim/'
-v_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/vertex_sim/'
 q_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/qual_cut_sim/'
 
 if Type == 'signal':
@@ -75,8 +74,6 @@ snr = np.full((d_len, num_ants, num_evts), np.nan, dtype = float)
 snr_max = np.full((d_len, 2, num_evts), np.nan, dtype = float)
 snr_b = np.copy(snr)
 snr_b_max = np.copy(snr_max)
-snr_ver = np.copy(snr)
-coord_ver = np.full((d_len, 2, 3, num_evts), np.nan, dtype = float)
 qual = np.full((d_len, num_evts, 6), 0, dtype = int)
 qual_tot = np.full((d_len, num_evts), 0, dtype = int)
 evt_rate = np.copy(pnu)
@@ -94,7 +91,7 @@ nan_flag = np.full((d_len, 2, 2, num_evts), 0, dtype = int)
 
 for r in tqdm(range(len(d_run_tot))):
     
-  #if r > 8740:
+  #if r > 3310:
 
     try:
         hf = h5py.File(d_list[r], 'r')
@@ -165,20 +162,7 @@ for r in tqdm(range(len(d_run_tot))):
         snr_b_max[r, 1] = -np.sort(-snr_tot[8:], axis = 0)[2]
         del hf, snr_tot
     except FileNotFoundError:
-        print(f'{sb_path}snr_banila{hf_name}')
-
-    try:
-        hf = h5py.File(f'{v_path}vertex{hf_name}', 'r')
-        snr_pow = hf['snr'][:]
-        snr_pow[bad_ant] = np.nan
-        snr_ver[r] = snr_pow
-        theta = hf['theta'][:]
-        phi = hf['phi'][:]
-        coord_ver[r, 0] = theta
-        coord_ver[r, 1] = phi
-        del hf, snr_pow, theta, phi
-    except FileNotFoundError:
-        print(f'{v_path}vertex{hf_name}')
+        print(f'{sb_path}snr_banila_{hf_name}')
     del ex_run, bad_ant
 
     try:
@@ -231,7 +215,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Sim_Summary_{Type}_v3_A{Station}.h5'
+file_name = f'Sim_Summary_{Type}_v2_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('sim_run', data=sim_run, compression="gzip", compression_opts=9)
 hf.create_dataset('config', data=config, compression="gzip", compression_opts=9)
@@ -262,8 +246,6 @@ hf.create_dataset('mf_max_each', data=mf_max_each, compression="gzip", compressi
 hf.create_dataset('mf_ser_max', data=mf_ser_max, compression="gzip", compression_opts=9)
 hf.create_dataset('snr', data=snr, compression="gzip", compression_opts=9)
 hf.create_dataset('snr_max', data=snr_max, compression="gzip", compression_opts=9)
-hf.create_dataset('snr_ver', data=snr_ver, compression="gzip", compression_opts=9)
-hf.create_dataset('coord_ver', data=coord_ver, compression="gzip", compression_opts=9)
 hf.create_dataset('qual', data=qual, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_tot', data=qual_tot, compression="gzip", compression_opts=9)
 hf.create_dataset('sig_in', data=sig_in, compression="gzip", compression_opts=9)
