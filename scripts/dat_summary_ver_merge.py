@@ -24,6 +24,8 @@ print(coord_ver.shape, np.round(coord_ver.nbytes/1024/1024))
 del hf1
 
 hf = h5py.File(hf_name, 'r+')
+del hf['snr_ver']
+del hf['coord_ver']
 print('saving!!!')
 hf.create_dataset('snr_ver', data=snr_ver, compression="gzip", compression_opts=9)
 print('saving!!!!')
