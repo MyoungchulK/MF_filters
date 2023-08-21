@@ -20,7 +20,7 @@ num_pols_com = int(num_pols + 1)
 
 class py_reco_handler:
 
-    def __init__(self, st, run, dt, hit_thres, sum_win = 25, num_ants_cut = 3, use_debug = False, use_input_hit = False):
+    def __init__(self, st, run, dt, hit_thres, sum_win = 25, num_ants_cut = 3, use_debug = False):
 
         self.dt = dt
         self.sum_win = sum_win
@@ -28,7 +28,6 @@ class py_reco_handler:
         self.hit_thres = hit_thres
         self.num_ants_cut = num_ants_cut
         self.use_debug = use_debug
-        self.use_input_hit = use_input_hit
 
         ## ch info
         self.ant_range = np.arange(num_ants, dtype = int)
@@ -96,22 +95,18 @@ class py_reco_handler:
             self.nega_sigma_idx = nega_sigma_idx
         del nega_sigma_idx
 
-    def get_id_hits_prep_to_vertex(self, pad_v = None, pad_t = None, pad_num = None, snr = None, hit = None):
+    def get_id_hits_prep_to_vertex(self, pad_v, pad_t, pad_num):
 
-        if self.use_input_hit:
-            self.snr_arr = snr
-            self.hit_time_arr = hit
-        else:
-            ## input waveform
-            self.pad_v = pad_v ** 2
-            self.pad_v[np.isnan(self.pad_v)] = 0
-            self.pad_t = pad_t
-            self.pad_num = pad_num
+        ## input waveform
+        self.pad_v = pad_v ** 2
+        self.pad_v[np.isnan(self.pad_v)] = 0
+        self.pad_t = pad_t
+        self.pad_num = pad_num
 
-            ## hit time and snr
-            self.get_ch_sliding_v2_snr_uw()
-            if self.use_debug == False:
-                del self.pad_v, self.pad_t, self.pad_num, self.max_bin, self.max_val, self.max_time, self.pad_mean, self.pad_sigma
+        ## hit time and snr
+        self.get_ch_sliding_v2_snr_uw()
+        if self.use_debug == False:
+            del self.pad_v, self.pad_t, self.pad_num, self.max_bin, self.max_val, self.max_time, self.pad_mean, self.pad_sigma
 
         ## ch selection. tag only uesful ch, ch that has bigger than snr, same pol, and numher of hit that bigger than cut
         ch_for_reco = np.full((num_ants, num_pols_com), False, dtype = bool)
