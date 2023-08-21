@@ -26,7 +26,7 @@ sb_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/snr_banila_sim/'
 r_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco_sim/'
 m_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf_sim/'
 c_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/csw_sim/'
-v_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/vertex_sim/'
+v_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/vertex_only_sim/'
 q_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/qual_cut_sim/'
 
 if Type == 'signal':
@@ -168,7 +168,7 @@ for r in tqdm(range(len(d_run_tot))):
         print(f'{sb_path}snr_banila{hf_name}')
 
     try:
-        hf = h5py.File(f'{v_path}vertex{hf_name}', 'r')
+        hf = h5py.File(f'{v_path}vertex_only{hf_name}', 'r')
         snr_pow = hf['snr'][:]
         snr_pow[bad_ant] = np.nan
         snr_ver[r] = snr_pow
@@ -178,7 +178,7 @@ for r in tqdm(range(len(d_run_tot))):
         coord_ver[r, 1] = phi
         del hf, snr_pow, theta, phi
     except FileNotFoundError:
-        print(f'{v_path}vertex{hf_name}')
+        print(f'{v_path}vertex_only{hf_name}')
     del ex_run, bad_ant
 
     try:
