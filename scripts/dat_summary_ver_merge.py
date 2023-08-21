@@ -17,17 +17,17 @@ hf_name = f'{d_path}Data_Summary_v2_A{Station}_b.h5'
 hf_name1 = f'{d_path}Data_Summary_Ver_v2_A{Station}.h5'
 
 hf1 = h5py.File(hf_name1, 'r')
-snr_ver = hf1['snr_ver'][:]
-print(snr_ver.shape, np.round(snr_ver.nbytes/1024/1024))
+#snr_ver = hf1['snr_ver'][:]
+#print(snr_ver.shape, np.round(snr_ver.nbytes/1024/1024))
 coord_ver = hf1['coord_ver'][:]
 print(coord_ver.shape, np.round(coord_ver.nbytes/1024/1024))
 del hf1
 
 hf = h5py.File(hf_name, 'r+')
-del hf['snr_ver']
+#del hf['snr_ver']
 del hf['coord_ver']
 print('saving!!!')
-hf.create_dataset('snr_ver', data=snr_ver, compression="gzip", compression_opts=9)
+#hf.create_dataset('snr_ver', data=snr_ver, compression="gzip", compression_opts=9)
 print('saving!!!!')
 hf.create_dataset('coord_ver', data=coord_ver, compression="gzip", compression_opts=9)
 print('saving!!!!!')
