@@ -35,8 +35,7 @@ def vertex_only_collector(st, run, analyze_blind_dat = False, no_tqdm = False):
 
     # hit time
     hit_thres = 3
-    if st == 2: num_ants_cut = 3
-    else: num_ants_cut = 2 
+    num_ants_cut = 2 
     handler = py_reco_handler(st, run, 0.5, hit_thres, num_ants_cut = num_ants_cut, use_input_hit = True)
     del hit_thres, num_ants_cut
 

@@ -39,8 +39,7 @@ def vertex_only_sim_collector(Data, Station, Year):
 
     # hit time
     hit_thres = 3
-    if Station == 2: num_ants_cut = 3
-    else: num_ants_cut = 2
+    num_ants_cut = 2
     handler = py_reco_handler(Station, ex_run, 0.5, hit_thres, num_ants_cut = num_ants_cut, use_input_hit = True)
     del hit_thres, num_ants_cut
 
