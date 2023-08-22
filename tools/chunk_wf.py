@@ -170,7 +170,7 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     num_angs = ara_int.num_angs
 
     # hit time
-    handler = py_reco_handler(st, run, wf_int.dt, 3, num_ants_cut = 3)
+    handler = py_reco_handler(st, run, wf_int.dt, 3, num_ants_cut = 2)
 
     # vertex
     vertex = py_ara_vertex(st)
