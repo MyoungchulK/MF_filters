@@ -50,11 +50,6 @@ def vertex_only_sim_collector(Data, Station, Year):
     # output array
     theta = np.full((num_pols_com, num_evts), np.nan, dtype = float)
     phi = np.copy(theta)
-    r = np.copy(theta)
-    nhits = np.copy(theta)
-    x = np.copy(theta)
-    y = np.copy(theta)
-    z = np.copy(theta)
 
     # loop over the events
     for evt in tqdm(range(num_evts)):
@@ -68,11 +63,6 @@ def vertex_only_sim_collector(Data, Station, Year):
         vertex.get_pair_fit_spherical(handler.pair_info, handler.useful_num_ants)
         theta[:, evt] = vertex.theta
         phi[:, evt] = vertex.phi
-        r[:, evt] = vertex.R
-        nhits[:, evt] = vertex.nhits
-        x[:, evt] = vertex.X
-        y[:, evt] = vertex.Y
-        z[:, evt] = vertex.Z
         #print(theta[:, evt], phi[:, evt])
     del num_evts, num_ants, num_pols_com, handler, vertex
 
@@ -83,9 +73,4 @@ def vertex_only_sim_collector(Data, Station, Year):
             'snr':snr,
             'hit':hit,
             'theta':theta,
-            'phi':phi,
-            'r':r,
-            'nhits':nhits,
-            'x':x,
-            'y':y,
-            'z':z}
+            'phi':phi}

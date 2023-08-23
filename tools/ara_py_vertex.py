@@ -170,6 +170,11 @@ class py_ara_vertex:
 
         self.theta = np.full((num_pols_com), np.nan, dtype = float) 
         self.phi = np.copy(self.theta)
+        self.R = np.copy(self.theta)
+        self.nhits = np.copy(self.theta)
+        self.X = np.copy(self.theta)
+        self.Y = np.copy(self.theta)
+        self.Z = np.copy(self.theta)
         for pol in range(num_pols_com):
             if useful_num_ants[pol] == 0:
                 continue
@@ -198,6 +203,11 @@ class py_ara_vertex:
             fit_result = self.reco.doPairFitSpherical()
             self.theta[pol] = fit_result.theta
             self.phi[pol] = fit_result.phi
+            self.R[pol] = fit_result.R
+            self.nhits[pol] = fit_result.nhits
+            self.X[pol] = fit_result.X
+            self.Y[pol] = fit_result.Y
+            self.Z[pol] = fit_result.Z
             del pair_indi, pair_len, fit_result
 
         self.theta = 90 - np.degrees(self.theta)

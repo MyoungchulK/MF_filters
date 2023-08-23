@@ -46,15 +46,10 @@ def vertex_only_collector(st, run, analyze_blind_dat = False, no_tqdm = False):
     # output array  
     theta = np.full((num_pols_com, num_evts), np.nan, dtype = float)
     phi = np.copy(theta)
-    r = np.copy(theta)
-    nhits = np.copy(theta)
-    x = np.copy(theta)
-    y = np.copy(theta)
-    z = np.copy(theta)
 
     # loop over the events
     for evt in tqdm(range(num_evts), disable = no_tqdm):
-      #if evt == 10090:        
+      #if evt == 500:        
         
         if daq_qual_cut_sum[evt]:
             continue
@@ -67,13 +62,8 @@ def vertex_only_collector(st, run, analyze_blind_dat = False, no_tqdm = False):
         vertex.get_pair_fit_spherical(handler.pair_info, handler.useful_num_ants)
         theta[:, evt] = vertex.theta
         phi[:, evt] = vertex.phi
-        r[:, evt] = vertex.R
-        nhits[:, evt] = vertex.nhits
-        x[:, evt] = vertex.X
-        y[:, evt] = vertex.Y
-        z[:, evt] = vertex.Z
         #print(handler.snr_arr, handler.hit_time_arr)
-        #print(theta[:, evt], phi[:, evt], r[:, evt], nhits[:, evt], x[:, evt], y[:, evt], z[:, evt])
+        #print(theta[:, evt], phi[:, evt])
     del num_ants, num_pols_com, num_evts, daq_qual_cut_sum, handler, vertex 
 
     print('Vertex only collecting is done!')
@@ -84,12 +74,7 @@ def vertex_only_collector(st, run, analyze_blind_dat = False, no_tqdm = False):
             'snr':snr,
             'hit':hit,
             'theta':theta,
-            'phi':phi,
-            'r':r,
-            'nhits':nhits,
-            'x':x,
-            'y':y,
-            'z':z}
+            'phi':phi}
 
 
 
