@@ -106,21 +106,21 @@ for r in tqdm(range(len(d_run_tot))):
     sim_run[r] = cons[1]
     config[r] = cons[2]
     flavor[r] = cons[4]
-    radius[r] = hf['radius'][:]
-    pnu[r] = hf['pnu'][:]
-    inu_thrown[r] = hf['inu_thrown'][-1]
-    weight[r] = hf['weight'][:]
-    probability[r] = hf['probability'][:]
-    nuflavorint[r] = hf['nuflavorint'][:]
-    nu_nubar[r] = hf['nu_nubar'][:]
-    currentint[r] = hf['currentint'][:]
-    elast_y[r] = hf['elast_y'][:]
-    posnu[r] = hf['posnu'][:]
-    posnu_antcen[r] = hf['posnu_antcen'][:]
-    nnu[r] = hf['nnu'][:]
-    rec_ang[r] = hf['rec_ang'][:]
-    view_ang[r] = hf['view_ang'][:]
-    arrival_time[r] = hf['arrival_time'][:]
+    #radius[r] = hf['radius'][:]
+    #pnu[r] = hf['pnu'][:]
+    #inu_thrown[r] = hf['inu_thrown'][-1]
+    #weight[r] = hf['weight'][:]
+    #probability[r] = hf['probability'][:]
+    #nuflavorint[r] = hf['nuflavorint'][:]
+    #nu_nubar[r] = hf['nu_nubar'][:]
+    #currentint[r] = hf['currentint'][:]
+    #elast_y[r] = hf['elast_y'][:]
+    #posnu[r] = hf['posnu'][:]
+    #posnu_antcen[r] = hf['posnu_antcen'][:]
+    #nnu[r] = hf['nnu'][:]
+    #rec_ang[r] = hf['rec_ang'][:]
+    #view_ang[r] = hf['view_ang'][:]
+    #arrival_time[r] = hf['arrival_time'][:]
     exponent[r] = hf['exponent_range'][:]
     wf_time = hf['wf_time'][:]
     wf_dege = np.array([wf_time[0] - 0.5, wf_time[-1] + 0.5])
@@ -129,7 +129,7 @@ for r in tqdm(range(len(d_run_tot))):
     sig_in[r] = np.nansum(np.digitize(sig_bin, wf_dege) == 1, axis = (0, 1))
     sig_in_wide[r] = np.nansum(np.digitize(sig_bin, wf_dege_wide) == 1, axis = (0, 1))
     signal_bin[r] = sig_bin
-    del hf, wf_time, sig_bin, wf_dege, wf_dege_wide
+    #del hf, wf_time, sig_bin, wf_dege, wf_dege_wide
 
     if Type == 'signal':
         hf_name = f'_AraOut.{Type}_E{int(exponent[r, 0])}_F{flavor[r]}_A{Station}_R{config[r]}.txt.run{sim_run[r]}.h5'
@@ -146,7 +146,7 @@ for r in tqdm(range(len(d_run_tot))):
 
     ex_run = get_example_run(Station, config[r])
     bad_ant = known_issue.get_bad_antenna(ex_run)
-    try:
+    """try:
         hf = h5py.File(f'{s_path}snr{hf_name}', 'r')
         snr_tot = hf['snr'][:]
         snr[r] = snr_tot
@@ -156,8 +156,8 @@ for r in tqdm(range(len(d_run_tot))):
         del hf, snr_tot
     except FileNotFoundError:
         print(f'{s_path}snr{hf_name}')
-
-    try:
+    """
+    """try:
         hf = h5py.File(f'{sb_path}snr_banila{hf_name}', 'r')
         snr_tot = hf['snr'][:]
         snr_b[r] = snr_tot
@@ -167,12 +167,12 @@ for r in tqdm(range(len(d_run_tot))):
         del hf, snr_tot
     except FileNotFoundError:
         print(f'{sb_path}snr_banila{hf_name}')
-
+    """
     try:
         hf = h5py.File(f'{v_path}vertex_only{hf_name}', 'r')
-        snr_pow = hf['snr'][:]
-        snr_pow[bad_ant] = np.nan
-        snr_ver[r] = snr_pow
+        #snr_pow = hf['snr'][:]
+        #snr_pow[bad_ant] = np.nan
+        #snr_ver[r] = snr_pow
         theta = hf['theta'][:]
         phi = hf['phi'][:]
         r_ver = hf['r'][:]
@@ -185,7 +185,7 @@ for r in tqdm(range(len(d_run_tot))):
         xyz_ver[r, 0] = x_ver
         xyz_ver[r, 1] = y_ver
         xyz_ver[r, 2] = z_ver
-        del hf, snr_pow, theta, phi, r_ver, x_ver, y_ver, z_ver
+        #del hf, snr_pow, theta, phi, r_ver, x_ver, y_ver, z_ver
     except FileNotFoundError:
         print(f'{v_path}vertex_only{hf_name}')
     del ex_run, bad_ant
@@ -194,8 +194,8 @@ for r in tqdm(range(len(d_run_tot))):
         hf = h5py.File(f'{r_path}reco{hf_name}', 'r')
         coef_tot = hf['coef'][:] # pol, rad, sol, evt
         coord_tot = hf['coord'][:] # pol, tp, rad, sol, evt
-        coef[r] = coef_tot
-        coord[r] = coord_tot
+        #coef[r] = coef_tot
+        #coord[r] = coord_tot
         coef_re = np.reshape(coef_tot, (3, 6, -1))
         coord_re = np.reshape(coord_tot, (3, 2, 6, -1))
         coord_re = np.transpose(coord_re, (1, 0, 2, 3))
@@ -203,10 +203,10 @@ for r in tqdm(range(len(d_run_tot))):
         coef_max[r] = coef_re[pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]]
         coord_max[r, :2] = coord_re[ang_num[:, np.newaxis, np.newaxis], pol_num[np.newaxis, :, np.newaxis], coef_max_idx, evt_num[np.newaxis, np.newaxis, :]]
         coord_max[r, 2] = rad_o[coef_max_idx // 3]
-        del hf, coef_tot, coord_tot, coef_re, coord_re, coef_max_idx
+        #del hf, coef_tot, coord_tot, coef_re, coord_re, coef_max_idx
     except FileNotFoundError:
         print(f'{r_path}reco{hf_name}')
-
+    """
     try:
         hf = h5py.File(f'{c_path}csw{hf_name}', 'r')
         hill_max_idx[r] = hf['hill_max_idx'][:]
@@ -223,7 +223,7 @@ for r in tqdm(range(len(d_run_tot))):
         del hf
     except FileNotFoundError:
         print(f'{c_path}csw{hf_name}')
-    
+    """
     try:
         hf = h5py.File(f'{m_path}mf{hf_name}', 'r')
         mf_max[r] = hf['mf_max'][:] # pol, evt

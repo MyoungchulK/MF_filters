@@ -20,7 +20,7 @@ num_pols_com = int(num_pols + 1)
 
 class py_reco_handler:
 
-    def __init__(self, st, run, dt, hit_thres, sum_win = 25, num_ants_cut = 3, use_debug = False, use_input_hit = False, use_rpr_only = False):
+    def __init__(self, st, run, dt, hit_thres, sum_win = 25, num_ants_cut = 3, use_debug = False, use_input_hit = False):
 
         self.dt = dt
         self.sum_win = sum_win
@@ -29,7 +29,6 @@ class py_reco_handler:
         self.num_ants_cut = num_ants_cut
         self.use_debug = use_debug
         self.use_input_hit = use_input_hit
-        self.use_rpr_only = use_rpr_only
 
         ## ch info
         self.ant_range = np.arange(num_ants, dtype = int)
@@ -113,9 +112,6 @@ class py_reco_handler:
             self.get_ch_sliding_v2_snr_uw()
             if self.use_debug == False:
                 del self.pad_v, self.pad_t, self.pad_num, self.max_bin, self.max_val, self.max_time, self.pad_mean, self.pad_sigma
-
-        if self.use_rpr_only:
-            return
 
         ## ch selection. tag only uesful ch, ch that has bigger than snr, same pol, and numher of hit that bigger than cut
         ch_for_reco = np.full((num_ants, num_pols_com), False, dtype = bool)

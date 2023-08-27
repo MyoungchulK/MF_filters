@@ -503,7 +503,12 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
         ver_cw_bp_theta[:, evt] = vertex.theta
         ver_cw_bp_phi[:, evt] = vertex.phi
         print(ver_cw_bp_snr[:, evt], ver_cw_bp_hit[:, evt])
-        print(ver_cw_bp_theta[:, evt], ver_cw_bp_phi[:, evt])
+        print(ver_cw_bp_theta[:, evt])
+        print(ver_cw_bp_phi[:, evt])
+        print(vertex.R)
+        print(vertex.X)
+        print(vertex.Y)
+        print(vertex.Z)
 
         # reco w/ interpolated wf
         for ant in range(num_ants):

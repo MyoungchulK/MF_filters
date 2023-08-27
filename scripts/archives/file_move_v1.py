@@ -15,21 +15,22 @@ from tools.ara_run_manager import get_path_info_v2
 
 Station = int(sys.argv[1])
 Type = str(sys.argv[2])
-Type1 = str(sys.argv[3])
 
 # sort
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/{Type}_sim/*'
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/{Type}/*'
 d_list, d_run_tot, d_run_range,d_len = file_sorter(d_path)
 
-t_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/{Type1}_sim/'
+t_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/{Type}_temp/'
 if not os.path.exists(t_path):
     os.makedirs(t_path)
 
 for r in tqdm(range(len(d_run_tot))):
-  
-    new_name = d_list[r].replace(Type, Type1)
+   
+    sim_run = int(get_path_info_v2(d_list[r], 'txt.run', '.root'))
+    if sim_run > 99:
+        continue
 
-    MV_CMD = f'mv {d_list[r]} {new_name}'
+    MV_CMD = f'mv {d_list[r]} {t_path}'
     call(MV_CMD.split(' '))
     print(MV_CMD)
     

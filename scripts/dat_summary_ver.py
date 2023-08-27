@@ -24,7 +24,8 @@ v_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/vertex_only/'
 del d_run_range
 
 #snr_ver = np.full((16, 0), 0, dtype = float)
-coord_ver = np.full((2, 3, 0), 0, dtype = float)
+coord_ver = np.full((3, 3, 0), 0, dtype = float)
+xyz_ver = np.copy(coord_ver)
 
 for r in tqdm(range(len(d_run_tot))):
     
@@ -40,9 +41,17 @@ for r in tqdm(range(len(d_run_tot))):
     #snr_ver = np.concatenate((snr_ver, snr), axis = 1)
     theta = hf_v['theta'][:]
     phi = hf_v['phi'][:]
-    coord = np.asarray([theta, phi])
+    r_ver = hf_v['r'][:]
+    coord = np.asarray([theta, phi, r_ver])
     coord_ver = np.concatenate((coord_ver, coord), axis = 2)
-    del v_name, hf_v, theta, phi, coord, bad_ant
+
+    x_ver = hf_v['x'][:]
+    y_ver = hf_v['y'][:]
+    z_ver = hf_v['z'][:]
+    xyz = np.asarray([x_ver, y_ver, z_ver])
+    xyz_ver = np.concatenate((xyz_ver, xyz), axis = 2)
+
+    del v_name, hf_v, theta, phi, coord, bad_ant, r_ver, x_ver, y_ver, z_ver, xyz
     #del v_name, hf_v, theta, phi, coord, snr, bad_ant
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
@@ -54,6 +63,7 @@ file_name = f'Data_Summary_Ver_v2_A{Station}_R{count_i}.h5'
 hf = h5py.File(file_name, 'w')
 #hf.create_dataset('snr_ver', data=snr_ver, compression="gzip", compression_opts=9)
 hf.create_dataset('coord_ver', data=coord_ver, compression="gzip", compression_opts=9)
+hf.create_dataset('xyz_ver', data=xyz_ver, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name, size_checker(path+file_name))
 
