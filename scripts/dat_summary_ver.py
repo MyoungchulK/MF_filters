@@ -20,7 +20,7 @@ known_issue = known_issue_loader(Station, verbose = True)
 # sort
 d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco/*'
 d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
-v_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/vertex_only/'
+v_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/vertex/'
 del d_run_range
 
 #snr_ver = np.full((16, 0), 0, dtype = float)
@@ -34,7 +34,7 @@ for r in tqdm(range(len(d_run_tot))):
 
     bad_ant = known_issue.get_bad_antenna(d_run_tot[r])
  
-    v_name = f'{v_path}vertex_only_A{Station}_R{d_run_tot[r]}.h5'
+    v_name = f'{v_path}vertex_A{Station}_R{d_run_tot[r]}.h5'
     hf_v = h5py.File(v_name, 'r')
     #snr = hf_v['snr'][:]
     #snr[bad_ant] = np.nan
