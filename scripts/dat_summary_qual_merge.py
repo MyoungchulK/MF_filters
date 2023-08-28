@@ -18,21 +18,19 @@ hf_name1 = f'{d_path}Data_Summary_Qual_v2_A{Station}.h5'
 
 hf1 = h5py.File(hf_name1, 'r')
 qual_ep = hf1['qual_ep'][:]
-print(qual_ep.shape, np.round(qual_ep.nbytes/1024/1024))
-unix_ep = hf1['unix_ep'][:]
-print(unix_ep.shape, np.round(unix_ep.nbytes/1024/1024))
-date_ep = hf1['date_ep'][:]
-print(date_ep.shape, np.round(date_ep.nbytes/1024/1024))
+qual_ep_corr = hf1['qual_ep_corr'][:]
+qual_ep_ver = hf1['qual_ep_ver'][:]
+qual_ep_mf = hf1['qual_ep_mf'][:]
 del hf1
 
 hf = h5py.File(hf_name, 'r+')
 del hf['qual_ep']
+del hf['qual_no_s_ep']
 print('saving!!!')
 hf.create_dataset('qual_ep', data=qual_ep, compression="gzip", compression_opts=9)
-print('saving!!!!')
-hf.create_dataset('unix_ep', data=unix_ep, compression="gzip", compression_opts=9)
-print('saving!!!!!')
-hf.create_dataset('date_ep', data=date_ep, compression="gzip", compression_opts=9)
+hf.create_dataset('qual_ep_corr', data=qual_ep_corr, compression="gzip", compression_opts=9)
+hf.create_dataset('qual_ep_ver', data=qual_ep_ver, compression="gzip", compression_opts=9)
+hf.create_dataset('qual_ep_mf', data=qual_ep_mf, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',hf_name, size_checker(hf_name))
 

@@ -70,7 +70,7 @@ coef_max = np.full((d_len, len(pol_num), num_evts), np.nan, dtype = float) # run
 coord_max = np.full((d_len, len(ang_num) + 1, len(pol_num), num_evts), np.nan, dtype = float) # run, pol, thephir, evt
 mf_max = np.full((d_len, len(pol_num), num_evts), np.nan, dtype = float) # run, pol, evt
 mf_max_each = np.full((d_len, len(pol_num), 2, 7, 6, num_evts), np.nan, dtype = float) # run, pol, sho, the, off, evt
-mf_temp = np.full((d_len, len(pol_num), 2, num_evts), np.nan, dtype = float) # run, pol, thephi, evt
+mf_ser_max = np.full((d_len, len(pol_num), 2, num_evts), np.nan, dtype = float) # run, pol, thephi, evt
 snr = np.full((d_len, num_ants, num_evts), np.nan, dtype = float)
 snr_max = np.full((d_len, 2, num_evts), np.nan, dtype = float)
 snr_b = np.copy(snr)
@@ -228,8 +228,8 @@ for r in tqdm(range(len(d_run_tot))):
         hf = h5py.File(f'{m_path}mf{hf_name}', 'r')
         mf_max[r] = hf['mf_max'][:] # pol, evt
         mf_max_each[r] = hf['mf_max_each'][:] # pol, sho, the, off, evt
-        mf_temp[r, :2] = hf['mf_temp'][:, 1:3] # of pols, theta n phi, # of evts
-        mf_temp[r, 2] = hf['mf_temp_com'][1:3] # of pols, theta n phi, # of evts
+        mf_ser_max[r, :2] = hf['mf_temp'][:, 1:3] # of pols, theta n phi, # of evts
+        mf_ser_max[r, 2] = hf['mf_temp_com'][1:3] # of pols, theta n phi, # of evts
         del hf
     except FileNotFoundError:
         print(f'{m_path}mf{hf_name}')
@@ -268,7 +268,7 @@ hf.create_dataset('coef_max', data=coef_max, compression="gzip", compression_opt
 hf.create_dataset('coord_max', data=coord_max, compression="gzip", compression_opts=9)
 hf.create_dataset('mf_max', data=mf_max, compression="gzip", compression_opts=9)
 hf.create_dataset('mf_max_each', data=mf_max_each, compression="gzip", compression_opts=9)
-hf.create_dataset('mf_temp', data=mf_temp, compression="gzip", compression_opts=9)
+hf.create_dataset('mf_ser_max', data=mf_ser_max, compression="gzip", compression_opts=9)
 hf.create_dataset('snr', data=snr, compression="gzip", compression_opts=9)
 hf.create_dataset('snr_max', data=snr_max, compression="gzip", compression_opts=9)
 hf.create_dataset('snr_ver', data=snr_ver, compression="gzip", compression_opts=9)
