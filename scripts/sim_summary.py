@@ -26,7 +26,7 @@ sb_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/snr_banila_sim/'
 r_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco_sim/'
 m_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf_sim/'
 c_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/csw_sim/'
-v_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/vertex_only_sim/'
+v_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/vertex_sim/'
 q_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/qual_cut_sim/'
 
 if Type == 'signal':
@@ -169,7 +169,7 @@ for r in tqdm(range(len(d_run_tot))):
         print(f'{sb_path}snr_banila{hf_name}')
 
     try:
-        hf = h5py.File(f'{v_path}vertex_only{hf_name}', 'r')
+        hf = h5py.File(f'{v_path}vertex{hf_name}', 'r')
         snr_pow = hf['snr'][:]
         snr_pow[bad_ant] = np.nan
         snr_ver[r] = snr_pow
@@ -187,7 +187,7 @@ for r in tqdm(range(len(d_run_tot))):
         xyz_ver[r, 2] = z_ver
         del hf, snr_pow, theta, phi, r_ver, x_ver, y_ver, z_ver
     except FileNotFoundError:
-        print(f'{v_path}vertex_only{hf_name}')
+        print(f'{v_path}vertex{hf_name}')
     del ex_run, bad_ant
 
     try:
@@ -240,7 +240,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Sim_Summary_{Type}_v3_A{Station}.h5'
+file_name = f'Sim_Summary_{Type}_v4_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('sim_run', data=sim_run, compression="gzip", compression_opts=9)
 hf.create_dataset('config', data=config, compression="gzip", compression_opts=9)

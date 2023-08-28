@@ -12,7 +12,7 @@ from tools.ara_known_issue import known_issue_loader
 
 Station = int(sys.argv[1])
 
-d_path1 = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/Data_Summary_Ver_v2_A*'
+d_path1 = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/Data_Summary_Ver_v2_A{Station}_R*'
 d_list1, d_run_tot1, d_run_range1, d_len1 = file_sorter(d_path1)
 del d_run_range1
 
