@@ -827,7 +827,7 @@ class post_qual_cut_loader:
 class filt_qual_cut_loader:
 
     def __init__(self, st, run, evt_num, analyze_blind_dat = False, verbose = False, spark_unblind = False, cal_sur_unblind = False,
-                sim_spark_path = None, sim_corr_path = None, sim_ver_path = None, sim_mf_path = None):
+                sim_spark_path = None, sim_corr_path = None, sim_mf_path = None):
 
         self.st = st
         self.run = run
@@ -839,7 +839,6 @@ class filt_qual_cut_loader:
         self.cal_sur_unblind = cal_sur_unblind
         self.sim_spark_path = sim_spark_path
         self.sim_corr_path = sim_corr_path
-        self.sim_ver_path = sim_ver_path
         self.sim_mf_path = sim_mf_path
         self.run_info = run_info_loader(self.st, self.run, analyze_blind_dat = analyze_blind_dat)
         if self.sim_spark_path is not None and self.sim_corr_path is not None and self.sim_mf_path is not None:
@@ -934,31 +933,67 @@ class filt_qual_cut_loader:
 
             return spark_evts
 
-    def get_calpulser_surface_events(self, cut_corr = 35, cut_z = -50, cut_sur = 0.5, cut_pole = 1.5, use_max = False):
+    def get_calpulser_surface_events(self, cut_corr = 35, cut_mf = 3.5, use_max = False):
 
         use_sim = False
-        if self.sim_mf_path is not None and self.sim_corr_path is not None and self.sim_ver_path is not None:
+        if self.sim_mf_path is not None and self.sim_corr_path is not None:
             use_sim = True
-        elif self.sim_mf_path is None and self.sim_corr_path is None and self.sim_ver_path is None:
+        elif self.sim_mf_path is None and self.sim_corr_path is None:
             pass
         else:
             print('Something wrong in calpulser/surface cut!')
             sys.exit(1)
 
-        cal_sur_evts = np.full((self.num_evts, 5), 0, dtype = int) # cal, corr, ver, mf sur, mf pole
+        cal_sur_evts = np.full((self.num_evts, 3), 0, dtype = int) # cal, corr, mf
         
         if use_sim:
             reco_dat = self.sim_corr_path
-            ver_dat = self.sim_ver_path
             mf_dat = self.sim_mf_path 
         else:
             reco_dat = self.run_info.get_result_path(file_type = 'reco', verbose = self.verbose, force_unblind = self.cal_sur_unblind, return_none = True)
-            ver_dat = self.run_info.get_result_path(file_type = 'vertex', verbose = self.verbose, force_unblind = self.cal_sur_unblind, return_none = True)
             mf_dat = self.run_info.get_result_path(file_type = 'mf', verbose = self.verbose, force_unblind = self.cal_sur_unblind, return_none = True)
         
-        if reco_dat is None and mf_dat is None and ver_dat is None:
-            return cal_sur_evts
+        ## temp
+        mf_dat = None
+        print('MF is off for surface cut!')
+        ## temp
 
+        if reco_dat is None and mf_dat is None:
+            return cal_sur_evts
+        if mf_dat is not None:
+            print('MF is on for surface cut!')
+            mf_hf = h5py.File(mf_dat, 'r')
+            if use_sim:
+                evt_name = 'entry_num'
+            else:
+                evt_name = 'evt_num'
+            evt_num_reco = mf_hf[evt_name][:]
+            num_evts_reco = len(evt_num_reco)
+            del evt_name
+
+            mf_temp = mf_hf['mf_temp'][:, 1] # pol, evt
+            sur_cuts = np.any(mf_temp < cut_mf, axis = 0).astype(int)
+            del mf_hf, mf_temp
+
+            if use_sim:
+                cal_sur_evts[:, 2] = sur_cuts
+            else:
+                if self.num_evts != num_evts_reco:
+                    evt_idx = np.in1d(self.evt_num, evt_num_reco)
+                else:
+                    evt_idx = np.full((self.num_evts), True, dtype = bool)
+                try:
+                    cal_sur_evts[evt_idx, 2] = sur_cuts
+                except ValueError:
+                    for evt in tqdm(range(num_evts_reco)):
+                        evt_idx = np.where(self.evt_num == evt_num_reco[evt])[0]
+                        if len(evt_idx) > 0:
+                            cal_sur_evts[evt_idx, 2] = sur_cuts[evt]
+                del evt_idx
+            del evt_num_reco, num_evts_reco, sur_cuts
+
+            if self.verbose:
+                quick_qual_check(cal_sur_evts[:, 2] != 0, 'mf surface cut', self.evt_num)
         if reco_dat is not None:
             reco_hf = h5py.File(reco_dat, 'r')
             if use_sim:
@@ -998,7 +1033,7 @@ class filt_qual_cut_loader:
             else:
                 print('Wr are using indi coord for suaface cut!!')
                 #coord_max_flat = np.reshape(coord_max[:, 0, 1, :, :], (coord_shape[0] * coord_shape[3], -1)) # pol, thephi, rad, sol, evt
-                rad_opt = np.array([0, 1, 2], dtype = int)
+                rad_opt = np.array([1, 2], dtype = int)
                 coord_max_flat = np.reshape(coord_max[:, 0, rad_opt, 0, :], (coord_shape[0] * len(rad_opt), -1)) # pol, thephi, rad, sol, evt
                 del rad_opt
             sur_cuts = np.any(coord_max_flat > cut_corr, axis = 0).astype(int)
@@ -1027,90 +1062,15 @@ class filt_qual_cut_loader:
             if self.verbose:
                 quick_qual_check(cal_sur_evts[:, 0] != 0, 'calpulser cut', self.evt_num)
                 quick_qual_check(cal_sur_evts[:, 1] != 0, 'corr surface cut', self.evt_num)
-            
-        if ver_dat is not None:
-            ver_hf = h5py.File(ver_dat, 'r')
-            if use_sim:
-                evt_name = 'entry_num'
-            else:
-                evt_name = 'evt_num'
-            evt_num_reco = ver_hf[evt_name][:]
-            num_evts_reco = len(evt_num_reco)
-            del evt_name
-
-            z_reco = ver_hf['z'][:num_pols]
-            z_reco[np.isnan(z_reco)] = -9999
-            sur_cuts = np.any(z_reco > cut_z, axis = 0).astype(int)
-            del ver_hf, z_reco
-
-            if use_sim:
-                cal_sur_evts[:, 2] = sur_cuts
-            else:
-                if self.num_evts != num_evts_reco:
-                    evt_idx = np.in1d(self.evt_num, evt_num_reco)
-                else:
-                    evt_idx = np.full((self.num_evts), True, dtype = bool)
-                try:
-                    cal_sur_evts[evt_idx, 2] = sur_cuts
-                except ValueError:
-                    for evt in tqdm(range(num_evts_reco)):
-                        evt_idx = np.where(self.evt_num == evt_num_reco[evt])[0]
-                        if len(evt_idx) > 0:
-                            cal_sur_evts[evt_idx, 2] = sur_cuts[evt]
-                del evt_idx
-            del evt_num_reco, num_evts_reco, sur_cuts
-
-            if self.verbose:
-                quick_qual_check(cal_sur_evts[:, 2] != 0, 'vertex surface cut', self.evt_num)
-
-        if mf_dat is not None:
-            mf_hf = h5py.File(mf_dat, 'r')
-            if use_sim:
-                evt_name = 'entry_num'
-            else:
-                evt_name = 'evt_num'
-            evt_num_reco = mf_hf[evt_name][:]
-            num_evts_reco = len(evt_num_reco)
-            del evt_name
-
-            mf_temp = mf_hf['mf_temp'][:, 1:3] # pol, theta n phi, evt
-            sur_cuts = np.any(mf_temp[:, 0] < cut_sur, axis = 0).astype(int)
-            pole_cuts = np.any(np.logical_and(mf_temp[:, 0] < cut_pole, mf_temp[:, 1] < cut_pole), axis = 0).astype(int)
-            del mf_hf, mf_temp
-
-            if use_sim:
-                cal_sur_evts[:, 3] = sur_cuts
-                cal_sur_evts[:, 4] = pole_cuts
-            else:
-                if self.num_evts != num_evts_reco:
-                    evt_idx = np.in1d(self.evt_num, evt_num_reco)
-                else:
-                    evt_idx = np.full((self.num_evts), True, dtype = bool)
-                try:
-                    cal_sur_evts[evt_idx, 3] = sur_cuts
-                    cal_sur_evts[evt_idx, 4] = pole_cuts
-                except ValueError:
-                    for evt in tqdm(range(num_evts_reco)):
-                        evt_idx = np.where(self.evt_num == evt_num_reco[evt])[0]
-                        if len(evt_idx) > 0:
-                            cal_sur_evts[evt_idx, 3] = sur_cuts[evt]
-                            cal_sur_evts[evt_idx, 4] = pole_cuts[evt]
-                del evt_idx
-            del evt_num_reco, num_evts_reco, sur_cuts, pole_cuts
-
-            if self.verbose:
-                quick_qual_check(cal_sur_evts[:, 3] != 0, 'mf surface cut', self.evt_num)
-                quick_qual_check(cal_sur_evts[:, 4] != 0, 'mf south pole cut', self.evt_num)
-
-        del use_sim, reco_dat, mf_dat, ver_dat
+        del use_sim, reco_dat, mf_dat
 
         return cal_sur_evts
 
     def run_filt_qual_cut(self, use_max = False, cut_ratio = None):
 
-        tot_filt_qual_cut = np.full((self.num_evts, 6), 0, dtype = int) # 0: spark, 1: cal, 2: reco. 3: vertex, 4: mf surface, 5: mf pole
-        tot_filt_qual_cut[:, 0] = self.get_spark_events(cut_ratio = cut_ratio)
-        tot_filt_qual_cut[:, 1:] = self.get_calpulser_surface_events(use_max = use_max)
+        tot_filt_qual_cut = np.full((self.num_evts, 4), 0, dtype = int)
+        tot_filt_qual_cut[:, :3] = self.get_calpulser_surface_events(use_max = use_max)
+        tot_filt_qual_cut[:, 3] = self.get_spark_events(cut_ratio = cut_ratio)
 
         self.filt_qual_cut_sum = np.nansum(tot_filt_qual_cut, axis = 1)
 
@@ -1430,7 +1390,7 @@ def get_bad_live_time(trig_type, unix_time, time_bins, sec_per_min, cuts, verbos
                         'single block', 'rf win', 'cal win', 'soft win', 'first minute', 
                         'dda voltage', 'bad cal min rate', 'bad cal sec rate', 'bad soft sec rate', 'no rf cal sec rate', 'bad l1 rate', 
                         'short runs', 'bad unix time', 'bad run', 'cw log', 'cw ratio', 'empty slot!', 'unlock calpulser', 
-                        'zero ped', 'single ped', 'low ped', 'known bad ped', 'op antenna cut', 'calpuler cut', 'corr surface cut', 'vertex surface cut', 'mf surface cut', 'mf pole cut']
+                        'zero ped', 'single ped', 'low ped', 'known bad ped', 'calpuler cut', 'corr surface cut', 'mf surface cut', 'op antenna cut']
             print(f'live time for each cuts. total number of cuts: {len(rough_tot_bad_time)}')
             for t in range(len(rough_tot_bad_time)):
                 print(f'{t + 1}) {q_name[t]}: ~{np.round(rough_tot_bad_time[t] / 60, 1)} min.')
