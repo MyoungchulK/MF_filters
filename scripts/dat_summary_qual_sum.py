@@ -38,7 +38,9 @@ for r in tqdm(range(len(d_run_tot1))):
     qual_ep_corr = np.concatenate((qual_ep_corr, qual_ep_corr1), axis = 0)
     qual_ep_ver = np.concatenate((qual_ep_ver, qual_ep_ver1), axis = 0)
     qual_ep_mf = np.concatenate((qual_ep_mf, qual_ep_mf1), axis = 0)
+    print(qual_ep.shape,qual_ep1.shape)
     del hf, qual_ep1, qual_ep_corr1, qual_ep_ver1, qual_ep_mf1
+
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 if not os.path.exists(path):
