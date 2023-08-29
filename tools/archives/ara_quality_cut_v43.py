@@ -945,7 +945,7 @@ class filt_qual_cut_loader:
             print('Something wrong in calpulser/surface cut!')
             sys.exit(1)
 
-        cal_sur_evts = np.full((self.num_evts, 5), 0, dtype = int) # cal, corr, ver z, ver theta, mf pole
+        cal_sur_evts = np.full((self.num_evts, 5), 0, dtype = int) # cal, corr, ver, mf sur, mf pole
         
         if use_sim:
             reco_dat = self.sim_corr_path
@@ -998,7 +998,7 @@ class filt_qual_cut_loader:
             else:
                 print('Wr are using indi coord for suaface cut!!')
                 #coord_max_flat = np.reshape(coord_max[:, 0, 1, :, :], (coord_shape[0] * coord_shape[3], -1)) # pol, thephi, rad, sol, evt
-                rad_opt = np.array([1, 2], dtype = int)
+                rad_opt = np.array([0, 1, 2], dtype = int)
                 coord_max_flat = np.reshape(coord_max[:, 0, rad_opt, 0, :], (coord_shape[0] * len(rad_opt), -1)) # pol, thephi, rad, sol, evt
                 del rad_opt
             sur_cuts = np.any(coord_max_flat > cut_corr, axis = 0).astype(int)
@@ -1040,35 +1040,28 @@ class filt_qual_cut_loader:
 
             z_reco = ver_hf['z'][:num_pols]
             z_reco[np.isnan(z_reco)] = -9999
-            z_cuts = np.any(z_reco > cut_z, axis = 0).astype(int)
-            t_reco = ver_hf['theta'][:num_pols]
-            t_reco[np.isnan(t_reco)] = -9999
-            t_cuts = np.any(t_reco > cut_corr, axis = 0).astype(int)
-            del ver_hf, z_reco, t_reco
+            sur_cuts = np.any(z_reco > cut_z, axis = 0).astype(int)
+            del ver_hf, z_reco
 
             if use_sim:
-                cal_sur_evts[:, 2] = z_cuts
-                cal_sur_evts[:, 3] = t_cuts
+                cal_sur_evts[:, 2] = sur_cuts
             else:
                 if self.num_evts != num_evts_reco:
                     evt_idx = np.in1d(self.evt_num, evt_num_reco)
                 else:
                     evt_idx = np.full((self.num_evts), True, dtype = bool)
                 try:
-                    cal_sur_evts[evt_idx, 2] = z_cuts
-                    cal_sur_evts[evt_idx, 3] = t_cuts
+                    cal_sur_evts[evt_idx, 2] = sur_cuts
                 except ValueError:
                     for evt in tqdm(range(num_evts_reco)):
                         evt_idx = np.where(self.evt_num == evt_num_reco[evt])[0]
                         if len(evt_idx) > 0:
-                            cal_sur_evts[evt_idx, 2] = z_cuts[evt]
-                            cal_sur_evts[evt_idx, 3] = t_cuts[evt]
+                            cal_sur_evts[evt_idx, 2] = sur_cuts[evt]
                 del evt_idx
-            del evt_num_reco, num_evts_reco, z_cuts, t_cuts
+            del evt_num_reco, num_evts_reco, sur_cuts
 
             if self.verbose:
-                quick_qual_check(cal_sur_evts[:, 2] != 0, 'vertex z cut', self.evt_num)
-                quick_qual_check(cal_sur_evts[:, 3] != 0, 'vertex theta cut', self.evt_num)
+                quick_qual_check(cal_sur_evts[:, 2] != 0, 'vertex surface cut', self.evt_num)
 
         if mf_dat is not None:
             mf_hf = h5py.File(mf_dat, 'r')
@@ -1081,10 +1074,12 @@ class filt_qual_cut_loader:
             del evt_name
 
             mf_temp = mf_hf['mf_temp'][:, 1:3] # pol, theta n phi, evt
+            sur_cuts = np.any(mf_temp[:, 0] < cut_sur, axis = 0).astype(int)
             pole_cuts = np.any(np.logical_and(mf_temp[:, 0] < cut_pole, mf_temp[:, 1] < cut_pole), axis = 0).astype(int)
             del mf_hf, mf_temp
 
             if use_sim:
+                cal_sur_evts[:, 3] = sur_cuts
                 cal_sur_evts[:, 4] = pole_cuts
             else:
                 if self.num_evts != num_evts_reco:
@@ -1092,16 +1087,19 @@ class filt_qual_cut_loader:
                 else:
                     evt_idx = np.full((self.num_evts), True, dtype = bool)
                 try:
+                    cal_sur_evts[evt_idx, 3] = sur_cuts
                     cal_sur_evts[evt_idx, 4] = pole_cuts
                 except ValueError:
                     for evt in tqdm(range(num_evts_reco)):
                         evt_idx = np.where(self.evt_num == evt_num_reco[evt])[0]
                         if len(evt_idx) > 0:
+                            cal_sur_evts[evt_idx, 3] = sur_cuts[evt]
                             cal_sur_evts[evt_idx, 4] = pole_cuts[evt]
                 del evt_idx
-            del evt_num_reco, num_evts_reco, pole_cuts
+            del evt_num_reco, num_evts_reco, sur_cuts, pole_cuts
 
             if self.verbose:
+                quick_qual_check(cal_sur_evts[:, 3] != 0, 'mf surface cut', self.evt_num)
                 quick_qual_check(cal_sur_evts[:, 4] != 0, 'mf south pole cut', self.evt_num)
 
         del use_sim, reco_dat, mf_dat, ver_dat
@@ -1110,7 +1108,7 @@ class filt_qual_cut_loader:
 
     def run_filt_qual_cut(self, use_max = False, cut_ratio = None):
 
-        tot_filt_qual_cut = np.full((self.num_evts, 6), 0, dtype = int) # 0: spark, 1: cal, 2: reco. 3: vertex z, 4: vertex theta, 5: mf pole
+        tot_filt_qual_cut = np.full((self.num_evts, 6), 0, dtype = int) # 0: spark, 1: cal, 2: reco. 3: vertex, 4: mf surface, 5: mf pole
         tot_filt_qual_cut[:, 0] = self.get_spark_events(cut_ratio = cut_ratio)
         tot_filt_qual_cut[:, 1:] = self.get_calpulser_surface_events(use_max = use_max)
 
@@ -1432,7 +1430,7 @@ def get_bad_live_time(trig_type, unix_time, time_bins, sec_per_min, cuts, verbos
                         'single block', 'rf win', 'cal win', 'soft win', 'first minute', 
                         'dda voltage', 'bad cal min rate', 'bad cal sec rate', 'bad soft sec rate', 'no rf cal sec rate', 'bad l1 rate', 
                         'short runs', 'bad unix time', 'bad run', 'cw log', 'cw ratio', 'empty slot!', 'unlock calpulser', 
-                        'zero ped', 'single ped', 'low ped', 'known bad ped', 'op antenna cut', 'calpuler cut', 'corr surface cut', 'vertex z cut', 'vertex theta cut', 'mf pole cut']
+                        'zero ped', 'single ped', 'low ped', 'known bad ped', 'op antenna cut', 'calpuler cut', 'corr surface cut', 'vertex surface cut', 'mf surface cut', 'mf pole cut']
             print(f'live time for each cuts. total number of cuts: {len(rough_tot_bad_time)}')
             for t in range(len(rough_tot_bad_time)):
                 print(f'{t + 1}) {q_name[t]}: ~{np.round(rough_tot_bad_time[t] / 60, 1)} min.')

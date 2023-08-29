@@ -27,7 +27,7 @@ def cobalt_run_loader(Key = None, Station = None, Act_Evt = None):
 
         if count >= Act_Evt[0] and count < Act_Evt[1]:
 
-            CMD_line = f'python3 -W ignore sim_script_executor.py -k {Key} -s {Station} -y {Yrs} -d {w} -n 1'
+            CMD_line = f'python3 -W ignore sim_script_executor.py -k {Key} -s {Station} -y {Yrs} -d {w} -n 0'
             print(CMD_line)
             call(CMD_line.split(' '))
 
