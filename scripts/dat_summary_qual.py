@@ -42,6 +42,8 @@ for r in tqdm(range(len(d_run_tot))):
     hf_q = h5py.File(q_name, 'r')
     evt_full = hf_q['evt_num'][:]
     qual_indi = hf_q['tot_qual_cut'][:]
+    qual_indi[:, 14] = 0 # no l1 cut
+    qual_indi[:, 15] = 0 # no rf/cal cut
     qual_indi[:, -1] = 0
     qual_ver = np.nansum(qual_indi, axis = 1) != 0
     cut_ver = np.in1d(evt, evt_full[qual_ver])

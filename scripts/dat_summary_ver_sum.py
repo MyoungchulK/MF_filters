@@ -43,7 +43,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Data_Summary_Ver_v2_A{Station}_bb.h5'
+file_name = f'Data_Summary_Ver_v2_A{Station}_bbb.h5'
 hf = h5py.File(file_name, 'w')
 #hf.create_dataset('snr_ver', data=snr_ver, compression="gzip", compression_opts=9)
 hf.create_dataset('coord_ver', data=coord_ver, compression="gzip", compression_opts=9)

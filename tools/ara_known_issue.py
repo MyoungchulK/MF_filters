@@ -1286,6 +1286,7 @@ class known_issue_loader:
             bad_run = np.append(bad_run, 11335) # possibly pulser
             bad_run = np.append(bad_run, np.arange(11428, 11432 + 1, dtype = int)) # 2018/07/04 ~ 5 unknown signal
             bad_run = np.append(bad_run, np.arange(12660, 12661 + 1, dtype = int)) # possibly pulser
+            bad_run = np.append(bad_run, 12705) # 12705 2018/11/13 unknown daq error
             bad_run = np.append(bad_run, 12734) # 12734 2018/11/16 unknown signal
             bad_run = np.append(bad_run, np.arange(12884, 12885 + 1, dtype = int)) # possibly pulser
             bad_run = np.append(bad_run, np.arange(12903, 12905 + 1, dtype = int)) # 12903 ~ 12905 2018/12/12 unknown signal

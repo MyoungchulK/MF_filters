@@ -35,6 +35,7 @@ for r in tqdm(range(len(d_run_tot))):
     bad_ant = known_issue.get_bad_antenna(d_run_tot[r])
  
     v_name = f'{v_path}vertex_A{Station}_R{d_run_tot[r]}.h5'
+    #print(v_name)
     hf_v = h5py.File(v_name, 'r')
     #snr = hf_v['snr'][:]
     #snr[bad_ant] = np.nan

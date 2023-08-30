@@ -35,10 +35,7 @@ def vertex_collector(st, run, analyze_blind_dat = False, no_tqdm = False):
 
     # hit time
     hit_thres = 4
-    num_ants_cut = 2
-    if int(st) == 3 and np.nansum(bad_ant) > 7:
-        num_ants_cut = 1
-        print('threshold for number antenna is 1 !!!!!!!')
+    num_ants_cut = 2 
     handler = py_reco_handler(st, run, 0.5, hit_thres, num_ants_cut = num_ants_cut, use_input_hit = True)
     del hit_thres, num_ants_cut
 
