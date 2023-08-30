@@ -43,11 +43,11 @@ for r in tqdm(range(len(d_run_tot))):
     evt_full = hf_q['evt_num'][:]
     qual_indi = hf_q['tot_qual_cut'][:]
     qual_indi[:, -1] = 0
-    qual_indi[:, -2] = 0
     qual_ver = np.nansum(qual_indi, axis = 1) != 0
     cut_ver = np.in1d(evt, evt_full[qual_ver])
     qual_ep_ver = np.concatenate((qual_ep_ver, cut_ver.astype(int)))
-    
+
+    qual_indi[:, -2] = 0    
     qual_indi[:, -3] = 0
     qual_corr = np.nansum(qual_indi, axis = 1) != 0
     cut_corr = np.in1d(evt, evt_full[qual_corr])
