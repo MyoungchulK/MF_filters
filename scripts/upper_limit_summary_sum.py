@@ -17,7 +17,7 @@ del d_run_range1
 
 num_pols = 2
 map_d_len = 400
-num_slos = 91
+num_slos = 180
 if Station == 2: num_configs = 7
 if Station == 3: num_configs = 9
 bin_width = 100

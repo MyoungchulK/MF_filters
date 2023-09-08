@@ -66,10 +66,10 @@ print(back_err.shape)
 
 hf_vv = h5py.File(d_path+f'proj_scan_A{Station}_VPol_w_sim_b.h5', 'r')
 hf_hh = h5py.File(d_path+f'proj_scan_A{Station}_HPol_w_sim_b.h5', 'r')
-map_s_pass_int_tot_v = hf_vv['map_s_pass_int_tot'][:]
-map_s_cut_int_tot_v = hf_vv['map_s_cut_int_tot'][:]
-map_s_pass_int_tot_h = hf_hh['map_s_pass_int_tot'][:]
-map_s_cut_int_tot_h = hf_hh['map_s_cut_int_tot'][:]
+map_s_pass_int_tot_v = hf_vv['map_s_pass_int_mean'][:]
+map_s_cut_int_tot_v = hf_vv['map_s_cut_int_mean'][:]
+map_s_pass_int_tot_h = hf_hh['map_s_pass_int_mean'][:]
+map_s_cut_int_tot_h = hf_hh['map_s_cut_int_mean'][:]
 map_s_pass = np.array([map_s_pass_int_tot_v, map_s_pass_int_tot_h])
 map_s_cut = np.array([map_s_cut_int_tot_v, map_s_cut_int_tot_h])
 print(map_s_pass_int_tot_v.shape)
