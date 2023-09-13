@@ -21,6 +21,7 @@ del d_run_range
 cut_idx = np.array([9, 10, 11, 13, 14, 16, 17, 18, 19, 23, 24, 25, 26], dtype = int)
 
 livetime = np.full((d_len, 3), 0, dtype = float)
+configs = np.full((d_len), 0, dtype = int)
 
 for r in tqdm(range(len(d_run_tot))):
 
@@ -28,6 +29,7 @@ for r in tqdm(range(len(d_run_tot))):
  
     q_name = f'{q_path}qual_cut_3rd_full_A{Station}_R{d_run_tot[r]}.h5'
     hf_q = h5py.File(q_name, 'r')
+    configs[r] = hf_q['config'][2]
     trig_type = hf_q['trig_type'][:]
     unix_time = hf_q['unix_time'][:]
     time_bins_sec = hf_q['time_bins_sec'][:]
@@ -50,6 +52,7 @@ os.chdir(path)
 
 file_name = f'Data_Summary_Live_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
+hf.create_dataset('configs', data=configs, compression="gzip", compression_opts=9)
 hf.create_dataset('livetime', data=livetime, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name, size_checker(path+file_name))

@@ -81,6 +81,7 @@ xyz_ver = np.copy(coord_ver)
 qual = np.full((d_len, num_evts, 8), 0, dtype = int)
 qual_tot = np.full((d_len, num_evts), 0, dtype = int)
 evt_rate = np.copy(pnu)
+one_weight = np.copy(pnu)
 hill_max_idx = np.full((d_len, 2, 2, num_evts), np.nan, dtype = float)
 hill_max = np.copy(hill_max_idx)
 snr_csw = np.copy(hill_max_idx)
@@ -140,6 +141,7 @@ for r in tqdm(range(len(d_run_tot))):
         qual_tot[r] = (hf['tot_qual_cut_sum'][:] != 0).astype(int)
         qual[r] = (hf['tot_qual_cut'][:] != 0).astype(int)
         evt_rate[r] = hf['evt_rate'][:]
+        one_weight[r] = hf['one_weight'][:]
         del hf
     except FileNotFoundError:
         print(f'{q_path}qual_cut{hf_name}')
@@ -240,7 +242,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Sim_Summary_{Type}_v4_A{Station}.h5'
+file_name = f'Sim_Summary_{Type}_v5_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('sim_run', data=sim_run, compression="gzip", compression_opts=9)
 hf.create_dataset('config', data=config, compression="gzip", compression_opts=9)
@@ -264,6 +266,7 @@ hf.create_dataset('coef', data=coef, compression="gzip", compression_opts=9)
 hf.create_dataset('coord', data=coord, compression="gzip", compression_opts=9)
 hf.create_dataset('exponent', data=exponent, compression="gzip", compression_opts=9)
 hf.create_dataset('evt_rate', data=evt_rate, compression="gzip", compression_opts=9)
+hf.create_dataset('one_weight', data=one_weight, compression="gzip", compression_opts=9)
 hf.create_dataset('coef_max', data=coef_max, compression="gzip", compression_opts=9)
 hf.create_dataset('coord_max', data=coord_max, compression="gzip", compression_opts=9)
 hf.create_dataset('mf_max', data=mf_max, compression="gzip", compression_opts=9)
