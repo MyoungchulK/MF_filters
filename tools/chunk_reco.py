@@ -57,14 +57,18 @@ def reco_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm
     wei_dat = run_info.get_result_path(file_type = 'snr', verbose = True)
     wei_hf = h5py.File(wei_dat, 'r')
     weights = wei_hf['snr'][:]
-    del run_info, wei_dat, wei_hf
+    del wei_dat, wei_hf
     if analyze_blind_dat:
         print('BURN!!!!!')
-        run_info = run_info_loader(st, run, analyze_blind_dat = False)
-        reco_dat = run_info.get_result_path(file_type = 'reco', verbose = True)
-        reco_hf = h5py.File(reco_dat, 'r')
-        evt_num_b = reco_hf['evt_num'][:]
-        del run_info, reco_dat, reco_hf
+        reco_dat = run_info.get_result_path(file_type = 'reco', verbose = True, return_none = True, force_unblind = True)
+        if reco_dat is None:
+            evt_num_b = np.full((10), -1, dtype = int)
+        else
+            reco_hf = h5py.File(reco_dat, 'r')
+            evt_num_b = reco_hf['evt_num'][:]
+            del reco_hf
+        del reco_dat
+    del run_info
 
     # wf analyzer
     wf_int = wf_analyzer(use_time_pad = True, use_band_pass = True, use_cw = True, verbose = True, use_l2 = use_l2, analyze_blind_dat = analyze_blind_dat, st = st, run = run)
