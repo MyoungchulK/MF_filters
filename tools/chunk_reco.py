@@ -63,7 +63,7 @@ def reco_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm
         reco_dat = run_info.get_result_path(file_type = 'reco', verbose = True, return_none = True, force_unblind = True)
         if reco_dat is None:
             evt_num_b = np.full((10), -1, dtype = int)
-        else
+        else:
             reco_hf = h5py.File(reco_dat, 'r')
             evt_num_b = reco_hf['evt_num'][:]
             del reco_hf
