@@ -242,7 +242,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Sim_Summary_{Type}_v5_A{Station}.h5'
+file_name = f'Sim_Summary_{Type}_v6_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('sim_run', data=sim_run, compression="gzip", compression_opts=9)
 hf.create_dataset('config', data=config, compression="gzip", compression_opts=9)
@@ -273,7 +273,9 @@ hf.create_dataset('mf_max', data=mf_max, compression="gzip", compression_opts=9)
 hf.create_dataset('mf_max_each', data=mf_max_each, compression="gzip", compression_opts=9)
 hf.create_dataset('mf_temp', data=mf_temp, compression="gzip", compression_opts=9)
 hf.create_dataset('snr', data=snr, compression="gzip", compression_opts=9)
+hf.create_dataset('snr_b', data=snr_b, compression="gzip", compression_opts=9)
 hf.create_dataset('snr_max', data=snr_max, compression="gzip", compression_opts=9)
+hf.create_dataset('snr_b_max', data=snr_b_max, compression="gzip", compression_opts=9)
 hf.create_dataset('snr_ver', data=snr_ver, compression="gzip", compression_opts=9)
 hf.create_dataset('coord_ver', data=coord_ver, compression="gzip", compression_opts=9)
 hf.create_dataset('xyz_ver', data=xyz_ver, compression="gzip", compression_opts=9)
