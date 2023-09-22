@@ -72,7 +72,10 @@ class ara_csw:
         tp_range = np.arange(len(coord[0, :, 0, 0, 0]), dtype = int)       
 
         self.coef_r_max_idx = np.argmax(coef, axis = 1) # pol, sol, evt
-        self.coord_r_max_idx = coord[self.pol_range[:, np.newaxis, np.newaxis, np.newaxis], tp_range[np.newaxis, :, np.newaxis, np.newaxis], self.coef_r_max_idx, self.sol_range[np.newaxis, np.newaxis, :, np.newaxis], evt_range[np.newaxis, np.newaxis, np.newaxis, :]]
+
+        coord_t = np.transpose(coord, (1, 0, 2, 3, 4))
+        self.coord_r_max_idx = coord_t[tp_range[:, np.newaxis, np.newaxis, np.newaxis], self.pol_range[np.newaxis, :, np.newaxis, np.newaxis], self.coef_r_max_idx, self.sol_range[np.newaxis, np.newaxis, :, np.newaxis], evt_range[np.newaxis, np.newaxis, np.newaxis, :]]
+        self.coord_r_max_idx  = np.transpose(self.coord_r_max_idx, (1, 0, 2, 3))
         self.coord_r_max_idx = self.coord_r_max_idx[:2]
         self.coord_r_max_idx[:, 0] += 0.5 
         self.coord_r_max_idx[:, 1] -= 0.5 
@@ -80,6 +83,8 @@ class ara_csw:
         self.coord_r_max_idx[:, 0] *= -1
         self.coord_r_max_idx[:, 1] += 180
         self.coord_r_max_idx = np.round(self.coord_r_max_idx).astype(int)
+
+        self.pol_range = np.arange(num_pols, dtype = int)
 
         if self.use_debug:
             self.corf_r_max = coef[self.pol_range[:, np.newaxis, np.newaxis], self.coef_r_max_idx, self.sol_range[np.newaxis, :, np.newaxis], evt_range[np.newaxis, np.newaxis, :]]
