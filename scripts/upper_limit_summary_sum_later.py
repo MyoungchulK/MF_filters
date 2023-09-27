@@ -17,7 +17,7 @@ del d_run_range1
 
 num_pols = 2
 map_d_len = 400
-num_slos = 180
+num_slos = 50
 if Station == 2: num_configs = 7
 if Station == 3: num_configs = 9
 bin_width = 100
@@ -62,7 +62,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Upper_Limit_A{Station}_v2.h5'
+file_name = f'Upper_Limit_A{Station}_v2_later.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('s_ang', data=s_ang, compression="gzip", compression_opts=9)
 hf.create_dataset('bins_s', data=bins_s, compression="gzip", compression_opts=9)

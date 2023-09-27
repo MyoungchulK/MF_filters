@@ -9,39 +9,73 @@ sys.path.append(curr_path+'/../')
 from tools.ara_utility import size_checker
 
 Station = int(sys.argv[1])
+Config = int(sys.argv[2])
 if Station == 2: num_configs = 7
 if Station == 3: num_configs = 9
 num_pols = 2
 
 d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 
-hf_v = h5py.File(d_path+f'back_est_A{Station}_VPol.h5', 'r')
-hf_h = h5py.File(d_path+f'back_est_A{Station}_HPol.h5', 'r')
+hf_v = h5py.File(d_path+f'back_est_A{Station}_VPol_v2.h5', 'r')
+hf_h = h5py.File(d_path+f'back_est_A{Station}_HPol_v2.h5', 'r')
 
 s_ang = hf_v['s_ang'][:]
 num_slos = len(s_ang)
-bins_d = hf_v['bins_d'][:]
-bin_center_d = hf_v['bin_center_d'][:]
 bins_s = hf_v['bins_s'][:]
 bin_center_s = hf_v['bin_center_s'][:]
+print(s_ang.shape)
+print(bins_s.shape)
+print(bin_center_s.shape)
 
 map_d_bins_v = hf_v['map_d_bins'][:]
 map_d_bin_center_v = hf_v['map_d_bin_center'][:]
 map_d_bins_h = hf_h['map_d_bins'][:]
 map_d_bin_center_h = hf_h['map_d_bin_center'][:]
 map_d_len = len(map_d_bin_center_h[:, 0, 0])
+map_d_bins = np.array([map_d_bins_v, map_d_bins_h])
+map_d_bin_center = np.array([map_d_bin_center_v, map_d_bin_center_h])
+print(map_d_bins_v.shape)
+print(map_d_bin_center_v.shape)
+print(map_d_bins_h.shape)
+print(map_d_bin_center_h.shape)
+print(map_d_bins.shape)
+print(map_d_bin_center.shape)
+
+slope_m = np.full((num_pols, map_d_len, len(bin_center_s), num_configs), np.nan, dtype = float)
+slope_m[:] = np.tan(np.radians(s_ang + 90))[np.newaxis, np.newaxis, :, np.newaxis]
+intercept_d = map_d_bin_center / np.cos(np.radians(90 - s_ang))[np.newaxis, np.newaxis, :, np.newaxis]
+print(slope_m.shape)
+print(intercept_d.shape)
 
 back_median_v = hf_v['back_median'][:]
 back_err_v = hf_v['back_err'][:]
 back_median_h = hf_h['back_median'][:]
 back_err_h = hf_h['back_err'][:]
+back_medi = np.array([back_median_v, back_median_h])
+back_err = np.array([back_err_v, back_err_h])
+print(back_median_v.shape)
+print(back_err_v.shape)
+print(back_median_h.shape)
+print(back_err_h.shape)
+print(back_medi.shape)
+print(back_err.shape)
 
-#sig_int_v = hf_v['sig_int'][:]
-#sig_eff_v = hf_v['sig_eff'][:]
-#sig_int_h = hf_h['sig_int'][:]
-#sig_eff_h = hf_h['sig_eff'][:]
+hf_vv = h5py.File(d_path+f'proj_scan_A{Station}_VPol_v2.h5', 'r')
+hf_hh = h5py.File(d_path+f'proj_scan_A{Station}_HPol_v2.h5', 'r')
+map_s_pass_int_tot_v = hf_vv['map_s_pass_int_mean'][:]
+map_s_cut_int_tot_v = hf_vv['map_s_cut_int_mean'][:]
+map_s_pass_int_tot_h = hf_hh['map_s_pass_int_mean'][:]
+map_s_cut_int_tot_h = hf_hh['map_s_cut_int_mean'][:]
+map_s_pass = np.array([map_s_pass_int_tot_v, map_s_pass_int_tot_h])
+map_s_cut = np.array([map_s_cut_int_tot_v, map_s_cut_int_tot_h])
+print(map_s_pass_int_tot_v.shape)
+print(map_s_cut_int_tot_v.shape)
+print(map_s_pass_int_tot_h.shape)
+print(map_s_cut_int_tot_h.shape)
+print(map_s_pass.shape)
+print(map_s_cut.shape)
 
-num_trials = 10000
+num_trials = 10001
 bin_width = 100
 bin_edges_o = np.full((2, num_pols, map_d_len, num_slos, num_configs), np.nan, dtype = float)
 bin_edges_u = np.copy(bin_edges_o)
@@ -52,41 +86,69 @@ upl_mean = np.full((num_pols, map_d_len, num_slos, num_configs), np.nan, dtype =
 fc = ROOT.TFeldmanCousins(0.90) 
 
 for c in range(num_configs):
+    if Config != c: continue
     for s in tqdm(range(num_slos)):
         for d in range(map_d_len):
-            nobs = np.full((num_pols, num_trials), np.nan, dtype = float)
-            upl = np.copy(nobs)
-            for n in tqdm(range(num_trials)):
-                nobs[0, n] = np.random.poisson(back_median_v[d, s, c])
-                nobs[1, n] = np.random.poisson(back_median_h[d, s, c])
-                upl[0, n] = fc.CalculateUpperLimit(nobs[0, n], back_median_v[d, s, c])
-                upl[1, n] = fc.CalculateUpperLimit(nobs[1, n], back_median_h[d, s, c])
-                print(upl[:, n])
-            nobs_bins = np.linspace(np.nanmin(nobs, axis = 1), np.nanmax(nobs, axis = 1), bin_width + 1)
-            bin_edges_o[0, :, d, s, c] = nobs_bins[0]
-            bin_edges_o[1, :, d, s, c] = nobs_bins[-1]
-            nobs_hist[:, 0, d, s, c] = np.histogram(nobs[0], bins = nobs_bins[:, 0])[0].astype(int)
-            nobs_hist[:, 1, d, s, c] = np.histogram(nobs[1], bins = nobs_bins[:, 1])[1].astype(int)
-            upl_bins = np.linspace(np.nanmin(upl, axis = 1), np.nanmax(upl, axis = 1), bin_width + 1)
-            bin_edges_u[0, :, d, s, c] = upl_bins[0]
-            bin_edges_u[1, :, d, s, c] = upl_bins[-1]
-            upl_hist[:, 0, d, s, c] = np.histogram(upl[0], bins = upl_bins[:, 0])[0].astype(int)
-            upl_hist[:, 1, d, s, c] = np.histogram(upl[1], bins = upl_bins[:, 1])[1].astype(int)
-            upl_mean[:, d, s, c] = np.nanmean(upl, axis = 1)
-            del nobs, upl, nobs_bins, upl_bins
+            for p in range(num_pols):
+
+                if back_medi[p, d, s, c] > 10: continue
+
+                nobs = np.random.poisson(back_medi[p, d, s, c], num_trials)
+                nobs_uni, nobs_counts = np.unique(nobs, return_counts = True)  
+                nobs_len = len(nobs_counts)
+                upl_uni = np.full((nobs_len), np.nan, dtype = float)
+                del nobs
+
+                for n in range(nobs_len):
+                    upl_uni[n] = fc.CalculateUpperLimit(nobs_uni[n], back_medi[p, d, s, c])
+                upl_mean[p, d, s, c] = np.average(upl_uni, weights = nobs_counts)                
+
+                nobs_min = np.nanmin(nobs_uni)
+                nobs_max = np.nanmax(nobs_uni)
+                if nobs_len == 1:
+                    nobs_min -= 1 
+                    nobs_max += 1 
+                bins_o = np.linspace(nobs_min, nobs_max, bin_width + 1)
+                bin_edges_o[:, p, d, s, c] = np.array([nobs_min, nobs_max])
+                nobs_hist[:, p, d, s, c] = np.histogram(nobs_uni, weights = nobs_counts, bins = bins_o)[0].astype(int)
+                del nobs_uni, nobs_min, nobs_max, bins_o
+
+                upl_min = np.nanmin(upl_uni)
+                upl_max = np.nanmax(upl_uni)
+                if nobs_len == 1:
+                    upl_min -= 1
+                    upl_max += 1
+                bins_u = np.linspace(upl_min, upl_max, bin_width + 1)
+                bin_edges_u[:, p, d, s, c] = np.array([upl_min, upl_max])
+                upl_hist[:, p, d, s, c] = np.histogram(upl_uni, weights = nobs_counts, bins = bins_u)[0].astype(int)                
+                del nobs_counts, nobs_len, upl_uni, upl_min, upl_max, bins_u 
+
+s_up_s = upl_mean / map_s_pass
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Upper_Limit_A{Station}.h5'
+file_name = f'Upper_Limit_A{Station}_R{Config}.h5'
 hf = h5py.File(file_name, 'w')
+hf.create_dataset('s_ang', data=s_ang, compression="gzip", compression_opts=9)
+hf.create_dataset('bins_s', data=bins_s, compression="gzip", compression_opts=9)
+hf.create_dataset('bin_center_s', data=bin_center_s, compression="gzip", compression_opts=9)
+hf.create_dataset('map_d_bins', data=map_d_bins, compression="gzip", compression_opts=9)
+hf.create_dataset('map_d_bin_center', data=map_d_bin_center, compression="gzip", compression_opts=9)
+hf.create_dataset('slope_m', data=slope_m, compression="gzip", compression_opts=9)
+hf.create_dataset('intercept_d', data=intercept_d, compression="gzip", compression_opts=9)
+hf.create_dataset('back_medi', data=back_medi, compression="gzip", compression_opts=9)
+hf.create_dataset('back_err', data=back_err, compression="gzip", compression_opts=9)
+hf.create_dataset('map_s_pass', data=map_s_pass, compression="gzip", compression_opts=9)
+hf.create_dataset('map_s_cut', data=map_s_cut, compression="gzip", compression_opts=9)
+hf.create_dataset('bin_edges_o', data=bin_edges_o, compression="gzip", compression_opts=9)
+hf.create_dataset('bin_edges_u', data=bin_edges_u, compression="gzip", compression_opts=9)
+hf.create_dataset('nobs_hist', data=nobs_hist, compression="gzip", compression_opts=9)
+hf.create_dataset('upl_hist', data=upl_hist, compression="gzip", compression_opts=9)
+hf.create_dataset('upl_mean', data=upl_mean, compression="gzip", compression_opts=9)
+hf.create_dataset('s_up_s', data=s_up_s, compression="gzip", compression_opts=9)
 hf.close()
-print('file is in:',path+file_name, size_checker(path+file_name))
-
-
-
-
-
+print('done! file is in:',path+file_name, size_checker(path+file_name))
 

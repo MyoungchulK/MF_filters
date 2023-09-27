@@ -21,19 +21,18 @@ d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 del d_run_range
 
 year = np.arange(2013,2021, dtype = int)
-num_mons = 12
 
 l_bins = []
 for y in range(len(year)):
-    for m in range(num_mons):
+    for m in range(12):
         md_2013 = datetime(year[y], int(m + 1), 1, 0, 0)
         md_2013_r = md_2013.replace(tzinfo=timezone.utc)
         unix_2013 = int(md_2013_r.timestamp())
         l_bins.append(unix_2013)
-md_2021 = datetime(2021, 1, 1, 0, 0)
-md_2021_r = md_2021.replace(tzinfo=timezone.utc)
-unix_2021 = int(md_2021_r.timestamp())
-l_bins.append(unix_2021)
+md_2013 = datetime(2021, 1, 1, 0, 0)
+md_2013_r = md_2013.replace(tzinfo=timezone.utc)
+unix_2013 = int(md_2013_r.timestamp())
+l_bins.append(unix_2013)
 l_bins = np.asarray(l_bins).astype(float)
 l_bin_center = (l_bins[1:] + l_bins[:-1]) / 2
 

@@ -937,9 +937,11 @@ class filt_qual_cut_loader:
     def get_calpulser_surface_events(self, cut_corr = 35, cut_z = -50, cut_sur = 0.5, cut_pole = 1.5, use_max = False):
 
         use_sim = False
-        if self.sim_mf_path is not None and self.sim_corr_path is not None and self.sim_ver_path is not None:
+        #if self.sim_mf_path is not None and self.sim_corr_path is not None and self.sim_ver_path is not None:
+        if self.sim_mf_path is not None and self.sim_corr_path is not None:
             use_sim = True
-        elif self.sim_mf_path is None and self.sim_corr_path is None and self.sim_ver_path is None:
+        #elif self.sim_mf_path is None and self.sim_corr_path is None and self.sim_ver_path is None:
+        elif self.sim_mf_path is None and self.sim_corr_path is None:
             pass
         else:
             print('Something wrong in calpulser/surface cut!')
@@ -956,7 +958,8 @@ class filt_qual_cut_loader:
             ver_dat = self.run_info.get_result_path(file_type = 'vertex', verbose = self.verbose, force_unblind = self.cal_sur_unblind, return_none = True)
             mf_dat = self.run_info.get_result_path(file_type = 'mf', verbose = self.verbose, force_unblind = self.cal_sur_unblind, return_none = True)
         
-        if reco_dat is None and mf_dat is None and ver_dat is None:
+        #if reco_dat is None and mf_dat is None and ver_dat is None:
+        if reco_dat is None and mf_dat is None:
             return cal_sur_evts
 
         if reco_dat is not None:
