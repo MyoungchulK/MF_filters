@@ -11,7 +11,7 @@ from tools.ara_utility import size_checker
 
 Station = int(sys.argv[1])
 
-d_path1 = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/Data_Summary_Qual_v3_A{Station}_R*'
+d_path1 = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/Data_Summary_Qual_v4_A{Station}_R*'
 d_list1, d_run_tot1, d_run_range1, d_len1 = file_sorter(d_path1)
 del d_run_range1
 
@@ -58,7 +58,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Data_Summary_Qual_v3_A{Station}.h5'
+file_name = f'Data_Summary_Qual_v4_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('qual_ep', data=qual_ep, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_ep_cw', data=qual_ep_cw, compression="gzip", compression_opts=9)

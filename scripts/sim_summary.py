@@ -288,7 +288,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Sim_Summary_{Type}_v7_A{Station}.h5'
+file_name = f'Sim_Summary_{Type}_v8_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('run_map', data=run_map, compression="gzip", compression_opts=9)
 hf.create_dataset('sim_run', data=sim_run, compression="gzip", compression_opts=9)

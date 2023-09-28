@@ -49,7 +49,6 @@ def sub_info_sim_collector(Data, Station, Year):
     posant_center = ara_root.posant_center
     posnu_antcen = ara_root.posnu_antcen
     signal_bin = ara_root.signal_bin
-    ray_step_edge = ara_root.ray_step_edge
     del ara_root
  
     print('Sub info sim collecting is done!')
@@ -79,5 +78,4 @@ def sub_info_sim_collector(Data, Station, Year):
             'posant_rf':posant_rf,
             'posant_center':posant_center,
             'posnu_antcen':posnu_antcen,
-            'signal_bin':signal_bin,
-            'ray_step_edge':ray_step_edge}
+            'signal_bin':signal_bin}
