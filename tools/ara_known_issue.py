@@ -1256,7 +1256,7 @@ class known_issue_loader:
             bad_run = np.append(bad_run, np.arange(15604, 15606 + 1, dtype = int)) # 15604 15605 15606 wrong l1 goal
             bad_run = np.append(bad_run, 16885) # 16885 wrong l1 goal
 
-            bad_run = np.append(bad_run, np.array([5169, 5173, 5184, 5406, 5660, 5661, 5665, 5762, 5772, 5975], dtype = int) # high event rate period
+            bad_run = np.append(bad_run, np.array([5169, 5173, 5184, 5406, 5660, 5661, 5665, 5762, 5772, 5975], dtype = int)) # high event rate period
 
         elif self.st == 3:
 
