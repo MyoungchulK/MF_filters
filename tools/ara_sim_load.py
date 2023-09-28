@@ -148,7 +148,7 @@ class ara_root_loader:
         self.launch_ang = np.copy(self.rec_ang)                                     # 180 deg: toward earth center. 0 deg: to sky
         self.arrival_time = np.copy(self.rec_ang)                                   # unit is second [s]
         self.signal_bin = np.copy(self.rec_ang)                                     # time of center of signal in the WF
-        self.ray_step_edge = np.full((2, 2, 2, num_ants, self.num_evts), np.nan, dtype = float) # number of ray, xz, first, and last,number antenna, number events
+        self.ray_step_edge = np.full((2, 2, 2, num_ants, self.num_evts), np.nan, dtype = float) # number of ray, xz, first and last,number antenna, number events
         if get_angle_info or get_temp_info:
             print('angle info in on! prepare for the looong for loop...')
             sim_st_index = self.sim_rf_ch_map[:, 1]
@@ -165,21 +165,11 @@ class ara_root_loader:
                     sig_bin = np.asarray(AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].SignalBinTime[:])
                     ray_steps = AraTree2.report.stations[0].strings[sim_st].antennas[sim_ant].ray_step
                     ray_len = len(ray_steps)
-                    if ray_len == 1:
-                        sol_1st = np.asarray(ray_steps[0], dtype = float)
-                        self.ray_step_edge[0, 0, :, ant, evt] = np.array([sol_1st[0, 0], sol_1st[0, -1]], dtype = float) # firat and last of x
-                        self.ray_step_edge[0, 1, :, ant, evt] = np.array([sol_1st[1, 0], sol_1st[1, -1]], dtype = float) # firat and last of z
-                        del sol_1st
-                    elif ray_len == 2:
-                        sol_1st = np.asarray(ray_steps[0], dtype = float)
-                        sol_2nd = np.asarray(ray_steps[-1], dtype = float)
-                        self.ray_step_edge[0, 0, :, ant, evt] = np.array([sol_1st[0, 0], sol_1st[0, -1]], dtype = float) # firat and last of x
-                        self.ray_step_edge[0, 1, :, ant, evt] = np.array([sol_1st[1, 0], sol_1st[1, -1]], dtype = float) # firat and last of z
-                        self.ray_step_edge[1, 0, :, ant, evt] = np.array([sol_2nd[0, 0], sol_2nd[0, -1]], dtype = float) # firat and last of x
-                        self.ray_step_edge[1, 1, :, ant, evt] = np.array([sol_2nd[1, 0], sol_2nd[1, -1]], dtype = float) # firat and last of z
-                        del sol_1st, sol_2nd
-                    else:
-                        pass
+                    for ray in range(ray_len):
+                        steps = np.asarray(ray_steps[ray], dtype = float)
+                        self.ray_step_edge[ray, 0, :, ant, evt] = np.array([steps[0, 0], steps[0, -1]], dtype = float) # firat and last of x
+                        self.ray_step_edge[ray, 1, :, ant, evt] = np.array([steps[1, 0], steps[1, -1]], dtype = float) # firat and last of z
+                        del steps
                     if len(sig_bin) == 0:
                         if evt == 0 and ant == 0:
                             print('No Signal Bin Time!! OLD SIM!!! SHAME ON YOU!!!')

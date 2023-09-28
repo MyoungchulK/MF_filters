@@ -1182,6 +1182,7 @@ class known_issue_loader:
             bad_run = np.append(bad_run, np.arange(2861, 2869 + 1, dtype = int)) # 2861 ~ 2869 2014/02/11 unknown signal
             bad_run = np.append(bad_run, 3442) # 3442 2014/04/19 unknown signal
             bad_run = np.append(bad_run, np.arange(3917, 3919 + 1, dtype = int)) # 2014/07/17 unknown signal
+            bad_run = np.append(bad_run, 4107) # 4316 2014/08/22 unknown signal
             bad_run = np.append(bad_run, 4316) # 4316 2014/10/28 unknown signal
             bad_run = np.append(bad_run, 4645) # 4645 2014/12/08 unknown daq error
             bad_run = np.append(bad_run, 5911) # 5911 2015/07/21 unknown signal
@@ -1206,6 +1207,7 @@ class known_issue_loader:
             bad_run = np.append(bad_run, np.arange(9402, 9848 + 1, dtype = int)) # short... and pole season...
             bad_run = np.append(bad_run, 9916) # 9916 2018/02/07 unknown signal
             bad_run = np.append(bad_run, 9941) # 9941 bad noise model
+            bad_run = np.append(bad_run, 10252) # 10252 2018/03/30 unknown signal
             bad_run = np.append(bad_run, np.arange(11071, 11076 + 1, dtype = int)) # 11071 ~ 11076 2018/06/25 unknown signal
             bad_run = np.append(bad_run, np.arange(11654, 11655 + 1, dtype = int)) # 11654 ~ 11655 2018/09/10 unknown signal
             bad_run = np.append(bad_run, np.arange(12128, 12131 + 1, dtype = int)) # 12131 2018/11/01 unknown signal
@@ -1254,6 +1256,8 @@ class known_issue_loader:
             bad_run = np.append(bad_run, np.arange(15604, 15606 + 1, dtype = int)) # 15604 15605 15606 wrong l1 goal
             bad_run = np.append(bad_run, 16885) # 16885 wrong l1 goal
 
+            bad_run = np.append(bad_run, np.array([5169, 5173, 5184, 5406, 5660, 5661, 5665, 5762, 5772, 5975], dtype = int) # high event rate period
+
         elif self.st == 3:
 
             bad_run = np.append(bad_run, np.arange(515 + 1, dtype = int))
@@ -1262,8 +1266,12 @@ class known_issue_loader:
             bad_run = np.append(bad_run, 1751) # 2013/11/08 unknown signal
             bad_run = np.append(bad_run, 1770) # unknown signal
             bad_run = np.append(bad_run, np.arange(1796, 1814 + 1, dtype = int)) # dda issue
+            bad_run = np.append(bad_run, 1840) # unknown signal
+            bad_run = np.append(bad_run, 1894) # unknown signal
             bad_run = np.append(bad_run, 2079) # unknown signal
             bad_run = np.append(bad_run, 2148) # wrong l1 goal
+            bad_run = np.append(bad_run, 2628) # surface signal
+            bad_run = np.append(bad_run, 3043) # dda issue
             bad_run = np.append(bad_run, np.arange(3843, 3861 + 1, dtype = int)) # noise source test
             bad_run = np.append(bad_run, np.arange(3881, 3892 + 1, dtype = int)) # noise source test
             bad_run = np.append(bad_run, np.arange(3916, 3975 + 1, dtype = int)) # noise source test
@@ -1310,6 +1318,7 @@ class known_issue_loader:
             bad_run = np.append(bad_run, np.arange(13443, 13444 + 1, dtype = int)) # 2019/02/11 unknown signal
             bad_run = np.append(bad_run, 13482) # 13482 2019/02/15 unknown signal
             bad_run = np.append(bad_run, 13482) # 2019/2/15 unknown signal
+            bad_run = np.append(bad_run, 13995) # 2019/4/13 unknown signal
             bad_run = np.append(bad_run, np.arange(13964, 13969 + 1, dtype = int)) # low power...
             bad_run = np.append(bad_run, 16307) # unkown signal
             bad_run = np.append(bad_run, np.arange(16347, 16349 + 1, dtype = int)) # 16347 ~ 16348 2019/11/27 possible noise mode

@@ -34,7 +34,6 @@ if Type == 'signal':
     num_evts = 100
 if Type == 'noise':
     num_evts = 1000
-num_sols = 2
 num_ants = 16
 evt_num = np.arange(num_evts, dtype = int)
 pol_num = np.arange(3, dtype = int)
@@ -66,8 +65,6 @@ arrival_time = np.copy(rec_ang)
 sig_in = np.full((d_len, num_evts), 0, dtype = int)
 sig_in_wide = np.full((d_len, num_evts), 0, dtype = int)
 signal_bin = np.copy(rec_ang)
-ray_step_edge = np.full((d_len, 2, 2, 2, num_ants, num_evts), np.nan, dtype = float) # rays, xz, edge
-ray_in_air = np.full((d_len, num_evts), 0, dtype = int)
 coef = np.full((d_len, len(pol_num), len(rad_num), 2, num_evts), np.nan, dtype = float) # run, pol, rad, sol, evt
 coord = np.full((d_len, len(pol_num), len(ang_num), len(rad_num), 2, num_evts), np.nan, dtype = float) # run, pol, thephi, rad, sol, evt
 coef_max = np.full((d_len, len(pol_num), num_evts), np.nan, dtype = float) # run, pol, evt
@@ -84,7 +81,7 @@ snr_b_max = np.copy(snr_max)
 snr_ver = np.copy(snr)
 coord_ver = np.full((d_len, 3, 3, num_evts), np.nan, dtype = float)
 xyz_ver = np.copy(coord_ver)
-qual_indi = np.full((d_len, num_evts, 9), 0, dtype = int)
+qual_indi = np.full((d_len, num_evts, 8), 0, dtype = int)
 qual_tot = np.full((d_len, num_evts), 0, dtype = int)
 evt_rate = np.copy(pnu)
 one_weight = np.copy(pnu)
@@ -169,10 +166,7 @@ for r in tqdm(range(d_len)):
     sig_in[r] = np.nansum(np.digitize(sig_bin, wf_dege) == 1, axis = (0, 1))
     sig_in_wide[r] = np.nansum(np.digitize(sig_bin, wf_dege_wide) == 1, axis = (0, 1))
     signal_bin[r] = sig_bin
-    ray_step_edge[r] = hf['ray_step_edge'][:]
-    ray_step_edge_re = np.reshape(ray_step_edge[r][:, 1, 0], (num_sols * num_ants, -1))
-    ray_in_air[r] = (~np.any(ray_step_edge_re >= 0, axis = 0)).astype(int)
-    del hf, wf_time, sig_bin, wf_dege, wf_dege_wide, ray_step_edge_re
+    del hf, wf_time, sig_bin, wf_dege, wf_dege_wide
 
     try:
         hf = h5py.File(f'{q_path}qual_cut{hf_name}', 'r')
@@ -280,13 +274,13 @@ for r in tqdm(range(d_len)):
     del hf_name
 
 
-qual = (np.nansum(qual_indi[:, :, 0:2], axis = 2) != 0).astype(int)
-qual_cw = np.copy(qual_indi[:, :, 2])
-qual_op = np.copy(qual_indi[:, :, 3])
-qual_cp = np.copy(qual_indi[:, :, 4])
-qual_corr = np.copy(qual_indi[:, :, 5])
-qual_ver = (np.nansum(qual_indi[:, :, 6:8], axis = 2) != 0).astype(int)
-qual_mf = np.copy(qual_indi[:, :, 8])
+qual = np.copy(qual_indi[:, :, 0])
+qual_cw = np.copy(qual_indi[:, :, 1])
+qual_op = np.copy(qual_indi[:, :, 2])
+qual_cp = np.copy(qual_indi[:, :, 3])
+qual_corr = np.copy(qual_indi[:, :, 4])
+qual_ver = (np.nansum(qual_indi[:, :, 5:7], axis = 2) != 0).astype(int)
+qual_mf = np.copy(qual_indi[:, :, 7])
  
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
@@ -294,7 +288,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Sim_Summary_{Type}_v10_A{Station}.h5'
+file_name = f'Sim_Summary_{Type}_v8_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('run_map', data=run_map, compression="gzip", compression_opts=9)
 hf.create_dataset('sim_run', data=sim_run, compression="gzip", compression_opts=9)
@@ -346,8 +340,6 @@ hf.create_dataset('qual_tot', data=qual_tot, compression="gzip", compression_opt
 hf.create_dataset('sig_in', data=sig_in, compression="gzip", compression_opts=9)
 hf.create_dataset('sig_in_wide', data=sig_in_wide, compression="gzip", compression_opts=9)
 hf.create_dataset('signal_bin', data=signal_bin, compression="gzip", compression_opts=9)
-hf.create_dataset('ray_step_edge', data=ray_step_edge, compression="gzip", compression_opts=9)
-hf.create_dataset('ray_in_air', data=ray_in_air, compression="gzip", compression_opts=9)
 hf.create_dataset('hill_max_idx', data=hill_max_idx, compression="gzip", compression_opts=9)
 hf.create_dataset('hill_max', data=hill_max, compression="gzip", compression_opts=9)
 hf.create_dataset('snr_csw', data=snr_csw, compression="gzip", compression_opts=9)

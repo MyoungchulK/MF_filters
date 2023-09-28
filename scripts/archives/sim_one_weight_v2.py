@@ -20,8 +20,6 @@ del d_run_range
 
 num_flas = 3
 num_evts = 100
-num_ants = 16
-num_sols = 2
 if Station == 2: num_configs = 7
 if Station == 3: num_configs = 9
 
@@ -38,7 +36,6 @@ flavor = np.copy(sim_run)
 exponent = np.full((d_len, 2), 0, dtype = int)
 sig_in = np.full((d_len, num_evts), 0, dtype = int)
 sig_in_wide = np.full((d_len, num_evts), 0, dtype = int)
-ray_in_air = np.full((d_len, num_evts), 0, dtype = int)
 
 for r in tqdm(range(len(d_run_tot))):
     
@@ -65,10 +62,13 @@ for r in tqdm(range(len(d_run_tot))):
     sig_bin = hf['signal_bin'][:]
     sig_in[r] = np.nansum(np.digitize(sig_bin, wf_dege) == 1, axis = (0, 1))
     sig_in_wide[r] = np.nansum(np.digitize(sig_bin, wf_dege_wide) == 1, axis = (0, 1))
-    ray_step_edge = hf['ray_step_edge'][:, 1, 0]
-    ray_step_edge = np.reshape(ray_step_edge, (num_sols * num_ants, -1))
-    ray_in_air[r] = (~np.any(ray_step_edge >= 0, axis = 0)).astype(int)
-    del hf, cons, prob, ray_step_edge
+    del hf, cons, prob
+
+print(np.count_nonzero(sig_in == 0))
+print(np.count_nonzero(sig_in_wide == 0))
+print(np.nansum(inu_thrown))
+print(np.count_nonzero(sig_in == 0) / np.nansum(inu_thrown))
+print(np.count_nonzero(sig_in_wide == 0) / np.nansum(inu_thrown))
 
 pnu /= 1e9
 exponent -= 9
@@ -81,10 +81,6 @@ one_weight_sig = np.copy(one_weight)
 one_weight_sig[sig_in == 0] = 0
 one_weight_sig_wide = np.copy(one_weight)
 one_weight_sig_wide[sig_in_wide == 0] = 0
-one_weight_ray_step = np.copy(one_weight)
-one_weight_ray_step[ray_in_air == 0] = 0
-one_weight_both = np.copy(one_weight)
-one_weight_both[np.logical_or(sig_in_wide == 0, ray_in_air == 0)] = 0
 
 ex_range = np.arange(7, 13, 1, dtype = int)
 num_ens = len(ex_range)
@@ -97,10 +93,6 @@ aeff_1d_sig = np.copy(aeff_1d)
 aeff_2d_sig = np.copy(aeff_2d)
 aeff_1d_sig_wide = np.copy(aeff_1d)
 aeff_2d_sig_wide = np.copy(aeff_2d)
-aeff_1d_ray_step = np.copy(aeff_1d)
-aeff_2d_ray_step = np.copy(aeff_2d)
-aeff_1d_both = np.copy(aeff_1d)
-aeff_2d_both = np.copy(aeff_2d)
 inu_thrown_tot = np.full((num_flas, num_configs, num_ens), 0, dtype = float)
 
 for f in range(num_flas):
@@ -113,8 +105,6 @@ for f in range(num_flas):
             tot_wei = one_weight[idxs].flatten()
             tot_wei_sig = one_weight_sig[idxs].flatten()
             tot_wei_sig_wide = one_weight_sig_wide[idxs].flatten()
-            tot_wei_ray_step = one_weight_ray_step[idxs].flatten()
-            tot_wei_both = one_weight_both[idxs].flatten()
             inu_thrown_tot[f, c, e] = tot_evt
 
             aeff_1d[:, f, c, e] = np.histogram(tot_pnu, weights = tot_wei, bins = energy_bins)[0]
@@ -123,10 +113,6 @@ for f in range(num_flas):
             aeff_1d_sig[:, f, c, e] /= tot_evt * np.diff(energy_bins) * solid_angle
             aeff_1d_sig_wide[:, f, c, e] = np.histogram(tot_pnu, weights = tot_wei_sig_wide, bins = energy_bins)[0]
             aeff_1d_sig_wide[:, f, c, e] /= tot_evt * np.diff(energy_bins) * solid_angle
-            aeff_1d_ray_step[:, f, c, e] = np.histogram(tot_pnu, weights = tot_wei_ray_step, bins = energy_bins)[0]
-            aeff_1d_ray_step[:, f, c, e] /= tot_evt * np.diff(energy_bins) * solid_angle
-            aeff_1d_both[:, f, c, e] = np.histogram(tot_pnu, weights = tot_wei_both, bins = energy_bins)[0]
-            aeff_1d_both[:, f, c, e] /= tot_evt * np.diff(energy_bins) * solid_angle
 
             aeff_2d[:, :, f, c, e] = np.histogram2d(tot_pnu, tot_cos, weights = tot_wei, bins=(energy_bins, cos_bins))[0]
             aeff_2d[:, :, f, c, e] /= tot_evt * np.diff(energy_bins)[:, np.newaxis] * np.diff(cos_bins)[np.newaxis, :] * solid_angle
@@ -134,10 +120,6 @@ for f in range(num_flas):
             aeff_2d_sig[:, :, f, c, e] /= tot_evt * np.diff(energy_bins)[:, np.newaxis] * np.diff(cos_bins)[np.newaxis, :] * solid_angle
             aeff_2d_sig_wide[:, :, f, c, e] = np.histogram2d(tot_pnu, tot_cos, weights = tot_wei_sig_wide, bins=(energy_bins, cos_bins))[0]
             aeff_2d_sig_wide[:, :, f, c, e] /= tot_evt * np.diff(energy_bins)[:, np.newaxis] * np.diff(cos_bins)[np.newaxis, :] * solid_angle
-            aeff_2d_ray_step[:, :, f, c, e] = np.histogram2d(tot_pnu, tot_cos, weights = tot_wei_ray_step, bins=(energy_bins, cos_bins))[0]
-            aeff_2d_ray_step[:, :, f, c, e] /= tot_evt * np.diff(energy_bins)[:, np.newaxis] * np.diff(cos_bins)[np.newaxis, :] * solid_angle
-            aeff_2d_both[:, :, f, c, e] = np.histogram2d(tot_pnu, tot_cos, weights = tot_wei_both, bins=(energy_bins, cos_bins))[0]
-            aeff_2d_both[:, :, f, c, e] /= tot_evt * np.diff(energy_bins)[:, np.newaxis] * np.diff(cos_bins)[np.newaxis, :] * solid_angle
 
 m_to_cm = 1e4
 flux_model = np.loadtxt('/home/mkim/analysis/MF_filters/data/flux_data/gzkKoteraSFR1.txt')
@@ -158,10 +140,6 @@ evt_rate_sig = np.copy(evt_rate)
 evt_rate_sig[sig_in == 0] = 0
 evt_rate_sig_wide = np.copy(evt_rate)
 evt_rate_sig_wide[sig_in_wide == 0] = 0
-evt_rate_ray_step = np.copy(evt_rate)
-evt_rate_ray_step[ray_in_air == 0] = 0
-evt_rate_both = np.copy(evt_rate)
-evt_rate_both[np.logical_or(sig_in_wide == 0, ray_in_air == 0)] = 0
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 if not os.path.exists(path):
@@ -187,7 +165,6 @@ hf.create_dataset('energy_bins', data=energy_bins, compression="gzip", compressi
 hf.create_dataset('cos_bins', data=cos_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('sig_in', data=sig_in, compression="gzip", compression_opts=9)
 hf.create_dataset('sig_in_wide', data=sig_in_wide, compression="gzip", compression_opts=9)
-hf.create_dataset('ray_in_air', data=ray_in_air, compression="gzip", compression_opts=9)
 hf.create_dataset('aeff_1d', data=aeff_1d, compression="gzip", compression_opts=9)
 hf.create_dataset('aeff_1d_sig', data=aeff_1d_sig, compression="gzip", compression_opts=9)
 hf.create_dataset('aeff_1d_sig_wide', data=aeff_1d_sig_wide, compression="gzip", compression_opts=9)
@@ -197,16 +174,11 @@ hf.create_dataset('aeff_2d_sig_wide', data=aeff_2d_sig_wide, compression="gzip",
 hf.create_dataset('evt_rate', data=evt_rate, compression="gzip", compression_opts=9)
 hf.create_dataset('evt_rate_sig', data=evt_rate_sig, compression="gzip", compression_opts=9)
 hf.create_dataset('evt_rate_sig_wide', data=evt_rate_sig_wide, compression="gzip", compression_opts=9)
-hf.create_dataset('one_weight_ray_step', data=one_weight_ray_step, compression="gzip", compression_opts=9)
-hf.create_dataset('one_weight_both', data=one_weight_both, compression="gzip", compression_opts=9)
-hf.create_dataset('aeff_1d_ray_step', data=aeff_1d_ray_step, compression="gzip", compression_opts=9)
-hf.create_dataset('aeff_2d_ray_step', data=aeff_2d_ray_step, compression="gzip", compression_opts=9)
-hf.create_dataset('aeff_1d_both', data=aeff_1d_both, compression="gzip", compression_opts=9)
-hf.create_dataset('aeff_2d_both', data=aeff_2d_both, compression="gzip", compression_opts=9)
-hf.create_dataset('evt_rate_ray_step', data=evt_rate_ray_step, compression="gzip", compression_opts=9)
-hf.create_dataset('evt_rate_both', data=evt_rate_both, compression="gzip", compression_opts=9)
 hf.create_dataset('gzkKoteraSFR_energy', data=energy, compression="gzip", compression_opts=9)
 hf.create_dataset('gzkKoteraSFR_e2', data=nu_tot_model, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name, size_checker(path+file_name))
+
+
+
 

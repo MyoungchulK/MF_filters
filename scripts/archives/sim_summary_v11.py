@@ -22,19 +22,14 @@ d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 del d_run_range
 
 i_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/sub_info_sim/'
-s_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/snr_sim/'
-sb_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/snr_banila_sim/'
 r_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco_sim/'
 m_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf_sim/'
-c_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/csw_sim/'
-v_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/vertex_sim/'
 q_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/qual_cut_sim/'
 
 if Type == 'signal':
     num_evts = 100
 if Type == 'noise':
     num_evts = 1000
-num_sols = 2
 num_ants = 16
 evt_num = np.arange(num_evts, dtype = int)
 pol_num = np.arange(3, dtype = int)
@@ -67,7 +62,6 @@ sig_in = np.full((d_len, num_evts), 0, dtype = int)
 sig_in_wide = np.full((d_len, num_evts), 0, dtype = int)
 signal_bin = np.copy(rec_ang)
 ray_step_edge = np.full((d_len, 2, 2, 2, num_ants, num_evts), np.nan, dtype = float) # rays, xz, edge
-ray_in_air = np.full((d_len, num_evts), 0, dtype = int)
 coef = np.full((d_len, len(pol_num), len(rad_num), 2, num_evts), np.nan, dtype = float) # run, pol, rad, sol, evt
 coord = np.full((d_len, len(pol_num), len(ang_num), len(rad_num), 2, num_evts), np.nan, dtype = float) # run, pol, thephi, rad, sol, evt
 coef_max = np.full((d_len, len(pol_num), num_evts), np.nan, dtype = float) # run, pol, evt
@@ -75,30 +69,10 @@ coord_max = np.full((d_len, len(ang_num) + 1, len(pol_num), num_evts), np.nan, d
 mf_max = np.full((d_len, len(pol_num), num_evts), np.nan, dtype = float) # run, pol, evt
 mf_max_each = np.full((d_len, len(pol_num), 2, 7, 6, num_evts), np.nan, dtype = float) # run, pol, sho, the, off, evt
 mf_temp = np.full((d_len, len(pol_num), 2, num_evts), np.nan, dtype = float) # run, pol, thephi, evt
-snr = np.full((d_len, num_ants, num_evts), np.nan, dtype = float)
-snr_all = np.copy(snr)
-snr_max = np.full((d_len, 3, num_evts), np.nan, dtype = float)
-snr_b = np.copy(snr)
-snr_b_all = np.copy(snr)
-snr_b_max = np.copy(snr_max)
-snr_ver = np.copy(snr)
-coord_ver = np.full((d_len, 3, 3, num_evts), np.nan, dtype = float)
-xyz_ver = np.copy(coord_ver)
-qual_indi = np.full((d_len, num_evts, 9), 0, dtype = int)
+qual_indi = np.full((d_len, num_evts, 8), 0, dtype = int)
 qual_tot = np.full((d_len, num_evts), 0, dtype = int)
 evt_rate = np.copy(pnu)
 one_weight = np.copy(pnu)
-hill_max_idx = np.full((d_len, 2, 2, num_evts), np.nan, dtype = float)
-hill_max = np.copy(hill_max_idx)
-snr_csw = np.copy(hill_max_idx)
-cdf_avg = np.copy(hill_max_idx)
-slope = np.copy(hill_max_idx)
-intercept = np.copy(hill_max_idx)
-r_value = np.copy(hill_max_idx)
-p_value = np.copy(hill_max_idx)
-std_err = np.copy(hill_max_idx)
-ks = np.copy(hill_max_idx)
-nan_flag = np.full((d_len, 2, 2, num_evts), 0, dtype = int)
 
 # temp
 if Station == 2: num_configs = 7
@@ -170,9 +144,7 @@ for r in tqdm(range(d_len)):
     sig_in_wide[r] = np.nansum(np.digitize(sig_bin, wf_dege_wide) == 1, axis = (0, 1))
     signal_bin[r] = sig_bin
     ray_step_edge[r] = hf['ray_step_edge'][:]
-    ray_step_edge_re = np.reshape(ray_step_edge[r][:, 1, 0], (num_sols * num_ants, -1))
-    ray_in_air[r] = (~np.any(ray_step_edge_re >= 0, axis = 0)).astype(int)
-    del hf, wf_time, sig_bin, wf_dege, wf_dege_wide, ray_step_edge_re
+    del hf, wf_time, sig_bin, wf_dege, wf_dege_wide
 
     try:
         hf = h5py.File(f'{q_path}qual_cut{hf_name}', 'r')
@@ -183,56 +155,6 @@ for r in tqdm(range(d_len)):
         del hf
     except FileNotFoundError:
         print(f'{q_path}qual_cut{hf_name}')
-
-    ex_run = get_example_run(Station, config[r])
-    bad_ant = known_issue.get_bad_antenna(ex_run)
-    try:
-        hf = h5py.File(f'{s_path}snr{hf_name}', 'r')
-        snr_tot = hf['snr'][:]
-        snr_all[r] = snr_tot
-        snr_tot[bad_ant] = np.nan
-        snr[r] = snr_tot
-        snr_max[r, 0] = -np.sort(-snr_tot[:8], axis = 0)[2]
-        snr_max[r, 1] = -np.sort(-snr_tot[8:], axis = 0)[2]
-        snr_max[r, 2] = -np.sort(-snr_tot, axis = 0)[2]
-        del hf, snr_tot
-    except FileNotFoundError:
-        print(f'{s_path}snr{hf_name}')
-
-    try:
-        hf = h5py.File(f'{sb_path}snr_banila{hf_name}', 'r')
-        snr_tot = hf['snr'][:]
-        snr_b_all[r] = snr_tot
-        snr_tot[bad_ant] = np.nan   
-        snr_b[r] = snr_tot
-        snr_b_max[r, 0] = -np.sort(-snr_tot[:8], axis = 0)[2]
-        snr_b_max[r, 1] = -np.sort(-snr_tot[8:], axis = 0)[2]
-        snr_b_max[r, 2] = -np.sort(-snr_tot, axis = 0)[2]
-        del hf, snr_tot
-    except FileNotFoundError:
-        print(f'{sb_path}snr_banila{hf_name}')
-
-    try:
-        hf = h5py.File(f'{v_path}vertex{hf_name}', 'r')
-        snr_pow = hf['snr'][:]
-        snr_pow[bad_ant] = np.nan
-        snr_ver[r] = snr_pow
-        theta = hf['theta'][:]
-        phi = hf['phi'][:]
-        r_ver = hf['r'][:]
-        x_ver = hf['x'][:]
-        y_ver = hf['y'][:]
-        z_ver = hf['z'][:]
-        coord_ver[r, 0] = theta
-        coord_ver[r, 1] = phi
-        coord_ver[r, 2] = r_ver
-        xyz_ver[r, 0] = x_ver
-        xyz_ver[r, 1] = y_ver
-        xyz_ver[r, 2] = z_ver
-        del hf, snr_pow, theta, phi, r_ver, x_ver, y_ver, z_ver
-    except FileNotFoundError:
-        print(f'{v_path}vertex{hf_name}')
-    del ex_run, bad_ant
 
     try:
         hf = h5py.File(f'{r_path}reco{hf_name}', 'r')
@@ -252,23 +174,6 @@ for r in tqdm(range(d_len)):
         print(f'{r_path}reco{hf_name}')
 
     try:
-        hf = h5py.File(f'{c_path}csw{hf_name}', 'r')
-        hill_max_idx[r] = hf['hill_max_idx'][:]
-        hill_max[r] = hf['hill_max'][:]
-        snr_csw[r] = hf['snr_csw'][:]
-        cdf_avg[r] = hf['cdf_avg'][:]
-        slope[r] = hf['slope'][:]
-        intercept[r] = hf['intercept'][:]
-        r_value[r] = hf['r_value'][:]
-        p_value[r] = hf['p_value'][:]
-        std_err[r] = hf['std_err'][:]
-        ks[r] = hf['ks'][:]
-        nan_flag[r] = hf['nan_flag'][:]
-        del hf
-    except FileNotFoundError:
-        print(f'{c_path}csw{hf_name}')
-    
-    try:
         hf = h5py.File(f'{m_path}mf{hf_name}', 'r')
         mf_max[r] = hf['mf_max'][:] # pol, evt
         mf_max_each[r] = hf['mf_max_each'][:] # pol, sho, the, off, evt
@@ -280,13 +185,13 @@ for r in tqdm(range(d_len)):
     del hf_name
 
 
-qual = (np.nansum(qual_indi[:, :, 0:2], axis = 2) != 0).astype(int)
-qual_cw = np.copy(qual_indi[:, :, 2])
-qual_op = np.copy(qual_indi[:, :, 3])
-qual_cp = np.copy(qual_indi[:, :, 4])
-qual_corr = np.copy(qual_indi[:, :, 5])
-qual_ver = (np.nansum(qual_indi[:, :, 6:8], axis = 2) != 0).astype(int)
-qual_mf = np.copy(qual_indi[:, :, 8])
+qual = np.copy(qual_indi[:, :, 0])
+qual_cw = np.copy(qual_indi[:, :, 1])
+qual_op = np.copy(qual_indi[:, :, 2])
+qual_cp = np.copy(qual_indi[:, :, 3])
+qual_corr = np.copy(qual_indi[:, :, 4])
+qual_ver = (np.nansum(qual_indi[:, :, 5:7], axis = 2) != 0).astype(int)
+qual_mf = np.copy(qual_indi[:, :, 7])
  
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
@@ -294,7 +199,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Sim_Summary_{Type}_v10_A{Station}.h5'
+file_name = f'Sim_Summary_{Type}_v9_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('run_map', data=run_map, compression="gzip", compression_opts=9)
 hf.create_dataset('sim_run', data=sim_run, compression="gzip", compression_opts=9)
@@ -325,15 +230,6 @@ hf.create_dataset('coord_max', data=coord_max, compression="gzip", compression_o
 hf.create_dataset('mf_max', data=mf_max, compression="gzip", compression_opts=9)
 hf.create_dataset('mf_max_each', data=mf_max_each, compression="gzip", compression_opts=9)
 hf.create_dataset('mf_temp', data=mf_temp, compression="gzip", compression_opts=9)
-hf.create_dataset('snr', data=snr, compression="gzip", compression_opts=9)
-hf.create_dataset('snr_all', data=snr_all, compression="gzip", compression_opts=9)
-hf.create_dataset('snr_b', data=snr_b, compression="gzip", compression_opts=9)
-hf.create_dataset('snr_b_all', data=snr_b_all, compression="gzip", compression_opts=9)
-hf.create_dataset('snr_max', data=snr_max, compression="gzip", compression_opts=9)
-hf.create_dataset('snr_b_max', data=snr_b_max, compression="gzip", compression_opts=9)
-hf.create_dataset('snr_ver', data=snr_ver, compression="gzip", compression_opts=9)
-hf.create_dataset('coord_ver', data=coord_ver, compression="gzip", compression_opts=9)
-hf.create_dataset('xyz_ver', data=xyz_ver, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_indi', data=qual_indi, compression="gzip", compression_opts=9)
 hf.create_dataset('qual', data=qual, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_cw', data=qual_cw, compression="gzip", compression_opts=9)
@@ -347,18 +243,6 @@ hf.create_dataset('sig_in', data=sig_in, compression="gzip", compression_opts=9)
 hf.create_dataset('sig_in_wide', data=sig_in_wide, compression="gzip", compression_opts=9)
 hf.create_dataset('signal_bin', data=signal_bin, compression="gzip", compression_opts=9)
 hf.create_dataset('ray_step_edge', data=ray_step_edge, compression="gzip", compression_opts=9)
-hf.create_dataset('ray_in_air', data=ray_in_air, compression="gzip", compression_opts=9)
-hf.create_dataset('hill_max_idx', data=hill_max_idx, compression="gzip", compression_opts=9)
-hf.create_dataset('hill_max', data=hill_max, compression="gzip", compression_opts=9)
-hf.create_dataset('snr_csw', data=snr_csw, compression="gzip", compression_opts=9)
-hf.create_dataset('cdf_avg', data=cdf_avg, compression="gzip", compression_opts=9)
-hf.create_dataset('slope', data=slope, compression="gzip", compression_opts=9)
-hf.create_dataset('intercept', data=intercept, compression="gzip", compression_opts=9)
-hf.create_dataset('r_value', data=r_value, compression="gzip", compression_opts=9)
-hf.create_dataset('p_value', data=p_value, compression="gzip", compression_opts=9)
-hf.create_dataset('std_err', data=std_err, compression="gzip", compression_opts=9)
-hf.create_dataset('ks', data=ks, compression="gzip", compression_opts=9)
-hf.create_dataset('nan_flag', data=nan_flag, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name, size_checker(path+file_name))
 
