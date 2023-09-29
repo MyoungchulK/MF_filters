@@ -81,6 +81,9 @@ def script_loader(key, station, run, qual_type, act_evt, blind_dat, condor_run, 
         results = method(Data, Ped, analyze_blind_dat = blind_dat, sel_evts = act_evt)
     elif key == 'qual_cut_1st' or key == 'qual_cut_2nd' or key == 'qual_cut_3rd':
         results = method(Data, Ped, qual_type = qual_type, analyze_blind_dat = blind_dat, no_tqdm = no_tqdm)
+    elif key == 'qual_cut_3rd_bad':
+        results = method(station, run, qual_type = qual_type, analyze_blind_dat = blind_dat, no_tqdm = no_tqdm)
+        return
     elif key == 'l1':
         results = method(Data, Ped, station, run, Year, analyze_blind_dat = blind_dat)
     elif key == 'ped':
