@@ -8,11 +8,15 @@ curr_path = os.getcwd()
 sys.path.append(curr_path+'/../')
 from tools.ara_run_manager import file_sorter
 from tools.ara_utility import size_checker
+from tools.ara_known_issue import known_issue_loader
 
 Station = int(sys.argv[1])
 count_i = int(sys.argv[2])
 count_f = int(sys.argv[3])
 count_ff = count_i + count_f
+
+known_issue = known_issue_loader(Station, verbose = True)
+bad_runs = known_issue.get_knwon_bad_run(use_qual = True)
 
 # sort
 d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco/*'
@@ -55,6 +59,7 @@ for r in tqdm(range(len(d_run_tot))):
     qual_tot = hf_q['tot_qual_cut_sum'][:] != 0
 
     cut = np.in1d(evt, evt_full[np.nansum(qual_indi[:, cut_1st], axis = 1) != 0]).astype(int)   
+    if d_run_tot[r] in bad_runs: cut[:] = 1
     cut_cw = np.in1d(evt, evt_full[qual_indi[:, 20] != 0]).astype(int)
     cut_op = np.in1d(evt, evt_full[qual_indi[:, 27] != 0]).astype(int)
     cut_cp = np.in1d(evt, evt_full[qual_indi[:, 28] != 0]).astype(int)
