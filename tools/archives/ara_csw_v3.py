@@ -71,9 +71,8 @@ class ara_csw:
         evt_range = np.arange(len(coef[0, 0, 0, :]), dtype = int)
         tp_range = np.arange(len(coord[0, :, 0, 0, 0]), dtype = int)       
 
-        ## horrible hard-coding that trying to get index of arrival time table from reco results
-        ## highly possibly i will update after.... my defense!
         self.coef_r_max_idx = np.argmax(coef, axis = 1) # pol, sol, evt
+
         coord_t = np.transpose(coord, (1, 0, 2, 3, 4))
         self.coord_r_max_idx = coord_t[tp_range[:, np.newaxis, np.newaxis, np.newaxis], self.pol_range[np.newaxis, :, np.newaxis, np.newaxis], self.coef_r_max_idx, self.sol_range[np.newaxis, np.newaxis, :, np.newaxis], evt_range[np.newaxis, np.newaxis, np.newaxis, :]]
         self.coord_r_max_idx  = np.transpose(self.coord_r_max_idx, (1, 0, 2, 3))
@@ -127,10 +126,9 @@ class ara_csw:
         self.double_pad_len = self.pad_len * 2
         self.bool_pad = np.full((self.double_pad_len, num_pols, self.num_sols), False, dtype = bool)
         self.norm_pad = np.full((self.double_pad_len, num_pols, self.num_sols), 0, dtype = float)
-        self.zero_pad = np.copy(self.norm_pad)
+        self.zero_pad = np.full((self.double_pad_len, num_pols, self.num_sols), 0, dtype = float)
         self.time_pad = np.arange(self.double_pad_len, dtype = float) * self.dt + self.pad_zero_t[0] - float(self.pad_len // 2) * self.dt
-        self.range_pad = np.full(self.bool_pad.shape, 0, dtype = int)
-        self.range_pad[:] = np.arange(self.double_pad_len, dtype = int)[:, np.newaxis, np.newaxis]
+        self.range_pad = np.arange(self.double_pad_len, dtype = int)
         self.param_shape = (num_pols, self.num_sols)
 
         if self.verbose:
@@ -230,46 +228,56 @@ class ara_csw:
         self.snr_csw = self.get_p2p_multiple_array() # rms is already devided it. So, p2p is already snr
         self.snr_csw /= 2 # (# of pols, # of rays) 
 
-        ## sorting
-        closeness = np.abs(self.range_pad - self.hill_max_idx[np.newaxis, :, :]) # (# of bins, # of pols, # of rays)
-        clo_sort_idx = np.argsort(closeness, axis = 0)
-        csw_hill[self.bool_pad == False] = np.nan
-        csw_sort = csw_hill[clo_sort_idx, self.pol_range[np.newaxis, :, np.newaxis], self.sol_range[np.newaxis, np.newaxis, :]] # (# of bins, # of pols, # of rays)       
+        ## sorting, cdf
+        self.cdf_avg = np.full(self.param_shape, np.nan, dtype = float)
+        self.slope = np.copy(self.cdf_avg)
+        self.intercept = np.copy(self.cdf_avg)
+        self.r_value = np.copy(self.cdf_avg)
+        self.p_value = np.copy(self.cdf_avg)
+        self.std_err = np.copy(self.cdf_avg)
+        self.ks = np.copy(self.cdf_avg)
         if self.use_debug:
-            self.closeness = np.copy(closeness)
-            self.clo_sort_idx = np.copy(clo_sort_idx)
-            self.csw_sort = np.copy(csw_sort)
-        del csw_hill, closeness, clo_sort_idx
-
-        ## cdf
-        sort_nan = np.isnan(csw_sort)
-        range_norm = self.range_pad.astype(float)
-        range_norm[sort_nan] = np.nan
-        range_norm -= np.nanmin(range_norm, axis = 0)
-        range_norm /= np.nanmax(range_norm, axis = 0)
-        cdf = np.nancumsum(csw_sort, axis = 0)
-        cdf /= np.nanmax(cdf, axis = 0)
-        cdf[sort_nan] = np.nan
-        if self.use_debug:
-            self.cdf_time = np.copy(range_norm)
-            self.cdf = np.copy(cdf)
-        del csw_sort
-  
-        ## analysis variable
-        self.cdf_avg = np.nanmean(cdf, axis = 0) # * 2 - 1 is removed
-        self.slope = np.full(self.param_shape, np.nan, dtype = float)
-        self.intercept = np.copy(self.slope)
-        self.r_value = np.copy(self.slope)
-        self.p_value = np.copy(self.slope)
-        self.std_err = np.copy(self.slope)
-        for p in range(num_pols): # really linregress is not desinged to take multiple dim array and nan ?!?!?!
+            self.csw_sort = np.full((self.double_pad_len, num_pols, self.num_sols), np.nan, dtype = float)
+            self.cdf = np.copy(self.csw_sort)
+            self.cdf_time = np.copy(self.csw_sort)
+            self.cdf_ks = np.copy(self.csw_sort)
+        for p in range(num_pols):
             for s in range(self.num_sols):
-                self.slope[p, s], self.intercept[p, s], self.r_value[p, s], self.p_value[p, s], self.std_err[p, s] = linregress(range_norm[~sort_nan[:, p, s], p, s], cdf[~sort_nan[:, p, s], p, s]) 
-        cdf_fit = range_norm * self.slope[np.newaxis, :, :] + self.intercept[np.newaxis, :, :]
-        self.ks = np.nanmax(np.abs(cdf_fit - cdf), axis = 0) # max diff between fit and data
-        if self.use_debug:
-            self.cdf_ks = np.copy(cdf_fit)
-        del range_norm, cdf, sort_nan
+                if self.nan_flag[p, s]:
+                    continue
+                csw_trim = csw_hill[self.bool_pad[:, p, s], p, s]        
+                range_trim = self.range_pad[self.bool_pad[:, p, s]]
+                closeness = np.abs(range_trim - self.hill_max_idx[p, s])
+                clo_sort_idx = np.argsort(closeness)
+                csw_sort = csw_trim[clo_sort_idx]
+                del csw_trim, closeness, clo_sort_idx
+
+                ## cdf
+                cdf = np.nancumsum(csw_sort)
+                cdf /= cdf[-1]       
+                self.cdf_avg[p, s] = np.nanmean(cdf) * 2 - 1  # why?????
+                if self.use_debug:
+                    trim_len = np.count_nonzero(self.bool_pad[:, p, s])
+                    self.csw_sort[:trim_len, p, s] = csw_sort
+                    self.cdf[:trim_len, p, s] = cdf
+                del csw_sort
+
+                range_norm = range_trim.astype(float)
+                range_norm -= range_norm[0]
+                range_norm /= range_norm[-1]
+                self.slope[p, s], self.intercept[p, s], self.r_value[p, s], self.p_value[p, s], self.std_err[p, s] = linregress(range_norm, cdf)
+                del range_trim
+
+                cdf_fit = range_norm * self.slope[p, s] + self.intercept[p, s]
+                self.ks[p, s] = np.nanmax(np.abs(cdf_fit - cdf)) # max diff between fit and data
+                if self.use_debug:
+                    self.cdf_time[:trim_len, p, s] = range_norm 
+                    self.cdf_ks[:trim_len, p, s] = cdf_fit
+                del range_norm, cdf, cdf_fit
+
+        cdf_avg_n = self.cdf_avg < 0
+        self.cdf_avg[cdf_avg_n] = 0
+        del csw_hill, cdf_avg_n
 
     def get_p2p_multiple_array(self):
 
