@@ -957,6 +957,8 @@ class filt_qual_cut_loader:
             cut_corr[0] = np.array([34.03, 33.38], dtype = float) # vpol: 170m, 300m
             cut_corr[1] = np.array([32.44, 31.79], dtype = float) # hpol: 170m, 300m
         cut_corr_flat = np.reshape(cut_corr, (num_pols * num_rads))
+        if self.verbose:
+            print('Surface cut val (V170, V300, H170, H300)!!!!:', cut_corr_flat)
 
         cal_sur_evts = np.full((self.num_evts, 5), 0, dtype = int) # cal, corr, ver z, ver theta, mf pole
         
@@ -1057,7 +1059,8 @@ class filt_qual_cut_loader:
             z_cuts = np.any(z_reco > cut_z, axis = 0).astype(int)
             t_reco = ver_hf['theta'][:num_pols]
             t_reco[np.isnan(t_reco)] = -9999
-            t_cuts = np.any(t_reco > cut_corr, axis = 0).astype(int)
+            #t_cuts = np.any(t_reco > cut_corr, axis = 0).astype(int)
+            t_cuts = np.any(t_reco > 35, axis = 0).astype(int) # old version
             del ver_hf, z_reco, t_reco
 
             if use_sim:
