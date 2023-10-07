@@ -28,9 +28,6 @@ cut_idxs = np.arange(33, dtype = int)
 cuts = np.array([20, 27, 28, 29, 30, 31, 32], dtype = int)
 cut_1st = cut_idxs[~np.in1d(cut_idxs, cuts)]
 
-cut_known = np.array([18, 19], dtype = int) - 1
-cut_wo_known = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 17, 20, 23, 24, 25, 26], dtype = int) - 1
-
 qual_ep = np.full((0), 0, dtype = int)
 qual_ep_cw = np.copy(qual_ep)
 qual_ep_op = np.copy(qual_ep)
@@ -39,12 +36,6 @@ qual_ep_corr = np.copy(qual_ep)
 qual_ep_ver = np.copy(qual_ep)
 qual_ep_mf = np.copy(qual_ep)
 qual_ep_tot = np.copy(qual_ep)
-
-qual_ep_known = np.copy(qual_ep)
-qual_ep_wo_known = np.copy(qual_ep)
-
-q_len = 33
-qual_ep_all = np.full((q_len, 0), 0, dtype = int)
 
 for r in tqdm(range(len(d_run_tot))):
     
@@ -57,51 +48,42 @@ for r in tqdm(range(len(d_run_tot))):
         print(d_list[r])
         continue
     evt = hf['evt_num'][:]
-    num_evts = len(evt)
-    qual_ep_run = np.full((q_len, num_evts), 0, dtype = int)
-    del hf, num_evts
+    del hf
 
     q_name = f'{q_path}qual_cut_3rd_full_A{Station}_R{d_run_tot[r]}.h5'
     hf_q = h5py.File(q_name, 'r')
     evt_full = hf_q['evt_num'][:]
-    qual_indi = hf_q['tot_qual_cut'][:] != 0
+    qual_indi = hf_q['tot_qual_cut'][:]
+    qual_indi[:, 14] = 0 # no l1 cut
+    qual_indi[:, 15] = 0 # no rf/cal cut
+    qual_tot = hf_q['tot_qual_cut_sum'][:] != 0
 
-    for q in range(q_len):
-        if q == 18 and (d_run_tot[r] in bad_runs):
-            qual_ep_run[q] = 1
-        else:
-            qual_ep_run[q] = np.in1d(evt, evt_full[qual_indi[:, q]]).astype(int)
-    del q_name, hf_q, evt_full, qual_indi, evt
+    cut = np.in1d(evt, evt_full[np.nansum(qual_indi[:, cut_1st], axis = 1) != 0]).astype(int)   
+    if d_run_tot[r] in bad_runs: cut[:] = 1
+    cut_cw = np.in1d(evt, evt_full[qual_indi[:, 20] != 0]).astype(int)
+    cut_op = np.in1d(evt, evt_full[qual_indi[:, 27] != 0]).astype(int)
+    cut_cp = np.in1d(evt, evt_full[qual_indi[:, 28] != 0]).astype(int)
+    cut_corr = np.in1d(evt, evt_full[qual_indi[:, 29] != 0]).astype(int)
+    cut_ver = np.in1d(evt, evt_full[np.nansum(qual_indi[:, 30:32], axis = 1) != 0]).astype(int)
+    cut_mf = np.in1d(evt, evt_full[qual_indi[:, 32] != 0]).astype(int)
+    cut_tot = np.in1d(evt, evt_full[qual_tot])
 
-    qual_ep_all = np.concatenate((qual_ep_all, qual_ep_run), axis = 1)
-
-    qual_ep_run[14] = 0 # no l1 cut
-    qual_ep_run[15] = 0 # no rf/cal cut
-    qual_ba = (np.nansum(qual_ep_run[cut_1st], axis = 0) != 0).astype(int)
-    qual_ver = (np.nansum(qual_ep_run[30:32], axis = 0) != 0).astype(int)
-    qual_tot = (np.nansum(qual_ep_run, axis = 0) != 0).astype(int)
-
-    qual_kn = (np.nansum(qual_ep_run[cut_known], axis = 0) != 0).astype(int)
-    qual_wo_kn = (np.nansum(qual_ep_run[cut_wo_known], axis = 0) != 0).astype(int)
-    qual_ep_known = np.concatenate((qual_ep_known, qual_kn))
-    qual_ep_wo_known = np.concatenate((qual_ep_wo_known, qual_wo_kn))  
- 
-    qual_ep = np.concatenate((qual_ep, qual_ba))
-    qual_ep_cw = np.concatenate((qual_ep_cw, qual_ep_run[20]))
-    qual_ep_op = np.concatenate((qual_ep_op, qual_ep_run[27]))
-    qual_ep_cp = np.concatenate((qual_ep_cp, qual_ep_run[28]))
-    qual_ep_corr = np.concatenate((qual_ep_corr, qual_ep_run[29]))
-    qual_ep_ver = np.concatenate((qual_ep_ver, qual_ver))
-    qual_ep_mf = np.concatenate((qual_ep_mf, qual_ep_run[32])) 
-    qual_ep_tot = np.concatenate((qual_ep_tot, qual_tot))
-    del qual_ep_run, qual_tot, qual_ba, qual_ver, qual_kn, qual_wo_kn
+    qual_ep = np.concatenate((qual_ep, cut)) 
+    qual_ep_cw = np.concatenate((qual_ep_cw, cut_cw)) 
+    qual_ep_op = np.concatenate((qual_ep_op, cut_op)) 
+    qual_ep_cp = np.concatenate((qual_ep_cp, cut_cp)) 
+    qual_ep_corr = np.concatenate((qual_ep_corr, cut_corr)) 
+    qual_ep_ver = np.concatenate((qual_ep_ver, cut_ver)) 
+    qual_ep_mf = np.concatenate((qual_ep_mf, cut_mf)) 
+    qual_ep_tot = np.concatenate((qual_ep_tot, cut_tot)) 
+    del evt, q_name, hf_q, evt_full, qual_indi, qual_tot, cut, cut_cw, cut_op, cut_cp, cut_corr, cut_ver, cut_mf, cut_tot
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Data_Summary_Qual_v7_A{Station}_R{count_i}.h5'
+file_name = f'Data_Summary_Qual_v4_A{Station}_R{count_i}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('qual_ep', data=qual_ep, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_ep_cw', data=qual_ep_cw, compression="gzip", compression_opts=9)
@@ -111,9 +93,6 @@ hf.create_dataset('qual_ep_corr', data=qual_ep_corr, compression="gzip", compres
 hf.create_dataset('qual_ep_ver', data=qual_ep_ver, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_ep_mf', data=qual_ep_mf, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_ep_tot', data=qual_ep_tot, compression="gzip", compression_opts=9)
-hf.create_dataset('qual_ep_all', data=qual_ep_all, compression="gzip", compression_opts=9)
-hf.create_dataset('qual_ep_known', data=qual_ep_known, compression="gzip", compression_opts=9)
-hf.create_dataset('qual_ep_wo_known', data=qual_ep_wo_known, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name, size_checker(path+file_name))
 

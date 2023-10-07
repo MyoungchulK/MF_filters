@@ -15,8 +15,8 @@ def wf_collector(Data, Ped, analyze_blind_dat = False, sel_evts = None):
     from tools.ara_data_load import analog_buffer_info_loader
     from tools.ara_constant import ara_const
     from tools.ara_wf_analyzer import wf_analyzer
-    from tools.ara_py_interferometers_ex import py_interferometers
-    from tools.ara_py_interferometers_ex import get_products
+    from tools.ara_py_interferometers import py_interferometers
+    from tools.ara_py_interferometers import get_products
     from tools.ara_known_issue import known_issue_loader
     from tools.ara_cw_filters import py_phase_variance
     from tools.ara_cw_filters import py_testbed

@@ -947,19 +947,6 @@ class filt_qual_cut_loader:
             print('Something wrong in calpulser/surface cut!')
             sys.exit(1)
 
-        ## reset corr surface cut
-        num_rads = 2
-        cut_corr = np.full((num_pols, num_rads), np.nan, dtype = float) # pols, rads
-        if self.st == 2:
-            cut_corr[0] = np.array([34.08, 34.56], dtype = float) # vpol: 170m, 300m
-            cut_corr[1] = np.array([32.03, 33.88], dtype = float) # hpol: 170m, 300m
-        elif self.st == 3:
-            cut_corr[0] = np.array([34.03, 33.38], dtype = float) # vpol: 170m, 300m
-            cut_corr[1] = np.array([32.44, 31.79], dtype = float) # hpol: 170m, 300m
-        cut_corr_flat = np.reshape(cut_corr, (num_pols * num_rads))
-        if self.verbose:
-            print('Surface cut val (V170, V300, H170, H300)!!!!:', cut_corr_flat)
-
         cal_sur_evts = np.full((self.num_evts, 5), 0, dtype = int) # cal, corr, ver z, ver theta, mf pole
         
         if use_sim:
@@ -1014,11 +1001,11 @@ class filt_qual_cut_loader:
             else:
                 print('Wr are using indi coord for suaface cut!!')
                 #coord_max_flat = np.reshape(coord_max[:, 0, 1, :, :], (coord_shape[0] * coord_shape[3], -1)) # pol, thephi, rad, sol, evt
-                rad_opt = np.array([1, 2], dtype = int) # 170m and 300m
-                coord_max_flat = np.reshape(coord_max[:, 0, rad_opt, 0, :], (coord_shape[0] * len(rad_opt), -1)) # now pol x rad, evt
+                rad_opt = np.array([1, 2], dtype = int)
+                coord_max_flat = np.reshape(coord_max[:, 0, rad_opt, 0, :], (coord_shape[0] * len(rad_opt), -1)) # pol, thephi, rad, sol, evt
                 del rad_opt
-            sur_cuts = np.any(coord_max_flat > cut_corr_flat[:, np.newaxis], axis = 0).astype(int)
-            del reco_hf, coord_max, coord_max_flat, coord_shape, cut_corr_flat
+            sur_cuts = np.any(coord_max_flat > cut_corr, axis = 0).astype(int)
+            del reco_hf, coord_max, coord_max_flat, coord_shape
 
             if use_sim:
                 cal_sur_evts[:, 0] = cal_cuts
@@ -1059,8 +1046,7 @@ class filt_qual_cut_loader:
             z_cuts = np.any(z_reco > cut_z, axis = 0).astype(int)
             t_reco = ver_hf['theta'][:num_pols]
             t_reco[np.isnan(t_reco)] = -9999
-            #t_cuts = np.any(t_reco > cut_corr, axis = 0).astype(int)
-            t_cuts = np.any(t_reco > 35, axis = 0).astype(int) # old version
+            t_cuts = np.any(t_reco > cut_corr, axis = 0).astype(int)
             del ver_hf, z_reco, t_reco
 
             if use_sim:

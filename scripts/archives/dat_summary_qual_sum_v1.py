@@ -11,7 +11,7 @@ from tools.ara_utility import size_checker
 
 Station = int(sys.argv[1])
 
-d_path1 = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/Data_Summary_Qual_v7_A{Station}_R*'
+d_path1 = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/Data_Summary_Qual_v6_A{Station}_R*'
 d_list1, d_run_tot1, d_run_range1, d_len1 = file_sorter(d_path1)
 del d_run_range1
 
@@ -23,8 +23,6 @@ qual_ep_corr = np.copy(qual_ep)
 qual_ep_ver = np.copy(qual_ep)
 qual_ep_mf = np.copy(qual_ep)
 qual_ep_tot = np.copy(qual_ep)
-qual_ep_known = np.copy(qual_ep)
-qual_ep_wo_known = np.copy(qual_ep)
 q_len = 33
 qual_ep_all = np.full((q_len, 0), 0, dtype = int)
 
@@ -46,8 +44,6 @@ for r in tqdm(range(len(d_run_tot1))):
     qual_ep_mf1 = hf['qual_ep_mf'][:]
     qual_ep_tot1 = hf['qual_ep_tot'][:]
     qual_ep_all1 = hf['qual_ep_all'][:]
-    qual_ep_known1 = hf['qual_ep_known'][:]
-    qual_ep_wo_known1 = hf['qual_ep_wo_known'][:]
 
     qual_ep = np.concatenate((qual_ep, qual_ep1), axis = 0)
     qual_ep_cw = np.concatenate((qual_ep_cw, qual_ep_cw1), axis = 0)
@@ -57,8 +53,6 @@ for r in tqdm(range(len(d_run_tot1))):
     qual_ep_ver = np.concatenate((qual_ep_ver, qual_ep_ver1), axis = 0)
     qual_ep_mf = np.concatenate((qual_ep_mf, qual_ep_mf1), axis = 0)
     qual_ep_tot = np.concatenate((qual_ep_tot, qual_ep_tot1), axis = 0)
-    qual_ep_known = np.concatenate((qual_ep_known, qual_ep_known1), axis = 0)
-    qual_ep_wo_known = np.concatenate((qual_ep_wo_known, qual_ep_wo_known1), axis = 0)
     qual_ep_all = np.concatenate((qual_ep_all, qual_ep_all1), axis = 1)
     del hf, qual_ep1, qual_ep_corr1, qual_ep_ver1, qual_ep_mf1
 
@@ -68,7 +62,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Data_Summary_Qual_v7_A{Station}.h5'
+file_name = f'Data_Summary_Qual_v6_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('qual_ep', data=qual_ep, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_ep_cw', data=qual_ep_cw, compression="gzip", compression_opts=9)
@@ -79,8 +73,6 @@ hf.create_dataset('qual_ep_ver', data=qual_ep_ver, compression="gzip", compressi
 hf.create_dataset('qual_ep_mf', data=qual_ep_mf, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_ep_tot', data=qual_ep_tot, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_ep_all', data=qual_ep_all, compression="gzip", compression_opts=9)
-hf.create_dataset('qual_ep_known', data=qual_ep_known, compression="gzip", compression_opts=9)
-hf.create_dataset('qual_ep_wo_known', data=qual_ep_wo_known, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name, size_checker(path+file_name))
 

@@ -16,7 +16,7 @@ def arr_time_table_loader(Station = None):
     ara_ray = ara_raytrace_loader(n0 = 1.35, nf = 1.78, l = 0.0132, verbose = True)
 
     # get posisiton for vertex and antenna
-    radius_bin = np.array([41, 170, 300])
+    radius_bin = np.array([41, 170, 300, 450, 600])
     ara_ray.get_src_trg_position(Station, 2016, radius_bin = radius_bin)
 
     # arrival time table
@@ -27,7 +27,7 @@ def arr_time_table_loader(Station = None):
     print(f'Output path check:{Output}')
     if not os.path.exists(Output):
         os.makedirs(Output)
-    h5_file_name = f'{Output}arr_time_table_A{Station}.h5'
+    h5_file_name = f'{Output}arr_time_table_A{Station}_all.h5'
     hf = h5py.File(h5_file_name, 'w')
     
     #saving result
