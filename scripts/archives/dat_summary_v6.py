@@ -25,26 +25,20 @@ bad_runs = known_issue.get_knwon_bad_run(use_qual = True)
 d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco_ele/*'
 d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 m_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf/'
+sb_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/snr_banila/'
 del d_run_range
 
-ang_num = np.arange(2, dtype = int)
-ang_len = len(ang_num)
-pol_num = np.arange(2, dtype = int)
-pol_len = len(pol_num)
+pol_num = np.arange(3, dtype = int)
+rad_num = np.arange(5, dtype = int)
 sol_num = np.arange(2, dtype = int)
-sol_len = len(sol_num)
-rad = np.array([41, 170, 300, 450, 600], dtype = float)
-rad_len = len(rad)
-rad_num = np.arange(rad_len, dtype = int)
-theta = 90 - np.linspace(0.5, 179.5, 179 + 1)
-the_len = len(theta)
-flat_len = the_len * rad_len * sol_len
-theta_ex = np.full((the_len, rad_len, sol_len), np.nan, dtype = float)
+rad_o = np.array([41, 170, 300, 450, 600], dtype = float)
+theta = np.linspace(0.5, 179.5, 179 + 1)
+theta_ex = np.full((180, 5, 2), np.nan, dtype = float)
 theta_ex[:] = theta[:, np.newaxis, np.newaxis]
-theta_flat = np.reshape(theta_ex, (flat_len))
-rad_ex = np.full((the_len, rad_len, sol_len), np.nan, dtype = float)
-rad_ex[:] = rad[np.newaxis, :, np.newaxis]
-rad_flat = np.reshape(rad_ex, (flat_len))
+theta_flat = np.reshape(theta_ex, (180*5*2))
+rad_ex = np.full((180, 5, 2), np.nan, dtype = float)
+rad_ex[:] = rad_o[np.newaxis, :, np.newaxis]
+rad_flat = np.reshape(rad_ex, (180*5*2))
 
 runs = np.copy(d_run_tot)
 configs = np.full((d_len), 0, dtype = int)
@@ -53,12 +47,14 @@ run_ep = np.full((0), 0, dtype = int)
 evt_ep = np.copy(run_ep)
 trig_ep = np.copy(run_ep)
 con_ep = np.copy(run_ep)
-coef_r_max = np.full((pol_len, rad_len, sol_len,0), 0, dtype = float) # pol, rad, sol, evt
-coord_r_max = np.full((ang_len, pol_len, rad_len, sol_len, 0), 0, dtype = float) # thepi, pol, rad, sol, evt
-coef_max = np.full((pol_len, 0), 0, dtype = float) # pol, evt
-coord_max = np.full((ang_len + 1, pol_len, 0), 0, dtype = float) # thepir, pol, evt
+coef_r_max = np.full((len(pol_num), len(rad_num), len(sol_num),0), 0, dtype = float) # run, pol, rad, sol, evt
+coord_r_max = np.full((len(ang_num), len(pol_num), len(rad_num), len(sol_num), 0), 0, dtype = float) # run, thepi, pol, rad, sol, evt
+coef_max = np.full((len(pol_num), 0), 0, dtype = float) # run, pol, evt
+coord_max = np.full((len(ang_num) + 1, len(pol_num), 0), 0, dtype = float) # run, thepir, pol, evt
 mf_max = np.copy(coef_max) # pols, evts
-mf_temp = np.full((pol_len, ang_len, 0), 0, dtype = float) # pols, thephi, evts 
+mf_temp = np.full((3, 2, 0), 0, dtype = float) # pols, thephi, evts 
+snr_3rd = np.copy(coef_max) # pols, evts
+snr_b_3rd = np.copy(coef_max)
 
 for r in tqdm(range(len(d_run_tot))):
     
@@ -83,23 +79,23 @@ for r in tqdm(range(len(d_run_tot))):
     con_ep = np.concatenate((con_ep, con_r))
     del trig_type, run_r, con_r, evt 
 
-    coef_tot = hf['coef'][:pol_len] # pol, theta, rad, sol, evt
-    coord_tot = hf['coord'][:pol_len] # pol, theta, rad, sol, evt
+    coef_tot = hf['coef'][:] # pol, theta, rad, sol, evt
+    coord_tot = hf['coord'][:] # pol, theta, rad, sol, evt
 
-    coef_r_max_idx = np.nanargmax(coef_tot, axis = 1) # pol, rad, ray, evt
+    coef_r_max_idx = np.nanargmax(coef_tot, axis = 1)
     coef_r_max1 = coef_tot[pol_num[:, np.newaxis, np.newaxis, np.newaxis], coef_r_max_idx, rad_num[np.newaxis, :, np.newaxis, np.newaxis], sol_num[np.newaxis, np.newaxis, :, np.newaxis], evt_num[np.newaxis, np.newaxis, np.newaxis, :]] # pol, rad, ray, evt
-    coord_r_max1 = np.full((ang_len, pol_len, rad_len, sol_len, num_evts), np.nan, dtype = float) # thepi, pol, rad, ray, evt
+    coord_r_max1 = np.full((2, 3, 5, 2, num_evts), np.nan, dtype = float) # thepi, pol, rad, ray, evt
     coord_r_max1[0] = theta[coef_r_max_idx]
     coord_r_max1[1] = coord_tot[pol_num[:, np.newaxis, np.newaxis, np.newaxis], coef_r_max_idx, rad_num[np.newaxis, :, np.newaxis, np.newaxis], sol_num[np.newaxis, np.newaxis, :, np.newaxis], evt_num[np.newaxis, np.newaxis, np.newaxis, :]]
     coef_r_max = np.concatenate((coef_r_max, coef_r_max1), axis = 3)
     coord_r_max = np.concatenate((coord_r_max, coord_r_max1), axis = 4)
     del coef_r_max_idx, coef_r_max1, coord_r_max1
 
-    coef_re = np.reshape(coef_tot, (pol_len, flat_len, -1))
-    coord_re = np.reshape(coord_tot, (pol_len, flat_len, -1))
+    coef_re = np.reshape(coef_tot, (3, 180*5*2, -1))
+    coord_re = np.reshape(coord_tot, (3, 180*5*2, -1))
     coef_max_idx = np.nanargmax(coef_re, axis = 1)
     coef_max1 = coef_re[pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]] # pol, evt
-    coord_max1 = np.full((ang_len + 1, pol_len, num_evts), np.nan, dtype = float) # thepir, pol, evt
+    coord_max1 = np.full((3, 3, num_evts), np.nan, dtype = float) # thepir, pol, evt
     coord_max1[0] = theta_flat[coef_max_idx]
     coord_max1[1] = coord_re[pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]]
     coord_max1[2] = rad_flat[coef_max_idx]
@@ -108,13 +104,28 @@ for r in tqdm(range(len(d_run_tot))):
     del coef_re, coord_re, coef_max_idx, coef_max1, coord_max1
     del coef_tot, coord_tot, evt_num
 
+    bad_ant = known_issue.get_bad_antenna(d_run_tot[r])
+    s_name = f'{sb_path}snr_banila_A{Station}_R{d_run_tot[r]}.h5'
+    hf = h5py.File(s_name, 'r')
+    snr = hf['snr'][:]
+    snr[bad_ant] = np.nan
+    snr_max = np.full((3, num_evts), np.nan, dtype = float)
+    snr_max[0] = -np.sort(-snr[:8], axis = 0)[2]
+    snr_max[1] = -np.sort(-snr[8:], axis = 0)[2]
+    snr_max[2] = -np.sort(-snr, axis = 0)[2]
+    snr_b_3rd = np.concatenate((snr_b_3rd, snr_max), axis = 1)
+    del bad_ant, s_name, hf, snr, snr_max
+
     m_name = f'{m_path}mf_A{Station}_R{d_run_tot[r]}.h5'
     hf = h5py.File(m_name, 'r')
-    mf_m = hf['mf_max'][:pol_len]
+    mf_m = hf['mf_max'][:]
     mf_t_p = hf['mf_temp'][:, 1:3]
-    #mf_t_c = hf['mf_temp_com'][1:3] # of pols, theta n phi, # of evts
+    mf_t_c = hf['mf_temp_com'][1:3] # of pols, theta n phi, # of evts
+    mf_t = np.full((3, 2, num_evts), np.nan, dtype = float)
+    mf_t[:2] = mf_t_p
+    mf_t[2] = mf_t_c
     mf_max = np.concatenate((mf_max, mf_m), axis = 1)
-    mf_temp = np.concatenate((mf_temp, mf_t_p), axis = 2) 
+    mf_temp = np.concatenate((mf_temp, mf_t), axis = 2) 
     del m_name, hf, mf_m, mf_t, mf_t_p, mf_t_c
     del num_evts
     
@@ -145,6 +156,7 @@ hf.create_dataset('coef_max', data=coef_max, compression="gzip", compression_opt
 hf.create_dataset('coord_max', data=coord_max, compression="gzip", compression_opts=9)
 hf.create_dataset('mf_max', data=mf_max, compression="gzip", compression_opts=9)
 hf.create_dataset('mf_temp', data=mf_temp, compression="gzip", compression_opts=9)
+hf.create_dataset('snr_b_3rd', data=snr_b_3rd, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name, size_checker(path+file_name))
 
