@@ -23,4 +23,4 @@ for d in d_list_chaos:
 
     subprocess.run(f'cd {d}; pwd', shell = True) # file path
     subprocess.run(f'cd {d}; ls -1 | wc -l', shell = True) # file counts
-    #subprocess.run(f'cd {d}; du -sh', shell = True) # total sizes
+    subprocess.run(f'cd {d}; du -sh', shell = True) # total sizes
