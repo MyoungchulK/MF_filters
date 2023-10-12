@@ -2,7 +2,7 @@ import numpy as np
 from tqdm import tqdm
 import h5py
 
-def reco_ele_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm = False):
+def reco_ele_temp_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm = False):
 
     print('Collecting reco ele starts!')
 
@@ -13,8 +13,8 @@ def reco_ele_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_
         from tools.ara_data_load import ara_root_loader
     from tools.ara_constant import ara_const
     from tools.ara_wf_analyzer import wf_analyzer
-    from tools.ara_py_interferometers_ele import py_interferometers
-    from tools.ara_py_interferometers_ele import get_products
+    from tools.ara_py_interferometers_ele_v2 import py_interferometers
+    from tools.ara_py_interferometers_ele_v2 import get_products
     from tools.ara_run_manager import run_info_loader
     from tools.ara_known_issue import known_issue_loader
     from tools.ara_quality_cut import get_bad_events
@@ -86,7 +86,8 @@ def reco_ele_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_
 
     # loop over the events
     for evt in tqdm(range(num_evts), disable = no_tqdm):
-      #if evt == 0:        
+      if evt_num[evt] == 800:        
+      #if evt_num[evt] == 29635:        
         
         if daq_qual_cut_sum[evt]:
             continue
@@ -109,6 +110,17 @@ def reco_ele_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_
         ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt])
         coef[:, :, :, :, evt] = ara_int.coef_max_ele
         coord[:, :, :, :, evt] = ara_int.coord_max_ele
+
+        print(evt)
+        coef1 = coef[0, :, :, :, evt]
+        coef_max = np.nanmax(coef1, axis = 0)
+        print(coef_max.shape)
+        coef_max_idx = np.nanargmax(coef1, axis = 0)
+        print(coef_max_idx)
+        max_t = theta[coef_max_idx]
+        print(max_t)
+        print(coef1[:, 3, 1])
+
     del ara_root, num_evts, num_ants, wf_int, ara_int, daq_qual_cut_sum, wei_pairs, evt_num_b
 
     print('Reco collecting is done!')

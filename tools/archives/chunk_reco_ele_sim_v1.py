@@ -8,14 +8,14 @@ def reco_ele_sim_collector(Data, Station, Year):
     print('Collecting reco ele sim starts!')
 
     from tools.ara_sim_load import ara_root_loader
+    from tools.ara_py_interferometers_ele import py_interferometers
     from tools.ara_run_manager import get_path_info_v2
     from tools.ara_run_manager import get_example_run
-    from tools.ara_run_manager import get_file_name
     from tools.ara_constant import ara_const
     from tools.ara_wf_analyzer import wf_analyzer
-    from tools.ara_py_interferometers_ele import py_interferometers
     from tools.ara_py_interferometers_ele import get_products
     from tools.ara_known_issue import known_issue_loader
+    from tools.ara_run_manager import get_file_name
 
     # const. info.
     ara_const = ara_const()
@@ -55,7 +55,7 @@ def reco_ele_sim_collector(Data, Station, Year):
     re_shape = ara_int.results_shape
     snr_hf = h5py.File(snr_path, 'r')
     snr = snr_hf['snr'][:]
-    wei_pairs = get_products(snr, ara_int.pairs, ara_int.v_pairs_len)
+    wei_pairs, wei_pol = get_products(snr, ara_int.pairs, ara_int.v_pairs_len)
     del ex_run, snr_path, snr_hf, snr
 
     # output array
@@ -70,13 +70,13 @@ def reco_ele_sim_collector(Data, Station, Year):
         wf_v = ara_root.get_rf_wfs(evt)
         for ant in range(num_ants):
             wf_int.get_int_wf(wf_time, wf_v[:, ant], ant, use_sim = True, use_zero_pad = True, use_band_pass = True, use_cw = True, evt = evt)
-        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt])
+        ara_int.get_sky_map(wf_int.pad_v, weights = wei_pairs[:, evt], wei_pol = wei_pol[:, evt])
         coef[:, :, :, :, evt] = ara_int.coef_max_ele
         coord[:, :, :, :, evt] = ara_int.coord_max_ele
         #if evt == 0:
         #    print(coef[0, :, 0, 0, evt], coord[0, :, 0, 0, evt])
         del wf_v
-    del ara_root, num_evts, wf_int, ara_int, num_ants, wf_time, wei_pairs
+    del ara_root, num_evts, wf_int, ara_int, num_ants, wf_time, wei_pairs, wei_pol
 
     print('Reco ele sim collecting is done!')
 

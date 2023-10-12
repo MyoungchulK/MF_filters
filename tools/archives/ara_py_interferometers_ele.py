@@ -66,10 +66,9 @@ class py_interferometers:
             print('radius param:', self.radius)
         self.num_rads = len(self.radius)
         self.num_rays = len(table_hf['num_ray_sol'][:])
-        self.num_rays += 1 # it is for d and r merged results 
         self.num_angs = int(2)
         self.num_pols = num_pols
-        #self.num_pols_com = int(num_pols + 1)
+        self.num_pols_com = int(num_pols + 1)
         arr_table = table_hf['arr_time_table'][:] # theta, phi, rad, ant, ray
         arr_table = np.transpose(arr_table, (0, 1, 2, 4, 3)) # theta, phi, rad, ray, ant
         if self.use_debug:
@@ -79,33 +78,25 @@ class py_interferometers:
         table_p1 = arr_table[:, :, :, :, self.pairs[:, 0]]
         table_p2 = arr_table[:, :, :, :, self.pairs[:, 1]] 
         self.table = table_p1 - table_p2 # theta, phi, rad, ray, pair
-
-        # table cleaning
-        minus_arr = np.logical_or(table_p1 < -100, table_p2 < -100) # minus arrival time. there must be error in ray tracing
-        self.table[minus_arr] = np.nan
-        partial_ray = np.any(np.isnan(self.table), axis = 4) # not all the channel pair has ray solution
-        partial_ray_ex = np.repeat(partial_ray[:, :, :, :, np.newaxis], self.pair_len, axis = 4) # match table shape
-        self.table[partial_ray_ex] = np.nan
+        self.bad_arr = np.logical_or(table_p1 < -100, table_p2 < -100)
         self.table_shape = self.table.shape # (theta, phi, ray, rad, pair)
-        self.sky_map_shape = (self.num_pols, self.num_thetas, self.num_phis, self.num_rads, self.num_rays)
-        self.results_shape = (self.num_pols, self.num_thetas, self.num_rads, self.num_rays)
-
-        # bad!
-        self.bad_coval = np.isnan(self.table)
-        self.bad_sky = np.full(self.sky_map_shape, False, dtype = bool)
-        self.bad_sky[0, :, :, :, :2] = np.all(np.isnan(self.table[:, :, :, :, :self.v_pairs_len]), axis = 4)
-        self.bad_sky[1, :, :, :, :2] = np.all(np.isnan(self.table[:, :, :, :, self.v_pairs_len:]), axis = 4)
-        self.bad_sky[0, :, :, :, 2] = np.all(self.bad_sky[0, :, :, :, :2], axis = 3) 
-        self.bad_sky[1, :, :, :, 2] = np.all(self.bad_sky[1, :, :, :, :2], axis = 3)
+        self.sky_map_shape = (self.num_pols_com, self.num_thetas, self.num_phis, self.num_rads, self.num_rays)
+        self.results_shape = (self.num_pols_com, self.num_thetas, self.num_rads, self.num_rays)
         if self.verbose:
             print('arr table shape:', self.table_shape)
-        del table_p1, table_p2, arr_table, minus_arr, partial_ray, partial_ray_ex
-   
+        del table_p1, table_p2, arr_table
+    
+        self.pol_com_range = np.arange(self.num_pols_com, dtype = int)
+        self.rad_range = np.arange(self.num_rads, dtype = int)
+        self.ray_range = np.arange(self.num_rays, dtype = int)
+        self.theta_range = np.arange(self.num_thetas, dtype = int)
+        #self.phi_range = np.arange(self.num_phis, dtype = int)
+
     def get_coval_time(self):
 
-        self.p0_idx = np.floor((self.table - self.lags[0]) / self.dt).astype(int) # all the nan will be converted to giant value
-        self.p0_idx[self.p0_idx < 0] = 0 # it also replace giant vaues
-        self.p0_idx[self.p0_idx >= self.lag_len - 1] = self.lag_len - 2 # it also replace giant vaues
+        self.p0_idx = np.floor((self.table - self.lags[0]) / self.dt).astype(int)
+        self.p0_idx[self.p0_idx < 0] = 0
+        self.p0_idx[self.p0_idx >= self.lag_len - 1] = self.lag_len - 2
 
         self.int_factor = (self.table - self.lags[self.p0_idx])/self.dt
         if self.verbose:
@@ -115,27 +106,24 @@ class py_interferometers:
 
         ## coval (theta, phi, rad, ray, pair)
         coval = np.diff(self.corr, axis = 0)[self.p0_idx, self.pair_range] * self.int_factor + self.corr[self.p0_idx, self.pair_range] 
-        coval[self.bad_coval] = np.nan # as mush as we claened table, it is time to clean results
+        coval[self.bad_arr] = 0
         if self.use_debug:
             self.coval = np.copy(coval) # individual pairs sky map
 
         sky_map = np.full(self.sky_map_shape, np.nan, dtype = float) # array dim (# of pols, # of thetas, # of phis, # of rs, # of rays) 
-        sky_map[0, :, :, :, :2] = np.nansum(coval[:, :, :, :, :self.v_pairs_len], axis = 4)
-        sky_map[1, :, :, :, :2] = np.nansum(coval[:, :, :, :, self.v_pairs_len:], axis = 4)
-        sky_map[self.bad_sky] = np.nan # sum of all-nan slice = 0... not nan...
-        sky_map[0, :, :, :, 2] = np.nanmean(sky_map[0, :, :, :, :2], axis = 3) # d and r
-        sky_map[1, :, :, :, 2] = np.nanmean(sky_map[1, :, :, :, :2], axis = 3)
+        sky_map[0] = np.nansum(coval[:, :, :, :, :self.v_pairs_len], axis = 4)
+        sky_map[1] = np.nansum(coval[:, :, :, :, self.v_pairs_len:], axis = 4)
+        sky_map[2] = np.nansum(sky_map[:2] * self.wei_pol[:, np.newaxis, np.newaxis, np.newaxis, np.newaxis], axis = 0)
         if self.use_debug:
             self.sky_map = np.copy(sky_map)
         del coval
-  
-        self.coef_max_ele = np.nanmax(sky_map, axis = 2) # array dim (# of pols, # of thetas, (# of phis), # of rs, # of rays) 
-        sky_map[np.isnan(sky_map)] = -1
-        self.coord_max_ele = self.phi[np.nanargmax(sky_map, axis = 2)] # array dim (# of pols, # of thetas, (# of phis), # of rs, # of rays)
-        self.coord_max_ele[np.isnan(self.coef_max_ele)] = np.nan
+    
+        coef_phi_max_idx = np.nanargmax(sky_map, axis = 2) # array dim (# of pols, # of thetas, # of rs, # of rays)
+        self.coord_max_ele = self.phi[coef_phi_max_idx]
+        self.coef_max_ele = sky_map[self.pol_com_range[:, np.newaxis, np.newaxis, np.newaxis], self.theta_range[np.newaxis, :, np.newaxis, np.newaxis], coef_phi_max_idx, self.rad_range[np.newaxis, np.newaxis, :, np.newaxis], self.ray_range[np.newaxis, np.newaxis, np.newaxis, :]] # array dim (# of pols, # of thetas, # of rs, # of rays) 
         if self.use_debug:
-            self.coef_phi_max_idx = np.nanargmax(sky_map, axis = 2)
-        del sky_map
+            self.coef_phi_max_idx = np.copy(coef_phi_max_idx)
+        del sky_map, coef_phi_max_idx
 
     def get_padded_wf(self):
 
@@ -162,7 +150,7 @@ class py_interferometers:
         # hilbert
         self.corr = np.abs(hilbert(self.corr, axis = 0))
     
-    def get_sky_map(self, pad_v, weights = None):
+    def get_sky_map(self, pad_v, weights = None, wei_pol = None):
 
         #zero pad
         self.pad_v = pad_v
@@ -172,8 +160,10 @@ class py_interferometers:
         # correlation
         self.get_cross_correlation()
 
+        self.wei_pol = np.full((self.num_pols), 1, dtype = float)
         if weights is not None:
             self.corr *= weights
+            self.wei_pol = wei_pol
 
         # coval
         self.get_coval_sample()
@@ -188,9 +178,9 @@ def get_products(weights, pairs, v_pairs_len):
     wei_pol[1] = np.nansum(wei_pairs[v_pairs_len:], axis = 0)
     wei_pairs[:v_pairs_len] /= wei_pol[0][np.newaxis, :]
     wei_pairs[v_pairs_len:] /= wei_pol[1][np.newaxis, :]
-    del wei_pol
+    wei_pol /= np.nansum(wei_pol, axis = 0)[np.newaxis, :]
 
-    return wei_pairs
+    return wei_pairs, wei_pol
 
 
 
