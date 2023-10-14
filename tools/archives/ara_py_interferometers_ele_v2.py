@@ -78,7 +78,6 @@ class py_interferometers:
         table_p1 = arr_table[:, :, :, :, self.pairs[:, 0]]
         table_p2 = arr_table[:, :, :, :, self.pairs[:, 1]] 
         self.table = table_p1 - table_p2 # theta, phi, rad, ray, pair
-        del arr_table
 
         # table cleaning
         minus_arr = np.logical_or(table_p1 < -100, table_p2 < -100) # minus arrival time. there must be error in ray tracing
@@ -89,7 +88,6 @@ class py_interferometers:
         self.table_shape = self.table.shape # (theta, phi, ray, rad, pair)
         self.sky_map_shape = (self.num_pols, self.num_thetas, self.num_phis, self.num_rads, self.num_rays)
         self.results_shape = (self.num_pols, self.num_thetas, self.num_rads, self.num_rays)
-        del table_p1, table_p2, minus_arr, partial_ray, partial_ray_ex
 
         # bad!
         self.bad_coval = np.isnan(self.table)
@@ -100,13 +98,14 @@ class py_interferometers:
         self.bad_sky[1, :, :, :, 2] = np.all(self.bad_sky[1, :, :, :, :2], axis = 3)
         if self.verbose:
             print('arr table shape:', self.table_shape)
+        del table_p1, table_p2, arr_table, minus_arr, partial_ray, partial_ray_ex
 
         # for advanced indexing
-        self.pol_range = np.arange(self.num_pols, dtype = int)
-        self.rad_range = np.arange(self.num_rads, dtype = int)
-        self.ray_range = np.arange(self.num_rays, dtype = int)
-        self.theta_range = np.arange(self.num_thetas, dtype = int)
-        self.phi_range = np.arange(self.num_phis, dtype = int)
+        #self.pol_range = np.arange(self.num_pols, dtype = int)
+        #self.rad_range = np.arange(self.num_rads, dtype = int)
+        #self.ray_range = np.arange(self.num_rays, dtype = int)
+        #self.theta_range = np.arange(self.num_thetas, dtype = int)
+        #self.phi_range = np.arange(self.num_phis, dtype = int)
    
     def get_coval_time(self):
 
@@ -129,22 +128,27 @@ class py_interferometers:
         sky_map = np.full(self.sky_map_shape, np.nan, dtype = float) # array dim (# of pols, # of thetas, # of phis, # of rs, # of rays) 
         sky_map[0, :, :, :, :2] = np.nansum(coval[:, :, :, :, :self.v_pairs_len], axis = 4)
         sky_map[1, :, :, :, :2] = np.nansum(coval[:, :, :, :, self.v_pairs_len:], axis = 4)
-        sky_map[self.bad_sky] = np.nan # sum of all-nan slice is 0... not nan...
+        sky_map[self.bad_sky] = np.nan # sum of all-nan slice = 0... not nan...
         sky_map[0, :, :, :, 2] = np.nanmean(sky_map[0, :, :, :, :2], axis = 3) # d and r
         sky_map[1, :, :, :, 2] = np.nanmean(sky_map[1, :, :, :, :2], axis = 3)
         if self.use_debug:
             self.sky_map = np.copy(sky_map)
         del coval
   
+        self.coef_max_ele = np.nanmax(sky_map, axis = 2) # array dim (# of pols, # of thetas, (# of phis), # of rs, # of rays) 
         sky_map[np.isnan(sky_map)] = -1
-        coef_phi_max_idx = np.nanargmax(sky_map, axis = 2) # array dim (# of pols, # of thetas, (# of phis), # of rs, # of rays)
-        self.coord_max_ele = self.phi[coef_phi_max_idx] # array dim (# of pols, # of thetas, (# of phis), # of rs, # of rays)
-        self.coef_max_ele = sky_map[self.pol_range[:, np.newaxis, np.newaxis, np.newaxis], self.theta_range[np.newaxis, :, np.newaxis, np.newaxis], coef_phi_max_idx, self.rad_range[np.newaxis, np.newaxis, :, np.newaxis], self.ray_range[np.newaxis, np.newaxis, np.newaxis, :]] # array dim (# of pols, # of thetas, (# of phis), # of rs, # of rays)
-        self.coord_max_ele[self.coef_max_ele < 0] = np.nan
-        self.coef_max_ele[self.coef_max_ele < 0] = np.nan
+        self.coord_max_ele = self.phi[np.nanargmax(sky_map, axis = 2)] # array dim (# of pols, # of thetas, (# of phis), # of rs, # of rays)
+        self.coord_max_ele[np.isnan(self.coef_max_ele)] = np.nan
+        #sky_map[np.isnan(sky_map)] = -1
+        #coef_phi_max_idx = np.nanmax(sky_map, axis = 2) # array dim (# of pols, # of thetas, (# of phis), # of rs, # of rays)
+        #self.coord_max_ele = self.phi[coef_phi_max_idx] # array dim (# of pols, # of thetas, (# of phis), # of rs, # of rays)
+        #self.coef_max_ele = sky_map[self.pol_range[:, np.newaxis, np.newaxis, np.newaxis], self.theta_range[np.newaxis, :, np.newaxis, np.newaxis], coef_phi_max_idx, self.rad_range[np.newaxis, np.newaxis, :, np.newaxis], self.ray_range[np.newaxis, np.newaxis, np.newaxis, :] # array dim (# of pols, # of thetas, (# of phis), # of rs, # of rays)
+        #self.coord_max_ele[self.coef_max_ele < 0] = np.nan
+        #self.coef_max_ele[self.coef_max_ele < 0] = np.nan
         if self.use_debug:
-            self.coef_phi_max_idx = np.copy(self.coef_phi_max_idx)
-        del sky_map, coef_phi_max_idx
+            self.coef_phi_max_idx = np.nanargmax(sky_map, axis = 2)
+            #self.coef_phi_max_idx = np.copy(self.coef_phi_max_idx)
+        del sky_map#, coef_phi_max_idx
 
     def get_padded_wf(self):
 

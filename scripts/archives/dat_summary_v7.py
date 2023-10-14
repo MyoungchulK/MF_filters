@@ -31,7 +31,7 @@ ang_num = np.arange(2, dtype = int)
 ang_len = len(ang_num)
 pol_num = np.arange(2, dtype = int)
 pol_len = len(pol_num)
-sol_num = np.arange(3, dtype = int)
+sol_num = np.arange(2, dtype = int)
 sol_len = len(sol_num)
 rad = np.array([41, 170, 300, 450, 600], dtype = float)
 rad_len = len(rad)
@@ -46,12 +46,6 @@ rad_ex = np.full((the_len, rad_len, sol_len), np.nan, dtype = float)
 rad_ex[:] = rad[np.newaxis, :, np.newaxis]
 rad_flat = np.reshape(rad_ex, (flat_len))
 
-sur_ang = np.array([180, 180, 37, 24, 17], dtype = float)
-theta_map = np.full((pol_len, the_len, rad_len, sol_len), np.nan, dtype = float)
-theta_map[:] = theta[np.newaxis, :, np.newaxis, np.newaxis]
-sur_bool = theta_map <= sur_ang[np.newaxis, np.newaxis, :, np.newaxis]
-sur_bool_flat = np.reshape(sur_bool, (pol_len, flat_len))
-
 runs = np.copy(d_run_tot)
 configs = np.full((d_len), 0, dtype = int)
 b_runs = np.in1d(runs, bad_runs).astype(int)
@@ -63,8 +57,6 @@ coef_r_max = np.full((pol_len, rad_len, sol_len,0), 0, dtype = float) # pol, rad
 coord_r_max = np.full((ang_len, pol_len, rad_len, sol_len, 0), 0, dtype = float) # thepi, pol, rad, sol, evt
 coef_max = np.full((pol_len, 0), 0, dtype = float) # pol, evt
 coord_max = np.full((ang_len + 1, pol_len, 0), 0, dtype = float) # thepir, pol, evt
-coef_s_max = np.copy(coef_max)
-coord_s_max = np.copy(coord_max)
 mf_max = np.copy(coef_max) # pols, evts
 mf_temp = np.full((pol_len, ang_len, 0), 0, dtype = float) # pols, thephi, evts 
 
@@ -91,8 +83,8 @@ for r in tqdm(range(len(d_run_tot))):
     con_ep = np.concatenate((con_ep, con_r))
     del trig_type, run_r, con_r, evt 
 
-    coef_tot = hf['coef'][:] # pol, theta, rad, sol, evt
-    coord_tot = hf['coord'][:] # pol, theta, rad, sol, evt
+    coef_tot = hf['coef'][:pol_len] # pol, theta, rad, sol, evt
+    coord_tot = hf['coord'][:pol_len] # pol, theta, rad, sol, evt
 
     coef_r_max_idx = np.nanargmax(coef_tot, axis = 1) # pol, rad, ray, evt
     coef_r_max1 = coef_tot[pol_num[:, np.newaxis, np.newaxis, np.newaxis], coef_r_max_idx, rad_num[np.newaxis, :, np.newaxis, np.newaxis], sol_num[np.newaxis, np.newaxis, :, np.newaxis], evt_num[np.newaxis, np.newaxis, np.newaxis, :]] # pol, rad, ray, evt
@@ -113,20 +105,7 @@ for r in tqdm(range(len(d_run_tot))):
     coord_max1[2] = rad_flat[coef_max_idx]
     coef_max = np.concatenate((coef_max, coef_max1), axis = 1)
     coord_max = np.concatenate((coord_max, coord_max1), axis = 2)
-    del coef_max1, coord_max1, 
-
-    sur_bool_flat_ex = np.repeat(sur_bool_flat[:, :, np.newaxis], num_evts, axis = 2)
-    coef_re[sur_bool_flat_ex] = np.nan
-    coord_re[sur_bool_flat_ex] = np.nan
-    coef_max_idx = np.nanargmax(coef_re, axis = 1)
-    coef_max2 = coef_re[pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]] # pol, evt
-    coord_max2 = np.full((ang_len + 1, pol_len, num_evts), np.nan, dtype = float) # thepir, pol, evt
-    coord_max2[0] = theta_flat[coef_max_idx]
-    coord_max2[1] = coord_re[pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]]
-    coord_max2[2] = rad_flat[coef_max_idx]
-    coef_s_max = np.concatenate((coef_s_max, coef_max2), axis = 1)
-    coord_s_max = np.concatenate((coord_s_max, coord_max2), axis = 2)
-    del coef_re, coord_re, coef_max_idx, coef_max2, coord_max2, sur_bool_flat_ex
+    del coef_re, coord_re, coef_max_idx, coef_max1, coord_max1
     del coef_tot, coord_tot, evt_num
 
     m_name = f'{m_path}mf_A{Station}_R{d_run_tot[r]}.h5'
@@ -149,7 +128,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Data_Summary_v14_A{Station}_R{count_i}.h5'
+file_name = f'Data_Summary_v12_A{Station}_R{count_i}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('runs', data=runs, compression="gzip", compression_opts=9)
 hf.create_dataset('b_runs', data=b_runs, compression="gzip", compression_opts=9)
@@ -158,10 +137,10 @@ hf.create_dataset('run_ep', data=run_ep, compression="gzip", compression_opts=9)
 hf.create_dataset('evt_ep', data=evt_ep, compression="gzip", compression_opts=9)
 hf.create_dataset('trig_ep', data=trig_ep, compression="gzip", compression_opts=9)
 hf.create_dataset('con_ep', data=con_ep, compression="gzip", compression_opts=9)
+#hf.create_dataset('coef', data=coef, compression="gzip", compression_opts=9)
+#hf.create_dataset('coord', data=coord, compression="gzip", compression_opts=9)
 hf.create_dataset('coef_r_max', data=coef_r_max, compression="gzip", compression_opts=9)
 hf.create_dataset('coord_r_max', data=coord_r_max, compression="gzip", compression_opts=9)
-hf.create_dataset('coef_s_max', data=coef_s_max, compression="gzip", compression_opts=9)
-hf.create_dataset('coord_s_max', data=coord_s_max, compression="gzip", compression_opts=9)
 hf.create_dataset('coef_max', data=coef_max, compression="gzip", compression_opts=9)
 hf.create_dataset('coord_max', data=coord_max, compression="gzip", compression_opts=9)
 hf.create_dataset('mf_max', data=mf_max, compression="gzip", compression_opts=9)
