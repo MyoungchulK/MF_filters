@@ -140,11 +140,13 @@ class py_interferometers:
         coef_phi_max_idx = np.nanargmax(sky_map, axis = 2) # array dim (# of pols, # of thetas, (# of phis), # of rs, # of rays)
         self.coord_max_ele = self.phi[coef_phi_max_idx] # array dim (# of pols, # of thetas, (# of phis), # of rs, # of rays)
         self.coef_max_ele = sky_map[self.pol_range[:, np.newaxis, np.newaxis, np.newaxis], self.theta_range[np.newaxis, :, np.newaxis, np.newaxis], coef_phi_max_idx, self.rad_range[np.newaxis, np.newaxis, :, np.newaxis], self.ray_range[np.newaxis, np.newaxis, np.newaxis, :]] # array dim (# of pols, # of thetas, (# of phis), # of rs, # of rays)
-        self.coord_max_ele[self.coef_max_ele < 0] = np.nan
-        self.coef_max_ele[self.coef_max_ele < 0] = np.nan
+        neg_idx = self.coef_max_ele < 0
+        self.coord_max_ele[neg_idx] = np.nan
+        self.coef_max_ele[neg_idx] = np.nan
         if self.use_debug:
             self.coef_phi_max_idx = np.copy(self.coef_phi_max_idx)
-        del sky_map, coef_phi_max_idx
+            self.coef_phi_max_idx[neg_idx] = -1
+        del sky_map, coef_phi_max_idx, neg_idx
 
     def get_padded_wf(self):
 
