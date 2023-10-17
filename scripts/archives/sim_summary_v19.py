@@ -33,29 +33,67 @@ if Type == 'noise':
 num_sols = 2
 num_ants = 16
 evt_num = np.arange(num_evts, dtype = int)
-nfour = float(2048 / 2 / 2 * 0.5)
-ang_num = np.arange(2, dtype = int)
-ang_len = len(ang_num)
 pol_num = np.arange(2, dtype = int)
 pol_len = len(pol_num)
-sol_num = np.arange(3, dtype = int)
-sol_len = len(sol_num)
+ang_num = np.arange(2, dtype = int)
 rad = np.array([41, 170, 300, 450, 600], dtype = float)
 rad_len = len(rad)
 rad_num = np.arange(rad_len, dtype = int)
+sol_num = np.arange(3, dtype = int)
+sol_len = len(sol_num)
+nfour = float(2048 / 2 / 2 * 0.5)
 theta = 90 - np.linspace(0.5, 179.5, 179 + 1)
 the_len = len(theta)
+the_h_len = the_len // 2
+
+rad_3_len = int(rad_len - 2)
+flat_3_len = the_len * rad_3_len
+theta_3_ex = np.full((the_len, rad_3_len), np.nan, dtype = float)
+theta_3_ex[:] = theta[:, np.newaxis]
+theta_3_flat = np.reshape(theta_3_ex, (flat_3_len))
+rad_3_ex = np.full((the_len, rad_3_len), np.nan, dtype = float)
+rad_3_ex[:] = rad[2:][np.newaxis, :]
+rad_3_flat = np.reshape(rad_3_ex, (flat_3_len))
+
+flat_len = the_len * rad_len
+theta_ex = np.full((the_len, rad_len), np.nan, dtype = float)
+theta_ex[:] = theta[:, np.newaxis]
+theta_flat = np.reshape(theta_ex, (flat_len))
+rad_ex = np.full((the_len, rad_len), np.nan, dtype = float)
+rad_ex[:] = rad[np.newaxis, :]
+rad_flat = np.reshape(rad_ex, (flat_len))
+
+sur_ang = np.array([180, 180, 37, 24, 17], dtype = float)
+theta_map = np.full((pol_len, the_len, rad_len, num_evts), np.nan, dtype = float)
+theta_map[:] = theta[np.newaxis, :, np.newaxis, np.newaxis]
+sur_bool = theta_map <= sur_ang[np.newaxis, np.newaxis, :, np.newaxis]
+sur_bool_flat = np.reshape(sur_bool, (pol_len, flat_len, -1))
+
+x = rad * np.cos(np.radians(sur_ang))
+y = rad * np.sin(np.radians(sur_ang)) + 10
+sur_10_ang = np.ceil(np.degrees(np.arctan(y / x)))
+sur_10_ang[:2] = -180
+print(sur_10_ang)
+sur_10_bool = theta_map >= sur_10_ang[np.newaxis, np.newaxis, :, np.newaxis]
+sur_10_bool_flat = np.reshape(sur_10_bool, (pol_len, flat_len, -1))
 
 sim_run = np.full((d_len), 0, dtype = int)
 config = np.copy(sim_run)
 radius = np.full((d_len), np.nan, dtype = float)
 inu_thrown = np.copy(radius)
-coef_max = np.full((d_len, pol_len, 2, num_evts), np.nan, dtype = float) # run, pol, sol(indi + mer), evt
-coord_max = np.full((d_len, len(ang_num) + 2, pol_len, 2, num_evts), np.nan, dtype = float) # run, thepirz, pol, sol(indi + mer), evt
+coef_r_max = np.full((d_len, pol_len, rad_len, sol_len, num_evts), np.nan, dtype = float) # run, pol, rad, sol, evt
+coord_r_max = np.full((d_len, len(ang_num), pol_len, rad_len, sol_len, num_evts), np.nan, dtype = float) # run, thepi, pol, rad, sol, evt
+coef_max = np.full((d_len, pol_len, num_evts), np.nan, dtype = float) # run, pol, evt
+coord_max = np.full((d_len, len(ang_num) + 1, pol_len, num_evts), np.nan, dtype = float) # run, thepir, pol, evt
+coef_3_max = np.copy(coef_max)
+coord_3_max = np.copy(coord_max)
 coef_s_max = np.copy(coef_max)
 coord_s_max = np.copy(coord_max)
+coef_s10_max = np.copy(coef_max)
+coord_s10_max = np.copy(coord_max)
 mf_max = np.full((d_len, pol_len, num_evts), np.nan, dtype = float) # run, pol, evt
-mf_temp = np.full((d_len, ang_len, pol_len, num_evts), np.nan, dtype = float) # run, thephi, pol, evt
+mf_max_each = np.full((d_len, pol_len, 2, 7, 6, num_evts), np.nan, dtype = float) # run, pol, sho, the, off, evt
+mf_temp = np.full((d_len, pol_len, 2, num_evts), np.nan, dtype = float) # run, pol, thephi, evt
 if Type == 'signal':
     pnu = np.full((d_len, num_evts), np.nan, dtype = float)
     flavor = np.copy(sim_run)
@@ -78,33 +116,6 @@ if Type == 'signal':
     ray_step_edge = np.full((d_len, 2, 2, 2, num_ants, num_evts), np.nan, dtype = float) # rays, xz, edge
     ray_in_air = np.full((d_len, num_evts), 0, dtype = int)
     snr_b_max = np.full((d_len, pol_len + 1, num_evts), np.nan, dtype = float)
-
-flat_len = the_len * rad_len
-flat_sol_len = the_len * rad_len * (sol_len - 1)
-theta_ex = np.full((the_len, rad_len, (sol_len - 1)), np.nan, dtype = float)
-theta_ex[:] = theta[:, np.newaxis, np.newaxis]
-theta_flat = np.reshape(theta_ex[:, :, 0], (flat_len))
-theta_sol_flat = np.reshape(theta_ex, (flat_sol_len))
-rad_ex = np.full((the_len, rad_len, (sol_len - 1)), np.nan, dtype = float)
-rad_ex[:] = rad[np.newaxis, :, np.newaxis]
-rad_flat = np.reshape(rad_ex[:, :, 0], (flat_len))
-rad_sol_flat = np.reshape(rad_ex, (flat_sol_len))
-z_flat = np.sin(np.radians(theta_flat)) * rad_flat
-z_sol_flat = np.sin(np.radians(theta_sol_flat)) * rad_sol_flat
-del theta_ex, rad_ex
-flat_lens = [flat_sol_len, flat_len]
-theta_flats = [theta_sol_flat, theta_flat]
-rad_flats = [rad_sol_flat, rad_flat]
-z_flats = [z_sol_flat, z_flat]
-
-sur_ang = np.array([180, 180, 37, 24, 17], dtype = float)
-theta_map = np.full((pol_len, the_len, rad_len, (sol_len - 1)), np.nan, dtype = float)
-theta_map[:] = theta[np.newaxis, :, np.newaxis, np.newaxis]
-sur_bool = theta_map <= sur_ang[np.newaxis, np.newaxis, :, np.newaxis]
-sur_bool_flat = np.reshape(sur_bool[:, :, :, 0], (pol_len, flat_len))
-sur_bool_sol_flat = np.reshape(sur_bool, (pol_len, flat_sol_len))
-del sur_ang, theta_map, sur_bool
-sur_flats = [sur_bool_sol_flat, sur_bool_flat]
 
 # temp
 if Station == 2: num_configs = 7
@@ -203,47 +214,53 @@ for r in tqdm(range(d_len)):
         
         coef_tot = hf['coef'][:] # pol, theta, rad, sol, evt
         coord_tot = hf['coord'][:] # pol, theta, rad, sol, evt
-        coef_tot[np.isnan(coef_tot)] = -1
 
-        for s in range(sol_len - 1):
-          if s == 0:
-            coef_re = np.reshape(coef_tot[:, :, :, :2], (pol_len, flat_lens[s], -1))
-            coord_re = np.reshape(coord_tot[:, :, :, :2], (pol_len, flat_lens[s], -1))
-          else:
-            coef_re = np.reshape(coef_tot[:, :, :, 2], (pol_len, flat_lens[s], -1))
-            coord_re = np.reshape(coord_tot[:, :, :, 2], (pol_len, flat_lens[s], -1))
-          for t in range(2):
-            if t == 1:
-                sur_bool_sol_flat_ex = np.repeat(sur_flats[s][:, :, np.newaxis], num_evts, axis = 2)
-                coef_re[sur_bool_sol_flat_ex] = -1
-                coord_re[sur_bool_sol_flat_ex] = np.nan
-                del sur_bool_sol_flat_ex
-            coef_max_idx = np.nanargmax(coef_re, axis = 1)
-            coef_max1 = coef_re[pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]] # pol, evt 
-            neg_idx = coef_max1 < 0
-            neg_idx_ex = np.repeat(neg_idx[np.newaxis, :, :], ang_len + 2, axis = 0)
-            coef_max1[neg_idx] = np.nan
-            coord_max1 = np.full((ang_len + 2, pol_len, num_evts), np.nan, dtype = float) # thepir, pol, evt
-            coord_max1[0] = theta_flats[s][coef_max_idx]
-            coord_max1[1] = coord_re[pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]]
-            coord_max1[2] = rad_flats[s][coef_max_idx]
-            coord_max1[3] = z_flats[s][coef_max_idx]
-            coord_max1[neg_idx_ex] = np.nan
-            if t == 0:
-                coef_max[r, :, s] = coef_max1
-                coord_max[r, :, :, s] = coord_max1
-            else:
-                coef_s_max[r, :, s] = coef_max1
-                coord_s_max[r, :, :, s] = coord_max1
-            del coef_max_idx, coef_max1, neg_idx, neg_idx_ex, coord_max1
-          del coef_re, coord_re
-        del coef_tot, coord_tot, hf
+        # max in each r
+        coef_r_max_idx = np.nanargmax(coef_tot, axis = 1)
+        coef_r_max[r] = coef_tot[pol_num[:, np.newaxis, np.newaxis, np.newaxis], coef_r_max_idx, rad_num[np.newaxis, :, np.newaxis, np.newaxis], sol_num[np.newaxis, np.newaxis, :, np.newaxis], evt_num[np.newaxis, np.newaxis, np.newaxis, :]]
+        coord_r_max[r, 0] = theta[coef_r_max_idx]
+        coord_r_max[r, 1] = coord_tot[pol_num[:, np.newaxis, np.newaxis, np.newaxis], coef_r_max_idx, rad_num[np.newaxis, :, np.newaxis, np.newaxis], sol_num[np.newaxis, np.newaxis, :, np.newaxis], evt_num[np.newaxis, np.newaxis, np.newaxis, :]]
+
+        # max for all
+        coef_re = np.reshape(coef_tot[:, :, 2:, 2], (pol_len, flat_3_len, -1)) # pol, theta x rad, (sol), evt
+        coord_re = np.reshape(coord_tot[:, :, 2:, 2], (pol_len, flat_3_len, -1)) # pol, theta x rad, (sol), evt
+        coef_max_idx = np.nanargmax(coef_re, axis = 1)
+        coef_3_max[r] = coef_re[pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]]
+        coord_3_max[r, 0] = theta_3_flat[coef_max_idx]
+        coord_3_max[r, 1] = coord_re[pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]]
+        coord_3_max[r, 2] = rad_3_flat[coef_max_idx]
+
+        coef_re = np.reshape(coef_tot[:, :, :, 2], (pol_len, flat_len, -1)) # pol, theta x rad, (sol), evt
+        coord_re = np.reshape(coord_tot[:, :, :, 2], (pol_len, flat_len, -1)) # pol, theta x rad, (sol), evt
+        coef_max_idx = np.nanargmax(coef_re, axis = 1)
+        coef_max[r] = coef_re[pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]]
+        coord_max[r, 0] = theta_flat[coef_max_idx]
+        coord_max[r, 1] = coord_re[pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]]
+        coord_max[r, 2] = rad_flat[coef_max_idx]
+ 
+        coef_re[sur_bool_flat] = np.nan
+        coord_re[sur_bool_flat] = np.nan
+        coef_max_idx = np.nanargmax(coef_re, axis = 1)
+        coef_s_max[r] = coef_re[pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]]
+        coord_s_max[r, 0] = theta_flat[coef_max_idx]
+        coord_s_max[r, 1] = coord_re[pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]]
+        coord_s_max[r, 2] = rad_flat[coef_max_idx]
+
+        coef_re[sur_10_bool_flat] = np.nan
+        coord_re[sur_10_bool_flat] = np.nan
+        coef_max_idx = np.nanargmax(coef_re, axis = 1)
+        coef_s10_max[r] = coef_re[pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]]
+        coord_s10_max[r, 0] = theta_flat[coef_max_idx]
+        coord_s10_max[r, 1] = coord_re[pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]]
+        coord_s10_max[r, 2] = rad_flat[coef_max_idx]
+        del hf, coef_tot, coord_tot, coef_re, coord_re, coef_max_idx, coef_r_max_idx
     except FileNotFoundError:
         print(f'{r_path}reco_ele{hf_name}')
 
     try:
         hf = h5py.File(f'{m_path}mf{hf_name}', 'r')
         mf_max[r] = hf['mf_max'][:pol_len] # pol, evt
+        mf_max_each[r] = hf['mf_max_each'][:pol_len] # pol, sho, the, off, evt
         mf_temp[r] = hf['mf_temp'][:, 1:3] # of pols, theta n phi, # of evts
         #mf_temp[r, 2] = hf['mf_temp_com'][1:3] # of pols, theta n phi, # of evts
         del hf
@@ -256,7 +273,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Sim_Summary_{Type}_v18_A{Station}.h5'
+file_name = f'Sim_Summary_{Type}_v16_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 if Type == 'signal':
     hf.create_dataset('pnu', data=pnu, compression="gzip", compression_opts=9)
@@ -285,11 +302,18 @@ hf.create_dataset('sim_run', data=sim_run, compression="gzip", compression_opts=
 hf.create_dataset('config', data=config, compression="gzip", compression_opts=9)
 hf.create_dataset('radius', data=radius, compression="gzip", compression_opts=9)
 hf.create_dataset('inu_thrown', data=inu_thrown, compression="gzip", compression_opts=9)
+hf.create_dataset('coef_r_max', data=coef_r_max, compression="gzip", compression_opts=9)
+hf.create_dataset('coord_r_max', data=coord_r_max, compression="gzip", compression_opts=9)
 hf.create_dataset('coef_max', data=coef_max, compression="gzip", compression_opts=9)
 hf.create_dataset('coord_max', data=coord_max, compression="gzip", compression_opts=9)
+hf.create_dataset('coef_3_max', data=coef_3_max, compression="gzip", compression_opts=9)
+hf.create_dataset('coord_3_max', data=coord_3_max, compression="gzip", compression_opts=9)
 hf.create_dataset('coef_s_max', data=coef_s_max, compression="gzip", compression_opts=9)
 hf.create_dataset('coord_s_max', data=coord_s_max, compression="gzip", compression_opts=9)
+hf.create_dataset('coef_s10_max', data=coef_s10_max, compression="gzip", compression_opts=9)
+hf.create_dataset('coord_s10_max', data=coord_s10_max, compression="gzip", compression_opts=9)
 hf.create_dataset('mf_max', data=mf_max, compression="gzip", compression_opts=9)
+hf.create_dataset('mf_max_each', data=mf_max_each, compression="gzip", compression_opts=9)
 hf.create_dataset('mf_temp', data=mf_temp, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name, size_checker(path+file_name))

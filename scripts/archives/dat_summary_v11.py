@@ -19,7 +19,8 @@ if Station == 2: num_configs = 7
 if Station == 3: num_configs = 9
 
 # sort
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco_ele/'
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco_ele/*'
+d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 m_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf/'
 del d_run_range
 
@@ -39,9 +40,6 @@ evt_f = int(np.nansum(num_evts[:count_ff]))
 print(evt_i, evt_f)
 evt_len = int(evt_f - evt_i)
 run_pa = run_ep[evt_i:evt_f]
-runs_pa = runs[count_i:count_ff]
-num_evts_pa = num_evts[count_i:count_ff]
-num_runs = len(runs_pa)
 print(evt_len, len(run_pa))
 del hf, r_path, file_name
 
@@ -98,16 +96,20 @@ sur_bool_sol_flat = np.reshape(sur_bool, (pol_len, flat_sol_len))
 del sur_ang, theta_map, sur_bool
 sur_flats = [sur_bool_sol_flat, sur_bool_flat]
 
-for r in tqdm(range(num_runs)):
+for r in tqdm(range(len(d_run_tot))):
     
   #if r <10:
+  if r >= count_i and r < count_ff:
 
-    run_idx = np.in1d(run_pa, runs_pa[r])
-    num_evts = num_evts_pa[r]
+    try:
+        hf = h5py.File(d_list[r], 'r')
+    except OSError: 
+        print(d_list[r])
+        continue
+    num_evts = len(hf['evt_num'][:])
     evt_num = np.arange(num_evts, dtype = int)
+    run_idx = np.in1d(run_pa, d_run_tot[r])
 
-    r_name = f'{f_path}reco_ele_A{Station}_R{runs_pa[r]}.h5'
-    hf = h5py.File(r_name, 'r')
     coef_tot = hf['coef'][:] # pol, theta, rad, sol, evt
     coord_tot = hf['coord'][:] # pol, theta, rad, sol, evt
     coef_tot[np.isnan(coef_tot)] = -1
@@ -125,7 +127,7 @@ for r in tqdm(range(num_runs)):
     #coord_r_max[:, :, :, :, run_idx] = coord_r_max1
     #del coef_r_max_idx, coef_r_max1, neg_idx, coord_r_max1
 
-    for s in range(sol_len - 1):
+    for s in range(sol_len - 2):
         if s == 0:
             coef_re = np.reshape(coef_tot[:, :, :, :2], (pol_len, flat_lens[s], -1))
             coord_re = np.reshape(coord_tot[:, :, :, :2], (pol_len, flat_lens[s], -1))
@@ -159,7 +161,7 @@ for r in tqdm(range(num_runs)):
         del coef_re, coord_re
     del coef_tot, coord_tot, evt_num
 
-    m_name = f'{m_path}mf_A{Station}_R{runs_pa[r]}.h5'
+    m_name = f'{m_path}mf_A{Station}_R{d_run_tot[r]}.h5'
     hf = h5py.File(m_name, 'r')
     mf_m = hf['mf_max'][:pol_len]
     mf_t_p = hf['mf_temp'][:, 1:3] # pol, thepi, evt
