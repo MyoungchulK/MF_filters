@@ -21,7 +21,6 @@ if Station == 3: num_configs = 9
 # sort
 d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco_ele/'
 m_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf/'
-del d_run_range
 
 r_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 file_name = f'Info_Summary_A{Station}.h5'
@@ -106,7 +105,7 @@ for r in tqdm(range(num_runs)):
     num_evts = num_evts_pa[r]
     evt_num = np.arange(num_evts, dtype = int)
 
-    r_name = f'{f_path}reco_ele_A{Station}_R{runs_pa[r]}.h5'
+    r_name = f'{d_path}reco_ele_A{Station}_R{runs_pa[r]}.h5'
     hf = h5py.File(r_name, 'r')
     coef_tot = hf['coef'][:] # pol, theta, rad, sol, evt
     coord_tot = hf['coord'][:] # pol, theta, rad, sol, evt

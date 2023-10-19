@@ -22,9 +22,7 @@ d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 del d_run_range
 
 i_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/sub_info_sim/'
-r_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco_ele_sim/'
-m_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf_sim/'
-sb_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/snr_banila_sim/'
+sb_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/snr_sim/'
 
 if Type == 'signal':
     num_evts = 100
@@ -32,30 +30,13 @@ if Type == 'noise':
     num_evts = 1000
 num_sols = 2
 num_ants = 16
-evt_num = np.arange(num_evts, dtype = int)
 nfour = float(2048 / 2 / 2 * 0.5)
-ang_num = np.arange(2, dtype = int)
-ang_len = len(ang_num)
-pol_num = np.arange(2, dtype = int)
-pol_len = len(pol_num)
-sol_num = np.arange(3, dtype = int)
-sol_len = len(sol_num)
-rad = np.array([41, 170, 300, 450, 600], dtype = float)
-rad_len = len(rad)
-rad_num = np.arange(rad_len, dtype = int)
-theta = 90 - np.linspace(0.5, 179.5, 179 + 1)
-the_len = len(theta)
 
 sim_run = np.full((d_len), 0, dtype = int)
 config = np.copy(sim_run)
 radius = np.full((d_len), np.nan, dtype = float)
 inu_thrown = np.copy(radius)
-coef_max = np.full((d_len, pol_len, 2, num_evts), np.nan, dtype = float) # run, pol, sol(indi + mer), evt
-coord_max = np.full((d_len, len(ang_num) + 2, pol_len, 2, num_evts), np.nan, dtype = float) # run, thepirz, pol, sol(indi + mer), evt
-coef_s_max = np.copy(coef_max)
-coord_s_max = np.copy(coord_max)
-mf_max = np.full((d_len, pol_len, num_evts), np.nan, dtype = float) # run, pol, evt
-mf_temp = np.full((d_len, ang_len, pol_len, num_evts), np.nan, dtype = float) # run, thephi, pol, evt
+snr = np.full((d_len, num_ants, num_evts), np.nan, dtype = float) # run, ch, evt
 if Type == 'signal':
     pnu = np.full((d_len, num_evts), np.nan, dtype = float)
     flavor = np.copy(sim_run)
@@ -77,34 +58,6 @@ if Type == 'signal':
     signal_bin = np.copy(rec_ang)
     ray_step_edge = np.full((d_len, 2, 2, 2, num_ants, num_evts), np.nan, dtype = float) # rays, xz, edge
     ray_in_air = np.full((d_len, num_evts), 0, dtype = int)
-    snr_b_max = np.full((d_len, pol_len + 1, num_evts), np.nan, dtype = float)
-
-flat_len = the_len * rad_len
-flat_sol_len = the_len * rad_len * (sol_len - 1)
-theta_ex = np.full((the_len, rad_len, (sol_len - 1)), np.nan, dtype = float)
-theta_ex[:] = theta[:, np.newaxis, np.newaxis]
-theta_flat = np.reshape(theta_ex[:, :, 0], (flat_len))
-theta_sol_flat = np.reshape(theta_ex, (flat_sol_len))
-rad_ex = np.full((the_len, rad_len, (sol_len - 1)), np.nan, dtype = float)
-rad_ex[:] = rad[np.newaxis, :, np.newaxis]
-rad_flat = np.reshape(rad_ex[:, :, 0], (flat_len))
-rad_sol_flat = np.reshape(rad_ex, (flat_sol_len))
-z_flat = np.sin(np.radians(theta_flat)) * rad_flat
-z_sol_flat = np.sin(np.radians(theta_sol_flat)) * rad_sol_flat
-del theta_ex, rad_ex
-flat_lens = [flat_sol_len, flat_len]
-theta_flats = [theta_sol_flat, theta_flat]
-rad_flats = [rad_sol_flat, rad_flat]
-z_flats = [z_sol_flat, z_flat]
-
-sur_ang = np.array([180, 180, 37, 24, 17], dtype = float)
-theta_map = np.full((pol_len, the_len, rad_len, (sol_len - 1)), np.nan, dtype = float)
-theta_map[:] = theta[np.newaxis, :, np.newaxis, np.newaxis]
-sur_bool = theta_map <= sur_ang[np.newaxis, np.newaxis, :, np.newaxis]
-sur_bool_flat = np.reshape(sur_bool[:, :, :, 0], (pol_len, flat_len))
-sur_bool_sol_flat = np.reshape(sur_bool, (pol_len, flat_sol_len))
-del sur_ang, theta_map, sur_bool
-sur_flats = [sur_bool_sol_flat, sur_bool_flat]
 
 # temp
 if Station == 2: num_configs = 7
@@ -182,82 +135,24 @@ for r in tqdm(range(d_len)):
         del wf_time, sig_bin, wf_dege, wf_dege_wide, ray_step_edge_re
     del hf
 
-    if Type == 'signal':
-        ex_run = get_example_run(Station, config[r])
-        bad_ant = known_issue.get_bad_antenna(ex_run)
-        try:
-            hf = h5py.File(f'{sb_path}snr_banila{hf_name}', 'r')
-            snr_tot = hf['snr'][:]
-            snr_tot[bad_ant] = np.nan
-            snr_b_max[r, 0] = -np.sort(-snr_tot[:8], axis = 0)[2]
-            snr_b_max[r, 1] = -np.sort(-snr_tot[8:], axis = 0)[2]
-            snr_b_max[r, 2] = -np.sort(-snr_tot, axis = 0)[2]
-            del hf, snr_tot
-        except FileNotFoundError:
-            print(f'{sb_path}snr_banila{hf_name}')
-        del ex_run, bad_ant
-
+    ex_run = get_example_run(Station, config[r])
+    bad_ant = known_issue.get_bad_antenna(ex_run)
     try:
-        #print(f'{r_path}reco_ele{hf_name}')
-        hf = h5py.File(f'{r_path}reco_ele{hf_name}', 'r')
-        
-        coef_tot = hf['coef'][:] # pol, theta, rad, sol, evt
-        coord_tot = hf['coord'][:] # pol, theta, rad, sol, evt
-        coef_tot[np.isnan(coef_tot)] = -1
-
-        for s in range(sol_len - 1):
-          if s == 0:
-            coef_re = np.reshape(coef_tot[:, :, :, :2], (pol_len, flat_lens[s], -1))
-            coord_re = np.reshape(coord_tot[:, :, :, :2], (pol_len, flat_lens[s], -1))
-          else:
-            coef_re = np.reshape(coef_tot[:, :, :, 2], (pol_len, flat_lens[s], -1))
-            coord_re = np.reshape(coord_tot[:, :, :, 2], (pol_len, flat_lens[s], -1))
-          for t in range(2):
-            if t == 1:
-                sur_bool_sol_flat_ex = np.repeat(sur_flats[s][:, :, np.newaxis], num_evts, axis = 2)
-                coef_re[sur_bool_sol_flat_ex] = -1
-                coord_re[sur_bool_sol_flat_ex] = np.nan
-                del sur_bool_sol_flat_ex
-            coef_max_idx = np.nanargmax(coef_re, axis = 1)
-            coef_max1 = coef_re[pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]] # pol, evt 
-            neg_idx = coef_max1 < 0
-            neg_idx_ex = np.repeat(neg_idx[np.newaxis, :, :], ang_len + 2, axis = 0)
-            coef_max1[neg_idx] = np.nan
-            coord_max1 = np.full((ang_len + 2, pol_len, num_evts), np.nan, dtype = float) # thepir, pol, evt
-            coord_max1[0] = theta_flats[s][coef_max_idx]
-            coord_max1[1] = coord_re[pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]]
-            coord_max1[2] = rad_flats[s][coef_max_idx]
-            coord_max1[3] = z_flats[s][coef_max_idx]
-            coord_max1[neg_idx_ex] = np.nan
-            if t == 0:
-                coef_max[r, :, s] = coef_max1
-                coord_max[r, :, :, s] = coord_max1
-            else:
-                coef_s_max[r, :, s] = coef_max1
-                coord_s_max[r, :, :, s] = coord_max1
-            del coef_max_idx, coef_max1, neg_idx, neg_idx_ex, coord_max1
-          del coef_re, coord_re
-        del coef_tot, coord_tot, hf
+        hf = h5py.File(f'{sb_path}snr{hf_name}', 'r')
+        snr_tot = hf['snr'][:]
+        snr_tot[bad_ant] = np.nan
+        snr[r] = snr_tot
+        del hf, snr_tot
     except FileNotFoundError:
-        print(f'{r_path}reco_ele{hf_name}')
-
-    try:
-        hf = h5py.File(f'{m_path}mf{hf_name}', 'r')
-        mf_max[r] = hf['mf_max'][:pol_len] # pol, evt
-        mf_temp1 = hf['mf_temp'][:, 1:3] # of pols, theta n phi, # of evts
-        mf_temp[r] = np.transpose(mf_temp1, (1, 0, 2)) # theta n phi, # of pols, # of evts
-        #mf_temp[r, 2] = hf['mf_temp_com'][1:3] # of pols, theta n phi, # of evts
-        del hf
-    except FileNotFoundError:
-        print(f'{m_path}mf{hf_name}')
-    del hf_name
+            print(f'{sb_path}snr{hf_name}')
+    del ex_run, bad_ant
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Sim_Summary_{Type}_v18_A{Station}.h5'
+file_name = f'SNR_Sim_Summary_{Type}_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 if Type == 'signal':
     hf.create_dataset('pnu', data=pnu, compression="gzip", compression_opts=9)
@@ -280,18 +175,7 @@ if Type == 'signal':
     hf.create_dataset('signal_bin', data=signal_bin, compression="gzip", compression_opts=9)
     hf.create_dataset('ray_step_edge', data=ray_step_edge, compression="gzip", compression_opts=9)
     hf.create_dataset('ray_in_air', data=ray_in_air, compression="gzip", compression_opts=9)
-    hf.create_dataset('snr_b_max', data=snr_b_max, compression="gzip", compression_opts=9)
-hf.create_dataset('run_map', data=run_map, compression="gzip", compression_opts=9)
-hf.create_dataset('sim_run', data=sim_run, compression="gzip", compression_opts=9)
-hf.create_dataset('config', data=config, compression="gzip", compression_opts=9)
-hf.create_dataset('radius', data=radius, compression="gzip", compression_opts=9)
-hf.create_dataset('inu_thrown', data=inu_thrown, compression="gzip", compression_opts=9)
-hf.create_dataset('coef_max', data=coef_max, compression="gzip", compression_opts=9)
-hf.create_dataset('coord_max', data=coord_max, compression="gzip", compression_opts=9)
-hf.create_dataset('coef_s_max', data=coef_s_max, compression="gzip", compression_opts=9)
-hf.create_dataset('coord_s_max', data=coord_s_max, compression="gzip", compression_opts=9)
-hf.create_dataset('mf_max', data=mf_max, compression="gzip", compression_opts=9)
-hf.create_dataset('mf_temp', data=mf_temp, compression="gzip", compression_opts=9)
+hf.create_dataset('snr', data=snr, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name, size_checker(path+file_name))
 

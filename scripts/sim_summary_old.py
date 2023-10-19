@@ -22,7 +22,7 @@ d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 del d_run_range
 
 i_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/sub_info_sim/'
-r_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco_ele_sim/'
+r_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco_sim/'
 m_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf_sim/'
 sb_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/snr_banila_sim/'
 
@@ -38,22 +38,26 @@ ang_num = np.arange(2, dtype = int)
 ang_len = len(ang_num)
 pol_num = np.arange(2, dtype = int)
 pol_len = len(pol_num)
-sol_num = np.arange(3, dtype = int)
+sol_num = np.arange(2, dtype = int)
 sol_len = len(sol_num)
-rad = np.array([41, 170, 300, 450, 600], dtype = float)
+rad = np.array([41, 170, 300], dtype = float)
 rad_len = len(rad)
 rad_num = np.arange(rad_len, dtype = int)
 theta = 90 - np.linspace(0.5, 179.5, 179 + 1)
 the_len = len(theta)
+flat_len = rad_len * sol_len
+rad_flat = np.full((rad_len, sol_len), np.nan, dtype = float)
+rad_flat[:] = rad[:, np.newaxis]
+rad_flat = np.reshape(rad_flat, (flat_len))
 
 sim_run = np.full((d_len), 0, dtype = int)
 config = np.copy(sim_run)
 radius = np.full((d_len), np.nan, dtype = float)
 inu_thrown = np.copy(radius)
-coef_max = np.full((d_len, pol_len, 2, num_evts), np.nan, dtype = float) # run, pol, sol(indi + mer), evt
-coord_max = np.full((d_len, len(ang_num) + 2, pol_len, 2, num_evts), np.nan, dtype = float) # run, thepirz, pol, sol(indi + mer), evt
-coef_s_max = np.copy(coef_max)
-coord_s_max = np.copy(coord_max)
+coef = np.full((d_len, pol_len, rad_len, sol_len, num_evts), np.nan, dtype = float) # run, pol, rad, sol, evt
+coord = np.full((d_len, ang_len, pol_len, rad_len, sol_len, num_evts), np.nan, dtype = float) # run, thepi, pol, rad, sol, evt
+coef_max = np.full((d_len, pol_len, num_evts), np.nan, dtype = float) # run, pol, evt
+coord_max = np.full((d_len, ang_len + 2, pol_len, num_evts), np.nan, dtype = float) # run, thepirz, pol, evt
 mf_max = np.full((d_len, pol_len, num_evts), np.nan, dtype = float) # run, pol, evt
 mf_temp = np.full((d_len, ang_len, pol_len, num_evts), np.nan, dtype = float) # run, thephi, pol, evt
 if Type == 'signal':
@@ -78,33 +82,6 @@ if Type == 'signal':
     ray_step_edge = np.full((d_len, 2, 2, 2, num_ants, num_evts), np.nan, dtype = float) # rays, xz, edge
     ray_in_air = np.full((d_len, num_evts), 0, dtype = int)
     snr_b_max = np.full((d_len, pol_len + 1, num_evts), np.nan, dtype = float)
-
-flat_len = the_len * rad_len
-flat_sol_len = the_len * rad_len * (sol_len - 1)
-theta_ex = np.full((the_len, rad_len, (sol_len - 1)), np.nan, dtype = float)
-theta_ex[:] = theta[:, np.newaxis, np.newaxis]
-theta_flat = np.reshape(theta_ex[:, :, 0], (flat_len))
-theta_sol_flat = np.reshape(theta_ex, (flat_sol_len))
-rad_ex = np.full((the_len, rad_len, (sol_len - 1)), np.nan, dtype = float)
-rad_ex[:] = rad[np.newaxis, :, np.newaxis]
-rad_flat = np.reshape(rad_ex[:, :, 0], (flat_len))
-rad_sol_flat = np.reshape(rad_ex, (flat_sol_len))
-z_flat = np.sin(np.radians(theta_flat)) * rad_flat
-z_sol_flat = np.sin(np.radians(theta_sol_flat)) * rad_sol_flat
-del theta_ex, rad_ex
-flat_lens = [flat_sol_len, flat_len]
-theta_flats = [theta_sol_flat, theta_flat]
-rad_flats = [rad_sol_flat, rad_flat]
-z_flats = [z_sol_flat, z_flat]
-
-sur_ang = np.array([180, 180, 37, 24, 17], dtype = float)
-theta_map = np.full((pol_len, the_len, rad_len, (sol_len - 1)), np.nan, dtype = float)
-theta_map[:] = theta[np.newaxis, :, np.newaxis, np.newaxis]
-sur_bool = theta_map <= sur_ang[np.newaxis, np.newaxis, :, np.newaxis]
-sur_bool_flat = np.reshape(sur_bool[:, :, :, 0], (pol_len, flat_len))
-sur_bool_sol_flat = np.reshape(sur_bool, (pol_len, flat_sol_len))
-del sur_ang, theta_map, sur_bool
-sur_flats = [sur_bool_sol_flat, sur_bool_flat]
 
 # temp
 if Station == 2: num_configs = 7
@@ -199,45 +176,33 @@ for r in tqdm(range(d_len)):
 
     try:
         #print(f'{r_path}reco_ele{hf_name}')
-        hf = h5py.File(f'{r_path}reco_ele{hf_name}', 'r')
+        hf = h5py.File(f'{r_path}reco{hf_name}', 'r')
         
-        coef_tot = hf['coef'][:] # pol, theta, rad, sol, evt
-        coord_tot = hf['coord'][:] # pol, theta, rad, sol, evt
+        coef_tot = hf['coef'][:2] # pol, rad, sol, evt
+        coord_tot = hf['coord'][:2] # pol, thetapi, rad, sol, evt
+        coef[r] = coef_tot
+        coord[r] = coord_tot
+        coord_tot = np.transpose(coord_tot, (1, 0, 2, 3, 4)) # thetapi, pol, rad, sol, evt
         coef_tot[np.isnan(coef_tot)] = -1
+        del hf
+        coef_re = np.reshape(coef_tot, (pol_len, flat_len, -1))
+        coord_re = np.reshape(coord_tot, (ang_len, pol_len, flat_len, -1))
+        del coef_tot, coord_tot
+        coef_max_idx = np.nanargmax(coef_re, axis = 1)
+        coef_max1 = coef_re[pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]] # pol, evt
+        neg_idx = coef_max1 < 0
+        coef_max1[neg_idx] = np.nan
+        del coef_re
+        neg_idx_ex = np.repeat(neg_idx[np.newaxis, :, :], ang_len + 2, axis = 0)
+        coord_max1 = np.full((ang_len + 2, pol_len, num_evts), np.nan, dtype = float) # thepirz, pol, evt
+        coord_max1[:2] = coord_re[:, pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]]
+        coord_max1[2] = rad_flat[coef_max_idx]
+        coord_max1[3] = np.sin(np.radians(coord_max1[0])) * coord_max1[2]
+        coord_max1[neg_idx_ex] = np.nan
+        del coord_re, coef_max_idx, neg_idx, neg_idx_ex
+        coef_max[r] = coef_max1
+        coord_max[r] = coord_max1
 
-        for s in range(sol_len - 1):
-          if s == 0:
-            coef_re = np.reshape(coef_tot[:, :, :, :2], (pol_len, flat_lens[s], -1))
-            coord_re = np.reshape(coord_tot[:, :, :, :2], (pol_len, flat_lens[s], -1))
-          else:
-            coef_re = np.reshape(coef_tot[:, :, :, 2], (pol_len, flat_lens[s], -1))
-            coord_re = np.reshape(coord_tot[:, :, :, 2], (pol_len, flat_lens[s], -1))
-          for t in range(2):
-            if t == 1:
-                sur_bool_sol_flat_ex = np.repeat(sur_flats[s][:, :, np.newaxis], num_evts, axis = 2)
-                coef_re[sur_bool_sol_flat_ex] = -1
-                coord_re[sur_bool_sol_flat_ex] = np.nan
-                del sur_bool_sol_flat_ex
-            coef_max_idx = np.nanargmax(coef_re, axis = 1)
-            coef_max1 = coef_re[pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]] # pol, evt 
-            neg_idx = coef_max1 < 0
-            neg_idx_ex = np.repeat(neg_idx[np.newaxis, :, :], ang_len + 2, axis = 0)
-            coef_max1[neg_idx] = np.nan
-            coord_max1 = np.full((ang_len + 2, pol_len, num_evts), np.nan, dtype = float) # thepir, pol, evt
-            coord_max1[0] = theta_flats[s][coef_max_idx]
-            coord_max1[1] = coord_re[pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]]
-            coord_max1[2] = rad_flats[s][coef_max_idx]
-            coord_max1[3] = z_flats[s][coef_max_idx]
-            coord_max1[neg_idx_ex] = np.nan
-            if t == 0:
-                coef_max[r, :, s] = coef_max1
-                coord_max[r, :, :, s] = coord_max1
-            else:
-                coef_s_max[r, :, s] = coef_max1
-                coord_s_max[r, :, :, s] = coord_max1
-            del coef_max_idx, coef_max1, neg_idx, neg_idx_ex, coord_max1
-          del coef_re, coord_re
-        del coef_tot, coord_tot, hf
     except FileNotFoundError:
         print(f'{r_path}reco_ele{hf_name}')
 
@@ -257,7 +222,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Sim_Summary_{Type}_v18_A{Station}.h5'
+file_name = f'Sim_Summary_{Type}_old_v19_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 if Type == 'signal':
     hf.create_dataset('pnu', data=pnu, compression="gzip", compression_opts=9)
@@ -286,10 +251,10 @@ hf.create_dataset('sim_run', data=sim_run, compression="gzip", compression_opts=
 hf.create_dataset('config', data=config, compression="gzip", compression_opts=9)
 hf.create_dataset('radius', data=radius, compression="gzip", compression_opts=9)
 hf.create_dataset('inu_thrown', data=inu_thrown, compression="gzip", compression_opts=9)
+hf.create_dataset('coef', data=coef, compression="gzip", compression_opts=9)
+hf.create_dataset('coord', data=coord, compression="gzip", compression_opts=9)
 hf.create_dataset('coef_max', data=coef_max, compression="gzip", compression_opts=9)
 hf.create_dataset('coord_max', data=coord_max, compression="gzip", compression_opts=9)
-hf.create_dataset('coef_s_max', data=coef_s_max, compression="gzip", compression_opts=9)
-hf.create_dataset('coord_s_max', data=coord_s_max, compression="gzip", compression_opts=9)
 hf.create_dataset('mf_max', data=mf_max, compression="gzip", compression_opts=9)
 hf.create_dataset('mf_temp', data=mf_temp, compression="gzip", compression_opts=9)
 hf.close()
