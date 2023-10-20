@@ -51,7 +51,7 @@ config = np.copy(sim_run)
 radius = np.full((d_len), np.nan, dtype = float)
 inu_thrown = np.copy(radius)
 coef_max = np.full((d_len, pol_len, num_evts), np.nan, dtype = float) # run, pol, evt
-coord_max = np.full((d_len, len(ang_num) + 2, pol_len, num_evts), np.nan, dtype = float) # run, thepirz, pol, evt
+coord_max = np.full((d_len, ang_len + 2, pol_len, num_evts), np.nan, dtype = float) # run, thepirz, pol, evt
 coef_s_max = np.copy(coef_max)
 coord_s_max = np.copy(coord_max)
 mf_max = np.full((d_len, pol_len, num_evts), np.nan, dtype = float) # run, pol, evt

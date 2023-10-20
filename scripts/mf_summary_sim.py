@@ -155,14 +155,14 @@ for r in tqdm(range(d_len)):
 
     try:
         hf = h5py.File(f'{m_path}mf{hf_name}', 'r')
-        mf_indi = hf['mf_indi'][:] # array dim: (# of chs, # of shos, # of ress, # of offs, # of evts)]
-        mf_indi = np.transpose(mf_indi, (0, 3, 2, 1, 4)) # chs, offs, ress, shos, evts
+        mf_indi1 = hf['mf_indi'][:] # array dim: (# of chs, # of shos, # of ress, # of offs, # of evts)]
+        mf_indi1 = np.transpose(mf_indi1, (0, 3, 2, 1, 4)) # chs, offs, ress, shos, evts
         del hf
 
-        mf_max_indi[r, :8] = mf_indi[:8][h_ant_num[:, np.newaxis], off_idx[0], res_idx[0][np.newaxis, :], sho_idx[0][np.newaxis, :], evt_num[np.newaxis, :]]
-        mf_max_indi[r, 8] = mf_indi[8:][h_ant_num[:, np.newaxis], off_idx[1], res_idx[1][np.newaxis, :], sho_idx[1][np.newaxis, :], evt_num[np.newaxis, :]]
-        mf_max_indi[r][off_nan] = np.nan
-        del sho_idx, res_idx, off_idx, off_nan, mf_indi
+        mf_indi[r, :8] = mf_indi1[:8][h_ant_num[:, np.newaxis], off_idx[0], res_idx[0][np.newaxis, :], sho_idx[0][np.newaxis, :], evt_num[np.newaxis, :]]
+        mf_indi[r, 8] = mf_indi1[8:][h_ant_num[:, np.newaxis], off_idx[1], res_idx[1][np.newaxis, :], sho_idx[1][np.newaxis, :], evt_num[np.newaxis, :]]
+        mf_indi[r][off_nan] = np.nan
+        del sho_idx, res_idx, off_idx, off_nan, mf_indi1
 
     except FileNotFoundError:
         print(f'{m_path}mf{hf_name}')

@@ -12,7 +12,7 @@ from tools.ara_utility import size_checker
 Station = int(sys.argv[1])
 
 # sort
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/Data_Summary_v15_A{Station}_R*'
+d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/Data_Summary_v16_A{Station}_R*'
 d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 del d_run_range
 for d in d_list:
@@ -31,8 +31,8 @@ del hf
 
 pol_len = 2
 ang_len = 2
-coef_max = np.full((pol_len, 2, 0), np.nan, dtype = float) # pol, sol(indi + mer), evt
-coord_max = np.full((ang_len + 2, pol_len, 2, 0), np.nan, dtype = float) # thepirz, pol, sol(indi + mer), evt
+coef_max = np.full((pol_len, 0), np.nan, dtype = float) # pol, sol(indi + mer), evt
+coord_max = np.full((ang_len + 2, pol_len, 0), np.nan, dtype = float) # thepirz, pol, sol(indi + mer), evt
 coef_s_max = np.copy(coef_max)
 coord_s_max = np.copy(coord_max)
 mf_max = np.full((pol_len, 0), np.nan, dtype = float) # pols, evts
@@ -54,10 +54,10 @@ for r in tqdm(range(len(d_run_tot1))):
     coord_s_max1 = hf['coord_s_max'][:]
     mf_max1 = hf['mf_max'][:] 
     mf_temp1 = hf['mf_temp'][:]
-    coef_max = np.concatenate((coef_max, coef_max1), axis = 2)
-    coord_max = np.concatenate((coord_max, coord_max1), axis = 3)
-    coef_s_max = np.concatenate((coef_s_max, coef_s_max1), axis = 2)
-    coord_s_max = np.concatenate((coord_s_max, coord_s_max1), axis = 3)
+    coef_max = np.concatenate((coef_max, coef_max1), axis = 1)
+    coord_max = np.concatenate((coord_max, coord_max1), axis = 2)
+    coef_s_max = np.concatenate((coef_s_max, coef_s_max1), axis = 1)
+    coord_s_max = np.concatenate((coord_s_max, coord_s_max1), axis = 2)
     mf_max = np.concatenate((mf_max, mf_max1), axis = 1)
     mf_temp = np.concatenate((mf_temp, mf_temp1), axis = 2)
     del hf, coef_max1, coord_max1, coef_s_max1, coord_s_max1, mf_max1, mf_temp1
@@ -67,7 +67,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Data_Summary_v15_A{Station}.h5'
+file_name = f'Data_Summary_v16_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('runs', data=runs, compression="gzip", compression_opts=9)
 hf.create_dataset('b_runs', data=b_runs, compression="gzip", compression_opts=9)
@@ -77,8 +77,6 @@ hf.create_dataset('evt_ep', data=evt_ep, compression="gzip", compression_opts=9)
 hf.create_dataset('trig_ep', data=trig_ep, compression="gzip", compression_opts=9)
 hf.create_dataset('con_ep', data=con_ep, compression="gzip", compression_opts=9)
 hf.create_dataset('unix_ep', data=unix_ep, compression="gzip", compression_opts=9)
-#hf.create_dataset('coef_r_max', data=coef_r_max, compression="gzip", compression_opts=9)
-#hf.create_dataset('coord_r_max', data=coord_r_max, compression="gzip", compression_opts=9)
 hf.create_dataset('coef_s_max', data=coef_s_max, compression="gzip", compression_opts=9)
 hf.create_dataset('coord_s_max', data=coord_s_max, compression="gzip", compression_opts=9)
 hf.create_dataset('coef_max', data=coef_max, compression="gzip", compression_opts=9)

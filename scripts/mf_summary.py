@@ -50,7 +50,7 @@ b_runs = np.in1d(runs, bad_runs).astype(int)
 del known_issue, bad_runs
 
 num_ants = 16
-mf_max_indi = np.full((num_ants, evt_len), np.nan, dtype = float) # chs, evts
+mf_indi = np.full((num_ants, evt_len), np.nan, dtype = float) # chs, evts
 
 ant_num = np.arange(num_ants, dtype = int)
 h_ant_num = np.arange(8, dtype = int)
@@ -79,14 +79,14 @@ for r in tqdm(range(num_runs)):
 
     m_name = f'{m_path}mf_lite_A{Station}_R{runs_pa[r]}.h5'
     hf = h5py.File(m_name, 'r')
-    mf_indi = hf['mf_indi'][:] # array dim: (# of chs, # of shos, # of ress, # of offs, # of evts)]
-    mf_indi = np.transpose(mf_indi, (0, 3, 2, 1, 4)) # chs, offs, ress, shos, evts
+    mf_indi1 = hf['mf_indi'][:] # array dim: (# of chs, # of shos, # of ress, # of offs, # of evts)]
+    mf_indi1 = np.transpose(mf_indi1, (0, 3, 2, 1, 4)) # chs, offs, ress, shos, evts
     del m_name, hf
 
-    mf_max_indi[:8, run_idx] = mf_indi[:8][h_ant_num[:, np.newaxis], off_idx[0], res_idx[0][np.newaxis, :], sho_idx[0][np.newaxis, :], evt_num[np.newaxis, :]]
-    mf_max_indi[8:, run_idx] = mf_indi[8:][h_ant_num[:, np.newaxis], off_idx[1], res_idx[1][np.newaxis, :], sho_idx[1][np.newaxis, :], evt_num[np.newaxis, :]]
-    mf_max_indi[:, run_idx][off_nan] = np.nan
-    del num_evts, run_idx, evt_num, sho_idx, res_idx, off_idx, off_nan, mf_indi
+    mf_indi[:8, run_idx] = mf_indi1[:8][h_ant_num[:, np.newaxis], off_idx[0], res_idx[0][np.newaxis, :], sho_idx[0][np.newaxis, :], evt_num[np.newaxis, :]]
+    mf_indi[8:, run_idx] = mf_indi1[8:][h_ant_num[:, np.newaxis], off_idx[1], res_idx[1][np.newaxis, :], sho_idx[1][np.newaxis, :], evt_num[np.newaxis, :]]
+    mf_indi[:, run_idx][off_nan] = np.nan
+    del num_evts, run_idx, evt_num, sho_idx, res_idx, off_idx, off_nan, mf_indi1
     
 path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 if not os.path.exists(path):
@@ -103,7 +103,7 @@ hf.create_dataset('evt_ep', data=evt_ep, compression="gzip", compression_opts=9)
 hf.create_dataset('trig_ep', data=trig_ep, compression="gzip", compression_opts=9)
 hf.create_dataset('con_ep', data=con_ep, compression="gzip", compression_opts=9)
 hf.create_dataset('unix_ep', data=unix_ep, compression="gzip", compression_opts=9)
-hf.create_dataset('mf_max_indi', data=mf_max_indi, compression="gzip", compression_opts=9)
+hf.create_dataset('mf_indi', data=mf_indi, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name, size_checker(path+file_name))
 print('done!')
