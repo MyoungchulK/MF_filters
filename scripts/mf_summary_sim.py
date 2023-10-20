@@ -22,9 +22,8 @@ d_list, d_run_tot, d_run_range, d_len = file_sorter(d_path)
 del d_run_range
 
 i_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/sub_info_sim/'
-r_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/reco_sim/'
-m_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf_sim/'
-sb_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/snr_banila_sim/'
+mb_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf_sim/'
+m_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf_lite_sim/'
 
 if Type == 'signal':
     num_evts = 100
@@ -32,34 +31,15 @@ if Type == 'noise':
     num_evts = 1000
 num_sols = 2
 num_ants = 16
-evt_num = np.arange(num_evts, dtype = int)
 nfour = float(2048 / 2 / 2 * 0.5)
-ang_num = np.arange(2, dtype = int)
-ang_len = len(ang_num)
-pol_num = np.arange(2, dtype = int)
-pol_len = len(pol_num)
-sol_num = np.arange(2, dtype = int)
-sol_len = len(sol_num)
-rad = np.array([41, 170, 300], dtype = float)
-rad_len = len(rad)
-rad_num = np.arange(rad_len, dtype = int)
-theta = 90 - np.linspace(0.5, 179.5, 179 + 1)
-the_len = len(theta)
-flat_len = rad_len * sol_len
-rad_flat = np.full((rad_len, sol_len), np.nan, dtype = float)
-rad_flat[:] = rad[:, np.newaxis]
-rad_flat = np.reshape(rad_flat, (flat_len))
+evt_num = np.arange(num_evts, dtype = int)
+h_ant_num = np.arange(8, dtype = int)
 
 sim_run = np.full((d_len), 0, dtype = int)
 config = np.copy(sim_run)
 radius = np.full((d_len), np.nan, dtype = float)
 inu_thrown = np.copy(radius)
-coef = np.full((d_len, pol_len, rad_len, sol_len, num_evts), np.nan, dtype = float) # run, pol, rad, sol, evt
-coord = np.full((d_len, ang_len, pol_len, rad_len, sol_len, num_evts), np.nan, dtype = float) # run, thepi, pol, rad, sol, evt
-coef_max = np.full((d_len, pol_len, num_evts), np.nan, dtype = float) # run, pol, evt
-coord_max = np.full((d_len, ang_len + 2, pol_len, num_evts), np.nan, dtype = float) # run, thepirz, pol, evt
-mf_max = np.full((d_len, pol_len, num_evts), np.nan, dtype = float) # run, pol, evt
-mf_temp = np.full((d_len, ang_len, pol_len, num_evts), np.nan, dtype = float) # run, thephi, pol, evt
+mf_indi = np.full((d_len, num_ants, num_evts), np.nan, dtype = float) # run, ch, evt
 if Type == 'signal':
     pnu = np.full((d_len, num_evts), np.nan, dtype = float)
     flavor = np.copy(sim_run)
@@ -81,7 +61,6 @@ if Type == 'signal':
     signal_bin = np.copy(rec_ang)
     ray_step_edge = np.full((d_len, 2, 2, 2, num_ants, num_evts), np.nan, dtype = float) # rays, xz, edge
     ray_in_air = np.full((d_len, num_evts), 0, dtype = int)
-    snr_b_max = np.full((d_len, pol_len + 1, num_evts), np.nan, dtype = float)
 
 # temp
 if Station == 2: num_configs = 7
@@ -159,69 +138,41 @@ for r in tqdm(range(d_len)):
         del wf_time, sig_bin, wf_dege, wf_dege_wide, ray_step_edge_re
     del hf
 
-    if Type == 'signal':
-        ex_run = get_example_run(Station, config[r])
-        bad_ant = known_issue.get_bad_antenna(ex_run)
-        try:
-            hf = h5py.File(f'{sb_path}snr_banila{hf_name}', 'r')
-            snr_tot = hf['snr'][:]
-            snr_tot[bad_ant] = np.nan
-            snr_b_max[r, 0] = -np.sort(-snr_tot[:8], axis = 0)[2]
-            snr_b_max[r, 1] = -np.sort(-snr_tot[8:], axis = 0)[2]
-            snr_b_max[r, 2] = -np.sort(-snr_tot, axis = 0)[2]
-            del hf, snr_tot
-        except FileNotFoundError:
-            print(f'{sb_path}snr_banila{hf_name}')
-        del ex_run, bad_ant
-
     try:
-        #print(f'{r_path}reco_ele{hf_name}')
-        hf = h5py.File(f'{r_path}reco{hf_name}', 'r')
-        
-        coef_tot = hf['coef'][:2] # pol, rad, sol, evt
-        coord_tot = hf['coord'][:2] # pol, thetapi, rad, sol, evt
-        coef[r] = coef_tot
-        coord[r] = coord_tot
-        coord_tot = np.transpose(coord_tot, (1, 0, 2, 3, 4)) # thetapi, pol, rad, sol, evt
-        coef_tot[np.isnan(coef_tot)] = -1
+        hf = h5py.File(f'{mb_path}mf{hf_name}', 'r')
+        mf_temp = hf['mf_temp'][:] # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)), # of evts)
         del hf
-        coef_re = np.reshape(coef_tot, (pol_len, flat_len, -1))
-        coord_re = np.reshape(coord_tot, (ang_len, pol_len, flat_len, -1))
-        del coef_tot, coord_tot
-        coef_max_idx = np.nanargmax(coef_re, axis = 1)
-        coef_max1 = coef_re[pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]] # pol, evt
-        neg_idx = coef_max1 < 0
-        coef_max1[neg_idx] = np.nan
-        del coef_re
-        neg_idx_ex = np.repeat(neg_idx[np.newaxis, :, :], ang_len + 2, axis = 0)
-        coord_max1 = np.full((ang_len + 2, pol_len, num_evts), np.nan, dtype = float) # thepirz, pol, evt
-        coord_max1[:2] = coord_re[:, pol_num[:, np.newaxis], coef_max_idx, evt_num[np.newaxis, :]]
-        coord_max1[2] = rad_flat[coef_max_idx]
-        coord_max1[3] = np.sin(np.radians(coord_max1[0])) * coord_max1[2]
-        coord_max1[neg_idx_ex] = np.nan
-        del coord_re, coef_max_idx, neg_idx, neg_idx_ex
-        coef_max[r] = coef_max1
-        coord_max[r] = coord_max1
-
+        sho_idx = (mf_temp[:, 0]).astype(int) # pols, evts
+        res_idx = (60 - (mf_temp[:, 1]).astype(int)) // 20 # pols, evts
+        off_idx = mf_temp[:, 3:] # pols, half chs, evts
+        off_nan = np.isnan(off_idx)
+        off_idx = off_idx.astype(int)
+        off_idx[off_nan] = -1
+        off_nan = np.reshape(off_nan, (num_ants, -1))
+        del mf_temp
     except FileNotFoundError:
-        print(f'{r_path}reco_ele{hf_name}')
+        print(f'{mb_path}mf{hf_name}')        
 
     try:
         hf = h5py.File(f'{m_path}mf{hf_name}', 'r')
-        mf_max[r] = hf['mf_max'][:pol_len] # pol, evt
-        mf_temp1 = hf['mf_temp'][:, 1:3] # of pols, theta n phi, # of evts
-        mf_temp[r] = np.transpose(mf_temp1, (1, 0, 2)) # theta n phi, # of pols, # of evts
-        del hf, mf_temp1
+        mf_indi = hf['mf_indi'][:] # array dim: (# of chs, # of shos, # of ress, # of offs, # of evts)]
+        mf_indi = np.transpose(mf_indi, (0, 3, 2, 1, 4)) # chs, offs, ress, shos, evts
+        del hf
+
+        mf_max_indi[r, :8] = mf_indi[:8][h_ant_num[:, np.newaxis], off_idx[0], res_idx[0][np.newaxis, :], sho_idx[0][np.newaxis, :], evt_num[np.newaxis, :]]
+        mf_max_indi[r, 8] = mf_indi[8:][h_ant_num[:, np.newaxis], off_idx[1], res_idx[1][np.newaxis, :], sho_idx[1][np.newaxis, :], evt_num[np.newaxis, :]]
+        mf_max_indi[r][off_nan] = np.nan
+        del sho_idx, res_idx, off_idx, off_nan, mf_indi
+
     except FileNotFoundError:
         print(f'{m_path}mf{hf_name}')
-    del hf_name
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Sim_Summary_{Type}_old_v19_A{Station}.h5'
+file_name = f'Sim_Summary_{Type}_MF_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 if Type == 'signal':
     hf.create_dataset('pnu', data=pnu, compression="gzip", compression_opts=9)
@@ -244,18 +195,7 @@ if Type == 'signal':
     hf.create_dataset('signal_bin', data=signal_bin, compression="gzip", compression_opts=9)
     hf.create_dataset('ray_step_edge', data=ray_step_edge, compression="gzip", compression_opts=9)
     hf.create_dataset('ray_in_air', data=ray_in_air, compression="gzip", compression_opts=9)
-    hf.create_dataset('snr_b_max', data=snr_b_max, compression="gzip", compression_opts=9)
-hf.create_dataset('run_map', data=run_map, compression="gzip", compression_opts=9)
-hf.create_dataset('sim_run', data=sim_run, compression="gzip", compression_opts=9)
-hf.create_dataset('config', data=config, compression="gzip", compression_opts=9)
-hf.create_dataset('radius', data=radius, compression="gzip", compression_opts=9)
-hf.create_dataset('inu_thrown', data=inu_thrown, compression="gzip", compression_opts=9)
-hf.create_dataset('coef', data=coef, compression="gzip", compression_opts=9)
-hf.create_dataset('coord', data=coord, compression="gzip", compression_opts=9)
-hf.create_dataset('coef_max', data=coef_max, compression="gzip", compression_opts=9)
-hf.create_dataset('coord_max', data=coord_max, compression="gzip", compression_opts=9)
-hf.create_dataset('mf_max', data=mf_max, compression="gzip", compression_opts=9)
-hf.create_dataset('mf_temp', data=mf_temp, compression="gzip", compression_opts=9)
+hf.create_dataset('mf_indi', data=mf_indi, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name, size_checker(path+file_name))
 
