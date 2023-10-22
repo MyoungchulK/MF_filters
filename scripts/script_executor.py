@@ -99,6 +99,9 @@ def script_loader(key, station, run, qual_type, act_evt, blind_dat, condor_run, 
         return
     elif key == 'vertex':
         results = method(station, run, analyze_blind_dat = blind_dat, no_tqdm = no_tqdm)
+    elif key == 'reco_ele_lite':
+        results = method(station, run, analyze_blind_dat = blind_dat, no_tqdm = no_tqdm)
+        return
     elif key == 'l2' or key == 'l2_temp':
         results = method(Data, Ped, analyze_blind_dat = blind_dat, use_condor = condor_run)
         return 
