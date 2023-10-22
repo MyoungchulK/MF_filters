@@ -20,7 +20,6 @@ if Station == 3: num_configs = 9
 
 # sort
 mb_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf/'
-m_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf_lite/'
 
 r_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 file_name = f'Info_Summary_A{Station}.h5'
@@ -66,6 +65,8 @@ for r in tqdm(range(num_runs)):
     m_name = f'{mb_path}mf_A{Station}_R{runs_pa[r]}.h5'
     hf = h5py.File(m_name, 'r')
     mf_temp = hf['mf_temp'][:] # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)), # of evts)
+    mf_indi1 = hf['mf_indi'][:] # array dim: (# of chs, # of shos, # of ress, # of offs, # of evts)]
+    mf_indi1 = np.transpose(mf_indi1, (0, 3, 2, 1, 4)) # chs, offs, ress, shos, evts
     del m_name, hf
 
     sho_idx = (mf_temp[:, 0]).astype(int) # pols, evts
@@ -76,12 +77,6 @@ for r in tqdm(range(num_runs)):
     off_idx[off_nan] = -1
     off_nan = np.reshape(off_nan, (num_ants, -1)) 
     del mf_temp
-
-    m_name = f'{m_path}mf_lite_A{Station}_R{runs_pa[r]}.h5'
-    hf = h5py.File(m_name, 'r')
-    mf_indi1 = hf['mf_indi'][:] # array dim: (# of chs, # of shos, # of ress, # of offs, # of evts)]
-    mf_indi1 = np.transpose(mf_indi1, (0, 3, 2, 1, 4)) # chs, offs, ress, shos, evts
-    del m_name, hf
 
     mf_indi[:8, run_idx] = mf_indi1[:8][h_ant_num[:, np.newaxis], off_idx[0], res_idx[0][np.newaxis, :], sho_idx[0][np.newaxis, :], evt_num[np.newaxis, :]]
     mf_indi[8:, run_idx] = mf_indi1[8:][h_ant_num[:, np.newaxis], off_idx[1], res_idx[1][np.newaxis, :], sho_idx[1][np.newaxis, :], evt_num[np.newaxis, :]]

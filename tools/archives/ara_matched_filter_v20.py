@@ -138,8 +138,6 @@ class ara_matched_filter:
         self.norm_fac = 2 * np.nansum(np.abs(self.temp) ** 2 / self.psd_int[:, :, np.newaxis, np.newaxis, np.newaxis], axis = 0)
         self.norm_fac /= self.lag_len * self.dt
 
-        self.norm_fac_for_max = np.sqrt(self.norm_fac)
-
         if self.verbose:
             print('norm is on!')
 
@@ -292,11 +290,11 @@ class ara_matched_filter:
         if self.verbose:        
             print('arrival time table is on!')
 
-    def get_padded_wf(self):
+    def get_padded_wf(self, pad_v):
 
         self.bool_pad[:] = True
-        self.bool_pad[self.quater_idx:-self.quater_idx][~np.isnan(self.pad_v)] = False
-        self.zero_pad[self.quater_idx:-self.quater_idx] = self.pad_v
+        self.bool_pad[self.quater_idx:-self.quater_idx][~np.isnan(pad_v)] = False
+        self.zero_pad[self.quater_idx:-self.quater_idx] = pad_v
         self.zero_pad[self.bool_pad] = 0
 
     def get_mf_wfs(self):
@@ -323,9 +321,6 @@ class ara_matched_filter:
         self.corr[self.bool_pad] = 0   
         if self.use_debug:
             self.corr_zero_trim = np.copy(self.corr)
-
-        # max
-        self.corr_max = np.nanmax(self.corr / self.norm_fac, axis = 0)
  
     def get_evt_wise_corr(self):
 
@@ -513,14 +508,11 @@ class ara_matched_filter:
 
     def get_evt_wise_snr(self, pad_v, weights = None):
 
-        self.pad_v = pad_v[:, self.good_chs]
-
         ## zero pad
-        self.get_padded_wf()
+        self.get_padded_wf(pad_v[:, self.good_chs])
 
         ## matched filter
         self.get_mf_wfs()
-        del self.pad_v
 
         if weights is not None:
             mf_wei =  self.snr[self.good_chs] * weights[self.good_chs][:, np.newaxis, np.newaxis, np.newaxis]

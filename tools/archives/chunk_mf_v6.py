@@ -1,28 +1,9 @@
 import numpy as np
 from tqdm import tqdm
 
-def mf_lite_collector(Data, Ped, st, run, analyze_blind_dat = False, use_l2 = False, no_tqdm = False):
+def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm = False):
 
-    print('Collecting mf lite starts!')
-
-    if analyze_blind_dat:
-        import h5py
-        from tools.ara_run_manager import run_info_loader 
-        run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
-        mf_dat = run_info.get_result_path(file_type = 'mf', verbose = True)
-        mf_hf = h5py.File(mf_dat, 'r')
-        mf_list = list(mf_hf)
-        print(mf_list)
-        try:
-            mf_lite_idx = mf_list.index('mf_indi')
-        except ValueError:
-            mf_lite_idx = -1
-        if mf_lite_idx != -1:
-            print(f'{mf_dat} has mf_lite in the file! move on!')
-            return -1
-        else:
-            print(f'{mf_dat} has no mf_lite in the file! proceed!')
-        del run_info, mf_dat, mf_hf, mf_list, mf_lite_idx
+    print('Collecting mf starts!')
 
     if use_l2:
         from tools.ara_data_load import ara_l2_loader
@@ -31,7 +12,7 @@ def mf_lite_collector(Data, Ped, st, run, analyze_blind_dat = False, use_l2 = Fa
         from tools.ara_data_load import ara_root_loader
     from tools.ara_constant import ara_const
     from tools.ara_wf_analyzer import wf_analyzer
-    from tools.ara_matched_filter_lite import ara_matched_filter  
+    from tools.ara_matched_filter import ara_matched_filter  
     from tools.ara_known_issue import known_issue_loader
     from tools.ara_quality_cut import get_bad_events
 
@@ -75,11 +56,21 @@ def mf_lite_collector(Data, Ped, st, run, analyze_blind_dat = False, use_l2 = Fa
 
     # matched filter
     ara_mf = ara_matched_filter(st, run, wf_int.dt, wf_int.pad_len, get_sub_file = True, verbose = True)  
+    good_ch_len = ara_mf.good_ch_len
     num_temp_params = ara_mf.num_temp_params
+    num_arr_params = ara_mf.num_arr_params
+    mf_param_shape = ara_mf.mf_param_shape
+    mf_param_com_shape = ara_mf.mf_param_com_shape
+    num_pols = ara_mf.num_pols
+    num_pols_com = ara_mf.num_pols_com
     del st, run
      
-    mf_indi = np.full((num_ants, num_temp_params[0], num_temp_params[1], num_temp_params[2], num_evts), np.nan, dtype = float) # chs, shos, ress, offs, evts 
-    del num_temp_params
+    mf_max = np.full((num_pols_com, num_evts), np.nan, dtype = float) # array dim: (# of pols, # of evts)
+    mf_max_each = np.full((num_pols_com, num_temp_params[0], num_arr_params[0], num_arr_params[1], num_evts), np.nan, dtype = float) # array dim: (# of pols, # of shos, # of thetas, # of phis, # of evts)
+    mf_temp = np.full((num_pols, mf_param_shape[1], num_evts), -1, dtype = int) # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)), # of evts) 
+    mf_temp_com = np.full((mf_param_com_shape, num_evts), -1, dtype = int) # array dim: (# of temp params (sho, theta, phi, off (16)), # of evts) 
+    mf_temp_off = np.full((good_ch_len, num_temp_params[0], num_temp_params[1], num_evts), np.nan, dtype = float) #  arr dim: (# of good ants, # of shos, # of ress)
+    del num_pols, num_pols_com, mf_param_shape, mf_param_com_shape, good_ch_len, num_temp_params, num_arr_params
 
     # loop over the events
     for evt in tqdm(range(num_evts), disable = no_tqdm):
@@ -100,17 +91,25 @@ def mf_lite_collector(Data, Ped, st, run, analyze_blind_dat = False, use_l2 = Fa
             ara_root.del_TGraph()
         ara_root.del_usefulEvt()
 
-        ara_mf.get_evt_wise_snr(wf_int.pad_v, use_max = True) 
-        mf_indi[:, :, :, :, evt] = ara_mf.corr_max
-        #if evt == 0: print(mf_indi[:, :, :, :, evt])
+        ara_mf.get_evt_wise_snr(wf_int.pad_v) 
+        mf_max[:, evt] = ara_mf.mf_max
+        mf_max_each[:, :, :, :, evt] = ara_mf.mf_max_each
+        mf_temp[:, :, evt] = ara_mf.mf_temp
+        mf_temp_com[:, evt] = ara_mf.mf_temp_com
+        mf_temp_off[:, :, :, evt] = ara_mf.mf_temp_off
+        #print(mf_max[:, evt], mf_temp[:, :, evt])
     del ara_root, num_evts, num_ants, wf_int, ara_mf, daq_qual_cut_sum
 
-    print('MF lite collecting is done!')
+    print('MF collecting is done!')
     
     return {'evt_num':evt_num,
             'trig_type':trig_type,
             'bad_ant':bad_ant,
-            'mf_indi':mf_indi}
+            'mf_max':mf_max,
+            'mf_max_each':mf_max_each,
+            'mf_temp':mf_temp,
+            'mf_temp_com':mf_temp_com,
+            'mf_temp_off':mf_temp_off}
 
 
 

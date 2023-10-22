@@ -23,7 +23,6 @@ del d_run_range
 
 i_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/sub_info_sim/'
 mb_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf_sim/'
-m_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf_lite_sim/'
 
 if Type == 'signal':
     num_evts = 100
@@ -141,7 +140,6 @@ for r in tqdm(range(d_len)):
     try:
         hf = h5py.File(f'{mb_path}mf{hf_name}', 'r')
         mf_temp = hf['mf_temp'][:] # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)), # of evts)
-        del hf
         sho_idx = (mf_temp[:, 0]).astype(int) # pols, evts
         res_idx = (60 - (mf_temp[:, 1]).astype(int)) // 20 # pols, evts
         off_idx = mf_temp[:, 3:] # pols, half chs, evts
@@ -150,22 +148,16 @@ for r in tqdm(range(d_len)):
         off_idx[off_nan] = -1
         off_nan = np.reshape(off_nan, (num_ants, -1))
         del mf_temp
-    except FileNotFoundError:
-        print(f'{mb_path}mf{hf_name}')        
-
-    try:
-        hf = h5py.File(f'{m_path}mf{hf_name}', 'r')
         mf_indi1 = hf['mf_indi'][:] # array dim: (# of chs, # of shos, # of ress, # of offs, # of evts)]
         mf_indi1 = np.transpose(mf_indi1, (0, 3, 2, 1, 4)) # chs, offs, ress, shos, evts
         del hf
 
         mf_indi[r, :8] = mf_indi1[:8][h_ant_num[:, np.newaxis], off_idx[0], res_idx[0][np.newaxis, :], sho_idx[0][np.newaxis, :], evt_num[np.newaxis, :]]
-        mf_indi[r, 8] = mf_indi1[8:][h_ant_num[:, np.newaxis], off_idx[1], res_idx[1][np.newaxis, :], sho_idx[1][np.newaxis, :], evt_num[np.newaxis, :]]
+        mf_indi[r, 8:] = mf_indi1[8:][h_ant_num[:, np.newaxis], off_idx[1], res_idx[1][np.newaxis, :], sho_idx[1][np.newaxis, :], evt_num[np.newaxis, :]]
         mf_indi[r][off_nan] = np.nan
         del sho_idx, res_idx, off_idx, off_nan, mf_indi1
-
     except FileNotFoundError:
-        print(f'{m_path}mf{hf_name}')
+        print(f'{mb_path}mf{hf_name}')        
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 if not os.path.exists(path):

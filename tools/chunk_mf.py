@@ -49,6 +49,7 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
 
     known_issue = known_issue_loader(st)
     bad_ant = known_issue.get_bad_antenna(run, print_integer = True)
+    good_ant_idx = bad_ant == 0
     del known_issue
 
     # wf analyzer
@@ -70,6 +71,7 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
     mf_temp = np.full((num_pols, mf_param_shape[1], num_evts), -1, dtype = int) # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)), # of evts) 
     mf_temp_com = np.full((mf_param_com_shape, num_evts), -1, dtype = int) # array dim: (# of temp params (sho, theta, phi, off (16)), # of evts) 
     mf_temp_off = np.full((good_ch_len, num_temp_params[0], num_temp_params[1], num_evts), np.nan, dtype = float) #  arr dim: (# of good ants, # of shos, # of ress)
+    mf_indi = np.full((num_ants, num_temp_params[0], num_temp_params[1], num_temp_params[2], num_evts), np.nan, dtype = float) # chs, shos, ress, offs, evts
     del num_pols, num_pols_com, mf_param_shape, mf_param_com_shape, good_ch_len, num_temp_params, num_arr_params
 
     # loop over the events
@@ -97,8 +99,9 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
         mf_temp[:, :, evt] = ara_mf.mf_temp
         mf_temp_com[:, evt] = ara_mf.mf_temp_com
         mf_temp_off[:, :, :, evt] = ara_mf.mf_temp_off
+        mf_indi[good_ant_idx, :, :, :, evt] = ara_mf.corr_max
         #print(mf_max[:, evt], mf_temp[:, :, evt])
-    del ara_root, num_evts, num_ants, wf_int, ara_mf, daq_qual_cut_sum
+    del ara_root, num_evts, num_ants, wf_int, ara_mf, daq_qual_cut_sum, good_ant_idx
 
     print('MF collecting is done!')
     
@@ -109,7 +112,8 @@ def mf_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm =
             'mf_max_each':mf_max_each,
             'mf_temp':mf_temp,
             'mf_temp_com':mf_temp_com,
-            'mf_temp_off':mf_temp_off}
+            'mf_temp_off':mf_temp_off,
+            'mf_indi':mf_indi}
 
 
 

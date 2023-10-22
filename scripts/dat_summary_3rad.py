@@ -55,7 +55,7 @@ pol_num = np.arange(2, dtype = int)
 pol_len = len(pol_num)
 sol_num = np.arange(3, dtype = int)
 sol_len = len(sol_num)
-rad = np.array([41, 170, 300, 450, 600], dtype = float)
+rad = np.array([41, 170, 300], dtype = float)
 rad_len = len(rad)
 rad_num = np.arange(rad_len, dtype = int)
 theta = 90 - np.linspace(0.5, 179.5, 179 + 1)
@@ -78,7 +78,7 @@ rad_flat = np.reshape(rad_ex, (flat_len))
 z_flat = np.sin(np.radians(theta_flat)) * rad_flat
 del theta_ex, rad_ex
 
-sur_ang = np.array([180, 180, 37, 24, 17], dtype = float)
+sur_ang = np.array([180, 180, 37], dtype = float)
 theta_map = np.full((pol_len, the_len, rad_len, sol_len), np.nan, dtype = float)
 theta_map[:] = theta[np.newaxis, :, np.newaxis, np.newaxis]
 sur_bool = theta_map <= sur_ang[np.newaxis, np.newaxis, :, np.newaxis]
@@ -95,8 +95,8 @@ for r in tqdm(range(num_runs)):
 
     r_name = f'{d_path}reco_ele_A{Station}_R{runs_pa[r]}.h5'
     hf = h5py.File(r_name, 'r')
-    coef_tot = hf['coef'][:] # pol, theta, rad, sol, evt
-    coord_tot = hf['coord'][:] # pol, theta, rad, sol, evt
+    coef_tot = hf['coef'][:, :, :3] # pol, theta, rad, sol, evt
+    coord_tot = hf['coord'][:, :, :3] # pol, theta, rad, sol, evt
     coef_tot[np.isnan(coef_tot)] = -1
     del hf, r_name
     coef_re = np.reshape(coef_tot, (pol_len, flat_len, -1))
@@ -144,7 +144,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Data_Summary_v16_A{Station}_R{count_i}.h5'
+file_name = f'Data_Summary_3rad_v16_A{Station}_R{count_i}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('runs', data=runs, compression="gzip", compression_opts=9)
 hf.create_dataset('b_runs', data=b_runs, compression="gzip", compression_opts=9)

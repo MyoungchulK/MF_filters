@@ -104,10 +104,6 @@ def script_loader(key, station, run, qual_type, act_evt, blind_dat, condor_run, 
         return 
     elif key == 'reco_pulser':
         results = method(Data, Ped, arr_type = pulser, analyze_blind_dat = blind_dat, use_l2 = l2_data, no_tqdm = no_tqdm)
-    elif key == 'mf_lite':
-        results = method(Data, Ped, station, run, analyze_blind_dat = blind_dat, use_l2 = l2_data, no_tqdm = no_tqdm) 
-        if results == -1:
-            return
     else:
         results = method(Data, Ped, analyze_blind_dat = blind_dat, use_l2 = l2_data, no_tqdm = no_tqdm)
     del module, method

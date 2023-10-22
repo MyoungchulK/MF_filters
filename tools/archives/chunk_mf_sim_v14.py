@@ -32,7 +32,6 @@ def mf_sim_collector(Data, Station, Year):
     ex_run = get_example_run(Station, config)
     known_issue = known_issue_loader(Station)
     bad_ant = known_issue.get_bad_antenna(ex_run, print_integer = True)
-    good_ant_idx = bad_ant == 0
     del known_issue
 
     # sub files
@@ -63,7 +62,6 @@ def mf_sim_collector(Data, Station, Year):
     mf_temp = np.full((num_pols, mf_param_shape[1], num_evts), -1, dtype = int) # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)), # of evts)
     mf_temp_com = np.full((mf_param_com_shape, num_evts), -1, dtype = int) # array dim: (# of temp params (sho, theta, phi, off (8)), # of evts)
     mf_temp_off = np.full((good_ch_len, num_temp_params[0], num_temp_params[1], num_evts), np.nan, dtype = float) #  arr dim: (# of good ants, # of shos, # of ress)
-    mf_indi = np.full((num_ants, num_temp_params[0], num_temp_params[1], num_temp_params[2], num_evts), np.nan, dtype = float) # chs, shos, ress, offs, evts
     del num_pols, num_pols_com, mf_param_shape, mf_param_com_shape, good_ch_len, num_temp_params, num_arr_params
 
     # loop over the events
@@ -81,7 +79,6 @@ def mf_sim_collector(Data, Station, Year):
         mf_temp[:, :, evt] = ara_mf.mf_temp
         mf_temp_com[:, evt] = ara_mf.mf_temp_com
         mf_temp_off[:, :, :, evt] = ara_mf.mf_temp_off
-        mf_indi[good_ant_idx, :, :, :, evt] = ara_mf.corr_max
         #print(mf_max[:, evt], mf_best[:, :, evt])
     del ara_root, num_evts, num_ants, wf_int, ara_mf, wf_time
 
@@ -93,8 +90,7 @@ def mf_sim_collector(Data, Station, Year):
             'mf_max_each':mf_max_each,
             'mf_temp':mf_temp,
             'mf_temp_com':mf_temp_com,
-            'mf_temp_off':mf_temp_off,
-            'mf_indi':mf_indi}
+            'mf_temp_off':mf_temp_off}
 
 
 

@@ -1,28 +1,9 @@
 import numpy as np
 from tqdm import tqdm
 
-def mf_lite_collector(Data, Ped, st, run, analyze_blind_dat = False, use_l2 = False, no_tqdm = False):
+def mf_lite_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False, no_tqdm = False):
 
     print('Collecting mf lite starts!')
-
-    if analyze_blind_dat:
-        import h5py
-        from tools.ara_run_manager import run_info_loader 
-        run_info = run_info_loader(st, run, analyze_blind_dat = analyze_blind_dat)
-        mf_dat = run_info.get_result_path(file_type = 'mf', verbose = True)
-        mf_hf = h5py.File(mf_dat, 'r')
-        mf_list = list(mf_hf)
-        print(mf_list)
-        try:
-            mf_lite_idx = mf_list.index('mf_indi')
-        except ValueError:
-            mf_lite_idx = -1
-        if mf_lite_idx != -1:
-            print(f'{mf_dat} has mf_lite in the file! move on!')
-            return -1
-        else:
-            print(f'{mf_dat} has no mf_lite in the file! proceed!')
-        del run_info, mf_dat, mf_hf, mf_list, mf_lite_idx
 
     if use_l2:
         from tools.ara_data_load import ara_l2_loader
