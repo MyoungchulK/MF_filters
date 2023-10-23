@@ -24,7 +24,7 @@ r_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 file_name = f'Info_Summary_A{Station}.h5'
 hf = h5py.File(r_path + file_name, 'r')
 runs = hf['runs'][:]
-num_runs = len(num_runs)
+num_runs = len(runs)
 del hf, r_path, file_name
 
 for r in tqdm(range(num_runs)):
@@ -32,7 +32,7 @@ for r in tqdm(range(num_runs)):
   #if r <10:
 
     m_name = f'{mb_path}mf{b_name}_A{Station}_R{runs[r]}.h5'
-    ml_name = f'{m_path}mf{b_name}_lite_A{Station}_R{runs[r]}.h5'
+    ml_name = f'{m_path}mf_lite{b_name}_A{Station}_R{runs[r]}.h5'
     print(m_name)
     print(ml_name)
 

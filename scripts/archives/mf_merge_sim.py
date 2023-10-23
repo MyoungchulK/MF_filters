@@ -54,7 +54,7 @@ print(run_map)
 
 for r in tqdm(range(d_len)):
     
-  #if r > 3980:
+  #if r > 5057:
 
     if Type == 'signal':
         hf_name = f'_AraOut.{Type}_E{run_map[0, r]}_F{run_map[1, r]}_A{Station}_R{run_map[2, r]}.txt.run{run_map[3, r]}.h5'
@@ -64,30 +64,18 @@ for r in tqdm(range(d_len)):
     #print(f'{m_path}mf_lite{hf_name}')
     #print(f'{mb_path}mf{hf_name}')
 
-    hf = h5py.File(f'{mb_path}mf{hf_name}', 'r+')
-    mf_list = list(hf)
-    try:
-        mf_lite_idx = mf_list.index('mf_indi')
-    except ValueError:
-        mf_lite_idx = -1
-    del mf_list
-
-    if mf_lite_idx != -1:
-        hf.close()
-        continue
+    hf = h5py.File(f'{m_path}mf_lite{hf_name}', 'r')
+    mf_indi = hf['mf_indi'][:] # array dim: (# of chs, # of shos, # of ress, # of offs, # of evts)]
+    del hf
 
     try:
-        hf_l = h5py.File(f'{m_path}mf_lite{hf_name}', 'r')
-        mf_indi = hf_l['mf_indi'][:] # array dim: (# of chs, # of shos, # of ress, # of offs, # of evts)]
-        del hf_l
-
+        hf = h5py.File(f'{mb_path}mf{hf_name}', 'r+')
         hf.create_dataset('mf_indi', data=mf_indi, compression="gzip", compression_opts=9)
         hf.close()
     except Exception as e:
         print(e)
         print(f'{m_path}mf_lite{hf_name}')
         print(f'{mb_path}mf{hf_name}')
-        hf.close()
         pass
 
 print('done!')

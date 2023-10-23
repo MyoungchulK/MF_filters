@@ -65,7 +65,7 @@ def mf_lite_sim_collector(Data, Station, Year):
 
         ara_mf.get_evt_wise_snr(wf_int.pad_v, use_max = True) 
         mf_indi[:, :, :, :, evt] = ara_mf.corr_max
-        if evt == 0: print(mf_indi[:, :, :, :, evt])
+        #if evt == 0: print(mf_indi[:, :, :, :, evt])
     del ara_root, num_evts, num_ants, wf_int, ara_mf, wf_time
 
     print('MF lite sim collecting is done!')
