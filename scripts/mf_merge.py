@@ -33,11 +33,9 @@ for r in tqdm(range(num_runs)):
 
     m_name = f'{mb_path}mf{b_name}_A{Station}_R{runs[r]}.h5'
     ml_name = f'{m_path}mf_lite{b_name}_A{Station}_R{runs[r]}.h5'
-    print(m_name)
-    print(ml_name)
 
     hf = h5py.File(m_name, 'r+')
-    mf_list = list(mf_hf)
+    mf_list = list(hf)
     try:
         mf_lite_idx = mf_list.index('mf_indi')
     except ValueError:
@@ -48,10 +46,15 @@ for r in tqdm(range(num_runs)):
         print(f'{m_name} already has mf_lite! move on!')
         pass
     else:
-        hf_l = h5py.File(ml_name, 'r')
-        mf_indi = hf_l['mf_indi'][:] # array dim: (# of chs, # of shos, # of ress, # of offs, # of evts)]
-        del hf_l
-        hf.create_dataset('mf_indi', data=mf_indi, compression="gzip", compression_opts=9)
+        try:
+            hf_l = h5py.File(ml_name, 'r')
+            mf_indi = hf_l['mf_indi'][:] # array dim: (# of chs, # of shos, # of ress, # of offs, # of evts)]
+            del hf_l
+            hf.create_dataset('mf_indi', data=mf_indi, compression="gzip", compression_opts=9)
+        except Exception as e:
+            print(e)
+            print(f'{m_name}')
+            print(f'{ml_name}')
     hf.close()
     
 print('done!')
