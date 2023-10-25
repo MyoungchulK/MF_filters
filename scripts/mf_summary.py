@@ -20,6 +20,7 @@ if Station == 3: num_configs = 9
 
 # sort
 mb_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf/'
+ml_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/mf_lite/'
 
 r_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 file_name = f'Info_Summary_A{Station}.h5'
@@ -65,9 +66,12 @@ for r in tqdm(range(num_runs)):
     m_name = f'{mb_path}mf_A{Station}_R{runs_pa[r]}.h5'
     hf = h5py.File(m_name, 'r')
     mf_temp = hf['mf_temp'][:] # array dim: (# of pols, # of temp params (sho, theta, phi, off (8)), # of evts)
-    mf_indi1 = hf['mf_indi'][:] # array dim: (# of chs, # of shos, # of ress, # of offs, # of evts)]
+
+    ml_name = f'{ml_path}mf_lite_A{Station}_R{runs_pa[r]}.h5'
+    hf_l = h5py.File(ml_name, 'r')
+    mf_indi1 = hf_l['mf_indi'][:] # array dim: (# of chs, # of shos, # of ress, # of offs, # of evts)]
     mf_indi1 = np.transpose(mf_indi1, (0, 3, 2, 1, 4)) # chs, offs, ress, shos, evts
-    del m_name, hf
+    del m_name, hf, ml_name, hf_l
 
     sho_idx = (mf_temp[:, 0]).astype(int) # pols, evts
     res_idx = (60 - (mf_temp[:, 1]).astype(int)) // 20 # pols, evts
