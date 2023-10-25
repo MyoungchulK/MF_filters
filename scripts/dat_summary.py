@@ -70,8 +70,8 @@ for r in tqdm(range(num_runs)):
     hf = h5py.File(r_name, 'r')
     coef_max[:, run_idx] = hf['coef_max'][:]
     coord_max[:, :, run_idx] = hf['coord_max'][:]
-    coef_s_max[:, run_idx] = hf['coef_max'][:]
-    coord_s_max[:, :, run_idx] = hf['coord_max'][:]
+    coef_s_max[:, run_idx] = hf['coef_s_max'][:]
+    coord_s_max[:, :, run_idx] = hf['coord_s_max'][:]
     del r_name, hf
 
     m_name = f'{m_path}mf_A{Station}_R{runs_pa[r]}.h5'

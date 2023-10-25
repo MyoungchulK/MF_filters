@@ -18,7 +18,7 @@ del d_run_range
 for d in d_list:
     print(d)
 
-hf = h5py.File(d_list1[0], 'r')
+hf = h5py.File(d_list[0], 'r')
 runs = hf['runs'][:]
 b_runs = hf['b_runs'][:]
 configs = hf['configs'][:]
@@ -38,14 +38,14 @@ coord_s_max = np.copy(coord_max)
 mf_max = np.full((pol_len, 0), np.nan, dtype = float) # pols, evts
 mf_temp = np.full((ang_len, pol_len, 0), np.nan, dtype = float) # thephi, pols, evts
 
-for r in tqdm(range(len(d_run_tot1))):
+for r in tqdm(range(len(d_run_tot))):
     
   #if r <10:
 
     try:
-        hf = h5py.File(d_list1[r], 'r')
+        hf = h5py.File(d_list[r], 'r')
     except OSError: 
-        print(d_list1[r])
+        print(d_list[r])
         continue
 
     coef_max1 = hf['coef_max'][:] 
