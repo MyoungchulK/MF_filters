@@ -18,16 +18,13 @@ num_pols = ara_const.POLARIZATION
 
 class py_interferometers:
 
-    def __init__(self, pad_len, dt, st, run = None, get_sub_file = False, use_debug = False, verbose = False, use_only_max = False):
+    def __init__(self, pad_len, dt, st, run = None, get_sub_file = False, use_debug = False, verbose = False):
 
         self.verbose = verbose
         self.dt = dt
         self.st = st
         self.run = run
         self.use_debug = use_debug
-        self.use_only_max = use_only_max
-        if self.verbose:
-            print('ONLY MAX VALUE!')
 
         if get_sub_file:
             self.get_zero_pad(pad_len)
@@ -77,26 +74,6 @@ class py_interferometers:
         if self.use_debug:
             self.arr_table = np.copy(arr_table)
         del table_path, table_name, table_hf
-
-        if self.use_only_max:
-            self.z_cal = np.sin(np.radians(self.theta)) * float(self.radius[0])
-
-            flat_len = self.num_thetas * self.num_rads * self.num_rays
-            theta_ex = np.full((self.num_thetas, self.num_rads, self.num_rays), np.nan, dtype = float)
-            theta_ex[:] = self.theta[:, np.newaxis, np.newaxis]
-            self.theta_flat = np.reshape(theta_ex, (flat_len))
-            rad_ex = np.full(theta_ex.shape, np.nan, dtype = float)
-            rad_ex[:] = self.radius[np.newaxis, :, np.newaxis]
-            self.rad_flat = np.reshape(rad_ex, (flat_len))
-            self.z_flat = np.sin(np.radians(self.theta_flat)) * self.rad_flat
-            del theta_ex, rad_ex
-
-            sur_ang = np.array([180, 180, 37, 24, 17], dtype = float)
-            theta_map = np.full((self.num_pols, self.num_thetas, self.num_rads, self.num_rays), np.nan, dtype = float)
-            theta_map[:] = self.theta[np.newaxis, :, np.newaxis, np.newaxis]
-            sur_bool = theta_map <= sur_ang[np.newaxis, np.newaxis, :, np.newaxis]
-            self.sur_bool_flat = np.reshape(sur_bool, (self.num_pols, flat_len))
-            del sur_ang, theta_map, sur_bool, flat_len
 
         table_p1 = arr_table[:, :, :, :, self.pairs[:, 0]]
         table_p2 = arr_table[:, :, :, :, self.pairs[:, 1]] 
@@ -163,60 +140,13 @@ class py_interferometers:
         coef_phi_max_idx = np.nanargmax(sky_map, axis = 2) # array dim (# of pols, # of thetas, (# of phis), # of rs, # of rays)
         self.coord_max_ele = self.phi[coef_phi_max_idx] # array dim (# of pols, # of thetas, (# of phis), # of rs, # of rays)
         self.coef_max_ele = sky_map[self.pol_range[:, np.newaxis, np.newaxis, np.newaxis], self.theta_range[np.newaxis, :, np.newaxis, np.newaxis], coef_phi_max_idx, self.rad_range[np.newaxis, np.newaxis, :, np.newaxis], self.ray_range[np.newaxis, np.newaxis, np.newaxis, :]] # array dim (# of pols, # of thetas, (# of phis), # of rs, # of rays)
-        
-        if self.use_only_max:
-            coef = self.coef_max_ele[:, :, 0, 0] # pol, theta, (rad), (ray)
-            coef_idx = np.nanargmax(coef, axis = 1)
-            self.coef_cal = coef[self.pol_range, coef_idx] # pol
-            neg_idx = self.coef_cal < 0
-            self.coef_cal[neg_idx] = np.nan
-            del coef
-
-            self.coord_cal = np.full((self.num_angs + 1, self.num_pols), np.nan, dtype = float) # thepiz, pol
-            self.coord_cal[0] = self.theta[coef_idx]
-            self.coord_cal[1] = self.coord_max_ele[:, :, 0, 0][self.pol_range, coef_idx] # pol, theta, (rad), (ray)
-            self.coord_cal[2] = self.z_cal[coef_idx]
-            self.coord_cal[:, neg_idx] = np.nan
-            del coef_idx, neg_idx
-
-            coef_re = np.reshape(self.coef_max_ele, (self.num_pols,  -1))
-            coord_re = np.reshape(self.coord_max_ele, (self.num_pols, -1))
-            self.coef_max = np.full((self.num_pols), np.nan, dtype = float) # pol, evt
-            self.coord_max = np.full((self.num_angs + 2, self.num_pols), np.nan, dtype = float) # thepirz, pol
-            self.coef_s_max = np.copy(self.coef_max)
-            self.coord_s_max = np.copy(self.coord_max)
-            for t in range(2):
-                if t == 1:
-                    coef_re[self.sur_bool_flat] = -1
-                    coord_re[self.sur_bool_flat] = np.nan
-                coef_max_idx = np.nanargmax(coef_re, axis = 1)
-                coef_max1 = coef_re[self.pol_range, coef_max_idx] # pol
-                neg_idx = coef_max1 < 0
-                coef_max1[neg_idx] = np.nan
-                coord_max1 = np.full((self.num_angs + 2, self.num_pols), np.nan, dtype = float) # thepir, pol
-                coord_max1[0] = self.theta_flat[coef_max_idx]
-                coord_max1[1] = coord_re[self.pol_range, coef_max_idx]
-                coord_max1[2] = self.rad_flat[coef_max_idx]
-                coord_max1[3] = self.z_flat[coef_max_idx]
-                coord_max1[:, neg_idx] = np.nan
-                del coef_max_idx, neg_idx
-                if t == 0:
-                    self.coef_max[:] = coef_max1
-                    self.coord_max[:] = coord_max1
-                else:
-                    self.coef_s_max[:] = coef_max1
-                    self.coord_s_max[:] = coord_max1
-                del coef_max1, coord_max1
-            del coef_re, coord_re
-        else:
-            neg_idx = self.coef_max_ele < 0
-            self.coord_max_ele[neg_idx] = np.nan
-            self.coef_max_ele[neg_idx] = np.nan
-            if self.use_debug:
-                self.coef_phi_max_idx = np.copy(self.coef_phi_max_idx)
-                self.coef_phi_max_idx[neg_idx] = -1
-            del neg_idx
-        del sky_map, coef_phi_max_idx
+        neg_idx = self.coef_max_ele < 0
+        self.coord_max_ele[neg_idx] = np.nan
+        self.coef_max_ele[neg_idx] = np.nan
+        if self.use_debug:
+            self.coef_phi_max_idx = np.copy(self.coef_phi_max_idx)
+            self.coef_phi_max_idx[neg_idx] = -1
+        del sky_map, coef_phi_max_idx, neg_idx
 
     def get_padded_wf(self):
 
