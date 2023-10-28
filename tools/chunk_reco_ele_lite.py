@@ -65,8 +65,13 @@ def reco_ele_lite_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False
         if reco_dat is not None:
             reco_hf = h5py.File(reco_dat, 'r')
             evt_num_b = reco_hf['evt_num'][:]
+            coef_cal_b = reco_hf['coef_cal'][:]
+            coord_cal_b = reco_hf['coord_cal'][:]
+            coef_max_b = reco_hf['coef_max'][:]
+            coord_max_b = reco_hf['coord_max'][:]
+            coef_s_max_b = reco_hf['coef_s_max'][:]
+            coord_s_max_b = reco_hf['coord_s_max'][:]
             del reco_hf
-        del reco_dat
     del wei_dat, wei_hf, run_info
 
     # wf analyzer
@@ -93,6 +98,21 @@ def reco_ele_lite_collector(Data, Ped, analyze_blind_dat = False, use_l2 = False
         coef_s_max = np.copy(coef_cal) # pol, evt
         coord_s_max = np.copy(coord_max) # thepirz, pol, evt
         del num_angs
+        if reco_dat is not None:
+            print('Filling burn sample results into blind data!')
+            for e in tqdm(range(len(evt_num_b)), disable = no_tqdm):
+                evt_idx = np.where(evt_num == evt_num_b[e])[0]
+                if len(evt_idx) > 0:
+                    evt_d = evt_idx[0]
+                    coef_cal[:, evt_d] = coef_cal_b[:, e]
+                    coord_cal[:, :, evt_d] = coord_cal_b[:, :, e]
+                    coef_max[:, evt_d] = coef_max_b[:, e]
+                    coord_max[:, :, evt_d] = coord_max_b[:, :, e]
+                    coef_s_max[:, evt_d] = coef_s_max_b[:, e]
+                    coord_s_max[:, :, evt_d] = coord_s_max_b[:, :, e]
+                    del evt_d
+            del coef_cal_b, coord_cal_b, coef_max_b, coord_max_b, coef_s_max_b, coord_s_max_b
+        del reco_dat
     else:
         coef = np.full((re_shape[0], re_shape[1], re_shape[2], re_shape[3], num_evts), np.nan, dtype = float) # pol, theta, rad, ray, evt
         coord = np.copy(coef) # pol, theta, rad, ray, evt
