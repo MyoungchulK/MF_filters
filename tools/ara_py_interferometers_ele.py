@@ -26,7 +26,7 @@ class py_interferometers:
         self.run = run
         self.use_debug = use_debug
         self.use_only_max = use_only_max
-        if self.verbose:
+        if self.verbose and self.use_only_max:
             print('ONLY MAX VALUE!')
 
         if get_sub_file:
@@ -213,7 +213,7 @@ class py_interferometers:
             self.coord_max_ele[neg_idx] = np.nan
             self.coef_max_ele[neg_idx] = np.nan
             if self.use_debug:
-                self.coef_phi_max_idx = np.copy(self.coef_phi_max_idx)
+                self.coef_phi_max_idx = np.copy(coef_phi_max_idx)
                 self.coef_phi_max_idx[neg_idx] = -1
             del neg_idx
         del sky_map, coef_phi_max_idx
