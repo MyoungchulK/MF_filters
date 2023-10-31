@@ -10,12 +10,12 @@ curr_path = os.getcwd()
 sys.path.append(curr_path+'/../')
 
 Station = int(sys.argv[1])
+D_PATH = str(sys.argv[2])
 
 # sort
-d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/'
-print('Tar path:', d_path)
+print('Tar path:', D_PATH)
 
-d_list_chaos = glob(f'{d_path}/*')
+d_list_chaos = glob(f'{D_PATH}/*')
 d_len = len(d_list_chaos)
 print('Total Runs:',d_len)
 
