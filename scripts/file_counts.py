@@ -1,15 +1,7 @@
-import numpy as np
-import os, sys
+import sys
 from glob import glob
-import h5py
-from tqdm import tqdm
-#from subprocess import call
 import subprocess
 
-curr_path = os.getcwd()
-sys.path.append(curr_path+'/../')
-
-Station = int(sys.argv[1])
 D_PATH = str(sys.argv[2])
 
 # sort
@@ -17,7 +9,7 @@ print('Tar path:', D_PATH)
 
 d_list_chaos = glob(f'{D_PATH}/*')
 d_len = len(d_list_chaos)
-print('Total Runs:',d_len)
+print('Total dirs:',d_len)
 
 for d in d_list_chaos:
 
