@@ -2,7 +2,7 @@ import sys
 from glob import glob
 import subprocess
 
-D_PATH = str(sys.argv[2])
+D_PATH = str(sys.argv[1])
 
 # sort
 print('Tar path:', D_PATH)
