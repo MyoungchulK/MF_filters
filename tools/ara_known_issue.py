@@ -1242,7 +1242,7 @@ class known_issue_loader:
             bad_run = np.append(bad_run, np.arange(12835, 12905 + 1, dtype = int)) # short...
             bad_run = np.append(bad_run, np.arange(12922, 12923 + 1, dtype = int)) # 12922 ~ 12923 2019/01/27 unknown signal
             bad_run = np.append(bad_run, np.arange(12930, 12932 + 1, dtype = int)) # 12930 2019/01/28 unknown signal
-            bad_run = np.append(bad_run, np.arange(12948, 12950 + 1, dtype = int)) # 12948 ~ 12950 2019/01/30 unknown signal
+            bad_run = np.append(bad_run, np.arange(12948, 12952 + 1, dtype = int)) # 12948 ~ 12952 2019/01/30 ~ 31 unknown signal
             bad_run = np.append(bad_run, 12961) # 12967 2019/02/01 unknown signal
             bad_run = np.append(bad_run, 12967) # 12967 2019/02/01 unknown signal
             bad_run = np.append(bad_run, np.arange(12994, 12995 + 1, dtype = int)) # 12994 ~ 12995 2019/02/04 unknown signal
