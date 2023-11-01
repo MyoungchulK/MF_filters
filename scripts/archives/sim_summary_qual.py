@@ -126,17 +126,16 @@ qual = (np.nansum(qual_indi[:, :, 0:2], axis = 2) != 0).astype(int)
 qual_cw = np.copy(qual_indi[:, :, 2])
 qual_op = np.copy(qual_indi[:, :, 3])
 qual_cp = np.copy(qual_indi[:, :, 4])
-qual_corr_t = np.copy(qual_indi[:, :, 5])
-qual_corr_z = np.copy(qual_indi[:, :, 6])
-qual_ver_t = np.copy(qual_indi[:, :, 7])
-qual_ver_z = np.copy(qual_indi[:, :, 8])
+qual_corr = np.copy(qual_indi[:, :, 5])
+qual_ver = (np.nansum(qual_indi[:, :, 6:8], axis = 2) != 0).astype(int)
+qual_mf = np.copy(qual_indi[:, :, 8])
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Sim_Summary_{Type}_Qual_v13_A{Station}.h5'
+file_name = f'Sim_Summary_{Type}_Qual_v12_A{Station}.h5'
 hf = h5py.File(file_name, 'w')
 if Type == 'signal':
     hf.create_dataset('pnu', data=pnu, compression="gzip", compression_opts=9)
@@ -159,10 +158,9 @@ hf.create_dataset('qual', data=qual, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_cw', data=qual_cw, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_op', data=qual_op, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_cp', data=qual_cp, compression="gzip", compression_opts=9)
-hf.create_dataset('qual_corr_t', data=qual_corr_t, compression="gzip", compression_opts=9)
-hf.create_dataset('qual_corr_z', data=qual_corr_z, compression="gzip", compression_opts=9)
-hf.create_dataset('qual_ver_t', data=qual_ver_t, compression="gzip", compression_opts=9)
-hf.create_dataset('qual_ver_z', data=qual_ver_z, compression="gzip", compression_opts=9)
+hf.create_dataset('qual_corr', data=qual_corr, compression="gzip", compression_opts=9)
+hf.create_dataset('qual_ver', data=qual_ver, compression="gzip", compression_opts=9)
+hf.create_dataset('qual_mf', data=qual_mf, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_tot', data=qual_tot, compression="gzip", compression_opts=9)
 hf.close()
 print('file is in:',path+file_name, size_checker(path+file_name))

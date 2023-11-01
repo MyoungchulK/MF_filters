@@ -55,10 +55,9 @@ qual_ep = np.full((evt_len), 0, dtype = int)
 qual_ep_cw = np.copy(qual_ep)
 qual_ep_op = np.copy(qual_ep)
 qual_ep_cp = np.copy(qual_ep)
-qual_ep_corr_t = np.copy(qual_ep)
-qual_ep_corr_z = np.copy(qual_ep)
-qual_ep_ver_t = np.copy(qual_ep)
-qual_ep_ver_z = np.copy(qual_ep)
+qual_ep_corr = np.copy(qual_ep)
+qual_ep_ver = np.copy(qual_ep)
+qual_ep_mf = np.copy(qual_ep)
 qual_ep_sum = np.copy(qual_ep)
 qual_ep_known = np.copy(qual_ep)
 qual_ep_wo_known = np.copy(qual_ep)
@@ -91,6 +90,7 @@ for r in tqdm(range(num_runs)):
     qual_ep_run[15] = 0 # no rf/cal cut
 
     qual_ba = (np.nansum(qual_ep_run[cut_1st], axis = 0) != 0).astype(int)
+    qual_ver = (np.nansum(qual_ep_run[30:32], axis = 0) != 0).astype(int)
     qual_sum = (np.nansum(qual_ep_run, axis = 0) != 0).astype(int)
     qual_kn = (np.nansum(qual_ep_run[cut_known], axis = 0) != 0).astype(int)
     qual_wo_kn = (np.nansum(qual_ep_run[cut_wo_known], axis = 0) != 0).astype(int)
@@ -99,21 +99,20 @@ for r in tqdm(range(num_runs)):
     qual_ep_cw[run_idx] = qual_ep_run[20]     
     qual_ep_op[run_idx] = qual_ep_run[27]
     qual_ep_cp[run_idx] = qual_ep_run[28]
-    qual_ep_corr_t[run_idx] = qual_ep_run[29]
-    qual_ep_corr_z[run_idx] = qual_ep_run[30]
-    qual_ep_ver_t[run_idx] = qual_ep_run[31]
-    qual_ep_ver_z[run_idx] = qual_ep_run[32]
+    qual_ep_corr[run_idx] = qual_ep_run[29]
+    qual_ep_ver[run_idx] = qual_ver
+    qual_ep_mf[run_idx] = qual_ep_run[32]
     qual_ep_sum[run_idx] = qual_sum
     qual_ep_known[run_idx] = qual_kn
     qual_ep_wo_known[run_idx] = qual_wo_kn
-    del run_idx, qual_ep_run, qual_ba, qual_sum, qual_kn, qual_wo_kn
+    del run_idx, qual_ep_run, qual_ba, qual_ver, qual_sum, qual_kn, qual_wo_kn
 
 path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Data_Summary_Qual_v10_A{Station}_R{count_i}.h5'
+file_name = f'Data_Summary_Qual_v9_A{Station}_R{count_i}.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('run_ep', data=run_ep, compression="gzip", compression_opts=9)
 hf.create_dataset('evt_ep', data=evt_ep, compression="gzip", compression_opts=9)
@@ -124,10 +123,9 @@ hf.create_dataset('qual_ep', data=qual_ep, compression="gzip", compression_opts=
 hf.create_dataset('qual_ep_cw', data=qual_ep_cw, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_ep_op', data=qual_ep_op, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_ep_cp', data=qual_ep_cp, compression="gzip", compression_opts=9)
-hf.create_dataset('qual_ep_corr_t', data=qual_ep_corr_t, compression="gzip", compression_opts=9)
-hf.create_dataset('qual_ep_corr_z', data=qual_ep_corr_z, compression="gzip", compression_opts=9)
-hf.create_dataset('qual_ep_ver_t', data=qual_ep_ver_t, compression="gzip", compression_opts=9)
-hf.create_dataset('qual_ep_ver_z', data=qual_ep_ver_z, compression="gzip", compression_opts=9)
+hf.create_dataset('qual_ep_corr', data=qual_ep_corr, compression="gzip", compression_opts=9)
+hf.create_dataset('qual_ep_ver', data=qual_ep_ver, compression="gzip", compression_opts=9)
+hf.create_dataset('qual_ep_mf', data=qual_ep_mf, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_ep_sum', data=qual_ep_sum, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_ep_all', data=qual_ep_all, compression="gzip", compression_opts=9)
 hf.create_dataset('qual_ep_known', data=qual_ep_known, compression="gzip", compression_opts=9)
