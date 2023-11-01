@@ -73,8 +73,8 @@ def qual_cut_3rd_collector(Data,Ped, qual_type = 3, analyze_blind_dat = False, n
     del ped_qual, ara_uproot
 
     ## filter cut
-    filt_qual = filt_qual_cut_loader(st, run, evt_num, analyze_blind_dat = analyze_blind_dat, verbose = True, spark_unblind = False, corr_unblind = True, ver_unblind = True) 
-    filt_qual_cut = filt_qual.run_filt_qual_cut()
+    filt_qual = filt_qual_cut_loader(st, run, evt_num, analyze_blind_dat = analyze_blind_dat, verbose = True, spark_unblind = False, cal_sur_unblind = True) 
+    filt_qual_cut = filt_qual.run_filt_qual_cut(use_max = False)
     filt_qual_cut_sum = filt_qual.filt_qual_cut_sum
     filt_qual_cut_sum_live = np.copy(filt_qual_cut)
     filt_qual_cut_sum_live  = np.nansum(filt_qual_cut_sum_live, axis = 1)
