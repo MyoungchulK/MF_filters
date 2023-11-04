@@ -1211,6 +1211,7 @@ class known_issue_loader:
             bad_run = np.append(bad_run, np.arange(11071, 11076 + 1, dtype = int)) # 11071 ~ 11076 2018/06/25 unknown signal
             bad_run = np.append(bad_run, np.arange(11654, 11655 + 1, dtype = int)) # 11654 ~ 11655 2018/09/10 unknown signal
             bad_run = np.append(bad_run, np.arange(12128, 12131 + 1, dtype = int)) # 12131 2018/11/01 unknown signal
+            bad_run = np.append(bad_run, 12248) # 12259 2018/11/15 unknown signal
             bad_run = np.append(bad_run, 12259) # 12259 2018/11/16 unknown signal
             bad_run = np.append(bad_run, 12345) # 12345 2018/11/23 unknown signal
             bad_run = np.append(bad_run, np.arange(12364, 12375 + 1, dtype = int)) # 12364 ~ 12375 2018/11/25 ~ 26 unknown signal
@@ -1245,6 +1246,7 @@ class known_issue_loader:
             bad_run = np.append(bad_run, np.arange(12948, 12952 + 1, dtype = int)) # 12948 ~ 12952 2019/01/30 ~ 31 unknown signal
             bad_run = np.append(bad_run, 12961) # 12967 2019/02/01 unknown signal
             bad_run = np.append(bad_run, 12967) # 12967 2019/02/01 unknown signal
+            bad_run = np.append(bad_run, 12988) # 12988 2019/02/04 unknown signal
             bad_run = np.append(bad_run, np.arange(12994, 12995 + 1, dtype = int)) # 12994 ~ 12995 2019/02/04 unknown signal
             bad_run = np.append(bad_run, np.arange(13001, 13002 + 1, dtype = int)) # 13001 2019/02/05 ev8850 unknown signal 
             bad_run = np.append(bad_run, 13253) # 13253 2019/03/02 unknown signal
@@ -1256,7 +1258,7 @@ class known_issue_loader:
             bad_run = np.append(bad_run, np.arange(15604, 15606 + 1, dtype = int)) # 15604 15605 15606 wrong l1 goal
             bad_run = np.append(bad_run, 16885) # 16885 wrong l1 goal
 
-            bad_run = np.append(bad_run, np.array([5169, 5173, 5184, 5406, 5660, 5661, 5665, 5762, 5772, 5975], dtype = int)) # high event rate period
+            bad_run = np.append(bad_run, np.array([4979, 5169, 5173, 5184, 5406, 5517, 5660, 5661, 5662, 5665, 5677, 5762, 5766, 5772, 5975], dtype = int)) # high event rate period
 
         elif self.st == 3:
 

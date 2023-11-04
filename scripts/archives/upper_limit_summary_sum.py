@@ -29,17 +29,6 @@ upl_hist = np.copy(nobs_hist)
 upl_mean = np.full((num_pols, map_d_len, num_slos, num_configs), np.nan, dtype = float)
 s_up_s = np.copy(upl_mean)
 
-d_len = 400
-s_len = 180
-map_d_bins = np.full((2, d_len + 1, s_len, num_configs), np.nan, dtype = float)
-map_d_bin_center = np.full((2, d_len, s_len, num_configs), np.nan, dtype = float)
-back_medi = np.full((2, map_d_len, num_slos, num_configs), np.nan, dtype = float)
-back_err = np.full((2, 2, map_d_len, num_slos, num_configs), np.nan, dtype = float)
-slope_m = np.full((num_pols, map_d_len, s_len, num_configs), np.nan, dtype = float)
-intercept_d = np.full((num_pols, map_d_len, s_len, num_configs), np.nan, dtype = float)
-map_s_pass = np.full((2, d_len, s_len, num_configs), np.nan, dtype = float)
-map_s_cut = np.full((2, d_len, s_len, num_configs), np.nan, dtype = float)
-
 for r in tqdm(range(len(d_run_tot1))):
     
   #if r <10:
@@ -53,14 +42,14 @@ for r in tqdm(range(len(d_run_tot1))):
         s_ang = hf['s_ang'][:]
         bins_s = hf['bins_s'][:]
         bin_center_s = hf['bin_center_s'][:] 
-    map_s_pass[:, :, :, r] = hf['map_s_pass'][:, :, :, r]
-    map_s_cut[:, :, :, r] = hf['map_s_cut'][:, :, :, r]
-    slope_m[:, :, :, r] = hf['slope_m'][:, :, :, r]
-    intercept_d[:, :, :, r] = hf['intercept_d'][:, :, :, r]
-    back_medi[:, :, :, r] = hf['back_medi'][:, :, :, r]
-    back_err[:, :, :, :, r] = hf['back_err'][:, :, :, :, r]
-    map_d_bins[:, :, :, r] = hf['map_d_bins'][:, :, :, r]
-    map_d_bin_center[:, :, :, r] = hf['map_d_bin_center'][:, :, :, r]
+        map_d_bins = hf['map_d_bins'][:]
+        map_d_bin_center = hf['map_d_bin_center'][:]
+        slope_m = hf['slope_m'][:]
+        intercept_d = hf['intercept_d'][:]
+        back_medi = hf['back_medi'][:]
+        back_err = hf['back_err'][:]
+        map_s_pass = hf['map_s_pass'][:]
+        map_s_cut = hf['map_s_cut'][:]
     bin_edges_o[:, :, :, :, r] = hf['bin_edges_o'][:, :, :, :, r]
     bin_edges_u[:, :, :, :, r] = hf['bin_edges_u'][:, :, :, :, r]
     nobs_hist[:, :, :, :, r] = hf['nobs_hist'][:, :, :, :, r]
@@ -73,7 +62,7 @@ if not os.path.exists(path):
     os.makedirs(path)
 os.chdir(path)
 
-file_name = f'Upper_Limit_A{Station}.h5'
+file_name = f'Upper_Limit_A{Station}_v2.h5'
 hf = h5py.File(file_name, 'w')
 hf.create_dataset('s_ang', data=s_ang, compression="gzip", compression_opts=9)
 hf.create_dataset('bins_s', data=bins_s, compression="gzip", compression_opts=9)

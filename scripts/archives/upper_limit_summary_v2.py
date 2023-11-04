@@ -16,8 +16,8 @@ num_pols = 2
 
 d_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 
-hf_v = h5py.File(d_path+f'back_est_A{Station}_VPol_R{Config}.h5', 'r')
-hf_h = h5py.File(d_path+f'back_est_A{Station}_HPol_R{Config}.h5', 'r')
+hf_v = h5py.File(d_path+f'back_est_A{Station}_VPol_v2.h5', 'r')
+hf_h = h5py.File(d_path+f'back_est_A{Station}_HPol_v2.h5', 'r')
 
 s_ang = hf_v['s_ang'][:]
 num_slos = len(s_ang)
@@ -60,8 +60,8 @@ print(back_err_h.shape)
 print(back_medi.shape)
 print(back_err.shape)
 
-hf_vv = h5py.File(d_path+f'proj_scan_A{Station}_VPol_R{Config}.h5', 'r')
-hf_hh = h5py.File(d_path+f'proj_scan_A{Station}_HPol_R{Config}.h5', 'r')
+hf_vv = h5py.File(d_path+f'proj_scan_A{Station}_VPol_v2.h5', 'r')
+hf_hh = h5py.File(d_path+f'proj_scan_A{Station}_HPol_v2.h5', 'r')
 map_s_pass_int_tot_v = hf_vv['map_s_pass_int_mean'][:]
 map_s_cut_int_tot_v = hf_vv['map_s_cut_int_mean'][:]
 map_s_pass_int_tot_h = hf_hh['map_s_pass_int_mean'][:]
@@ -86,7 +86,7 @@ upl_mean = np.full((num_pols, map_d_len, num_slos, num_configs), np.nan, dtype =
 fc = ROOT.TFeldmanCousins(0.90) 
 
 for c in range(num_configs):
-    if int(Config - 1) != c: continue
+    if Config != c: continue
     for s in tqdm(range(num_slos)):
         for d in range(map_d_len):
             for p in range(num_pols):

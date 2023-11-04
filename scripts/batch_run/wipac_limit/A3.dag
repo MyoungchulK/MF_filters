@@ -1,0 +1,26 @@
+JOB job_ARA_S3_T0_R1 ARA_job.sub 
+VARS job_ARA_S3_T0_R1 station="3" trig="0" run="1" run_w="0"
+
+JOB job_ARA_S3_T0_R2 ARA_job.sub
+VARS job_ARA_S3_T0_R2 station="3" trig="0" run="2" run_w="0"
+
+JOB job_ARA_S3_T0_R3 ARA_job.sub
+VARS job_ARA_S3_T0_R3 station="3" trig="0" run="3" run_w="0"
+
+JOB job_ARA_S3_T0_R4 ARA_job.sub
+VARS job_ARA_S3_T0_R4 station="3" trig="0" run="4" run_w="0"
+
+JOB job_ARA_S3_T0_R5 ARA_job.sub
+VARS job_ARA_S3_T0_R5 station="3" trig="0" run="5" run_w="0"
+
+JOB job_ARA_S3_T0_R6 ARA_job.sub
+VARS job_ARA_S3_T0_R6 station="3" trig="0" run="6" run_w="0"
+
+JOB job_ARA_S3_T0_R7 ARA_job.sub
+VARS job_ARA_S3_T0_R7 station="3" trig="0" run="7" run_w="0"
+
+JOB job_ARA_S3_T0_R8 ARA_job.sub
+VARS job_ARA_S3_T0_R8 station="3" trig="0" run="8" run_w="0"
+
+JOB job_ARA_S3_T0_R9 ARA_job.sub
+VARS job_ARA_S3_T0_R9 station="3" trig="0" run="9" run_w="0"
