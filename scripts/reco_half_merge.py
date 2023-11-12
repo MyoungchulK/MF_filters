@@ -38,6 +38,15 @@ for r in tqdm(range(num_runs)):
     ml_name = f'{ml_path}reco_ele_lite_s1{b_name}_A{Station}_R{runs[r]}.h5'
     r_name = f'{r_path}reco_ele_lite{b_name}_A{Station}_R{runs[r]}.h5'
 
+    m_flag = int(os.path.exists(m_name))
+    ml_flag = int(os.path.exists(ml_name))
+    tot_flag = int(m_flag + ml_flag)
+    if tot_flag == 0: continue
+    if tot_flag == 1:
+        if m_flag == 0: print(m_name)
+        if ml_flag == 0: print(ml_name)
+        continue   
+
     hf = h5py.File(m_name, 'r')
     evt_num = hf['evt_num'][:]
     trig_type = hf['trig_type'][:]
@@ -79,7 +88,7 @@ for r in tqdm(range(num_runs)):
     hf.create_dataset('coef_s_max', data=coef_s_max, compression="gzip", compression_opts=9)
     hf.create_dataset('coord_s_max', data=coord_s_max, compression="gzip", compression_opts=9)
     hf.close() 
-    
+
 print('done!')
 
 
