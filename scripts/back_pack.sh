@@ -1,14 +1,10 @@
 st=$1
 con=$2
+pol=$3
 
-source ../setup.sh
-python3 back_est.py ${st} ${con} 0
-python3 back_est_gof.py ${st} ${con} 0
-python3 back_est_pseudo.py ${st} ${con} 0
-python3 back_est.py ${st} ${con} 1
-python3 back_est_gof.py ${st} ${con} 1
-python3 back_est_pseudo.py ${st} ${con} 1
-python3 upper_limit_summary.py ${st} ${con}
+python3 back_est.py ${st} ${con} ${pol}
+python3 back_est_gof.py ${st} ${con} ${pol}
+python3 back_est_pseudo.py ${st} ${con} ${pol}
 
 
 
