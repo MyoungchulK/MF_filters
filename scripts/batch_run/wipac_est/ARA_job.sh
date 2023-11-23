@@ -2,11 +2,9 @@
 
 # load in variables
 station=$1
-trig=$2
-run=$3
-run_w=$4
-ant_c=1
-smear_l=20
+pol=$2
+slo=$3
+frac=$4
 
 # run the reconstruction script
 export HDF5_USE_FILE_LOCKING='FALSE'
@@ -15,7 +13,5 @@ source /cvmfs/ara.opensciencegrid.org/trunk/RHEL_8_x86_64/setup.sh
 source /home/mkim/analysis/MF_filters/setup.sh
 cd /home/mkim/analysis/MF_filters/scripts/
 
-python3 /home/mkim/analysis/MF_filters/scripts/back_est.py ${station} ${run} ${trig}
-python3 /home/mkim/analysis/MF_filters/scripts/back_est_gof.py ${station} ${run} ${trig}
-python3 /home/mkim/analysis/MF_filters/scripts/back_est_pseudo.py ${station} ${run} ${trig}
+python3 /home/mkim/analysis/MF_filters/scripts/back_est_gof_ell.py ${station} ${pol} ${slo} ${frac}
 

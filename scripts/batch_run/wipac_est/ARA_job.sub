@@ -1,8 +1,8 @@
-log    = /scratch/mkim/wipac_est/logs/A$(station).T$(trig).R$(run).log
-output = /scratch/mkim/wipac_est/logs/A$(station).T$(trig).R$(run).out
-error  = /scratch/mkim/wipac_est/logs/A$(station).T$(trig).R$(run).err
+log    = /scratch/mkim/wipac_est/logs/A$(station).P$(pol).S$(slo).F$(frac).log
+output = /scratch/mkim/wipac_est/logs/A$(station).P$(pol).S$(slo).F$(frac).out
+error  = /scratch/mkim/wipac_est/logs/A$(station).P$(pol).S$(slo).F$(frac).err
 
-request_memory = 8GB
+request_memory = 2GB
 
 Universe = vanilla
 getenv = true
@@ -13,6 +13,6 @@ when_to_transfer_output = ON_EXIT
 nice_user = false
 
 executable = ARA_job.sh
-arguments = $(station) $(trig) $(run) $(run_w)
+arguments = $(station) $(pol) $(slo) $(frac)
 
 queue
