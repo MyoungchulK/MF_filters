@@ -20,11 +20,6 @@ if ppol == 1: Pol = 'HPol'
 dpath = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 rpath = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
 
-wfname = f'proj_scan_A{Station}_{Pol}_total_v3.h5'
-hf_d = h5py.File(dpath+wfname, 'r')
-norm_fac_n = hf_d['norm_fac_n'][:]
-del wfname, hf_d
-
 file_name = dpath+f'back_fit_gof_A{Station}_{Pol}_total_v3_0_0.h5'
 hf = h5py.File(file_name, 'r')
 slope_a = hf['slope_a'][:]
@@ -33,12 +28,14 @@ inercept_b_bins = hf['inercept_b_bins'][:]
 map_d_bins = hf['map_d_bins'][:]
 map_d_bin_center = hf['map_d_bin_center'][:]
 norm_fac = hf['norm_fac'][:]
+norm_fac_n = hf['norm_fac_n'][:]
 map_d = hf['map_d'][:]
 map_d_int = hf['map_d_int'][:]
 map_n = hf['map_n'][:]
 map_n_int = hf['map_n_int'][:]
 map_d_fit = hf['map_d_fit'][:]
 map_d_fit_dat = hf['map_d_fit_dat'][:]
+map_d_fit_dat_net = hf['map_d_fit_dat_net'][:]
 map_d_fit_net = hf['map_d_fit_net'][:]
 map_d_cdf = hf['map_d_cdf'][:]
 map_n_fit = hf['map_n_fit'][:]
@@ -68,7 +65,8 @@ p_val = np.copy(logL_pseudo_sum_d)
 for s in tqdm(range(s_len)):
     for f in range(num_fits):
 
-        file_name = dpath+f'back_fit_gof_A{Station}_{Pol}_total_v3_{s}_{f}.h5'
+      file_name = dpath+f'back_fit_gof_A{Station}_{Pol}_total_v3_{s}_{f}.h5'
+      try:
         hf = h5py.File(file_name, 'r')
         exp_back_poi_d[:, s, f] = hf['exp_back_poi_d'][:, s, f]
         logL_pseudo_d[:, s, f] = hf['logL_pseudo_d'][:, s, f]
@@ -77,6 +75,8 @@ for s in tqdm(range(s_len)):
         logL_pseudo_high_sum_d[s, f] = hf['logL_pseudo_high_sum_d'][s, f]
         p_val[s, f] = hf['p_val'][s, f]
         del hf
+      except OSError:
+        print(file_name) 
 
 file_name = dpath+f'back_fit_gof_A{Station}_{Pol}_total_v3.h5'
 hf = h5py.File(file_name, 'w')
@@ -93,6 +93,7 @@ hf.create_dataset('map_n', data=map_n, compression="gzip", compression_opts=9)
 hf.create_dataset('map_n_int', data=map_n_int, compression="gzip", compression_opts=9)
 hf.create_dataset('map_d_fit', data=map_d_fit, compression="gzip", compression_opts=9)
 hf.create_dataset('map_d_fit_dat', data=map_d_fit_dat, compression="gzip", compression_opts=9)
+hf.create_dataset('map_d_fit_dat_net', data=map_d_fit_dat_net, compression="gzip", compression_opts=9)
 hf.create_dataset('map_d_fit_net', data=map_d_fit_net, compression="gzip", compression_opts=9)
 hf.create_dataset('map_d_cdf', data=map_d_cdf, compression="gzip", compression_opts=9)
 hf.create_dataset('map_n_fit', data=map_n_fit, compression="gzip", compression_opts=9)

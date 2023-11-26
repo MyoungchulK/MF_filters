@@ -13,14 +13,9 @@ from tools.ara_run_manager import file_sorter
 from tools.ara_utility import size_checker
 
 Station = int(sys.argv[1])
-Config = int(sys.argv[2])
-if Config > 1:
-    print('stupid!!!!!')
-    sys.exit(1)
-
-ppol = int(sys.argv[3])
-slo = int(sys.argv[4])
-frac = int(sys.argv[5])
+ppol = int(sys.argv[2])
+slo = int(sys.argv[3])
+frac = int(sys.argv[4])
 if ppol == 0: Pol = 'VPol'
 if ppol == 1: Pol = 'HPol'
 
@@ -49,11 +44,13 @@ print(map_d_bin_center.shape)
 
 norm_fac = hf_d[f'norm_fac'][:]
 print(norm_fac.shape)
-map_d = hf_d[f'map_d'][:] * norm_fac
-map_d_int = (map_d).astype(int)
+norm_fac_n = hf_d[f'norm_fac_n'][:]
+print(norm_fac_n.shape)
+map_d = hf_d[f'map_d'][:]
+map_d_int = (map_d * norm_fac).astype(int)
 print(map_d.shape)
-map_n = hf_d[f'map_n'][:] * norm_fac
-map_n_int = (map_n).astype(int)
+map_n = hf_d[f'map_n'][:]
+map_n_int = (map_n * norm_fac).astype(int)
 print(map_d.shape)
 
 d_len = map_d.shape[0]
@@ -129,9 +126,12 @@ for s in tqdm(range(s_len)):
   del map_n_s, int_s, fit_idx, fit_b
 
 map_d_fit_net = np.copy(map_d_fit)
+map_d_fit_net *= norm_fac
 map_d_fit_net[np.isnan(map_d_fit_dat)] = np.nan
+map_d_fit_dat_net = np.copy(map_d_fit_dat)
+map_d_fit_dat_net *= norm_fac
 
-logL_d = np.nansum(2 * (map_d_fit_net - map_d_fit_dat + map_d_fit_dat * np.log(map_d_fit_dat / map_d_fit_net)), axis = 0)
+logL_d = np.nansum(2 * (map_d_fit_net - map_d_fit_dat_net + map_d_fit_dat_net * np.log(map_d_fit_dat_net / map_d_fit_net)), axis = 0)
 print(logL_d.shape)
 
 exp_back_d = np.nansum(map_d_fit_net, axis = 0)
@@ -183,12 +183,14 @@ hf.create_dataset('inercept_b_bins', data=inercept_b_bins, compression="gzip", c
 hf.create_dataset('map_d_bins', data=map_d_bins, compression="gzip", compression_opts=9)
 hf.create_dataset('map_d_bin_center', data=map_d_bin_center, compression="gzip", compression_opts=9)
 hf.create_dataset('norm_fac', data=norm_fac, compression="gzip", compression_opts=9)
+hf.create_dataset('norm_fac_n', data=norm_fac_n, compression="gzip", compression_opts=9)
 hf.create_dataset('map_d', data=map_d, compression="gzip", compression_opts=9)
 hf.create_dataset('map_d_int', data=map_d_int, compression="gzip", compression_opts=9)
 hf.create_dataset('map_n', data=map_n, compression="gzip", compression_opts=9)
 hf.create_dataset('map_n_int', data=map_n_int, compression="gzip", compression_opts=9)
 hf.create_dataset('map_d_fit', data=map_d_fit, compression="gzip", compression_opts=9)
 hf.create_dataset('map_d_fit_dat', data=map_d_fit_dat, compression="gzip", compression_opts=9)
+hf.create_dataset('map_d_fit_dat_net', data=map_d_fit_dat_net, compression="gzip", compression_opts=9)
 hf.create_dataset('map_d_fit_net', data=map_d_fit_net, compression="gzip", compression_opts=9)
 hf.create_dataset('map_d_cdf', data=map_d_cdf, compression="gzip", compression_opts=9)
 hf.create_dataset('map_n_fit', data=map_n_fit, compression="gzip", compression_opts=9)
