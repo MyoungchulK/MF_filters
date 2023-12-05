@@ -91,13 +91,6 @@ class py_interferometers:
             self.z_flat = np.sin(np.radians(self.theta_flat)) * self.rad_flat
             del theta_ex, rad_ex
 
-            sur_ang = np.array([180, 180, 37, 24, 17], dtype = float)
-            theta_map = np.full((self.num_pols, self.num_thetas, self.num_rads, self.num_rays), np.nan, dtype = float)
-            theta_map[:] = self.theta[np.newaxis, :, np.newaxis, np.newaxis]
-            sur_bool = theta_map <= sur_ang[np.newaxis, np.newaxis, :, np.newaxis]
-            self.sur_bool_flat = np.reshape(sur_bool, (self.num_pols, flat_len))
-            del sur_ang, theta_map, sur_bool, flat_len
-
         table_p1 = arr_table[:, :, :, :, self.pairs[:, 0]]
         table_p2 = arr_table[:, :, :, :, self.pairs[:, 1]] 
         self.table = table_p1 - table_p2 # theta, phi, rad, ray, pair
@@ -186,9 +179,7 @@ class py_interferometers:
             self.coef_s_max = np.copy(self.coef_max)
             self.coord_s_max = np.copy(self.coord_max)
             for t in range(2):
-                if t == 1:
-                    coef_re[self.sur_bool_flat] = -1
-                    coord_re[self.sur_bool_flat] = np.nan
+              if t == 0:
                 coef_max_idx = np.nanargmax(coef_re, axis = 1)
                 coef_max1 = coef_re[self.pol_range, coef_max_idx] # pol
                 neg_idx = coef_max1 < 0

@@ -87,8 +87,8 @@ for r in tqdm(range(num_runs)):
     del evt_full, qual_indi, evt
 
     qual_ep_all[:, run_idx] = qual_ep_run
-    qual_ep_run[14] = 0 # no l1 cut
-    qual_ep_run[15] = 0 # no rf/cal cut
+    qual_ep_run[14] = 0 # no rf/cal cut
+    qual_ep_run[15] = 0 # no l1 cut
 
     qual_ba = (np.nansum(qual_ep_run[cut_1st], axis = 0) != 0).astype(int)
     qual_sum = (np.nansum(qual_ep_run, axis = 0) != 0).astype(int)
