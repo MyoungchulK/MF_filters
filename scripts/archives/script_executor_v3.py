@@ -9,7 +9,6 @@ curr_path = os.getcwd()
 sys.path.append(curr_path+'/../')
 from tools.ara_run_manager import run_info_loader
 from tools.ara_run_manager import condor_info_loader
-from tools.ara_run_manager import get_path_info_v2
 from tools.ara_utility import size_checker
 
 @click.command()
@@ -24,9 +23,7 @@ from tools.ara_utility import size_checker
 @click.option('-l', '--l2_data', default = False, type = bool)
 @click.option('-t', '--no_tqdm', default = False, type = bool)
 @click.option('-p', '--pulser', default = '', type = str)
-@click.option('-dd', '--data', default = '', type = str)
-@click.option('-pp', '--ped', default = '', type = str)
-def script_loader(key, station, run, qual_type, act_evt, blind_dat, condor_run, not_override, l2_data, no_tqdm, pulser, data, ped):
+def script_loader(key, station, run, qual_type, act_evt, blind_dat, condor_run, not_override, l2_data, no_tqdm, pulser):
 
     if not_override:
         blind_type = ''
@@ -52,51 +49,25 @@ def script_loader(key, station, run, qual_type, act_evt, blind_dat, condor_run, 
                 print(f'{done_path} is corrupted!!')
 
     # get run info
-    if len(data) != 0:
-        print('use data path directly input from user!')
-        Data = data
-        Ped = ped
+    run_info = run_info_loader(station, run, analyze_blind_dat = blind_dat)
 
-        from tools.ara_data_load import ara_uproot_loader
-        ara_uproot = ara_uproot_loader(Data)
-        station = ara_uproot.station_id
-        run = ara_uproot.run
-        Year, Month, Date = ara_uproot.get_run_time()[:-1]
-        del ara_uproot
-
-        run_info = run_info_loader(station, run, analyze_blind_dat = blind_dat)
-        Config = run_info.get_config_number()
-        del run_info
-
-        print(f'event_dat_path:{Data}.', size_checker(Data))
-        print(f'ped_path:{Ped}.', size_checker(Ped))
-        print(f'data info. 1)station:{station} 2)run:{run} 3)config:{Config} 4)year:{Year} 5)month:{Month} 6)date:{Date}')
-    else:
-        run_info = run_info_loader(station, run, analyze_blind_dat = blind_dat)
-
-        file_type = 'event'
-        verbose = True    
-        return_none = False
-        return_dat_only = False
-        if key == 'sensor':
-            file_type = 'sensorHk'
-            return_none = True
-            return_dat_only = True
-        elif key == 'l1':
-            file_type = 'eventHk'
-            return_none = True
-            return_dat_only = True
-        elif key == 'blk_len' or key == 'rf_len' or key == 'dead' or key == 'dupl' or  key == 'run_time' or key == 'ped' or key == 'cw_band' or key == 'cw_flag_merge' or key == 'cw_ratio_merge' or key == 'evt_num' or key == 'medi' or key == 'sub_info' or key == 'sub_info_burn' or key == 'cw_time':
-            return_dat_only = True
-        Data, Ped = run_info.get_data_ped_path(file_type = file_type, return_none = return_none, verbose = verbose, return_dat_only = return_dat_only, l2_data = l2_data)
-        station, run, Config, Year, Month, Date = run_info.get_data_info()
-        if Month == -1:
-            from tools.ara_data_load import ara_uproot_loader
-            ara_uproot = ara_uproot_loader(Data)
-            Year, Month, Date = ara_uproot.get_run_time()[:-1]
-            print(f'New data info.! 1)station:{station} 2)run:{run} 3)config:{Config} 4)year:{Year} 5)month:{Month} 6)date:{Date}')
-            del ara_uproot
-        del run_info   
+    file_type = 'event'
+    verbose = True    
+    return_none = False
+    return_dat_only = False
+    if key == 'sensor':
+        file_type = 'sensorHk'
+        return_none = True
+        return_dat_only = True
+    elif key == 'l1':
+        file_type = 'eventHk'
+        return_none = True
+        return_dat_only = True
+    elif key == 'blk_len' or key == 'rf_len' or key == 'dead' or key == 'dupl' or  key == 'run_time' or key == 'ped' or key == 'cw_band' or key == 'cw_flag_merge' or key == 'cw_ratio_merge' or key == 'evt_num' or key == 'medi' or key == 'sub_info' or key == 'sub_info_burn' or key == 'cw_time':
+        return_dat_only = True
+    Data, Ped = run_info.get_data_ped_path(file_type = file_type, return_none = return_none, verbose = verbose, return_dat_only = return_dat_only, l2_data = l2_data)
+    station, run, Config, Year, Month, Date = run_info.get_data_info()
+    del run_info   
 
     # move input to condor
     condor_info = condor_info_loader(use_condor = condor_run, verbose = True)
