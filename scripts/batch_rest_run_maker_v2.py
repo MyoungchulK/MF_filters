@@ -8,7 +8,7 @@ sys.path.append(curr_path+'/../')
 from tools.ara_run_manager import batch_info_loader
 from tools.ara_run_manager import file_sorter
 
-def batch_run_loader(Station = None, Output = None, Analyze_Blind = False, Key = None):
+def batch_run_loader(Station = None, Input = None, Output = None, Analyze_Blind = False):
 
     batch_info = batch_info_loader(Station)
 
@@ -36,8 +36,8 @@ def batch_run_loader(Station = None, Output = None, Analyze_Blind = False, Key =
 
     for w in tqdm(lists):
 
-            log_name = f'/home/mkim/logs/A{Station}.R{int(w)}.log'
-            err_name = f'/home/mkim/logs/A{Station}.R{int(w)}.err'
+            log_name = f'{Input}A{Station}.R{int(w)}.log'
+            err_name = f'{Input}A{Station}.R{int(w)}.err'
             log_flag = False
             err_flag = False
             if not os.path.exists(log_name) and not os.path.exists(err_name): continue
@@ -79,6 +79,7 @@ if __name__ == "__main__":
     Usage = python3 %s
 
     <Station ex)2>
+    <Input ex)/home/mkim/wipac_full/logs/>
     <Output ex)/home/mkim/analysis/MF_filters/scripts/batch_run/wipac/>
     <Analyze_Blind ex)0 or 1>
     <Key ex)snr>
@@ -89,9 +90,9 @@ if __name__ == "__main__":
 
     # argv
     station=int(sys.argv[1])
-    output=str(sys.argv[2])
-    blind=bool(int(sys.argv[3]))
-    key=str(sys.argv[4])
+    inputs = str(sys.argv[2])
+    output=str(sys.argv[3])
+    blind=bool(int(sys.argv[4]))
 
-    batch_run_loader(Station = station, Output = output, Analyze_Blind = blind, Key = key)
+    batch_run_loader(Station = station, Input = inputs, Output = output, Analyze_Blind = blind)
  
