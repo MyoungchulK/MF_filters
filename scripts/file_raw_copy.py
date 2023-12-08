@@ -37,13 +37,22 @@ for lines in list_file:
 list_file.close()
 run_num = np.asarray(run_num, dtype = int)
 
-raw_log = os.listdir(Input)
+#raw_log = os.listdir(Input)
+raw_log = glob(f'{Input}A{Station}*')
 raw_list = []
 for logs in raw_log:
-    raw_run = int(get_path_info_v2(logs, f'A{Station}.R', '.log'))    
-    run_idx = np.where(run_num == raw_run)[0][0]
-    raw_paths = run_path[run_idx]
-    raw_list.append(raw_paths)
+    flags = False
+    with open(logs,'r') as f:
+        f_read = f.read()
+        key_idx = f_read.find('Error')
+        if key_idx != -1:
+            flags = True
+    if flags:
+        raw_run = int(get_path_info_v2(logs, f'A{Station}.R', '.log'))    
+        run_idx = np.where(run_num == raw_run)[0][0]
+        raw_paths = run_path[run_idx]
+        raw_list.append(raw_paths)
+print(len(raw_list))
 
 for r in tqdm(range(len(raw_list))):
     if os.path.exists(raw_list[r]):
