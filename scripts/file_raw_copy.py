@@ -40,6 +40,7 @@ run_num = np.asarray(run_num, dtype = int)
 #raw_log = os.listdir(Input)
 raw_log = glob(f'{Input}A{Station}*')
 raw_list = []
+raw_num = []
 for logs in raw_log:
     flags = False
     with open(logs,'r') as f:
@@ -49,12 +50,18 @@ for logs in raw_log:
             flags = True
     if flags:
         raw_run = int(get_path_info_v2(logs, f'A{Station}.R', '.log'))    
+        raw_num.append(raw_run)
         run_idx = np.where(run_num == raw_run)[0][0]
         raw_paths = run_path[run_idx]
         raw_list.append(raw_paths)
 print(len(raw_list))
+raw_num = np.asarray(raw_num).astype(int)
+print(raw_num)
 
 for r in tqdm(range(len(raw_list))):
+    if Station == 3 and raw_num[r] == 482 and Blind == 1:
+        print('A3 Run482!!!!!!!!!!!! pass!!!!!')
+        continue
     if os.path.exists(raw_list[r]):
         raw_tar = raw_list[r]
     else:
