@@ -12,8 +12,12 @@ from tools.ara_known_issue import known_issue_loader
 
 Station = int(sys.argv[1])
 Blind = int(sys.argv[2])
-if Blind == 1: b_name = '_full'
-else: b_name = ''
+if Blind == 1:
+    b_name = '_full'
+    bb_name = '_Full'
+else:
+    b_name = ''
+    bb_name = ''
 print(b_name)
 
 # sort
@@ -24,7 +28,7 @@ if not os.path.exists(r_path):
     os.makedirs(r_path)
 
 rr_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
-file_name = f'Info_Summary_A{Station}.h5'
+file_name = f'Info_Summary{bb_name}__A{Station}.h5'
 hf = h5py.File(rr_path + file_name, 'r')
 runs = hf['runs'][:]
 num_runs = len(runs)
