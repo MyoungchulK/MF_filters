@@ -27,7 +27,7 @@ print(list_name)
 list_file =  open(list_name, "r")
 run_num = []
 run_path = []
-for lines in tqdm(list_file):
+for lines in list_file:
     line = lines.split()
     run_nums = int(line[0])
     run_paths = str(line[1])
@@ -37,9 +37,9 @@ for lines in tqdm(list_file):
 list_file.close()
 run_num = np.asarray(run_num, dtype = int)
 
-raw_log = glob(f'{Input}A{Station}*')
+raw_log = glob(f'{Input}*/logs/A{Station}*')
 err_num = []
-for logs in tqdm(raw_log):
+for logs in raw_log:
     flags = False
     with open(logs,'r') as f:
         f_read = f.read()
@@ -50,32 +50,33 @@ for logs in tqdm(raw_log):
         err_run = int(get_path_info_v2(logs, f'A{Station}.R', '.log'))
         err_num.append(err_run)
 err_num = np.asarray(err_num, dtype = int)
+print('Error #:', len(err_num))
 err_num  = np.unique(err_num).astype(int)
-print(len(err_num))
+print('Error Net #:', len(err_num))
 
 mvd_name = f'../data/raw_list/A{Station}_raw_list{blind_type}.txt'
 mvd_file =  open(mvd_name, "r")
 mvd_num = []
-for lines in tqdm(mvd_file):
+for lines in mvd_file:
     line = lines.split()
     mvd_nums = int(line[0])
     mvd_num.append(mvd_nums)
     del line
 mvd_file.close()
 mvd_num = np.asarray(mvd_num, dtype = int)
-print(len(mvd_num))
+print('Moved #:', len(mvd_num))
 
 net_idx = ~np.in1d(err_num, mvd_num)
 raw_num = err_num[net_idx]
-print(len(raw_num))
+print('Net #:', len(raw_num))
 raw_list = []
 for r in range(len(raw_num)):
     raw_idx = np.where(run_num == raw_num[r])[0][0]
     raw_path = run_path[raw_idx]
     raw_list.append(raw_path)
-    print(raw_num[r], raw_path)
+    #print(raw_num[r], raw_path)
 
-"""
+
 for r in tqdm(range(len(raw_list))):
     if Station == 3 and raw_num[r] == 482 and Blind == 1:
         print('A3 Run482!!!!!!!!!!!! pass!!!!!')
@@ -95,7 +96,7 @@ for r in tqdm(range(len(raw_list))):
         CP_CMD = f'cp -r {raw_tar} {Output}'
         print(CP_CMD, size_checker(raw_tar))
         call(CP_CMD.split(' '))
-"""
+
 
 
 
