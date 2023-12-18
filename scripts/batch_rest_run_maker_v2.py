@@ -36,6 +36,8 @@ def batch_run_loader(Station = None, Input = None, Output = None, Analyze_Blind 
 
     for w in tqdm(lists):
 
+            if Station == 3 and int(w) == 482: continue
+
             log_name = f'{Input}A{Station}.R{int(w)}.log'
             err_name = f'{Input}A{Station}.R{int(w)}.err'
             log_flag = False
