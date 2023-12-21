@@ -594,3 +594,6 @@
 3861 /misc/disk19/users/mkim/OMF_filter/ARA03/temp/event003861.root 
 3866 /misc/disk19/users/mkim/OMF_filter/ARA03/temp/event003866.root 
 3893 /misc/disk19/users/mkim/OMF_filter/ARA03/temp/event003893.root 
+3302 /misc/disk19/users/mkim/OMF_filter/ARA03/temp/event003302.root 
+4074 /misc/disk19/users/mkim/OMF_filter/ARA03/temp/event004074.root 
+4089 /misc/disk19/users/mkim/OMF_filter/ARA03/temp/event004089.root 
