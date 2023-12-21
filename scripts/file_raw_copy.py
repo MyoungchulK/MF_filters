@@ -64,6 +64,7 @@ for lines in mvd_file:
     del line
 mvd_file.close()
 mvd_num = np.asarray(mvd_num, dtype = int)
+mvd_num = np.unique(mvd_num).astype(int)
 print('Moved #:', len(mvd_num))
 
 net_idx = ~np.in1d(err_num, mvd_num)
