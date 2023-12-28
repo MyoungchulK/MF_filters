@@ -50,6 +50,12 @@ def batch_run_loader(Station = None, Input = None, Output = None, Analyze_Blind 
                     key_idx = f_read.find('Error')
                     if key_idx != -1:
                         log_flag = True
+            if os.path.exists(log_name):
+                with open(log_name,'r') as f:
+                    f_read = f.read()
+                    key_idx = f_read.find('condor_rm')
+                    if key_idx != -1:
+                        log_flag = True
             if os.path.exists(err_name):
                 with open(err_name,'r') as f:
                     f_read = f.read()
