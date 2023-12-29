@@ -70,6 +70,17 @@ def batch_run_loader(Station = None, Input = None, Output = None, Analyze_Blind 
                 if log_flag: 
                     print(int(w))
                     new_list.append(int(w))
+            if Station == 2 and os.path.exists(log_name):
+                log_flag = False
+                with open(log_name,'r') as f:
+                    f_read = f.read()
+                    key_idx = f_read[-300:].find('aborted')
+                    key_idx1 = f_read[-300:].find('2023-12-29')
+                    if key_idx != -1 and key_idx1 != -1:
+                        log_flag = True
+                if log_flag:
+                    print(int(w))
+                    new_list.append(int(w))
 
     new_list = np.asarray(new_list, dtype = int)
     new_list = np.unique(new_list).astype(int)

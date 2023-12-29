@@ -51,6 +51,11 @@ for logs in raw_log:
             key_idx1 = f_read[-300:].find('2023-12-28')
             if key_idx != -1 and key_idx1 != -1:
                 flags = True
+        if Station == 2:
+            key_idx = f_read[-300:].find('aborted')
+            key_idx1 = f_read[-300:].find('2023-12-29')
+            if key_idx != -1 and key_idx1 != -1:
+                flags = True
     if flags:
         err_run = int(get_path_info_v2(logs, f'A{Station}.R', '.log'))
         err_num.append(err_run)
