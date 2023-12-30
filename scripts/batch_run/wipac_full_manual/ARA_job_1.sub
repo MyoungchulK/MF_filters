@@ -1,0 +1,20 @@
+log    = /scratch/mkim/wipac_full_manual/logs/A$(station).R$(run).log
+output = /scratch/mkim/wipac_full_manual/logs/A$(station).R$(run).out
+error  = /scratch/mkim/wipac_full_manual/logs/A$(station).R$(run).err
+
+request_memory = 6GB
+#request_disk = 6GB
+
+Universe = vanilla
+getenv = true
++TransferOutput = ""
++OriginalTime = 345600
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+
+nice_user = false
+
+executable = ARA_job.sh
+arguments = $(station) $(run)
+
+queue
