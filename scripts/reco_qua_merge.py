@@ -51,26 +51,38 @@ for r in tqdm(range(num_runs)):
         if ml_flag == 0: print(ml_name)
         continue   
 
-    hf = h5py.File(m_name, 'r')
-    evt_num = hf['evt_num'][:]
-    trig_type = hf['trig_type'][:]
-    bad_ant = hf['bad_ant'][:]
-    coef_cal = hf['coef_cal'][:]
-    coord_cal = hf['coord_cal'][:]
-    coef_max = hf['coef_max'][:]
-    coord_max = hf['coord_max'][:]
-    coef_s_max = hf['coef_s_max'][:]
-    coord_s_max = hf['coord_s_max'][:]
+    try:
+        hf = h5py.File(m_name, 'r')
+    except OSError:
+        print(m_name)
+    try:
+        evt_num = hf['evt_num'][:]
+        trig_type = hf['trig_type'][:]
+        bad_ant = hf['bad_ant'][:]
+        coef_cal = hf['coef_cal'][:]
+        coord_cal = hf['coord_cal'][:]
+        coef_max = hf['coef_max'][:]
+        coord_max = hf['coord_max'][:]
+        coef_s_max = hf['coef_s_max'][:]
+        coord_s_max = hf['coord_s_max'][:]
+    except ValueError:
+        continue
     del hf
 
-    hf_l = h5py.File(ml_name, 'r')
-    sel_evt_idx_l = hf_l['sel_evt_idx'][:] != 0
-    coef_cal_l = hf_l['coef_cal'][:]
-    coord_cal_l = hf_l['coord_cal'][:]
-    coef_max_l = hf_l['coef_max'][:]
-    coord_max_l = hf_l['coord_max'][:]
-    coef_s_max_l = hf_l['coef_s_max'][:]
-    coord_s_max_l = hf_l['coord_s_max'][:]
+    try:
+        hf_l = h5py.File(ml_name, 'r')
+    except OSError:
+        print(ml_name)
+    try:
+        sel_evt_idx_l = hf_l['sel_evt_idx'][:] != 0
+        coef_cal_l = hf_l['coef_cal'][:]
+        coord_cal_l = hf_l['coord_cal'][:]
+        coef_max_l = hf_l['coef_max'][:]
+        coord_max_l = hf_l['coord_max'][:]
+        coef_s_max_l = hf_l['coef_s_max'][:]
+        coord_s_max_l = hf_l['coord_s_max'][:]
+    except ValueError:
+        continue
     del hf_l
 
     coef_cal[:, sel_evt_idx_l] = coef_cal_l[:, sel_evt_idx_l]

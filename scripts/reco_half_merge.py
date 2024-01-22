@@ -28,7 +28,7 @@ if not os.path.exists(r_path):
     os.makedirs(r_path)
 
 rr_path = os.path.expandvars("$OUTPUT_PATH") + f'/ARA0{Station}/Hist/'
-file_name = f'Info_Summary{bb_name}__A{Station}.h5'
+file_name = f'Info_Summary{bb_name}_A{Station}.h5'
 hf = h5py.File(rr_path + file_name, 'r')
 runs = hf['runs'][:]
 num_runs = len(runs)
