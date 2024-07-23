@@ -165,8 +165,8 @@ def cw_flag_collector(data, ped, output, analyze_blind_dat = False, use_l2 = Fal
             time_travel_entry = clean_entry[time_travel_idx]
             sigma[time_travel_entry] = np.concatenate((sigma[time_travel_entry], sigmas))
             phase_idx[time_travel_entry] = np.concatenate((phase_idx[time_travel_entry], phase_idxs))
-            collect_sigma_variance_avg[evt, 1] = sigma_variance_avg
-            collect_sigma_variance_avg_sum[evt, 1] = sigma_variance_avg_sum
+            collect_sigma_variance_avg[time_travel_entry, 1] = sigma_variance_avg
+            collect_sigma_variance_avg_sum[time_travel_entry, 1] = sigma_variance_avg_sum
         else:
             time_travel_entry = 0
         evt_counts += 1
